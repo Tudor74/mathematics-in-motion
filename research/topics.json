@@ -1,0 +1,158 @@
+{
+ "foundations": {
+  "name": "Sets, functions & proof",
+  "label": "arXiv math.LO · Logic (MSC 03)",
+  "query": "cat:math.LO",
+  "listing": "math.LO",
+  "field": "mathematical logic and the foundations of mathematics: set theory, proof theory, model theory, computability and their applications",
+  "peopleNote": "Six researchers with widely recognised influence on set theory, model theory and formal proof who are still publishing on arXiv.",
+  "people": [
+   {
+    "name": "Saharon Shelah",
+    "wiki": "Saharon_Shelah",
+    "arxiv": "au:Shelah AND au:Saharon",
+    "area": "Set theory & model theory"
+   },
+   {
+    "name": "W. Hugh Woodin",
+    "wiki": "W._Hugh_Woodin",
+    "arxiv": "au:Woodin AND au:Hugh",
+    "area": "Set theory & large cardinals"
+   },
+   {
+    "name": "Ehud Hrushovski",
+    "wiki": "Ehud_Hrushovski",
+    "arxiv": "au:Hrushovski AND au:Ehud",
+    "area": "Model theory"
+   },
+   {
+    "name": "Maryanthe Malliaris",
+    "wiki": "Maryanthe_Malliaris",
+    "arxiv": "au:Malliaris AND au:Maryanthe",
+    "area": "Model theory & combinatorics"
+   },
+   {
+    "name": "Joel David Hamkins",
+    "wiki": "Joel_David_Hamkins",
+    "arxiv": "au:Hamkins AND au:Joel",
+    "area": "Set theory & philosophy of mathematics"
+   },
+   {
+    "name": "Kevin Buzzard",
+    "wiki": "Kevin_Buzzard",
+    "arxiv": "au:Buzzard AND au:Kevin",
+    "area": "Formalised proof (Lean)"
+   }
+  ],
+  "openQuestions": [
+   {
+    "title": "The continuum hypothesis and new axioms",
+    "status": "independent",
+    "q": "Is there an infinite set larger than the natural numbers but smaller than the real numbers?",
+    "known": "Gödel (1940) and Cohen (1963) showed the usual axioms (ZFC) can neither prove nor refute the continuum hypothesis. The live question is which new axioms mathematicians should accept: forcing axioms such as Martin’s Maximum imply the continuum has size ℵ₂, whereas Woodin’s Ultimate L programme points towards the hypothesis being true.",
+    "link": "https://en.wikipedia.org/wiki/Continuum_hypothesis",
+    "id": "continuum-hypothesis"
+   },
+   {
+    "title": "An “ultimate” canonical universe",
+    "status": "open",
+    "q": "Is there a canonical, fine-structural model of set theory, like Gödel’s L, that is compatible with the strongest large cardinals?",
+    "known": "Inner models of this kind are known for large cardinals up to roughly Woodin cardinals and somewhat beyond. Woodin’s Ultimate L conjecture predicts such a model exists even for a supercompact cardinal; it remains unproved.",
+    "link": "https://en.wikipedia.org/wiki/Inner_model_theory",
+    "id": "ultimate-l"
+   },
+   {
+    "title": "Short proofs and NP versus coNP",
+    "status": "open",
+    "q": "Does every proof system for propositional logic have true statements whose shortest proofs are exponentially long?",
+    "known": "Cook and Reckhow (1979) showed this holds for every proof system exactly when NP ≠ coNP. Exponential lower bounds are proved for weaker systems such as resolution (Haken, 1985), but the question is open for Frege systems, the standard textbook proof systems.",
+    "link": "https://en.wikipedia.org/wiki/Proof_complexity",
+    "id": "proof-length"
+   },
+   {
+    "title": "Vaught’s conjecture",
+    "status": "open",
+    "q": "Can a complete theory in a countable language have more than countably many, but fewer than continuum many, countable models?",
+    "known": "Vaught (1961) conjectured that it cannot. It is proved for ω-stable theories (Shelah, Harrington and Makkai, 1984) and for o-minimal theories (Mayer, 1988), but remains open in general.",
+    "link": "https://en.wikipedia.org/wiki/Vaught_conjecture",
+    "id": "vaught"
+   },
+   {
+    "title": "Hilbert’s tenth problem over the rationals",
+    "status": "claimed",
+    "q": "Is there an algorithm that decides whether a polynomial equation with rational coefficients has a rational solution?",
+    "known": "Over the integers the answer is no (Matiyasevich, 1970, completing work of Davis, Putnam and Robinson). Over the rationals a Diophantine definition of ℤ inside ℚ would settle it negatively. Until recently such definitions were known only under unproved conjectures; a preprint posted on 12 November 2026 (Burungale) claims an unconditional one, which has not yet been peer reviewed.",
+    "extra": {
+     "label": "The Nov 2026 preprint",
+     "url": "https://arxiv.org/abs/2611.16130"
+    },
+    "link": "https://en.wikipedia.org/wiki/Hilbert%27s_tenth_problem",
+    "id": "hilbert-10-q"
+   },
+   {
+    "title": "Tarski’s exponential function problem",
+    "status": "open",
+    "q": "Is there an algorithm that decides every first-order statement about the real numbers with addition, multiplication and the exponential function?",
+    "known": "Without the exponential, Tarski showed the answer is yes. Wilkie (1996) proved the theory with exp is model complete, and Macintyre and Wilkie (1996) proved it decidable assuming Schanuel’s conjecture, which is itself unproved.",
+    "link": "https://en.wikipedia.org/wiki/Tarski%27s_exponential_function_problem",
+    "id": "tarski-exp"
+   }
+  ],
+  "milestones": [
+   {
+    "year": 1874,
+    "title": "Not all infinities are equal",
+    "text": "Cantor proves the real numbers cannot be listed in a sequence: there are more reals than natural numbers.",
+    "wiki": "Georg_Cantor's_first_set_theory_article"
+   },
+   {
+    "year": 1879,
+    "title": "Logic becomes a formal language",
+    "text": "Frege’s Begriffsschrift introduces quantifiers and the first fully formal system of predicate logic.",
+    "wiki": "Begriffsschrift"
+   },
+   {
+    "year": 1901,
+    "title": "Russell’s paradox",
+    "text": "The set of all sets that are not members of themselves cannot consistently exist, exposing a flaw in naive set theory.",
+    "wiki": "Russell's_paradox"
+   },
+   {
+    "year": 1908,
+    "title": "Axioms for sets",
+    "text": "Zermelo publishes axioms for set theory; with later additions by Fraenkel and Skolem these become ZF, the standard foundation.",
+    "wiki": "Zermelo_set_theory"
+   },
+   {
+    "year": 1931,
+    "title": "Incompleteness",
+    "text": "Gödel shows any consistent, effectively axiomatised theory containing arithmetic has true statements it cannot prove.",
+    "wiki": "Gödel's_incompleteness_theorems"
+   },
+   {
+    "year": 1936,
+    "title": "Limits of computation",
+    "text": "Church and Turing show there is no general algorithm for deciding first-order validity; Turing’s halting problem is undecidable.",
+    "wiki": "Halting_problem"
+   },
+   {
+    "year": 1963,
+    "title": "Forcing and independence",
+    "text": "Cohen invents forcing and proves the continuum hypothesis cannot be proved from ZFC, complementing Gödel’s 1938 consistency result.",
+    "wiki": "Forcing_(mathematics)"
+   },
+   {
+    "year": 1970,
+    "title": "Hilbert’s tenth problem",
+    "text": "Matiyasevich completes the proof that no algorithm decides whether a polynomial equation has integer solutions.",
+    "wiki": "Hilbert's_tenth_problem"
+   },
+   {
+    "year": 2005,
+    "title": "Machine-checked mathematics",
+    "text": "Gonthier and Werner complete a fully computer-verified proof of the four colour theorem in the Coq proof assistant.",
+    "wiki": "Four_color_theorem"
+   }
+  ]
+ }
+}

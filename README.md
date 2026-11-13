@@ -27,3 +27,13 @@ Two panels follow the who's who. **Leading open questions** is curated in the pa
 (`OPEN_QUESTIONS`) so it works offline; review it when the field moves. **Open questions in
 the latest papers** calls the worker's `/open/:id`, which takes the six newest abstracts
 matching the lesson's `openQuery` and AI-extracts the question and the paper's claim about it.
+
+## Per-lesson data and new panels (v0.16)
+
+All per-lesson research content lives in `research/topics.json` (arXiv query, people,
+curated open questions, milestones). Run `node tools/build-research.js` after editing it:
+it validates the file and regenerates the data blocks in `workers/research.js` and
+`index.html`. New panels: **How we got here** (milestones), **Where this lesson sits**
+(prerequisites and follow-ons, every lesson) and **Further reading** (every lesson).
+When the live feed sees a paper claiming to settle a curated question, the worker stores a
+flag and the curated card shows it for about four months.
