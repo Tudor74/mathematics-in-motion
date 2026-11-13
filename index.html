@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light">
-<title>Mathematics In Motion — v0.12</title>
-<meta name="application-version" content="0.12">
+<title>Mathematics In Motion — v0.13</title>
+<meta name="application-version" content="0.13">
 <style>
 :root{--ink:#192c37;--muted:#546873;--blue:#1772b7;--pale:#e8f2f8;--line:#c7d8e3;--paper:#fff;--bg:#f3f6f7;--warm:#ad472a;--thumb:46px;--zero:17%;--rewind:#f3e7e1}
 *{box-sizing:border-box}html{background:var(--bg);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}body{margin:0;padding:22px}button,select,input{font:inherit}button,select{min-height:44px}button{background:white;border:1px solid #aec3cf;border-radius:10px;padding:10px 17px;cursor:pointer;color:var(--ink);font-weight:600}button:hover{background:#edf5fa}button:active{background:#dfedf5}button:disabled{cursor:default;opacity:.5}button.primary{background:var(--blue);border-color:var(--blue);color:#fff;min-width:112px}button.primary:hover{background:#115c95}button:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid #a44289;outline-offset:4px}
@@ -347,6 +347,44 @@ svg .svg-word{cursor:pointer!important;text-decoration-line:underline!important;
 @media print{
  .header-row #words{color:#192c37;border:1px solid #aebcc4;background:transparent}
 }
+/* v0.13: research panel — latest arXiv submissions, publication timeline, AI impact paragraph. */
+.header-row #research{flex:0 0 auto;margin:0;min-height:44px;padding:6px 11px;color:#f1f4f6;border:1px solid #ffffff33;background:#ffffff08;border-radius:7px;font-size:13px;line-height:1.25;white-space:nowrap}
+.header-row #research:hover{background:#ffffff17;border-color:#ffffff66}
+.header-row #research:focus-visible{outline:2px solid #acd4ef;outline-offset:3px}
+.header-row #research[hidden]{display:none}
+#research-dialog{width:min(760px,calc(100vw - 28px));max-height:calc(100dvh - 28px);padding:20px 22px;border:1px solid #b5cbd8;border-radius:14px;color:var(--ink);background:#fff;box-shadow:0 16px 60px #142b4b40;overflow:auto;font-size:16px;line-height:1.5}
+#research-dialog:not([open]){display:none}
+#research-dialog::backdrop{background:#182d3d45}
+#research-dialog [hidden]{display:none!important}
+#research-title{font-size:26px;line-height:1.15;margin:0 0 4px;letter-spacing:-.02em}
+#research-title:focus{outline:none}
+.research-source{font-size:14px;color:var(--muted);margin:0 0 14px}
+.research-source a{color:#155e93}
+#research-dialog h3{font-size:12px;text-transform:uppercase;letter-spacing:.08em;font-weight:750;color:var(--muted);margin:20px 0 8px}
+.research-status{font-size:15px;color:var(--muted);margin:10px 0;padding:10px 12px;border-radius:8px;background:#f3f7fa}
+.research-status.error{color:#8e3a25;background:#fbece6}
+.research-charts{display:grid;grid-template-columns:1.7fr 1fr;gap:14px}
+.research-chart{border:1px solid #dbe6ec;border-radius:10px;padding:10px 10px 6px;background:#fbfdfe}
+.research-chart p{margin:0 0 4px;font-size:13px;color:var(--muted)}
+.research-chart p b{color:var(--ink);font-size:15px}
+.research-chart svg{display:block;width:100%;height:auto}
+.research-chart text{font:11px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#546873}
+.research-summary{margin:0;font-size:16.5px;line-height:1.6}
+.research-note{font-size:13px;color:var(--muted);margin:6px 0 0}
+.research-papers{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.research-papers li{border:1px solid #dbe6ec;border-radius:10px;padding:10px 12px;background:#fff;display:flex;flex-direction:column;gap:4px}
+.research-papers a{color:#155e93;font-weight:650;line-height:1.3;text-decoration:none}
+.research-papers a:hover,.research-papers a:focus-visible{text-decoration:underline}
+.research-papers .meta{font-size:13px;color:var(--muted);line-height:1.35}
+.research-papers .tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.03em;padding:1px 6px;border-radius:5px;background:#e1eef7;color:#1d5d8a;margin-right:5px}
+.research-papers .tag.cross{background:#f2ece2;color:#7a5a20}
+.research-papers details{font-size:13.5px;color:#33454f}
+.research-papers summary{cursor:pointer;color:var(--muted);font-size:13px}
+.research-footer{margin-top:16px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+@media(max-width:760px){.header-row #research{font-size:12px;padding:6px 8px}.research-charts,.research-papers{grid-template-columns:1fr}#research-dialog{padding:16px}}
+@media(max-width:380px){.header-row #research{padding:6px}}
+@media(forced-colors:active){.header-row #research{color:ButtonText;background:ButtonFace;border:1px solid ButtonText}}
+@media print{.header-row #research{display:none}}
 </style>
 </head>
 <body>
@@ -362,6 +400,7 @@ svg .svg-word{cursor:pointer!important;text-decoration-line:underline!important;
  </div>
 
  <span class="header-counter" id="counter" aria-label="Topic 1 of 11">1 / 11</span>
+ <button type="button" id="research" aria-haspopup="dialog" aria-controls="research-dialog" hidden>Research</button>
  <button type="button" id="words" aria-haspopup="dialog" aria-controls="word-dialog" disabled>Word meanings</button>
 </div>
 </header>
@@ -435,6 +474,26 @@ svg .svg-word{cursor:pointer!important;text-decoration-line:underline!important;
   <p id="word-list-count" aria-live="polite"></p><div id="word-list"></div>
  </div>
  <div class="word-footer"><p>Paused for reading. Closing keeps your place.</p><button type="button" class="primary" id="word-resume">Resume 1×</button></div>
+</dialog>
+
+<dialog id="research-dialog" aria-labelledby="research-title">
+ <div class="dialog-top"><p class="eyebrow">Recent research · arXiv</p><button type="button" class="dialog-close" id="research-close">Close</button></div>
+ <h2 id="research-title" tabindex="-1">Research</h2>
+ <p class="research-source" id="research-source"></p>
+ <p class="research-status" id="research-status" role="status" aria-live="polite"></p>
+ <div id="research-body" hidden>
+  <h3>Publication timeline</h3>
+  <div class="research-charts">
+   <div class="research-chart"><p id="research-volume-label">Submissions per year</p><div id="research-years"></div></div>
+   <div class="research-chart"><p id="research-frequency-label">Last 12 months</p><div id="research-months"></div></div>
+  </div>
+  <h3>What the latest submissions suggest</h3>
+  <p class="research-summary" id="research-summary"></p>
+  <p class="research-note" id="research-summary-note"></p>
+  <h3>Latest six submissions</h3>
+  <ol class="research-papers" id="research-papers"></ol>
+ </div>
+ <div class="research-footer"><span id="research-updated"></span><span>Thank you to arXiv for use of its open access interoperability.</span></div>
 </dialog>
 
 <script>
@@ -2217,7 +2276,7 @@ function updateTopicHeader(key){
 }
 
 function renderLessonNavigation(){
- updateTopicHeader(branchKey);
+ updateTopicHeader(branchKey);updateResearchButton();
  $('route-select').value=branchKey;
  $('route-select').setAttribute('aria-label',branches[branchKey].name+' — choose any lesson');
 }
@@ -2426,7 +2485,7 @@ function updateControls(){
  $('play').setAttribute('aria-label',isPlaying?'Pause playback':atRouteEnd()?'Play the route again':`Play at ${fmt(lastForward||1)} times normal speed`);
  $('play').title=$('play').getAttribute('aria-label');
  updateDestinations();
- $('status').textContent=`v0.12 · Offline`;
+ $('status').textContent=`v0.13 · Offline`;
 }
 function atRouteEnd(){return branchKey===branchOrder.at(-1)&&t>=TOTAL}
 function advance(now){
@@ -2606,6 +2665,74 @@ function closeWords(resume=false){
  target.focus({preventScroll:true});
  if(resume){if(atRouteEnd())activateBranch(branchOrder[0],0);setRate(lastForward||1)}
 }
+// v0.13 · Research panel. Lessons opt in here; the worker whitelists the same ids.
+const RESEARCH_API='https://mim-research.puter.work/lesson/';
+const RESEARCH_LESSONS=new Set(['foundations']);
+const researchDialog=$('research-dialog');
+let researchLesson=null,researchTimer=null,researchRun=0;
+const MONTH_NAMES=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const TEX={'\\mathbb{N}':'ℕ','\\mathbb{Z}':'ℤ','\\mathbb{Q}':'ℚ','\\mathbb{R}':'ℝ','\\mathbb{C}':'ℂ','\\alpha':'α','\\beta':'β','\\gamma':'γ','\\delta':'δ','\\kappa':'κ','\\lambda':'λ','\\omega':'ω','\\sigma':'σ','\\aleph':'ℵ','\\in':'∈','\\leq':'≤','\\geq':'≥','\\le':'≤','\\ge':'≥','\\to':'→','\\times':'×','\\infty':'∞','\\ldots':'…','\\cdots':'⋯','\\pm':'±','\\neq':'≠'};
+function plainTeX(s){return String(s).replace(/\$([^$]*)\$/g,(_,m)=>m.replace(/\\[a-zA-Z]+(\{[A-Z]\})?/g,c=>TEX[c]??c.replace(/^\\(mathrm|mathcal|mathbf|text)\{(.*)\}$/,'$2')).replace(/[{}]/g,'')).replace(/\s+/g,' ').trim()}
+function researchBars(rows,{w=420,h=150,label}){
+ const known=rows.filter(r=>r.n!=null),max=Math.max(1,...known.map(r=>r.n)),raw=max/4,mag=10**Math.floor(Math.log10(raw)),step=[1,2,2.5,5,10].map(k=>k*mag).find(k=>k>=raw),top=Math.ceil(max/step)*step;
+ const L=34,B=h-20,T=8,bw=(w-L-4)/rows.length,Y=v=>B-(B-T)*v/top;
+ let g='';for(let v=0;v<=top;v+=step)g+=`<line x1="${L}" x2="${w-2}" y1="${Y(v)}" y2="${Y(v)}" stroke="#e3ecf1"/><text x="${L-5}" y="${Y(v)+4}" text-anchor="end">${v}</text>`;
+ rows.forEach((r,i)=>{const x=L+i*bw+bw*.14,bwi=bw*.72;
+  if(r.n==null)g+=`<rect x="${x}" y="${B-3}" width="${bwi}" height="3" fill="#dbe6ec"><title>${esc(r.key)}: still counting</title></rect>`;
+  else g+=`<rect x="${x}" y="${Y(r.n)}" width="${bwi}" height="${Math.max(1,B-Y(r.n))}" rx="2" fill="${r.partial?'#9cc3e0':'#1772b7'}"><title>${esc(label(r,true))}: ${r.n}${r.partial?' so far':''}</title></rect>`;
+  if(i%Math.ceil(rows.length/9)===0||i===rows.length-1)g+=`<text x="${x+bwi/2}" y="${h-5}" text-anchor="middle">${esc(label(r,false))}</text>`;
+ });
+ return `<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(rows.map(r=>label(r,true)+' '+(r.n??'pending')).join(', '))}">${g}</svg>`;
+}
+function renderResearch(d){
+ $('research-title').textContent=d.name;
+ $('research-source').innerHTML=`Source: <a href="https://arxiv.org/list/${esc(d.query.replace('cat:',''))}/recent" target="_blank" rel="noopener">${esc(d.label)}</a> · counts include cross-listed papers.`;
+ const years=d.years,months=d.months,full=years.filter(r=>!r.partial&&r.n!=null),last=full.at(-1),first=full[0];
+ $('research-years').innerHTML=researchBars(years,{label:(r,long)=>long?r.key+(r.partial?' (to date)':''):"'"+r.key.slice(2)});
+ $('research-months').innerHTML=researchBars(months,{w:260,label:(r,long)=>{const [y,m]=r.key.split('-');return long?MONTH_NAMES[m-1]+' '+y+(r.partial?' (to date)':''):MONTH_NAMES[m-1][0]}});
+ const growth=first&&last&&first!==last?Math.round(100*(last.n/first.n-1)):null;
+ $('research-volume-label').innerHTML=last?`Submissions per year · <b>${last.n.toLocaleString('en-GB')}</b> in ${last.key}${growth!=null?` (${growth>=0?'+':''}${growth}% since ${first.key})`:''}`:'Submissions per year';
+ const done=months.filter(r=>!r.partial&&r.n!=null),perWeek=done.length?done.reduce((a,r)=>a+r.n,0)/done.length*12/52:null;
+ $('research-frequency-label').innerHTML=perWeek?`Last 12 months · <b>≈ ${Math.round(perWeek)} a week</b>`:'Last 12 months';
+ $('research-summary').textContent=d.summary?d.summary.text:'Summary not available yet.';
+ $('research-summary-note').textContent=d.summary?`AI-written (${d.summary.model}) from the six abstracts below, ${new Date(d.summary.at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}. These are preprints, not peer-reviewed results.`:'';
+ const primary=d.query.replace('cat:','');
+ $('research-papers').innerHTML=d.papers.map(p=>{const who=p.authors.length>3?p.authors.slice(0,3).join(', ')+' et al.':p.authors.join(', ');
+  return `<li><a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(plainTeX(p.title))}</a><span class="meta"><span class="tag${p.category===primary?'':' cross'}" title="${p.category===primary?'Primary category':'Cross-listed from '+esc(p.category)}">${esc(p.category)}</span>${esc(who)} · ${esc(new Date(p.published+'T12:00Z').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}))}</span><details><summary>Abstract</summary>${esc(plainTeX(p.abstract))}</details></li>`}).join('');
+ $('research-updated').textContent=`Checked ${new Date(d.papersAt).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}`;
+ $('research-body').hidden=false;
+}
+async function loadResearch(key,run,attempt=0){
+ const status=$('research-status');
+ try{
+  const res=await fetch(RESEARCH_API+encodeURIComponent(key),{cache:'no-store'});
+  const d=await res.json();if(run!==researchRun)return;
+  if(!res.ok)throw new Error(d.message||d.error||('HTTP '+res.status));
+  renderResearch(d);
+  const missing=[...d.years,...d.months].filter(r=>r.n==null).length;
+  if(!d.complete&&attempt<12){status.className='research-status';status.hidden=false;status.textContent=`Counting older publications on arXiv… ${missing} periods to go.`;researchTimer=setTimeout(()=>loadResearch(key,run,attempt+1),1500)}
+  else status.hidden=true;
+ }catch(err){if(run!==researchRun)return;status.hidden=false;status.className='research-status error';
+  status.textContent=(navigator.onLine===false?'You are offline. ':'')+'The research feed could not be reached'+(err&&err.message?` (${err.message})`:'')+'. The lesson itself works offline; try again when connected.';}
+}
+function openResearch(){
+ const key=branchKey;if(!RESEARCH_LESSONS.has(key))return;
+ pauseForWord();clearTimeout(researchTimer);const run=++researchRun;
+ if(researchLesson!==key){$('research-body').hidden=true;$('research-title').textContent=branches[key].name;$('research-source').textContent='';}
+ researchLesson=key;const status=$('research-status');status.hidden=false;status.className='research-status';
+ status.textContent='Fetching the latest arXiv submissions… the first visit of the day can take up to half a minute.';
+ if(!researchDialog.open)researchDialog.showModal();$('research-title').focus({preventScroll:true});
+ loadResearch(key,run);
+}
+function closeResearch(){if(!researchDialog.open)return;clearTimeout(researchTimer);researchRun++;researchDialog.close();$('research').focus({preventScroll:true})}
+function updateResearchButton(){const b=$('research'),on=RESEARCH_LESSONS.has(branchKey);b.hidden=!on;if(on){const l='Recent research on '+branches[branchKey].name;b.title=l;b.setAttribute('aria-label',l)}}
+function installResearch(){
+ $('research').addEventListener('click',openResearch);
+ $('research-close').addEventListener('click',closeResearch);
+ researchDialog.addEventListener('cancel',e=>{e.preventDefault();closeResearch()});
+ researchDialog.addEventListener('click',e=>{if(e.target!==researchDialog)return;const b=researchDialog.getBoundingClientRect();if(e.clientX<b.left||e.clientX>b.right||e.clientY<b.top||e.clientY>b.bottom)closeResearch()});
+ updateResearchButton();
+}
 function installWordHelp(){
  $('words').addEventListener('click',e=>showAllWords(e.currentTarget));
  $('word-close').addEventListener('click',()=>closeWords(false));
@@ -2634,6 +2761,7 @@ function installWordHelp(){
 try{
  installLessonNavigation();
  installWordHelp();
+ installResearch();
  installMapAnd3D();
  // Scrolling longer descriptions should not advance to a new topic mid-read.
  for(const region of [document.querySelector('.copy'),$('phase'),$('three-caption')]){
