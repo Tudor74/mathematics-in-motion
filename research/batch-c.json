@@ -616,10 +616,10 @@
     "area": "Pattern formation & cancer modelling"
    },
    {
-    "name": "Alan Perelson",
-    "wiki": "Alan_Perelson",
-    "arxiv": "au:\"Alan Perelson\"",
-    "area": "Viral dynamics & immunology"
+    "name": "Bryan Grenfell",
+    "wiki": "Bryan_Grenfell",
+    "arxiv": "au:\"Bryan Grenfell\"",
+    "area": "Epidemic dynamics"
    }
   ],
   "openQuestions": [
@@ -1052,9 +1052,9 @@
    {
     "id": "navier-stokes-smoothness",
     "title": "Navier–Stokes existence and smoothness",
-    "status": "open",
+    "status": "claimed",
     "q": "Do smooth solutions of the three-dimensional Navier–Stokes equations always stay smooth, or can they blow up in finite time?",
-    "known": "Leray (1934) proved weak solutions exist for all time, and Caffarelli, Kohn and Nirenberg (1982) showed any singular set is very small. Global smoothness is one of the Clay Millennium Prize problems.",
+    "known": "Leray (1934) proved weak solutions exist for all time, and Caffarelli, Kohn and Nirenberg (1982) showed any singular set is very small. In September 2026 OpenAI announced a proposed blow-up construction using a smooth external force, a case the Clay problem statement allows; it has not been verified and its credit is disputed.",
     "link": "https://en.wikipedia.org/wiki/Navier%E2%80%93Stokes_existence_and_smoothness"
    },
    {
@@ -2037,7 +2037,7 @@
   "query": "cat:physics.geo-ph OR cat:physics.ao-ph",
   "listing": "physics.geo-ph",
   "field": "geophysics and climate science: seismology, the geodynamo, atmosphere and ocean dynamics, climate sensitivity and predictability",
-  "peopleNote": "Six researchers whose work on climate dynamics, predictability and planetary atmospheres is widely cited and who publish on arXiv.",
+  "peopleNote": "Six researchers whose work on climate dynamics, predictability, tipping points and planetary atmospheres is widely cited and who publish on arXiv.",
   "people": [
    {
     "name": "Michael Ghil",
@@ -2048,7 +2048,7 @@
    {
     "name": "Tim Palmer",
     "wiki": "Tim_Palmer_(physicist)",
-    "arxiv": "au:\"T. N. Palmer\"",
+    "arxiv": "au:\"Tim Palmer\"",
     "area": "Predictability & weather prediction"
    },
    {
@@ -2058,22 +2058,22 @@
     "area": "Planetary climate"
    },
    {
-    "name": "Kerry Emanuel",
-    "wiki": "Kerry_Emanuel",
-    "arxiv": "au:\"Kerry Emanuel\"",
-    "area": "Tropical cyclones"
+    "name": "Tapio Schneider",
+    "wiki": "Tapio_Schneider",
+    "arxiv": "au:\"Tapio Schneider\"",
+    "area": "Climate modelling & clouds"
    },
    {
-    "name": "Anders Levermann",
-    "wiki": "Anders_Levermann",
-    "arxiv": "au:\"Anders Levermann\"",
-    "area": "Ocean circulation & tipping points"
+    "name": "Valerio Lucarini",
+    "wiki": "Valerio_Lucarini",
+    "arxiv": "au:\"Valerio Lucarini\"",
+    "area": "Climate dynamics & tipping points"
    },
    {
-    "name": "Stefan Rahmstorf",
-    "wiki": "Stefan_Rahmstorf",
-    "arxiv": "au:\"Stefan Rahmstorf\"",
-    "area": "Ocean circulation"
+    "name": "Laure Zanna",
+    "wiki": "Laure_Zanna",
+    "arxiv": "au:\"Laure Zanna\"",
+    "area": "Ocean dynamics & machine learning"
    }
   ],
   "openQuestions": [
