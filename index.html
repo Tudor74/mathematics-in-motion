@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light">
-<title>Mathematics In Motion — v0.13</title>
-<meta name="application-version" content="0.13">
+<title>Mathematics In Motion — v0.14</title>
+<meta name="application-version" content="0.14">
 <style>
 :root{--ink:#192c37;--muted:#546873;--blue:#1772b7;--pale:#e8f2f8;--line:#c7d8e3;--paper:#fff;--bg:#f3f6f7;--warm:#ad472a;--thumb:46px;--zero:17%;--rewind:#f3e7e1}
 *{box-sizing:border-box}html{background:var(--bg);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}body{margin:0;padding:22px}button,select,input{font:inherit}button,select{min-height:44px}button{background:white;border:1px solid #aec3cf;border-radius:10px;padding:10px 17px;cursor:pointer;color:var(--ink);font-weight:600}button:hover{background:#edf5fa}button:active{background:#dfedf5}button:disabled{cursor:default;opacity:.5}button.primary{background:var(--blue);border-color:var(--blue);color:#fff;min-width:112px}button.primary:hover{background:#115c95}button:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid #a44289;outline-offset:4px}
@@ -352,7 +352,7 @@ svg .svg-word{cursor:pointer!important;text-decoration-line:underline!important;
 .research-panel[hidden]{display:none}
 .research-panel [hidden]{display:none!important}
 .research-panel .eyebrow{margin:0 0 4px}
-#research-heading{font-size:24px;line-height:1.15;margin:0 0 4px;letter-spacing:-.02em}
+#research-heading,#people-heading{font-size:24px;line-height:1.15;margin:0 0 4px;letter-spacing:-.02em}
 .research-source{font-size:14px;color:var(--muted);margin:0 0 14px}
 .research-source a{color:#155e93}
 .research-panel h3{font-size:12px;text-transform:uppercase;letter-spacing:.08em;font-weight:750;color:var(--muted);margin:20px 0 8px}
@@ -377,8 +377,20 @@ svg .svg-word{cursor:pointer!important;text-decoration-line:underline!important;
 .research-papers details{font-size:13.5px;color:#33454f}
 .research-papers summary{cursor:pointer;color:var(--muted);font-size:13px}
 .research-footer{margin-top:16px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
-@media(max-width:1000px){.research-columns{grid-template-columns:1fr}.research-papers{grid-template-columns:1fr 1fr}}
-@media(max-width:760px){.research-panel{margin-top:10px;padding:16px 14px}.research-charts,.research-papers{grid-template-columns:1fr}}
+.people-list{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.people-list li{border:1px solid #dbe6ec;border-radius:12px;padding:14px;display:grid;grid-template-columns:64px 1fr;gap:4px 12px;align-content:start;background:#fff}
+.people-photo{grid-row:span 3;width:64px;height:64px;border-radius:50%;object-fit:cover;object-position:50% 20%;background:#e1eef7;display:grid;place-items:center;font-weight:750;color:#1d5d8a;font-size:20px}
+.people-list h3{margin:2px 0 0;font-size:17px;letter-spacing:0;text-transform:none;color:var(--ink)}
+.people-area{font-size:12px;font-weight:700;color:#1d5d8a;letter-spacing:.02em}
+.people-desc{font-size:13px;color:var(--muted);line-height:1.3}
+.people-bio{grid-column:1/-1;font-size:14px;line-height:1.5;margin:8px 0 2px;color:#33454f}
+.people-arxiv{grid-column:1/-1;font-size:13px;color:var(--muted);line-height:1.4}
+.people-arxiv a{color:#155e93}
+.people-links{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.people-links a{font-size:13px;font-weight:650;color:#155e93;text-decoration:none;border:1px solid #c9dbe7;border-radius:6px;padding:4px 9px;min-height:32px;display:inline-flex;align-items:center}
+.people-links a:hover,.people-links a:focus-visible{background:#e8f2f8}
+@media(max-width:1000px){.research-columns{grid-template-columns:1fr}.research-papers,.people-list{grid-template-columns:1fr 1fr}}
+@media(max-width:760px){.research-panel{margin-top:10px;padding:16px 14px}.research-charts,.research-papers,.people-list{grid-template-columns:1fr}}
 @media print{.research-panel{display:none}}
 </style>
 </head>
@@ -478,6 +490,15 @@ svg .svg-word{cursor:pointer!important;text-decoration-line:underline!important;
   <ol class="research-papers" id="research-papers"></ol>
  </div>
  <div class="research-footer"><span id="research-updated"></span><span>Thank you to arXiv for use of its open access interoperability.</span></div>
+</section>
+
+<section class="frame research-panel" id="people-panel" aria-labelledby="people-heading" hidden>
+ <p class="eyebrow">Who's who · Wikipedia, arXiv, LinkedIn</p>
+ <h2 id="people-heading">People shaping <span id="people-title">this area</span></h2>
+ <p class="research-source" id="people-note"></p>
+ <p class="research-status" id="people-status" role="status" aria-live="polite"></p>
+ <ol class="people-list" id="people-list" hidden></ol>
+ <div class="research-footer"><span>Bios and photos: Wikipedia (CC BY-SA). Paper counts: arXiv author search, which can include namesakes.</span><span>LinkedIn links open a people search; check the profile is the right person.</span></div>
 </section>
 
 <dialog id="word-dialog" aria-labelledby="word-title">
@@ -2485,7 +2506,7 @@ function updateControls(){
  $('play').setAttribute('aria-label',isPlaying?'Pause playback':atRouteEnd()?'Play the route again':`Play at ${fmt(lastForward||1)} times normal speed`);
  $('play').title=$('play').getAttribute('aria-label');
  updateDestinations();
- $('status').textContent=`v0.13 · Offline`;
+ $('status').textContent=`v0.14 · Offline`;
 }
 function atRouteEnd(){return branchKey===branchOrder.at(-1)&&t>=TOTAL}
 function advance(now){
@@ -2727,11 +2748,48 @@ function startResearch(){
  status.hidden=false;status.className='research-status';status.textContent='Fetching the latest arXiv submissions… the first visit of the day can take up to half a minute.';
  loadResearch(researchLesson,run);
 }
-function updateResearchButton(){researchFor(branchKey)}
+// v0.14 · Who's who panel, lazy-loaded like the research panel.
+const PEOPLE_API='https://mim-research.puter.work/people/';
+let peopleLesson=null,peopleTimer=null,peopleRun=0,peopleVisible=false,peopleShown=false;
+function initials(n){return n.replace(/^[A-Z]\. /,'').split(/\s+/).map(w=>w[0]).filter(c=>/[A-Z]/.test(c)).slice(0,2).join('')}
+function renderPeople(d){
+ $('people-note').textContent=d.note||'';
+ $('people-list').innerHTML=d.people.map(p=>{
+  const photo=p.image?`<img class="people-photo" src="${esc(p.image)}" alt="" loading="lazy" referrerpolicy="no-referrer">`:`<span class="people-photo" aria-hidden="true">${esc(initials(p.name))}</span>`;
+  const a=p.arxiv,latest=a.latest?` Latest: <a href="${esc(a.latest.url)}" target="_blank" rel="noopener">${esc(plainTeX(a.latest.title))}</a> (${esc(new Date(a.latest.published+'T12:00Z').toLocaleDateString('en-GB',{month:'short',year:'numeric'}))}).`:'';
+  return `<li>${photo}<span class="people-area">${esc(p.area)}</span><h3>${esc(p.name)}</h3><span class="people-desc">${esc(p.description)}</span>
+   <p class="people-bio">${esc(p.bio||'Biography loading…')}</p>
+   <p class="people-arxiv">${a.count==null?'Counting arXiv papers…':`<b>${a.count.toLocaleString('en-GB')}</b> arXiv papers.`}${latest}</p>
+   <p class="people-links"><a href="${esc(p.wikipedia)}" target="_blank" rel="noopener" aria-label="${esc(p.name)} on Wikipedia">Wikipedia</a><a href="${esc(a.url)}" target="_blank" rel="noopener" aria-label="${esc(p.name)} on arXiv">arXiv</a><a href="${esc(p.linkedin)}" target="_blank" rel="noopener" aria-label="Search LinkedIn for ${esc(p.name)}">LinkedIn search</a></p></li>`}).join('');
+ $('people-list').hidden=false;
+}
+async function loadPeople(key,run,attempt=0){
+ const status=$('people-status');
+ try{
+  const res=await fetch(PEOPLE_API+encodeURIComponent(key),{cache:'no-store'});const d=await res.json();if(run!==peopleRun)return;
+  if(!res.ok)throw new Error(d.message||d.error||('HTTP '+res.status));
+  renderPeople(d);
+  if(!d.complete&&attempt<6){status.hidden=false;status.className='research-status';status.textContent='Looking up arXiv records…';peopleTimer=setTimeout(()=>loadPeople(key,run,attempt+1),1500)}
+  else status.hidden=true;
+ }catch(err){if(run!==peopleRun)return;peopleShown=false;status.hidden=false;status.className='research-status error';
+  status.textContent=(navigator.onLine===false?'You are offline. ':'')+"The who's who could not be loaded"+(err&&err.message?` (${err.message})`:'')+'. Try again when connected.'}
+}
+function peopleFor(key){
+ const panel=$('people-panel'),on=RESEARCH_LESSONS.has(key);panel.hidden=!on;clearTimeout(peopleTimer);peopleRun++;
+ if(!on){peopleLesson=null;return}
+ if(peopleLesson===key)return;
+ peopleLesson=key;peopleShown=false;$('people-list').hidden=true;$('people-title').textContent=branches[key].name.toLowerCase();$('people-note').textContent='';
+ const status=$('people-status');status.hidden=false;status.className='research-status';status.textContent='Scroll here to load the who\'s who.';
+ if(peopleVisible)startPeople();
+}
+function startPeople(){if(!peopleLesson||peopleShown)return;peopleShown=true;const run=++peopleRun,status=$('people-status');status.hidden=false;status.className='research-status';status.textContent='Loading profiles from Wikipedia and arXiv…';loadPeople(peopleLesson,run)}
+function updateResearchButton(){researchFor(branchKey);peopleFor(branchKey)}
 function installResearch(){
- if('IntersectionObserver' in window)new IntersectionObserver(es=>{researchVisible=es.some(e=>e.isIntersecting);if(researchVisible)startResearch()},{rootMargin:'200px'}).observe($('research-panel'));
- else researchVisible=true;
- researchLesson=null;researchFor(branchKey);
+ if('IntersectionObserver' in window){
+  new IntersectionObserver(es=>{researchVisible=es.some(e=>e.isIntersecting);if(researchVisible)startResearch()},{rootMargin:'200px'}).observe($('research-panel'));
+  new IntersectionObserver(es=>{peopleVisible=es.some(e=>e.isIntersecting);if(peopleVisible)startPeople()},{rootMargin:'200px'}).observe($('people-panel'));
+ }else researchVisible=peopleVisible=true;
+ researchLesson=null;peopleLesson=null;updateResearchButton();
 }
 function installWordHelp(){
  $('words').addEventListener('click',e=>showAllWords(e.currentTarget));

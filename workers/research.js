@@ -13,7 +13,17 @@ const TOPICS = {
     name: 'Sets, functions & proof',
     label: 'arXiv math.LO · Logic (MSC 03)',
     query: 'cat:math.LO',
-    field: 'mathematical logic and the foundations of mathematics: set theory, proof theory, model theory, computability and their applications'
+    field: 'mathematical logic and the foundations of mathematics: set theory, proof theory, model theory, computability and their applications',
+    // Who's who: a curated roster (influential, living, active on arXiv), enriched live from Wikipedia and arXiv.
+    peopleNote: 'Six researchers with widely recognised influence on set theory, model theory and formal proof who are still publishing on arXiv.',
+    people: [
+      { name: 'Saharon Shelah', wiki: 'Saharon_Shelah', arxiv: 'au:Shelah AND au:Saharon', area: 'Set theory & model theory' },
+      { name: 'W. Hugh Woodin', wiki: 'W._Hugh_Woodin', arxiv: 'au:Woodin AND au:Hugh', area: 'Set theory & large cardinals' },
+      { name: 'Ehud Hrushovski', wiki: 'Ehud_Hrushovski', arxiv: 'au:Hrushovski AND au:Ehud', area: 'Model theory' },
+      { name: 'Maryanthe Malliaris', wiki: 'Maryanthe_Malliaris', arxiv: 'au:Malliaris AND au:Maryanthe', area: 'Model theory & combinatorics' },
+      { name: 'Joel David Hamkins', wiki: 'Joel_David_Hamkins', arxiv: 'au:Hamkins AND au:Joel', area: 'Set theory & philosophy of mathematics' },
+      { name: 'Kevin Buzzard', wiki: 'Kevin_Buzzard', arxiv: 'au:Buzzard AND au:Kevin', area: 'Formalised proof (Lean)' }
+    ]
   }
 };
 
@@ -24,6 +34,8 @@ const BUDGET = 21000;             // ms of arXiv work per incoming request
 const PAPERS_TTL = 6 * 3600e3;    // re-check the newest submissions every six hours
 const OPEN_TTL = 24 * 3600e3;     // counts for the current year/month refresh daily
 const MODEL = 'claude-sonnet-4-6';
+const PEOPLE_TTL = 7 * 24 * 3600e3;  // Wikipedia bios and arXiv author records refresh weekly
+const UA = 'MathematicsInMotion/0.14 (educational site; https://mathematics-in-motion.puter.site)';
 const API = 'https://export.arxiv.org/api/query';
 const K = (...parts) => 'mimr:' + parts.join(':');
 
@@ -38,7 +50,7 @@ async function arxiv(params) {
   if (gap > 0) await sleep(gap);
   lastCall = Date.now();
   const qs = Object.entries(params).map(([k, v]) => k + '=' + encodeURIComponent(v)).join('&');
-  const res = await fetch(API + '?' + qs, { headers: { 'User-Agent': 'MathematicsInMotion/0.13 (educational; puter.site)' } });
+  const res = await fetch(API + '?' + qs, { headers: { 'User-Agent': UA } });
   if (!res.ok) throw new Error('arXiv responded ' + res.status);
   return res.text();
 }
@@ -141,7 +153,54 @@ async function build(id, topic) {
   };
 }
 
+async function wikipedia(title) {
+  const res = await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(title), { headers: { 'User-Agent': UA, 'Accept': 'application/json' } });
+  if (!res.ok) throw new Error('Wikipedia responded ' + res.status);
+  const d = await res.json();
+  const sentences = String(d.extract || '').match(/[^.!?]+[.!?]+(\s|$)/g) || [d.extract || ''];
+  return {
+    url: d.content_urls && d.content_urls.desktop ? d.content_urls.desktop.page : 'https://en.wikipedia.org/wiki/' + title,
+    description: d.description || '', bio: sentences.slice(0, 2).join('').trim(),
+    image: d.thumbnail ? d.thumbnail.source : null
+  };
+}
+
+async function people(id, topic) {
+  const start = Date.now(), kv = me.puter.kv, left = () => BUDGET - (Date.now() - start);
+  const cache = (await kv.get(K(id, 'people2'))) || {};
+  for (const p of topic.people) {
+    const c = cache[p.wiki] || {};
+    if (!c.wiki || Date.now() - c.wiki.at > PEOPLE_TTL) {
+      try { c.wiki = { at: Date.now(), ...(await wikipedia(p.wiki)) }; } catch (e) { c.wiki = c.wiki || null; }
+    }
+    if ((!c.arxiv || Date.now() - c.arxiv.at > PEOPLE_TTL) && left() > WAIT + 2500) {
+      const xml = await arxiv({ search_query: p.arxiv, sortBy: 'submittedDate', sortOrder: 'descending', start: 0, max_results: 1 });
+      const [latest] = parseEntries(xml);
+      c.arxiv = { at: Date.now(), count: total(xml), latest: latest ? { title: latest.title, url: latest.url, published: latest.published } : null };
+    }
+    cache[p.wiki] = c;
+  }
+  await kv.set(K(id, 'people2'), cache);
+  const list = topic.people.map(p => {
+    const c = cache[p.wiki] || {}, w = c.wiki || {};
+    return {
+      name: p.name, area: p.area, description: w.description || '', bio: w.bio || '', image: w.image || null,
+      wikipedia: w.url || 'https://en.wikipedia.org/wiki/' + p.wiki,
+      arxiv: { url: 'https://arxiv.org/search/?searchtype=author&query=' + encodeURIComponent(p.name.replace(/^W\. /, '')) + '&order=-announced_date_first', count: c.arxiv ? c.arxiv.count : null, latest: c.arxiv ? c.arxiv.latest : null },
+      linkedin: 'https://www.linkedin.com/search/results/people/?keywords=' + encodeURIComponent(p.name)
+    };
+  });
+  return { lesson: id, name: topic.name, note: topic.peopleNote, people: list, complete: list.every(p => p.arxiv.count != null && p.bio), updated: new Date().toISOString() };
+}
+
 router.get('/health', async () => ({ ok: true, lessons: Object.keys(TOPICS) }));
+
+router.get('/people/:id', async ({ params }) => {
+  const topic = TOPICS[params.id];
+  if (!topic || !topic.people) return json({ error: "No who's who for this lesson yet", lesson: params.id }, 404);
+  try { return json(await people(params.id, topic)); }
+  catch (e) { return json({ error: "Who's who failed", message: String(e && e.message || e) }, 502); }
+});
 
 router.get('/lesson/:id', async ({ params }) => {
   const topic = TOPICS[params.id];
@@ -150,4 +209,4 @@ router.get('/lesson/:id', async ({ params }) => {
   catch (e) { return json({ error: 'Research feed failed', message: String(e && e.message || e) }, 502); }
 });
 
-router.get('/*rest', async ({ params }) => json({ error: 'Not found', path: params.rest, endpoints: ['/health', '/lesson/:id'] }, 404));
+router.get('/*rest', async ({ params }) => json({ error: 'Not found', path: params.rest, endpoints: ['/health', '/lesson/:id', '/people/:id'] }, 404));

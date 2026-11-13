@@ -13,3 +13,10 @@ the lesson, loaded when it scrolls into view. It calls the Puter worker in `work
 `https://mim-research.puter.work`), which returns the six newest arXiv submissions,
 yearly and monthly submission counts, and a cached AI-written impact paragraph.
 To add a lesson, add a topic to `TOPICS` in the worker and its id to `RESEARCH_LESSONS`.
+
+## Who's who panel (v0.14)
+
+Below the research panel, the same lessons show six researchers in the area. The roster
+is curated in the worker (`TOPICS.<lesson>.people`); `/people/:id` enriches it live with the
+Wikipedia summary and photo, and the arXiv paper count and newest paper (refreshed weekly).
+LinkedIn has no public API, so cards link to a LinkedIn people search for the name.
