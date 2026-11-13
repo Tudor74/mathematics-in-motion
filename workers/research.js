@@ -3609,6 +3609,11 @@ const PAPERS_TTL = 6 * 3600e3;    // re-check the newest submissions every six h
 const OPEN_TTL = 24 * 3600e3;     // counts for the current year/month refresh daily
 const MODEL = 'claude-sonnet-4-6';
 const PEOPLE_TTL = 7 * 24 * 3600e3;  // Wikipedia bios and arXiv author records refresh weekly
+// Visitors are served the cache while it is younger than VISITOR_MAX_AGE; the scheduled
+// /refresh-next job keeps it fresh, so pages never wait on arXiv or the AI. If the job stops,
+// requests fall back to refreshing live once the cache is older than this.
+const VISITOR_MAX_AGE = 26 * 3600e3;
+const REFRESH_AGE = 6 * 3600e3;      // the job refreshes a lesson once its data is older than this
 const UA = 'MathematicsInMotion/0.16 (educational site; https://mathematics-in-motion.puter.site)';
 const API = 'https://export.arxiv.org/api/query';
 const K = (...parts) => 'mimr:' + parts.join(':');
@@ -3692,14 +3697,14 @@ ${list}`;
   return text(r).replace(/\s+/g, ' ').trim();
 }
 
-async function build(id, topic) {
+async function build(id, topic, { maxAge = VISITOR_MAX_AGE, budget = BUDGET, countsMaxAge = 2 * OPEN_TTL } = {}) {
   const start = Date.now(), now = new Date(), kv = me.puter.kv;
-  const left = () => BUDGET - (Date.now() - start);
+  const left = () => budget - (Date.now() - start);
 
   // 1 · Newest six submissions.
   let papers = await kv.get(K(id, 'papers'));
   let stale = false;
-  if (!papers || Date.now() - papers.at > PAPERS_TTL) {
+  if (!papers || Date.now() - papers.at > maxAge) {
     try {
       const xml = await arxiv({ search_query: topic.query, sortBy: 'submittedDate', sortOrder: 'descending', start: 0, max_results: 6 });
       papers = { at: Date.now(), list: parseEntries(xml) };
@@ -3718,7 +3723,7 @@ async function build(id, topic) {
   // 3 · Counts: fill what the remaining budget allows, newest periods first.
   const { years, months } = periods(now);
   const counts = (await kv.get(K(id, 'counts'))) || {};
-  const fresh = (key, open) => counts[key] && (!open || Date.now() - counts[key].at < OPEN_TTL);
+  const fresh = (key, open) => counts[key] && (!open || Date.now() - counts[key].at < countsMaxAge);
   const todo = [...months.slice().reverse(), ...years.slice().reverse()].filter(p => !fresh(p.key, p.open));
   for (const p of todo) {
     if (stale || left() < WAIT + 2500) break;
@@ -3752,8 +3757,8 @@ async function wikipedia(title) {
   };
 }
 
-async function people(id, topic) {
-  const start = Date.now(), kv = me.puter.kv, left = () => BUDGET - (Date.now() - start);
+async function people(id, topic, { budget = BUDGET } = {}) {
+  const start = Date.now(), kv = me.puter.kv, left = () => budget - (Date.now() - start);
   const cache = (await kv.get(K(id, 'people2'))) || {};
   let arxivDown = false;
   for (const p of topic.people) {
@@ -3805,11 +3810,11 @@ ${list}`;
   }).filter(x => x.question);
 }
 
-async function openQuestions(id, topic) {
+async function openQuestions(id, topic, { maxAge = VISITOR_MAX_AGE } = {}) {
   const kv = me.puter.kv;
   let cache = await kv.get(K(id, 'open2'));
   const flags = (await kv.get(K(id, 'flags'))) || {};
-  if (!cache || Date.now() - cache.at > PAPERS_TTL) {
+  if (!cache || Date.now() - cache.at > maxAge) {
     let xml;
     try { xml = await arxiv({ search_query: openQuery(topic), sortBy: 'submittedDate', sortOrder: 'descending', start: 0, max_results: 6 }); }
     catch (e) { if (!cache) throw e; return { lesson: id, query: openQuery(topic), model: cache.model, at: new Date(cache.at).toISOString(), items: cache.items, flags, stale: true }; }
@@ -3857,6 +3862,36 @@ router.post('/admin/arxiv-count', async ({ request, user }) => {
   return json(out);
 });
 
+// Scheduled refresh: each call refreshes the lesson whose data is oldest, within ~24 s.
+async function ages(id) {
+  const kv = me.puter.kv;
+  const [papers, open, ppl] = await Promise.all([kv.get(K(id, 'papers')), kv.get(K(id, 'open2')), kv.get(K(id, 'people2'))]);
+  const pplAt = ppl ? Math.min(...Object.values(ppl).map(c => (c.arxiv && c.arxiv.at) || 0)) : 0;
+  return { papers: papers ? papers.at : 0, open: open ? open.at : 0, people: isFinite(pplAt) ? pplAt : 0 };
+}
+async function refreshNext() {
+  const start = Date.now(), ids = Object.keys(TOPICS);
+  const all = await Promise.all(ids.map(async id => ({ id, a: await ages(id) })));
+  const score = x => Math.min(x.a.papers, x.a.open);
+  all.sort((p, q) => score(p) - score(q));
+  const pick = all[0], topic = TOPICS[pick.id], done = [];
+  const elapsed = () => Date.now() - start;
+  if (Date.now() - score(pick) < REFRESH_AGE) return { lesson: null, note: 'everything is fresh', ms: elapsed() };
+  try { await build(pick.id, topic, { maxAge: REFRESH_AGE, budget: 12000, countsMaxAge: OPEN_TTL }); done.push('papers+summary+counts'); } catch (e) { done.push('papers failed: ' + (e.message || e)); }
+  if (elapsed() < 14000) { try { await openQuestions(pick.id, topic, { maxAge: REFRESH_AGE }); done.push('open questions'); } catch (e) { done.push('open failed: ' + (e.message || e)); } }
+  if (elapsed() < 15000 && Date.now() - pick.a.people > PEOPLE_TTL - 12 * 3600e3) { try { await people(pick.id, topic, { budget: 22000 - elapsed() }); done.push('people'); } catch (e) { done.push('people failed'); } }
+  await me.puter.kv.set(K('last-refresh'), { lesson: pick.id, done, at: Date.now(), ms: elapsed() });
+  return { lesson: pick.id, done, ms: elapsed() };
+}
+router.get('/refresh-next', async () => {
+  try { return json(await refreshNext()); } catch (e) { return json({ error: String(e.message || e) }, 500); }
+});
+router.get('/refresh-status', async () => {
+  const ids = Object.keys(TOPICS), now = Date.now();
+  const rows = await Promise.all(ids.map(async id => { const a = await ages(id); const h = t => t ? Math.round((now - t) / 360e3) / 10 : null; return { id, papersHours: h(a.papers), openHours: h(a.open), peopleHours: h(a.people) }; }));
+  return json({ last: await me.puter.kv.get(K('last-refresh')), lessons: rows, at: new Date(now).toISOString() });
+});
+
 router.get('/health', async () => ({ ok: true, lessons: Object.keys(TOPICS) }));
 
 router.get('/open/:id', async ({ params }) => {
@@ -3880,4 +3915,4 @@ router.get('/lesson/:id', async ({ params }) => {
   catch (e) { return json({ error: 'Research feed failed', message: String(e && e.message || e) }, 502); }
 });
 
-router.get('/*rest', async ({ params }) => json({ error: 'Not found', path: params.rest, endpoints: ['/health', '/lesson/:id', '/people/:id', '/open/:id'] }, 404));
+router.get('/*rest', async ({ params }) => json({ error: 'Not found', path: params.rest, endpoints: ['/health', '/lesson/:id', '/people/:id', '/open/:id', '/refresh-next', '/refresh-status'] }, 404));

@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Research Refresh Admin</title>
+<style>
+:root{--ink:#192c37;--muted:#546873;--line:#dbe6ec;--blue:#1772b7;--paper:#fff;--bg:#f3f7fa;--ok:#2c776c;--warn:#a5651a;--bad:#c45238}
+*{box-sizing:border-box}
+body{margin:0;padding:24px 16px;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:860px;margin:0 auto;display:grid;gap:16px}
+section{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px 22px}
+h1{font-size:26px;margin:0 0 4px;letter-spacing:-.02em}h2{font-size:18px;margin:0 0 8px}
+p{margin:0 0 10px}.muted{color:var(--muted);font-size:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+button{font:inherit;font-weight:650;min-height:44px;padding:8px 16px;border-radius:9px;border:1px solid #b5cbd8;background:#fff;color:var(--ink);cursor:pointer}
+button.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+button:disabled{opacity:.5;cursor:default}
+#state{font-weight:650}#state.ok{color:var(--ok)}#state.warn{color:var(--warn)}#state.bad{color:var(--bad)}
+pre{margin:8px 0 0;padding:10px;background:#f5f8fa;border-radius:8px;font-size:13px;white-space:pre-wrap;word-break:break-word}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}th{color:var(--muted);font-weight:650;font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+td.num{font-variant-numeric:tabular-nums}
+.fresh{color:var(--ok)}.old{color:var(--warn)}.none{color:var(--bad)}
+.table-wrap{overflow-x:auto}
+</style>
+</head>
+<body>
+<main>
+<section>
+ <h1>Research refresh</h1>
+ <p class="muted">Keeps every lesson's research panels pre-loaded, so visitors never wait for arXiv or the AI. A Puter schedule on your account calls the research worker every 15 minutes; each call refreshes the lesson with the oldest data, cycling through all lessons about twice a day.</p>
+ <p>Schedule: <span id="state">checking…</span></p>
+ <div class="row">
+  <button class="primary" id="enable">Enable automatic refresh</button>
+  <button id="run">Refresh one lesson now</button>
+  <button id="disable">Turn off</button>
+ </div>
+ <pre id="log" hidden></pre>
+</section>
+<section>
+ <h2>Cache age by lesson</h2>
+ <p class="muted" id="last"></p>
+ <div class="table-wrap"><table><thead><tr><th>Lesson</th><th>Papers &amp; summary</th><th>Open questions</th><th>People</th></tr></thead><tbody id="ages"></tbody></table></div>
+</section>
+</main>
+<script src="https://js.puter.com/v2/"></script>
+<script>
+const WORKER='https://mim-research.puter.work';
+const $=id=>document.getElementById(id);
+const log=m=>{const l=$('log');l.hidden=false;l.textContent=(typeof m==='string'?m:JSON.stringify(m,null,1))+'\n'+l.textContent};
+const isOurs=s=>s.state!=='ended'&&s.every===15*60*1000&&String(s.handlerName||'').startsWith('@');
+
+// Runs in Puter's events worker. It may only use its parameters and standard globals.
+const handler=async ({ fetch }) => {
+  const go = fetch || globalThis.fetch;
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), 27000);
+  try { const res = await go('https://mim-research.puter.work/refresh-next', { signal: ctl.signal }); await res.text(); }
+  catch (e) { /* a slow arXiv moment should never count as a failure and suspend the schedule */ }
+  finally { clearTimeout(timer); }
+};
+
+async function schedules(){
+ const out=[];let cursor=null;
+ do{const page=await puter.events.listSchedules({cursor});out.push(...page.items);cursor=page.cursor??null}while(cursor);
+ return out.filter(isOurs);
+}
+async function showState(){
+ const st=$('state');
+ if(!puter.auth.isSignedIn()){st.textContent='sign in to check';st.className='warn';return}
+ try{const list=await schedules();
+  if(!list.length){st.textContent='off';st.className='bad';return}
+  const s=list[0];st.className=s.state==='active'?'ok':'warn';
+  st.textContent=`${s.state}${s.suspendedReason?' ('+s.suspendedReason+')':''}${s.nextRunAt?' · next run '+new Date(s.nextRunAt).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}):''}${list.length>1?` · ${list.length} schedules (extra ones will be removed)`:''}`;
+ }catch(e){st.textContent='could not read schedules: '+(e.message||e.code||e);st.className='bad'}
+}
+async function enable(){
+ $('enable').disabled=true;
+ try{
+  if(!puter.auth.isSignedIn())await puter.auth.signIn();
+  if(!await puter.perms.request('backgroundEvents')){log('Background permission was not granted, so no schedule was created.');return}
+  const list=await schedules();
+  for(const extra of list.slice(1))await puter.events.removeSchedule(extra.scheduleId);
+  if(list.length){log('Already enabled.');return}
+  const s=await puter.events.onSchedule({every:'15m',startAt:Date.now()+60e3,handler});
+  log(`Enabled. First run ${new Date(s.nextRunAt||s.startAt).toLocaleString('en-GB')}.`);
+ }catch(e){log('Could not enable: '+(e.code?e.code+' — ':'')+(e.message||e))}
+ finally{$('enable').disabled=false;showState()}
+}
+async function disable(){
+ try{if(!puter.auth.isSignedIn())await puter.auth.signIn();const list=await schedules();for(const s of list)await puter.events.removeSchedule(s.scheduleId);log(list.length?'Turned off.':'Nothing to turn off.')}
+ catch(e){log('Could not turn off: '+(e.message||e))}finally{showState()}
+}
+async function runOnce(){
+ $('run').disabled=true;log('Refreshing… (up to 30 seconds)');
+ try{const r=await fetch(WORKER+'/refresh-next',{cache:'no-store'});log(await r.json())}catch(e){log('Refresh failed: '+(e.message||e))}
+ finally{$('run').disabled=false;loadAges()}
+}
+async function loadAges(){
+ try{const d=await (await fetch(WORKER+'/refresh-status',{cache:'no-store'})).json();
+  const cell=h=>h==null?'<td class="none">never</td>':`<td class="num ${h<12?'fresh':'old'}">${h<1?Math.round(h*60)+' min':h.toFixed(1)+' h'}</td>`;
+  $('ages').innerHTML=d.lessons.map(r=>`<tr><td>${r.id}</td>${cell(r.papersHours)}${cell(r.openHours)}${cell(r.peopleHours)}</tr>`).join('');
+  $('last').textContent=d.last?`Last refresh: ${d.last.lesson} (${d.last.done.join(', ')}) at ${new Date(d.last.at).toLocaleString('en-GB')} in ${(d.last.ms/1000).toFixed(1)} s.`:'No scheduled refresh has run yet.';
+ }catch(e){$('last').textContent='Could not reach the research worker.'}
+}
+$('enable').onclick=enable;$('disable').onclick=disable;$('run').onclick=runOnce;
+showState();loadAges();setInterval(loadAges,60000);
+</script>
+</body>
+</html>

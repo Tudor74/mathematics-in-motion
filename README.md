@@ -37,3 +37,10 @@ it validates the file and regenerates the data blocks in `workers/research.js` a
 (prerequisites and follow-ons, every lesson) and **Further reading** (every lesson).
 When the live feed sees a paper claiming to settle a curated question, the worker stores a
 flag and the curated card shows it for about four months.
+
+## Scheduled refresh (v0.18)
+
+`admin.html` (served at `/admin.html` on the Puter site) creates a Puter schedule on the
+owner's account that calls the worker's `/refresh-next` every 15 minutes. Each call refreshes
+the lesson with the oldest cached data. Visitors are served the cache while it is under
+26 hours old, so pages never wait for arXiv or the AI. `/refresh-status` shows cache ages.
