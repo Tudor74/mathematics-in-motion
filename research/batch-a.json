@@ -1,0 +1,2156 @@
+{
+ "order": {
+  "name": "Order & lattices",
+  "label": "arXiv math.CO · Order & lattices (MSC 06)",
+  "query": "(cat:math.CO OR cat:math.RA OR cat:math.LO) AND (abs:poset OR abs:posets OR abs:\"partially ordered\" OR abs:\"distributive lattice\" OR abs:\"lattice theory\")",
+  "listing": "math.CO",
+  "field": "order theory and lattice theory: partially ordered sets, lattices, Boolean algebras, linear extensions and their combinatorics",
+  "peopleNote": "Six researchers whose work on posets, lattices and their combinatorics is widely cited and who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Richard P. Stanley",
+    "wiki": "Richard_P._Stanley",
+    "arxiv": "(au:\"Richard P. Stanley\" OR au:\"Richard Stanley\") AND cat:math.*",
+    "area": "Posets & algebraic combinatorics"
+   },
+   {
+    "name": "George Grätzer",
+    "wiki": "George_Grätzer",
+    "arxiv": "(au:\"George Grätzer\" OR au:\"G. Grätzer\" OR au:\"George Gratzer\")",
+    "area": "Lattice theory"
+   },
+   {
+    "name": "William T. Trotter",
+    "wiki": "William_T._Trotter",
+    "arxiv": "(au:\"William T. Trotter\" OR au:\"William Trotter\")",
+    "area": "Dimension theory of posets"
+   },
+   {
+    "name": "Jeff Kahn",
+    "wiki": "Jeff_Kahn_(mathematician)",
+    "arxiv": "au:\"Jeff Kahn\" AND cat:math.*",
+    "area": "Probabilistic combinatorics & posets"
+   },
+   {
+    "name": "Igor Pak",
+    "wiki": "Igor_Pak",
+    "arxiv": "au:\"Igor Pak\" AND cat:math.*",
+    "area": "Linear extensions & enumeration"
+   },
+   {
+    "name": "Sergey Fomin",
+    "wiki": "Sergey_Fomin",
+    "arxiv": "au:\"Sergey Fomin\"",
+    "area": "Algebraic combinatorics"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "one-third-two-thirds",
+    "title": "The 1/3–2/3 conjecture",
+    "status": "open",
+    "q": "In every finite partial order that is not a total order, are there two elements x and y such that x comes before y in between a third and two thirds of all compatible total orders?",
+    "known": "Posed by Kislitsyn (1968) and independently by Fredman and Linial. Kahn and Saks (1984) proved a version with 3/11 in place of 1/3, Brightwell, Felsner and Trotter (1995) improved the constant to about 0.276, and the conjecture is known for many special classes of posets.",
+    "link": "https://en.wikipedia.org/wiki/1/3%E2%80%932/3_conjecture"
+   },
+   {
+    "id": "union-closed",
+    "title": "Frankl’s union-closed sets conjecture",
+    "status": "open",
+    "q": "If a finite family of sets is closed under unions, must some element belong to at least half of the sets?",
+    "known": "Frankl posed it in 1979. Gilmer (2022) proved that some element lies in at least 1% of the sets, and follow-up work quickly raised this to about 38%, but one half remains unproved.",
+    "link": "https://en.wikipedia.org/wiki/Union-closed_sets_conjecture"
+   },
+   {
+    "id": "finite-lattice-representation",
+    "title": "Finite lattice representation problem",
+    "status": "open",
+    "q": "Is every finite lattice the lattice of congruences of some finite algebra?",
+    "known": "Pálfy and Pudlák (1980) showed this is equivalent to asking whether every finite lattice is an interval in the subgroup lattice of a finite group. Many small lattices are known to be representable, but the general question is open.",
+    "link": "https://en.wikipedia.org/wiki/Finite_lattice_representation_problem"
+   },
+   {
+    "id": "rota-basis",
+    "title": "Rota’s basis conjecture",
+    "status": "open",
+    "q": "Given n bases of an n-dimensional vector space, can the vectors always be arranged in an n×n grid so that every row and every column is a basis?",
+    "known": "Rota posed it in 1989. It is known for some small dimensions and in asymptotic forms (Pokrovskiy, 2020, and later improvements), but the full conjecture is open.",
+    "link": "https://en.wikipedia.org/wiki/Rota%27s_basis_conjecture"
+   },
+   {
+    "id": "sunflower",
+    "title": "The sunflower conjecture",
+    "status": "open",
+    "q": "Is there a constant C such that any family of more than Cᵏ sets of size k contains three sets whose pairwise intersections are all the same?",
+    "known": "Erdős and Rado (1960) proved a bound growing like k!. Alweiss, Lovett, Wu and Zhang (2019) improved it dramatically to about (log k)ᵏ, but an exponential bound Cᵏ remains open.",
+    "link": "https://en.wikipedia.org/wiki/Sunflower_(mathematics)"
+   },
+   {
+    "id": "stanley-stembridge",
+    "title": "The Stanley–Stembridge conjecture",
+    "status": "claimed",
+    "q": "Are the chromatic symmetric functions of incomparability graphs of (3+1)-free posets always positive combinations of elementary symmetric functions?",
+    "known": "Stanley and Stembridge proposed it in 1993, linking poset structure to symmetric functions. Many special cases were proved over thirty years, and Hikita posted a proof in 2024 that is being checked by the community.",
+    "link": "https://en.wikipedia.org/wiki/Chromatic_symmetric_function"
+   }
+  ],
+  "milestones": [
+   {
+    "year": 1847,
+    "title": "An algebra of logic",
+    "text": "Boole treats logical reasoning as algebra, the origin of Boolean algebras.",
+    "wiki": "Boolean_algebra"
+   },
+   {
+    "year": 1897,
+    "title": "Lattices appear",
+    "text": "Dedekind studies structures with meet and join, now called lattices.",
+    "wiki": "Lattice_(order)"
+   },
+   {
+    "year": 1928,
+    "title": "Sperner’s theorem",
+    "text": "Sperner finds the largest family of subsets in which no set contains another.",
+    "wiki": "Sperner's_theorem"
+   },
+   {
+    "year": 1937,
+    "title": "Distributive lattices as sets",
+    "text": "Birkhoff shows every finite distributive lattice is a lattice of down-sets of a poset.",
+    "wiki": "Birkhoff's_representation_theorem"
+   },
+   {
+    "year": 1950,
+    "title": "Dilworth’s theorem",
+    "text": "Dilworth proves the largest antichain equals the fewest chains needed to cover a finite poset.",
+    "wiki": "Dilworth's_theorem"
+   },
+   {
+    "year": 1955,
+    "title": "Fixed points in lattices",
+    "text": "Tarski proves every order-preserving map on a complete lattice has a fixed point.",
+    "wiki": "Knaster–Tarski_theorem"
+   },
+   {
+    "year": 1964,
+    "title": "Möbius functions of posets",
+    "text": "Rota develops Möbius inversion on posets, unifying many counting arguments.",
+    "wiki": "Incidence_algebra"
+   }
+  ]
+ },
+ "discrete": {
+  "name": "Counting & graphs",
+  "label": "arXiv math.CO · Combinatorics (MSC 05)",
+  "query": "cat:math.CO",
+  "listing": "math.CO",
+  "field": "combinatorics and graph theory: enumeration, extremal and probabilistic combinatorics, Ramsey theory, graph structure and colouring",
+  "peopleNote": "Six combinatorialists whose results on graphs, Ramsey theory and probabilistic methods shape the field and who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Noga Alon",
+    "wiki": "Noga_Alon",
+    "arxiv": "au:\"Noga Alon\"",
+    "area": "Probabilistic & extremal combinatorics"
+   },
+   {
+    "name": "Maria Chudnovsky",
+    "wiki": "Maria_Chudnovsky",
+    "arxiv": "au:\"Maria Chudnovsky\"",
+    "area": "Structural graph theory"
+   },
+   {
+    "name": "Benny Sudakov",
+    "wiki": "Benny_Sudakov",
+    "arxiv": "au:\"Benny Sudakov\"",
+    "area": "Extremal & Ramsey theory"
+   },
+   {
+    "name": "Peter Keevash",
+    "wiki": "Peter_Keevash",
+    "arxiv": "au:\"Peter Keevash\"",
+    "area": "Designs & hypergraphs"
+   },
+   {
+    "name": "Jacob Fox",
+    "wiki": "Jacob_Fox",
+    "arxiv": "au:\"Jacob Fox\" AND cat:math.*",
+    "area": "Ramsey theory & regularity"
+   },
+   {
+    "name": "Lisa Sauermann",
+    "wiki": "Lisa_Sauermann",
+    "arxiv": "au:\"Lisa Sauermann\"",
+    "area": "Additive & extremal combinatorics"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "hadwiger",
+    "title": "Hadwiger’s conjecture",
+    "status": "open",
+    "q": "If a graph has no complete graph on t vertices as a minor, can it always be coloured with t − 1 colours?",
+    "known": "Hadwiger posed it in 1943. It is proved for t ≤ 6, the case t = 6 by Robertson, Seymour and Thomas (1993), and is open for every larger t.",
+    "link": "https://en.wikipedia.org/wiki/Hadwiger_conjecture_(graph_theory)"
+   },
+   {
+    "id": "ramsey-r55",
+    "title": "Diagonal Ramsey numbers",
+    "status": "open",
+    "q": "What is the smallest number of people guaranteeing five mutual friends or five mutual strangers, and how fast do these Ramsey numbers grow?",
+    "known": "It is known that 43 ≤ R(5,5) ≤ 46, the upper bound by Angeltveit and McKay (2024). Campos, Griffiths, Morris and Sahasrabudhe (2023) made the first exponential improvement on the classical upper bound for R(k,k).",
+    "link": "https://en.wikipedia.org/wiki/Ramsey%27s_theorem"
+   },
+   {
+    "id": "erdos-hajnal",
+    "title": "The Erdős–Hajnal conjecture",
+    "status": "open",
+    "q": "If a graph avoids some fixed induced subgraph, must it contain a clique or an independent set of polynomial size?",
+    "known": "Erdős and Hajnal posed it in 1989. It is proved for several small forbidden graphs, including the five-vertex path (Nguyen, Scott and Seymour, 2023), but is open in general.",
+    "link": "https://en.wikipedia.org/wiki/Erd%C5%91s%E2%80%93Hajnal_conjecture"
+   },
+   {
+    "id": "reconstruction",
+    "title": "The reconstruction conjecture",
+    "status": "open",
+    "q": "Is every graph with at least three vertices determined by the collection of graphs obtained by deleting one vertex at a time?",
+    "known": "Kelly and Ulam formulated it in the 1940s. It is known for trees, regular graphs and disconnected graphs, and has been checked by computer for small graphs, but no general proof exists.",
+    "link": "https://en.wikipedia.org/wiki/Reconstruction_conjecture"
+   },
+   {
+    "id": "graceful-tree",
+    "title": "The graceful tree conjecture",
+    "status": "open",
+    "q": "Can the vertices of every tree with n edges be labelled 0 to n so that the edge differences are exactly 1 to n?",
+    "known": "Ringel and Kotzig posed it in the 1960s. The related Ringel conjecture on tree decompositions was proved in 2020 by Montgomery, Pokrovskiy and Sudakov, but graceful labelling of all trees remains open.",
+    "link": "https://en.wikipedia.org/wiki/Graceful_labeling"
+   },
+   {
+    "id": "cycle-double-cover",
+    "title": "The cycle double cover conjecture",
+    "status": "open",
+    "q": "Does every graph without a bridge have a collection of cycles that covers every edge exactly twice?",
+    "known": "Proposed by Szekeres (1973) and Seymour (1979). A minimal counterexample would have to be a snark, a special kind of cubic graph, but none is known.",
+    "link": "https://en.wikipedia.org/wiki/Cycle_double_cover"
+   }
+  ],
+  "milestones": [
+   {
+    "year": 1736,
+    "title": "The bridges of Königsberg",
+    "text": "Euler proves no walk crosses each of the city’s seven bridges exactly once, founding graph theory.",
+    "wiki": "Seven_Bridges_of_Königsberg"
+   },
+   {
+    "year": 1852,
+    "title": "The four colour problem",
+    "text": "Francis Guthrie asks whether four colours suffice for every map.",
+    "wiki": "Four_color_theorem"
+   },
+   {
+    "year": 1930,
+    "title": "Ramsey’s theorem",
+    "text": "Ramsey shows complete disorder is impossible: large structures always contain ordered substructures.",
+    "wiki": "Ramsey's_theorem"
+   },
+   {
+    "year": 1947,
+    "title": "The probabilistic method",
+    "text": "Erdős uses random colourings to prove lower bounds for Ramsey numbers.",
+    "wiki": "Probabilistic_method"
+   },
+   {
+    "year": 1959,
+    "title": "Random graphs",
+    "text": "Erdős and Rényi begin the theory of random graphs and their sudden phase changes.",
+    "wiki": "Erdős–Rényi_model"
+   },
+   {
+    "year": 1975,
+    "title": "Szemerédi’s theorem",
+    "text": "Szemerédi proves every dense set of integers contains arbitrarily long arithmetic progressions.",
+    "wiki": "Szemerédi's_theorem"
+   },
+   {
+    "year": 1976,
+    "title": "Four colours suffice",
+    "text": "Appel and Haken prove the four colour theorem with extensive computer checking.",
+    "wiki": "Four_color_theorem"
+   },
+   {
+    "year": 2004,
+    "title": "Graph minors",
+    "text": "Robertson and Seymour complete their proof that every minor-closed graph family has finitely many forbidden minors.",
+    "wiki": "Robertson–Seymour_theorem"
+   }
+  ]
+ },
+ "number": {
+  "name": "Number theory",
+  "label": "arXiv math.NT · Number theory (MSC 11)",
+  "query": "cat:math.NT",
+  "listing": "math.NT",
+  "field": "number theory: primes, Diophantine equations, L-functions, modular forms, arithmetic geometry and analytic methods",
+  "peopleNote": "Six number theorists behind major recent advances on primes, L-functions and arithmetic geometry who still publish on arXiv.",
+  "people": [
+   {
+    "name": "James Maynard",
+    "wiki": "James_Maynard_(mathematician)",
+    "arxiv": "au:\"James Maynard\"",
+    "area": "Prime gaps & analytic number theory"
+   },
+   {
+    "name": "Peter Scholze",
+    "wiki": "Peter_Scholze",
+    "arxiv": "au:\"Peter Scholze\"",
+    "area": "Arithmetic geometry"
+   },
+   {
+    "name": "Kannan Soundararajan",
+    "wiki": "Kannan_Soundararajan",
+    "arxiv": "au:\"Kannan Soundararajan\"",
+    "area": "L-functions"
+   },
+   {
+    "name": "Manjul Bhargava",
+    "wiki": "Manjul_Bhargava",
+    "arxiv": "au:\"Manjul Bhargava\"",
+    "area": "Arithmetic statistics"
+   },
+   {
+    "name": "Ken Ono",
+    "wiki": "Ken_Ono",
+    "arxiv": "au:\"Ken Ono\" AND cat:math.*",
+    "area": "Modular forms & partitions"
+   },
+   {
+    "name": "Andrew Granville",
+    "wiki": "Andrew_Granville",
+    "arxiv": "au:\"Andrew Granville\"",
+    "area": "Analytic number theory"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "riemann-hypothesis",
+    "title": "The Riemann hypothesis",
+    "status": "open",
+    "q": "Do all non-trivial zeros of the Riemann zeta function lie on the line with real part 1/2?",
+    "known": "Riemann stated it in 1859. Over 40% of the zeros are known to lie on the line (Conrey, 1989, with later improvements) and trillions have been checked numerically, but the hypothesis, which controls the error in counting primes, is unproved.",
+    "link": "https://en.wikipedia.org/wiki/Riemann_hypothesis"
+   },
+   {
+    "id": "twin-primes",
+    "title": "The twin prime conjecture",
+    "status": "open",
+    "q": "Are there infinitely many pairs of primes that differ by 2?",
+    "known": "Zhang (2013) proved infinitely many prime pairs differ by at most 70 million; Maynard and the Polymath project lowered the bound to 246. Reaching 2 seems to need new ideas.",
+    "link": "https://en.wikipedia.org/wiki/Twin_prime"
+   },
+   {
+    "id": "goldbach",
+    "title": "Goldbach’s conjecture",
+    "status": "open",
+    "q": "Is every even number greater than 2 the sum of two primes?",
+    "known": "Goldbach posed it in 1742. Helfgott (2013) proved the weak version that every odd number above 5 is a sum of three primes; the even case is verified by computer far beyond 10¹⁸ but unproved.",
+    "link": "https://en.wikipedia.org/wiki/Goldbach%27s_conjecture"
+   },
+   {
+    "id": "abc",
+    "title": "The abc conjecture",
+    "status": "claimed",
+    "q": "When a + b = c for coprime positive integers, is c almost always smaller than a fixed power, slightly above 1, of the product of the distinct primes dividing abc?",
+    "known": "Masser and Oesterlé formulated it in 1985. Mochizuki released a claimed proof in 2012; Scholze and Stix (2018) identified what they consider a serious gap, and the claim is not accepted by most experts.",
+    "link": "https://en.wikipedia.org/wiki/Abc_conjecture"
+   },
+   {
+    "id": "bsd",
+    "title": "The Birch and Swinnerton-Dyer conjecture",
+    "status": "open",
+    "q": "Does the order of vanishing of an elliptic curve’s L-function at s = 1 equal the number of independent rational points of infinite order?",
+    "known": "Birch and Swinnerton-Dyer proposed it from computer experiments in the 1960s. It is proved when that order is 0 or 1, by Gross and Zagier (1986) together with Kolyvagin (1989), but open in general.",
+    "link": "https://en.wikipedia.org/wiki/Birch_and_Swinnerton-Dyer_conjecture"
+   },
+   {
+    "id": "collatz",
+    "title": "The Collatz conjecture",
+    "status": "open",
+    "q": "If you repeatedly halve even numbers and send odd n to 3n + 1, do you always reach 1?",
+    "known": "Collatz posed it in 1937. It is verified for enormous ranges of starting values, and Tao (2019) proved that almost all orbits attain almost bounded values, but no proof is known.",
+    "link": "https://en.wikipedia.org/wiki/Collatz_conjecture"
+   }
+  ],
+  "milestones": [
+   {
+    "year": "c. 300 BC",
+    "title": "Infinitely many primes",
+    "text": "Euclid proves there is no largest prime number.",
+    "wiki": "Euclid's_theorem"
+   },
+   {
+    "year": 1640,
+    "title": "Fermat’s little theorem",
+    "text": "Fermat states that aᵖ − a is divisible by p for every prime p.",
+    "wiki": "Fermat's_little_theorem"
+   },
+   {
+    "year": 1801,
+    "title": "Disquisitiones Arithmeticae",
+    "text": "Gauss systematises modular arithmetic and proves quadratic reciprocity.",
+    "wiki": "Disquisitiones_Arithmeticae"
+   },
+   {
+    "year": 1859,
+    "title": "The zeta function and primes",
+    "text": "Riemann links the distribution of primes to the zeros of the zeta function.",
+    "wiki": "Riemann_hypothesis"
+   },
+   {
+    "year": 1896,
+    "title": "The prime number theorem",
+    "text": "Hadamard and de la Vallée Poussin prove there are about x / log x primes up to x.",
+    "wiki": "Prime_number_theorem"
+   },
+   {
+    "year": 1994,
+    "title": "Fermat’s Last Theorem",
+    "text": "Wiles, with Taylor, completes the proof that xⁿ + yⁿ = zⁿ has no positive solutions for n > 2.",
+    "wiki": "Wiles's_proof_of_Fermat's_Last_Theorem"
+   },
+   {
+    "year": 2004,
+    "title": "Primes in progression",
+    "text": "Green and Tao prove the primes contain arbitrarily long arithmetic progressions.",
+    "wiki": "Green–Tao_theorem"
+   },
+   {
+    "year": 2013,
+    "title": "Bounded prime gaps",
+    "text": "Zhang proves infinitely many pairs of primes lie within a fixed distance of each other.",
+    "wiki": "Yitang_Zhang"
+   }
+  ]
+ },
+ "geometry": {
+  "name": "Geometry",
+  "label": "arXiv math.MG · Metric, convex & discrete geometry (MSC 51, 52)",
+  "query": "cat:math.MG",
+  "listing": "math.MG",
+  "field": "geometry: metric, convex and discrete geometry, polytopes, packings and incidence problems",
+  "peopleNote": "Six geometers known for landmark results on packings, polytopes and discrete geometry who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Gil Kalai",
+    "wiki": "Gil_Kalai",
+    "arxiv": "au:\"Gil Kalai\"",
+    "area": "Polytopes & combinatorial geometry"
+   },
+   {
+    "name": "János Pach",
+    "wiki": "János_Pach",
+    "arxiv": "(au:\"János Pach\" OR au:\"Janos Pach\")",
+    "area": "Discrete & computational geometry"
+   },
+   {
+    "name": "Imre Bárány",
+    "wiki": "Imre_Bárány",
+    "arxiv": "(au:\"Imre Bárány\" OR au:\"Imre Barany\")",
+    "area": "Convex geometry"
+   },
+   {
+    "name": "Maryna Viazovska",
+    "wiki": "Maryna_Viazovska",
+    "arxiv": "au:\"Maryna Viazovska\"",
+    "area": "Sphere packing"
+   },
+   {
+    "name": "Henry Cohn",
+    "wiki": "Henry_Cohn",
+    "arxiv": "au:\"Henry Cohn\" AND cat:math.*",
+    "area": "Packings & energy minimisation"
+   },
+   {
+    "name": "Károly Bezdek",
+    "wiki": "Károly_Bezdek",
+    "arxiv": "(au:\"Károly Bezdek\" OR au:\"Karoly Bezdek\")",
+    "area": "Discrete geometry"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "hadwiger-nelson",
+    "title": "The Hadwiger–Nelson problem",
+    "status": "open",
+    "q": "How many colours are needed to colour the plane so that no two points exactly one unit apart share a colour?",
+    "known": "The answer is known to be 5, 6 or 7. The lower bound of 5 was found by de Grey in 2018 with computer help; the upper bound of 7 comes from a simple hexagon colouring.",
+    "link": "https://en.wikipedia.org/wiki/Hadwiger%E2%80%93Nelson_problem"
+   },
+   {
+    "id": "polynomial-hirsch",
+    "title": "The polynomial Hirsch conjecture",
+    "status": "open",
+    "q": "Is the diameter of the graph of every polytope bounded by a polynomial in its dimension and number of facets?",
+    "known": "The original Hirsch conjecture was disproved by Santos (2010). The best general upper bound, due to Kalai and Kleitman (1992), is quasi-polynomial, so whether a polynomial bound holds, which matters for the simplex method, is open.",
+    "link": "https://en.wikipedia.org/wiki/Hirsch_conjecture"
+   },
+   {
+    "id": "kalai-3d",
+    "title": "Kalai’s 3ᵈ conjecture",
+    "status": "open",
+    "q": "Does every centrally symmetric d-dimensional polytope have at least 3ᵈ non-empty faces in total?",
+    "known": "Kalai proposed it in 1989; the cube attains the bound. It is proved in dimensions up to 4 (Sanyal, Werner and Ziegler, 2009) and for some special classes, but open in general.",
+    "link": "https://en.wikipedia.org/wiki/Kalai%27s_3d_conjecture"
+   },
+   {
+    "id": "happy-ending",
+    "title": "The Erdős–Szekeres conjecture",
+    "status": "open",
+    "q": "Do 2ⁿ⁻² + 1 points in the plane, no three on a line, always contain n points forming a convex polygon?",
+    "known": "Erdős and Szekeres conjectured this in 1935 and showed the number is finite. Suk (2017) proved 2ⁿ⁺ᵒ⁽ⁿ⁾ points suffice, matching the conjecture asymptotically; the exact value is known only for n ≤ 6.",
+    "link": "https://en.wikipedia.org/wiki/Happy_ending_problem"
+   },
+   {
+    "id": "unit-distance",
+    "title": "The Erdős unit distance problem",
+    "status": "open",
+    "q": "How many pairs of points at distance exactly one can n points in the plane determine?",
+    "known": "Erdős (1946) showed a grid gives slightly more than linearly many. The best upper bound, of order n^(4/3), dates from Spencer, Szemerédi and Trotter (1984), and closing the gap is open.",
+    "link": "https://en.wikipedia.org/wiki/Erd%C5%91s_unit_distance_problem"
+   },
+   {
+    "id": "kissing-numbers",
+    "title": "Kissing numbers",
+    "status": "open",
+    "q": "How many equal spheres can touch a central sphere of the same size in dimensions 5, 6 and 7?",
+    "known": "Exact answers are known only in dimensions 1, 2, 3, 4, 8 and 24; dimension 4 was settled by Musin (2003). In dimension 5 the answer is known to lie between 40 and 44.",
+    "link": "https://en.wikipedia.org/wiki/Kissing_number"
+   }
+  ],
+  "milestones": [
+   {
+    "year": "c. 300 BC",
+    "title": "Euclid’s Elements",
+    "text": "Euclid derives plane geometry from a short list of axioms and postulates.",
+    "wiki": "Euclid's_Elements"
+   },
+   {
+    "year": 1830,
+    "title": "Non-Euclidean geometry",
+    "text": "Lobachevsky and Bolyai independently describe a consistent geometry in which the parallel postulate fails.",
+    "wiki": "Non-Euclidean_geometry"
+   },
+   {
+    "year": 1854,
+    "title": "Riemannian geometry",
+    "text": "Riemann’s lecture defines geometry intrinsically through a way of measuring lengths.",
+    "wiki": "Riemannian_geometry"
+   },
+   {
+    "year": 1872,
+    "title": "The Erlangen programme",
+    "text": "Klein classifies geometries by the groups of transformations that preserve them.",
+    "wiki": "Erlangen_program"
+   },
+   {
+    "year": 1899,
+    "title": "Rigorous axioms",
+    "text": "Hilbert gives a complete modern axiom system for Euclidean geometry.",
+    "wiki": "Hilbert's_axioms"
+   },
+   {
+    "year": 1998,
+    "title": "The Kepler conjecture",
+    "text": "Hales announces a computer-assisted proof that the familiar cannonball stacking is the densest sphere packing.",
+    "wiki": "Kepler_conjecture"
+   },
+   {
+    "year": 2016,
+    "title": "Packings in 8 and 24 dimensions",
+    "text": "Viazovska proves the E8 lattice packing is densest in dimension 8, and with collaborators the Leech lattice in dimension 24.",
+    "wiki": "Sphere_packing"
+   }
+  ]
+ },
+ "algebra": {
+  "name": "Linear algebra",
+  "label": "arXiv math.RA · Matrix theory & linear algebra (MSC 15)",
+  "query": "(cat:math.RA OR cat:math.SP OR cat:math.NA OR cat:math.CO) AND (abs:\"matrix theory\" OR abs:\"linear algebra\" OR abs:\"eigenvalues of\" OR abs:\"Hadamard matrix\" OR abs:\"matrix multiplication\")",
+  "listing": "math.RA",
+  "field": "linear algebra and matrix theory: eigenvalues, matrix inequalities, random matrices, special matrices and the complexity of matrix computations",
+  "peopleNote": "Six researchers whose work on matrices, spectra and linear-algebra algorithms is widely influential and who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Daniel Spielman",
+    "wiki": "Daniel_Spielman",
+    "arxiv": "(au:\"Daniel A. Spielman\" OR au:\"Daniel Spielman\")",
+    "area": "Spectral graph theory"
+   },
+   {
+    "name": "Nikhil Srivastava",
+    "wiki": "Nikhil_Srivastava",
+    "arxiv": "au:\"Nikhil Srivastava\"",
+    "area": "Interlacing polynomials"
+   },
+   {
+    "name": "Adam Marcus",
+    "wiki": "Adam_Marcus_(mathematician)",
+    "arxiv": "au:\"Adam W. Marcus\"",
+    "area": "Interlacing & Kadison–Singer"
+   },
+   {
+    "name": "Lloyd N. Trefethen",
+    "wiki": "Lloyd_N._Trefethen",
+    "arxiv": "(au:\"Lloyd N. Trefethen\" OR au:\"Nick Trefethen\")",
+    "area": "Numerical linear algebra"
+   },
+   {
+    "name": "Gilbert Strang",
+    "wiki": "Gilbert_Strang",
+    "arxiv": "au:\"Gilbert Strang\"",
+    "area": "Linear algebra & its teaching"
+   },
+   {
+    "name": "Van H. Vu",
+    "wiki": "Van_H._Vu",
+    "arxiv": "(au:\"Van Vu\" OR au:\"Van H. Vu\") AND cat:math.*",
+    "area": "Random matrices"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "hadamard",
+    "title": "The Hadamard conjecture",
+    "status": "open",
+    "q": "Is there a square matrix of ±1 entries with mutually orthogonal rows in every size that is a multiple of 4?",
+    "known": "Paley (1933) conjectured this after constructing many such matrices. Constructions now cover most multiples of 4, but the smallest unresolved size is 668.",
+    "link": "https://en.wikipedia.org/wiki/Hadamard_matrix"
+   },
+   {
+    "id": "omega",
+    "title": "The exponent of matrix multiplication",
+    "status": "open",
+    "q": "Can two n × n matrices be multiplied using about n² arithmetic operations?",
+    "known": "Strassen (1969) showed fewer than n³ operations suffice. Successive improvements brought the exponent ω below 2.372 by 2024, but whether ω = 2 is open.",
+    "link": "https://en.wikipedia.org/wiki/Computational_complexity_of_matrix_multiplication"
+   },
+   {
+    "id": "crouzeix",
+    "title": "Crouzeix’s conjecture",
+    "status": "open",
+    "q": "For any square matrix and polynomial, is the norm of p(A) at most twice the largest value of |p| on the numerical range of A?",
+    "known": "Crouzeix proposed the constant 2 in 2004. Crouzeix and Palencia (2017) proved the bound with constant 1 + √2; the conjectured value 2 is open.",
+    "link": "https://en.wikipedia.org/wiki/Crouzeix%27s_conjecture"
+   },
+   {
+    "id": "permanent-determinant",
+    "title": "Permanent versus determinant",
+    "status": "open",
+    "q": "Can the permanent of an n × n matrix be written as the determinant of a matrix only polynomially larger?",
+    "known": "Valiant (1979) showed this is an algebraic analogue of P versus NP. The best lower bound, of order n²/2, is due to Mignon and Ressayre (2004), far from the exponential size expected.",
+    "link": "https://en.wikipedia.org/wiki/Permanent_(mathematics)"
+   },
+   {
+    "id": "mub-6",
+    "title": "Mutually unbiased bases in dimension 6",
+    "status": "open",
+    "q": "In six-dimensional complex space, how many orthonormal bases can be chosen so that every pair is mutually unbiased?",
+    "known": "In prime-power dimensions d there are d + 1 such bases (Wootters and Fields, 1989). In dimension 6 only 3 are known, and numerical evidence suggests no more exist, but no proof is known.",
+    "link": "https://en.wikipedia.org/wiki/Mutually_unbiased_bases"
+   },
+   {
+    "id": "sic-povm",
+    "title": "Zauner’s conjecture",
+    "status": "open",
+    "q": "Does every dimension d admit d² equiangular lines in complex d-dimensional space, giving a symmetric informationally complete measurement?",
+    "known": "Zauner conjectured it in 1999. Exact or numerical solutions are known in many dimensions, with deep links to algebraic number theory, but no general construction is proved.",
+    "link": "https://en.wikipedia.org/wiki/SIC-POVM"
+   }
+  ],
+  "milestones": [
+   {
+    "year": 1693,
+    "title": "Determinants",
+    "text": "Leibniz uses determinant-like expressions to solve systems of linear equations.",
+    "wiki": "Determinant"
+   },
+   {
+    "year": 1750,
+    "title": "Cramer’s rule",
+    "text": "Cramer publishes a formula solving linear systems with determinants.",
+    "wiki": "Cramer's_rule"
+   },
+   {
+    "year": 1844,
+    "title": "Vector spaces in embryo",
+    "text": "Grassmann’s Ausdehnungslehre describes linear combinations and dimension abstractly.",
+    "wiki": "Hermann_Grassmann"
+   },
+   {
+    "year": 1858,
+    "title": "Matrix algebra",
+    "text": "Cayley treats matrices as objects that can be added and multiplied.",
+    "wiki": "Matrix_(mathematics)"
+   },
+   {
+    "year": 1888,
+    "title": "Axioms for vector spaces",
+    "text": "Peano gives the first axiomatic definition of a vector space.",
+    "wiki": "Vector_space"
+   },
+   {
+    "year": 1965,
+    "title": "Computing the SVD",
+    "text": "Golub and Kahan introduce a practical algorithm for the singular value decomposition.",
+    "wiki": "Singular_value_decomposition"
+   },
+   {
+    "year": 1969,
+    "title": "Faster multiplication",
+    "text": "Strassen multiplies matrices with fewer than n³ operations.",
+    "wiki": "Strassen_algorithm"
+   },
+   {
+    "year": 2013,
+    "title": "Kadison–Singer resolved",
+    "text": "Marcus, Spielman and Srivastava use interlacing polynomials to solve the Kadison–Singer problem.",
+    "wiki": "Kadison–Singer_problem"
+   }
+  ]
+ },
+ "groups": {
+  "name": "Groups & symmetry",
+  "label": "arXiv math.GR · Group theory (MSC 20)",
+  "query": "cat:math.GR",
+  "listing": "math.GR",
+  "field": "group theory: finite groups, geometric and combinatorial group theory, growth, representations and symmetry",
+  "peopleNote": "Six group theorists spanning finite, geometric and asymptotic group theory who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Martin Bridson",
+    "wiki": "Martin_Bridson",
+    "arxiv": "(au:\"Martin R. Bridson\" OR au:\"Martin Bridson\")",
+    "area": "Geometric group theory"
+   },
+   {
+    "name": "Emmanuel Breuillard",
+    "wiki": "Emmanuel_Breuillard",
+    "arxiv": "au:\"Emmanuel Breuillard\"",
+    "area": "Approximate groups"
+   },
+   {
+    "name": "Aner Shalev",
+    "wiki": "Aner_Shalev",
+    "arxiv": "au:\"Aner Shalev\"",
+    "area": "Finite & profinite groups"
+   },
+   {
+    "name": "Martin Liebeck",
+    "wiki": "Martin_Liebeck",
+    "arxiv": "(au:\"Martin W. Liebeck\" OR au:\"Martin Liebeck\")",
+    "area": "Finite simple groups"
+   },
+   {
+    "name": "Alexander Lubotzky",
+    "wiki": "Alexander_Lubotzky",
+    "arxiv": "au:\"Alexander Lubotzky\"",
+    "area": "Expanders & arithmetic groups"
+   },
+   {
+    "name": "Mladen Bestvina",
+    "wiki": "Mladen_Bestvina",
+    "arxiv": "au:\"Mladen Bestvina\"",
+    "area": "Outer automorphism groups"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "burnside-b25",
+    "title": "The Burnside problem for B(2,5)",
+    "status": "open",
+    "q": "Is the largest group generated by two elements in which every element satisfies x⁵ = 1 finite?",
+    "known": "Burnside asked such questions in 1902. Novikov and Adian (1968) showed the free Burnside groups are infinite for large odd exponents, and the cases of exponent 2, 3, 4 and 6 are finite, but exponent 5 is unresolved.",
+    "link": "https://en.wikipedia.org/wiki/Burnside_problem"
+   },
+   {
+    "id": "kaplansky-zero-divisor",
+    "title": "Kaplansky’s zero-divisor conjecture",
+    "status": "open",
+    "q": "If a group has no elements of finite order, can the product of two non-zero elements of its group ring be zero?",
+    "known": "Kaplansky raised it in the 1950s. The related unit conjecture was disproved by Gardam (2021), but the zero-divisor conjecture is open, though known for many classes such as orderable groups.",
+    "link": "https://en.wikipedia.org/wiki/Kaplansky%27s_conjectures"
+   },
+   {
+    "id": "hyperbolic-residually-finite",
+    "title": "Are hyperbolic groups residually finite?",
+    "status": "open",
+    "q": "In every word-hyperbolic group, can each non-identity element be detected in some finite quotient?",
+    "known": "Hyperbolic groups were introduced by Gromov (1987). Agol (2013) and Wise proved residual finiteness for cubulated hyperbolic groups, but the general case is a central open question.",
+    "link": "https://en.wikipedia.org/wiki/Hyperbolic_group"
+   },
+   {
+    "id": "whitehead-asphericity",
+    "title": "Whitehead’s asphericity conjecture",
+    "status": "open",
+    "q": "Is every connected subcomplex of a two-dimensional aspherical complex itself aspherical?",
+    "known": "Whitehead posed it in 1941. Bestvina and Brady (1997) showed that a counterexample would also disprove either it or the Eilenberg–Ganea conjecture, but the question is open.",
+    "link": "https://en.wikipedia.org/wiki/Whitehead_conjecture"
+   },
+   {
+    "id": "andrews-curtis",
+    "title": "The Andrews–Curtis conjecture",
+    "status": "open",
+    "q": "Can every balanced presentation of the trivial group be reduced to the trivial presentation using a standard list of moves?",
+    "known": "Andrews and Curtis proposed it in 1965. Many potential counterexamples are known, and it is linked to the smooth Poincaré conjecture in dimension 4, but none has been resolved either way.",
+    "link": "https://en.wikipedia.org/wiki/Andrews%E2%80%93Curtis_conjecture"
+   },
+   {
+    "id": "sofic",
+    "title": "Are all groups sofic?",
+    "status": "open",
+    "q": "Can every group be approximated, in a precise statistical sense, by permutation groups of finite sets?",
+    "known": "Gromov (1999) introduced the idea, and Weiss named it. Many conjectures, such as Gottschalk’s surjunctivity conjecture, are known for sofic groups, yet no non-sofic group has been found.",
+    "link": "https://en.wikipedia.org/wiki/Sofic_group"
+   }
+  ],
+  "milestones": [
+   {
+    "year": 1832,
+    "title": "Galois groups",
+    "text": "Galois links solvability of polynomial equations to groups of permutations of their roots.",
+    "wiki": "Évariste_Galois"
+   },
+   {
+    "year": 1854,
+    "title": "Abstract groups",
+    "text": "Cayley defines a group abstractly by its multiplication table.",
+    "wiki": "Group_(mathematics)"
+   },
+   {
+    "year": 1872,
+    "title": "Sylow theorems",
+    "text": "Sylow proves the existence of subgroups of prime-power order in finite groups.",
+    "wiki": "Sylow_theorems"
+   },
+   {
+    "year": 1911,
+    "title": "Dehn’s problems",
+    "text": "Dehn poses the word, conjugacy and isomorphism problems for groups.",
+    "wiki": "Word_problem_for_groups"
+   },
+   {
+    "year": 1955,
+    "title": "Undecidable word problem",
+    "text": "Novikov, and Boone independently, construct groups with undecidable word problem.",
+    "wiki": "Word_problem_for_groups"
+   },
+   {
+    "year": 1963,
+    "title": "Odd order theorem",
+    "text": "Feit and Thompson prove every finite group of odd order is solvable.",
+    "wiki": "Feit–Thompson_theorem"
+   },
+   {
+    "year": 1981,
+    "title": "Polynomial growth",
+    "text": "Gromov proves groups of polynomial growth are virtually nilpotent.",
+    "wiki": "Gromov's_theorem_on_groups_of_polynomial_growth"
+   },
+   {
+    "year": 2004,
+    "title": "Finite simple groups classified",
+    "text": "Aschbacher and Smith’s work on quasithin groups completes the classification of finite simple groups.",
+    "wiki": "Classification_of_finite_simple_groups"
+   }
+  ]
+ },
+ "rings": {
+  "name": "Rings, fields & polynomials",
+  "label": "arXiv math.AC · Commutative & noncommutative algebra (MSC 12, 13, 16)",
+  "query": "cat:math.AC OR cat:math.RA",
+  "listing": "math.AC",
+  "field": "ring theory and field theory: commutative algebra, noncommutative rings, polynomial equations, Galois theory and homological methods",
+  "peopleNote": "Six algebraists central to commutative and computational algebra who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Melvin Hochster",
+    "wiki": "Melvin_Hochster",
+    "arxiv": "au:\"Melvin Hochster\"",
+    "area": "Commutative algebra"
+   },
+   {
+    "name": "Craig Huneke",
+    "wiki": "Craig_Huneke",
+    "arxiv": "au:\"Craig Huneke\"",
+    "area": "Commutative algebra"
+   },
+   {
+    "name": "Karen E. Smith",
+    "wiki": "Karen_E._Smith",
+    "arxiv": "au:\"Karen E. Smith\" AND cat:math.*",
+    "area": "Singularities in positive characteristic"
+   },
+   {
+    "name": "Irena Peeva",
+    "wiki": "Irena_Peeva",
+    "arxiv": "au:\"Irena Peeva\"",
+    "area": "Syzygies & free resolutions"
+   },
+   {
+    "name": "David Eisenbud",
+    "wiki": "David_Eisenbud",
+    "arxiv": "au:\"David Eisenbud\"",
+    "area": "Commutative algebra & geometry"
+   },
+   {
+    "name": "Bernd Sturmfels",
+    "wiki": "Bernd_Sturmfels",
+    "arxiv": "au:\"Bernd Sturmfels\"",
+    "area": "Computational & applied algebra"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "jacobian",
+    "title": "The Jacobian conjecture",
+    "status": "open",
+    "q": "If a polynomial map from ℂⁿ to itself has a Jacobian determinant that is a non-zero constant, must it have a polynomial inverse?",
+    "known": "Keller posed it in 1939. It is known in dimension 2 for polynomials of low degree and in many special cases, and many published proofs have turned out to be flawed.",
+    "link": "https://en.wikipedia.org/wiki/Jacobian_conjecture"
+   },
+   {
+    "id": "inverse-galois",
+    "title": "The inverse Galois problem",
+    "status": "open",
+    "q": "Does every finite group arise as the Galois group of some extension of the rational numbers?",
+    "known": "Hilbert (1892) showed symmetric and alternating groups occur, and Shafarevich (1954) proved it for all solvable groups. It is also known for 25 of the 26 sporadic simple groups, but open in general.",
+    "link": "https://en.wikipedia.org/wiki/Inverse_Galois_problem"
+   },
+   {
+    "id": "hilbert-12",
+    "title": "Hilbert’s twelfth problem",
+    "status": "open",
+    "q": "Can all abelian extensions of an arbitrary number field be generated explicitly by special values of analytic functions, as roots of unity do for the rationals?",
+    "known": "The Kronecker–Weber theorem settles the rationals and complex multiplication settles imaginary quadratic fields. Dasgupta and Kakde (2021) gave an explicit answer for totally real fields using p-adic methods; general fields remain open.",
+    "link": "https://en.wikipedia.org/wiki/Hilbert%27s_twelfth_problem"
+   },
+   {
+    "id": "dixmier",
+    "title": "The Dixmier conjecture",
+    "status": "open",
+    "q": "Is every endomorphism of the first Weyl algebra over a field of characteristic zero an automorphism?",
+    "known": "Dixmier posed it in 1968. Tsuchimoto (2005) and Belov-Kanel and Kontsevich (2007) showed it is stably equivalent to the Jacobian conjecture.",
+    "link": "https://en.wikipedia.org/wiki/Dixmier_conjecture"
+   },
+   {
+    "id": "serre-multiplicity",
+    "title": "Serre’s positivity conjecture",
+    "status": "open",
+    "q": "For two modules intersecting properly over a regular local ring, is Serre’s intersection multiplicity always positive?",
+    "known": "Serre (1958) proved it in the unramified case. Roberts and Gillet–Soulé (1985) proved the vanishing conjecture and Gabber (1990s) proved non-negativity, but positivity in general is open.",
+    "link": "https://en.wikipedia.org/wiki/Serre%27s_multiplicity_conjectures"
+   },
+   {
+    "id": "casas-alvero",
+    "title": "The Casas-Alvero conjecture",
+    "status": "open",
+    "q": "If a complex polynomial of degree n shares a root with each of its first n − 1 derivatives, must it be (x − a)ⁿ?",
+    "known": "Casas-Alvero proposed it around 2001. It is proved for degrees that are prime powers, or twice a prime power, by Graf von Bothmer, Labs, Schicho and van de Woestijne (2007) and Draisma and de Jong, but open in general.",
+    "link": "https://en.wikipedia.org/wiki/Casas-Alvero_conjecture"
+   }
+  ],
+  "milestones": [
+   {
+    "year": 1799,
+    "title": "The fundamental theorem of algebra",
+    "text": "Gauss gives a proof that every non-constant polynomial has a complex root.",
+    "wiki": "Fundamental_theorem_of_algebra"
+   },
+   {
+    "year": 1824,
+    "title": "No quintic formula",
+    "text": "Abel completes the proof that general quintic equations cannot be solved by radicals.",
+    "wiki": "Abel–Ruffini_theorem"
+   },
+   {
+    "year": 1832,
+    "title": "Galois theory",
+    "text": "Galois characterises which polynomial equations are solvable by radicals.",
+    "wiki": "Galois_theory"
+   },
+   {
+    "year": 1871,
+    "title": "Ideals",
+    "text": "Dedekind introduces ideals to restore unique factorisation in rings of algebraic integers.",
+    "wiki": "Ideal_(ring_theory)"
+   },
+   {
+    "year": 1890,
+    "title": "Hilbert’s basis theorem",
+    "text": "Hilbert proves every ideal in a polynomial ring over a field is finitely generated.",
+    "wiki": "Hilbert's_basis_theorem"
+   },
+   {
+    "year": 1921,
+    "title": "Noetherian rings",
+    "text": "Noether’s Idealtheorie in Ringbereichen founds modern abstract commutative algebra.",
+    "wiki": "Noetherian_ring"
+   },
+   {
+    "year": 1965,
+    "title": "Gröbner bases",
+    "text": "Buchberger gives an algorithm making polynomial ideal computations practical.",
+    "wiki": "Gröbner_basis"
+   }
+  ]
+ },
+ "calculus": {
+  "name": "Limits & calculus",
+  "label": "arXiv math.CA · Classical analysis (MSC 26)",
+  "query": "cat:math.CA",
+  "listing": "math.CA",
+  "field": "classical analysis: real functions, inequalities, special functions, approximation and harmonic analysis",
+  "peopleNote": "Six analysts whose work on classical and harmonic analysis is widely influential and who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Terence Tao",
+    "wiki": "Terence_Tao",
+    "arxiv": "au:\"Terence Tao\"",
+    "area": "Harmonic analysis & more"
+   },
+   {
+    "name": "Charles Fefferman",
+    "wiki": "Charles_Fefferman",
+    "arxiv": "au:\"Charles Fefferman\"",
+    "area": "Harmonic analysis & interpolation"
+   },
+   {
+    "name": "Steven G. Krantz",
+    "wiki": "Steven_G._Krantz",
+    "arxiv": "(au:\"Steven G. Krantz\" OR au:\"Steven Krantz\")",
+    "area": "Real & complex analysis"
+   },
+   {
+    "name": "Lawrence C. Evans",
+    "wiki": "Lawrence_C._Evans",
+    "arxiv": "(au:\"Lawrence C. Evans\" OR au:\"L. C. Evans\")",
+    "area": "Analysis & PDE"
+   },
+   {
+    "name": "Wilhelm Schlag",
+    "wiki": "Wilhelm_Schlag",
+    "arxiv": "au:\"Wilhelm Schlag\"",
+    "area": "Harmonic analysis & dispersive equations"
+   },
+   {
+    "name": "Alexander Volberg",
+    "wiki": "Alexander_Volberg",
+    "arxiv": "au:\"Alexander Volberg\"",
+    "area": "Harmonic analysis"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "pi-plus-e",
+    "title": "Is π + e irrational?",
+    "status": "open",
+    "q": "Is the sum of the two most famous constants of calculus an irrational number?",
+    "known": "Both π (Lambert, 1761) and e (Euler, 1737) are irrational, and both are transcendental. It is known that at least one of π + e and πe is transcendental, but for neither number is irrationality proved.",
+    "link": "https://en.wikipedia.org/wiki/Transcendental_number"
+   },
+   {
+    "id": "euler-gamma",
+    "title": "Is Euler’s constant irrational?",
+    "status": "open",
+    "q": "Is the limit of 1 + 1/2 + … + 1/n − log n, about 0.5772, an irrational number?",
+    "known": "Euler introduced the constant in 1734. Its decimal expansion is computed to billions of digits, which shows any fraction equal to it would need an enormous denominator, but irrationality is unproved.",
+    "link": "https://en.wikipedia.org/wiki/Euler%27s_constant"
+   },
+   {
+    "id": "schanuel",
+    "title": "Schanuel’s conjecture",
+    "status": "open",
+    "q": "If complex numbers z₁, …, zₙ are linearly independent over the rationals, do zᵢ and e^(zᵢ) together contain at least n algebraically independent numbers?",
+    "known": "Schanuel formulated it in the 1960s. It would imply the transcendence of e + π and many similar facts, but only special cases such as the Lindemann–Weierstrass theorem are known.",
+    "link": "https://en.wikipedia.org/wiki/Schanuel%27s_conjecture"
+   },
+   {
+    "id": "zeta-5",
+    "title": "Irrationality of ζ(5)",
+    "status": "open",
+    "q": "Is 1 + 1/2⁵ + 1/3⁵ + … an irrational number?",
+    "known": "Apéry (1978) proved ζ(3) is irrational. Ball and Rivoal (2001) showed infinitely many odd zeta values are irrational and Zudilin (2001) that one of ζ(5), ζ(7), ζ(9), ζ(11) is, but no single one beyond ζ(3) is known.",
+    "link": "https://en.wikipedia.org/wiki/Ap%C3%A9ry%27s_theorem"
+   },
+   {
+    "id": "catalan",
+    "title": "Is Catalan’s constant irrational?",
+    "status": "open",
+    "q": "Is 1 − 1/3² + 1/5² − 1/7² + …, about 0.9160, an irrational number?",
+    "known": "The constant appears throughout combinatorics and analysis and is computed to billions of digits, yet whether it is irrational, let alone transcendental, is unknown.",
+    "link": "https://en.wikipedia.org/wiki/Catalan%27s_constant"
+   },
+   {
+    "id": "pompeiu",
+    "title": "The Pompeiu problem",
+    "status": "open",
+    "q": "If a bounded smooth region has the property that a continuous function integrating to zero over every rigid motion of it must vanish, does that fail only for discs?",
+    "known": "Pompeiu raised the question in 1929. Discs are known to fail the property, and Williams (1976) linked counterexamples to Schiffer’s overdetermined problem, but the general case is open.",
+    "link": "https://en.wikipedia.org/wiki/Pompeiu_problem"
+   }
+  ],
+  "milestones": [
+   {
+    "year": 1665,
+    "title": "Fluxions",
+    "text": "Newton develops his method of fluxions for rates of change and areas.",
+    "wiki": "History_of_calculus"
+   },
+   {
+    "year": 1684,
+    "title": "Calculus in print",
+    "text": "Leibniz publishes the differential calculus with the dx notation still used today.",
+    "wiki": "Gottfried_Wilhelm_Leibniz"
+   },
+   {
+    "year": 1734,
+    "title": "The Analyst",
+    "text": "Berkeley criticises infinitesimals as “ghosts of departed quantities”.",
+    "wiki": "The_Analyst"
+   },
+   {
+    "year": 1821,
+    "title": "Rigorous limits",
+    "text": "Cauchy’s Cours d’analyse bases calculus on limits and continuity.",
+    "wiki": "Cours_d'analyse"
+   },
+   {
+    "year": 1854,
+    "title": "The Riemann integral",
+    "text": "Riemann gives a precise definition of the integral via sums over partitions.",
+    "wiki": "Riemann_integral"
+   },
+   {
+    "year": 1872,
+    "title": "A pathological function",
+    "text": "Weierstrass presents a function that is continuous everywhere but differentiable nowhere.",
+    "wiki": "Karl_Weierstrass"
+   },
+   {
+    "year": 1961,
+    "title": "Infinitesimals made rigorous",
+    "text": "Robinson’s non-standard analysis gives infinitesimals a sound logical foundation.",
+    "wiki": "Nonstandard_analysis"
+   }
+  ]
+ },
+ "analysis": {
+  "name": "Real analysis & series",
+  "label": "arXiv math.CA · Real analysis, series & approximation (MSC 26, 40, 41)",
+  "query": "cat:math.CA AND (abs:series OR abs:approximation OR abs:convergence OR abs:\"Fourier\")",
+  "listing": "math.CA",
+  "field": "real analysis: series, convergence, Fourier analysis, approximation and geometric harmonic analysis",
+  "peopleNote": "Six analysts behind recent advances in Fourier analysis, approximation and additive problems who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Larry Guth",
+    "wiki": "Larry_Guth",
+    "arxiv": "au:\"Larry Guth\"",
+    "area": "Polynomial methods & harmonic analysis"
+   },
+   {
+    "name": "Hong Wang",
+    "wiki": "Hong_Wang_(mathematician)",
+    "arxiv": "au:\"Hong Wang\" AND cat:math.*",
+    "area": "Kakeya & restriction problems"
+   },
+   {
+    "name": "Svitlana Mayboroda",
+    "wiki": "Svitlana_Mayboroda",
+    "arxiv": "au:\"Svitlana Mayboroda\"",
+    "area": "Harmonic analysis & localisation"
+   },
+   {
+    "name": "Kristian Seip",
+    "wiki": "Kristian_Seip",
+    "arxiv": "au:\"Kristian Seip\"",
+    "area": "Function spaces & Dirichlet series"
+   },
+   {
+    "name": "Ben Green",
+    "wiki": "Ben_Green_(mathematician)",
+    "arxiv": "au:\"Ben Green\" AND cat:math.*",
+    "area": "Additive combinatorics"
+   },
+   {
+    "name": "Assaf Naor",
+    "wiki": "Assaf_Naor",
+    "arxiv": "au:\"Assaf Naor\"",
+    "area": "Metric geometry & analysis"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "kakeya",
+    "title": "The Kakeya conjecture",
+    "status": "open",
+    "q": "Must a set in n-dimensional space that contains a unit line segment in every direction have full dimension n?",
+    "known": "Davies (1971) proved it in the plane, and Wang and Zahl (2025) proved it in three dimensions. Dimensions four and higher remain open.",
+    "link": "https://en.wikipedia.org/wiki/Kakeya_set"
+   },
+   {
+    "id": "bochner-riesz",
+    "title": "The Bochner–Riesz conjecture",
+    "status": "open",
+    "q": "For which exponents do Bochner–Riesz means of Fourier series and integrals converge in Lᵖ?",
+    "known": "Carleson and Sjölin (1972) settled the plane. In three and more dimensions only partial ranges are known, with recent progress from polynomial partitioning (Guth, Hickman and Iliopoulou, 2019).",
+    "link": "https://en.wikipedia.org/wiki/Bochner%E2%80%93Riesz_mean"
+   },
+   {
+    "id": "littlewood",
+    "title": "The Littlewood conjecture",
+    "status": "open",
+    "q": "For any two real numbers α and β, does n·‖nα‖·‖nβ‖ get arbitrarily close to zero?",
+    "known": "Littlewood posed it around 1930. Einsiedler, Katok and Lindenstrauss (2006) proved the possible exceptions form a set of Hausdorff dimension zero.",
+    "link": "https://en.wikipedia.org/wiki/Littlewood_conjecture"
+   },
+   {
+    "id": "erdos-ap",
+    "title": "Erdős’s conjecture on arithmetic progressions",
+    "status": "open",
+    "q": "If the sum of the reciprocals of a set of positive integers diverges, must the set contain arithmetic progressions of every length?",
+    "known": "Erdős posed it in 1936 (with Turán) and offered a large prize. Bloom and Sisask (2020) proved it for three-term progressions; longer progressions remain open.",
+    "link": "https://en.wikipedia.org/wiki/Erd%C5%91s_conjecture_on_arithmetic_progressions"
+   },
+   {
+    "id": "flint-hills",
+    "title": "The Flint Hills series",
+    "status": "open",
+    "q": "Does the series 1/(n³ sin² n), summed over all positive integers n, converge?",
+    "known": "Pickover popularised it in 2002. Its convergence is tied to how well π can be approximated by fractions: Alekseyev (2011) showed it would converge if π’s irrationality measure were below 2.5.",
+    "link": "https://en.wikipedia.org/wiki/Flint_Hills_series"
+   },
+   {
+    "id": "lonely-runner",
+    "title": "The lonely runner conjecture",
+    "status": "open",
+    "q": "If k runners with distinct constant speeds circle a unit track, is every runner at some time at least 1/k away from all others?",
+    "known": "Wills (1967) and Cusick (1973) posed equivalent forms. It is proved for small numbers of runners, up to seven by Barajas and Serra (2008), but open in general.",
+    "link": "https://en.wikipedia.org/wiki/Lonely_runner_conjecture"
+   }
+  ],
+  "milestones": [
+   {
+    "year": "c. 1350",
+    "title": "The harmonic series diverges",
+    "text": "Oresme proves 1 + 1/2 + 1/3 + … grows without bound.",
+    "wiki": "Harmonic_series_(mathematics)"
+   },
+   {
+    "year": 1735,
+    "title": "The Basel problem",
+    "text": "Euler shows 1 + 1/4 + 1/9 + … equals π²/6.",
+    "wiki": "Basel_problem"
+   },
+   {
+    "year": 1807,
+    "title": "Fourier series",
+    "text": "Fourier claims any function can be written as a sum of sines and cosines.",
+    "wiki": "Fourier_series"
+   },
+   {
+    "year": 1872,
+    "title": "Constructing the reals",
+    "text": "Dedekind defines real numbers by cuts of the rationals.",
+    "wiki": "Dedekind_cut"
+   },
+   {
+    "year": 1885,
+    "title": "Polynomial approximation",
+    "text": "Weierstrass proves every continuous function on an interval is a uniform limit of polynomials.",
+    "wiki": "Stone–Weierstrass_theorem"
+   },
+   {
+    "year": 1966,
+    "title": "Carleson’s theorem",
+    "text": "Carleson proves the Fourier series of a square-integrable function converges almost everywhere.",
+    "wiki": "Carleson's_theorem"
+   }
+  ]
+ },
+ "topology": {
+  "name": "Topology",
+  "label": "arXiv math.GT · Geometric & general topology (MSC 54)",
+  "query": "cat:math.GT OR cat:math.GN",
+  "listing": "math.GT",
+  "field": "topology: general and geometric topology, knots, three- and four-manifolds, and invariants of spaces",
+  "peopleNote": "Six topologists behind landmark results on knots, three-manifolds and four-manifolds who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Ian Agol",
+    "wiki": "Ian_Agol",
+    "arxiv": "au:\"Ian Agol\"",
+    "area": "Three-manifolds"
+   },
+   {
+    "name": "Danny Calegari",
+    "wiki": "Danny_Calegari",
+    "arxiv": "au:\"Danny Calegari\"",
+    "area": "Low-dimensional topology"
+   },
+   {
+    "name": "Peter Kronheimer",
+    "wiki": "Peter_Kronheimer",
+    "arxiv": "(au:\"Peter Kronheimer\" OR au:\"P. B. Kronheimer\" OR au:\"Peter B. Kronheimer\")",
+    "area": "Gauge theory & four-manifolds"
+   },
+   {
+    "name": "Tomasz Mrowka",
+    "wiki": "Tomasz_Mrowka",
+    "arxiv": "(au:\"Tomasz Mrowka\" OR au:\"Tomasz S. Mrowka\" OR au:\"T. S. Mrowka\")",
+    "area": "Gauge theory & knots"
+   },
+   {
+    "name": "Ciprian Manolescu",
+    "wiki": "Ciprian_Manolescu",
+    "arxiv": "au:\"Ciprian Manolescu\"",
+    "area": "Floer homology"
+   },
+   {
+    "name": "Lisa Piccirillo",
+    "wiki": "Lisa_Piccirillo",
+    "arxiv": "au:\"Lisa Piccirillo\"",
+    "area": "Knots & four-manifolds"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "smooth-poincare-4",
+    "title": "The smooth four-dimensional Poincaré conjecture",
+    "status": "open",
+    "q": "Is every smooth four-dimensional manifold that is a homotopy sphere actually the standard smooth four-sphere?",
+    "known": "Freedman (1982) proved the topological version, and the analogue holds in every other dimension. In dimension 4 smooth structures behave unusually, and the question is open.",
+    "link": "https://en.wikipedia.org/wiki/Generalized_Poincar%C3%A9_conjecture"
+   },
+   {
+    "id": "unknotting",
+    "title": "The unknotting problem",
+    "status": "open",
+    "q": "Is there a polynomial-time algorithm to decide whether a knot diagram represents the unknot?",
+    "known": "Haken (1961) gave the first algorithm. The problem is in NP (Hass, Lagarias and Pippenger, 1999) and in co-NP (Lackenby), and Lackenby announced a quasi-polynomial algorithm in 2021, but polynomial time is open.",
+    "link": "https://en.wikipedia.org/wiki/Unknotting_problem"
+   },
+   {
+    "id": "slice-ribbon",
+    "title": "The slice–ribbon conjecture",
+    "status": "open",
+    "q": "Is every slice knot a ribbon knot?",
+    "known": "Fox posed it in 1962. It is known for two-bridge knots (Lisca, 2007) and some other families, but open in general.",
+    "link": "https://en.wikipedia.org/wiki/Slice_knot"
+   },
+   {
+    "id": "volume-conjecture",
+    "title": "The volume conjecture",
+    "status": "open",
+    "q": "Do the coloured Jones polynomials of a hyperbolic knot determine the volume of its complement through their growth rate?",
+    "known": "Kashaev (1997) and H. and J. Murakami (2001) formulated it. It is checked for several knots, including the figure-eight knot, but unproved in general.",
+    "link": "https://en.wikipedia.org/wiki/Volume_conjecture"
+   },
+   {
+    "id": "hilbert-smith",
+    "title": "The Hilbert–Smith conjecture",
+    "status": "open",
+    "q": "Can a compact group that acts faithfully on a manifold fail to be a Lie group?",
+    "known": "The conjecture says no. It is equivalent to ruling out faithful actions of the p-adic integers, and Pardon (2013) proved it for three-manifolds, but higher dimensions are open.",
+    "link": "https://en.wikipedia.org/wiki/Hilbert%E2%80%93Smith_conjecture"
+   },
+   {
+    "id": "borel",
+    "title": "The Borel conjecture",
+    "status": "open",
+    "q": "Are closed aspherical manifolds with isomorphic fundamental groups always homeomorphic?",
+    "known": "Borel raised it in 1953. It is known for many groups, including hyperbolic and CAT(0) groups in high dimensions (Bartels and Lück, 2012), but open in general.",
+    "link": "https://en.wikipedia.org/wiki/Borel_conjecture"
+   }
+  ],
+  "milestones": [
+   {
+    "year": 1752,
+    "title": "Euler’s polyhedron formula",
+    "text": "Euler observes that vertices − edges + faces = 2 for convex polyhedra.",
+    "wiki": "Euler_characteristic"
+   },
+   {
+    "year": 1858,
+    "title": "One-sided surfaces",
+    "text": "Möbius and Listing describe a surface with only one side.",
+    "wiki": "Möbius_strip"
+   },
+   {
+    "year": 1895,
+    "title": "Analysis Situs",
+    "text": "Poincaré introduces homology and the fundamental group.",
+    "wiki": "Analysis_Situs_(paper)"
+   },
+   {
+    "year": 1914,
+    "title": "Topological spaces",
+    "text": "Hausdorff gives an axiomatic definition of topological space.",
+    "wiki": "Topological_space"
+   },
+   {
+    "year": 1961,
+    "title": "High-dimensional Poincaré",
+    "text": "Smale proves the Poincaré conjecture in dimensions five and above.",
+    "wiki": "Generalized_Poincaré_conjecture"
+   },
+   {
+    "year": 1982,
+    "title": "Dimension four",
+    "text": "Freedman proves the topological four-dimensional Poincaré conjecture.",
+    "wiki": "Michael_Freedman"
+   },
+   {
+    "year": 1984,
+    "title": "The Jones polynomial",
+    "text": "Jones discovers a new knot invariant from operator algebras.",
+    "wiki": "Jones_polynomial"
+   },
+   {
+    "year": 2003,
+    "title": "Geometrisation",
+    "text": "Perelman proves Thurston’s geometrisation conjecture, including the Poincaré conjecture.",
+    "wiki": "Geometrization_conjecture"
+   },
+   {
+    "year": 2012,
+    "title": "Virtual Haken",
+    "text": "Agol proves every closed hyperbolic three-manifold has a finite cover containing an embedded incompressible surface.",
+    "wiki": "Virtually_Haken_conjecture"
+   }
+  ]
+ },
+ "complex": {
+  "name": "Complex analysis",
+  "label": "arXiv math.CV · Complex variables (MSC 30, 32)",
+  "query": "cat:math.CV",
+  "listing": "math.CV",
+  "field": "complex analysis: holomorphic functions, conformal maps, complex dynamics, potential theory and several complex variables",
+  "peopleNote": "Six complex analysts, including leaders in complex dynamics and function theory, who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Mikhail Lyubich",
+    "wiki": "Mikhail_Lyubich",
+    "arxiv": "au:\"Mikhail Lyubich\"",
+    "area": "Complex dynamics"
+   },
+   {
+    "name": "Curtis T. McMullen",
+    "wiki": "Curtis_T._McMullen",
+    "arxiv": "(au:\"Curtis T. McMullen\" OR au:\"Curtis McMullen\")",
+    "area": "Dynamics & Riemann surfaces"
+   },
+   {
+    "name": "Laura DeMarco",
+    "wiki": "Laura_DeMarco",
+    "arxiv": "au:\"Laura DeMarco\"",
+    "area": "Complex & arithmetic dynamics"
+   },
+   {
+    "name": "Håkan Hedenmalm",
+    "wiki": "Håkan_Hedenmalm",
+    "arxiv": "(au:\"Håkan Hedenmalm\" OR au:\"Haakan Hedenmalm\" OR au:\"Hakan Hedenmalm\")",
+    "area": "Function spaces"
+   },
+   {
+    "name": "Alexandre Eremenko",
+    "wiki": "Alexandre_Eremenko",
+    "arxiv": "au:\"Alexandre Eremenko\"",
+    "area": "Value distribution theory"
+   },
+   {
+    "name": "Lasse Rempe",
+    "wiki": "Lasse_Rempe",
+    "arxiv": "au:\"Lasse Rempe\"",
+    "area": "Transcendental dynamics"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "mlc",
+    "title": "Is the Mandelbrot set locally connected?",
+    "status": "open",
+    "q": "Is the Mandelbrot set locally connected, which would give a complete picture of quadratic dynamics?",
+    "known": "Douady and Hubbard (1980s) showed it is connected. Yoccoz proved local connectivity at many points, Lyubich extended this, and the full conjecture would imply density of hyperbolic parameters.",
+    "link": "https://en.wikipedia.org/wiki/Mandelbrot_set"
+   },
+   {
+    "id": "lindelof",
+    "title": "The Lindelöf hypothesis",
+    "status": "open",
+    "q": "Does the Riemann zeta function grow more slowly than any positive power of t along the critical line?",
+    "known": "Lindelöf conjectured it in 1908; it follows from the Riemann hypothesis. Bourgain (2017) proved growth at most t to the power 13/84 + ε, still far from the conjecture.",
+    "link": "https://en.wikipedia.org/wiki/Lindel%C3%B6f_hypothesis"
+   },
+   {
+    "id": "bloch-constant",
+    "title": "Bloch’s constant",
+    "status": "open",
+    "q": "What is the largest radius of a disc that the image of every normalised holomorphic map of the unit disc must contain injectively?",
+    "known": "Bloch (1925) showed such a constant exists. Ahlfors and Grunsky (1937) conjectured an exact value of about 0.4719; the best proved lower bound is still below it.",
+    "link": "https://en.wikipedia.org/wiki/Bloch%27s_theorem_(complex_analysis)"
+   },
+   {
+    "id": "mandelbrot-area",
+    "title": "Does the Mandelbrot set’s boundary have positive area?",
+    "status": "open",
+    "q": "Is the boundary of the Mandelbrot set so wiggly that it occupies positive area in the plane?",
+    "known": "Shishikura (1998) proved the boundary has Hausdorff dimension 2, the largest possible. Whether it has positive area is open, and a positive answer would have striking consequences for quadratic dynamics.",
+    "link": "https://en.wikipedia.org/wiki/Mandelbrot_set"
+   },
+   {
+    "id": "corona-several",
+    "title": "The corona problem in several variables",
+    "status": "open",
+    "q": "In the unit ball of ℂⁿ, n ≥ 2, is the open ball dense in the maximal ideal space of bounded holomorphic functions?",
+    "known": "Carleson (1962) proved the corona theorem for the unit disc. In higher dimensions the question is open for the ball and the polydisc.",
+    "link": "https://en.wikipedia.org/wiki/Corona_theorem"
+   },
+   {
+    "id": "eremenko",
+    "title": "Eremenko’s conjecture",
+    "status": "open",
+    "q": "For a transcendental entire function, is every connected component of the set of escaping points unbounded?",
+    "known": "Eremenko (1989) showed the escaping set is non-empty and posed the question. Rottenfusser, Rückert, Rempe and Schleicher (2011) found a counterexample to a strong form, but the conjecture as stated is open.",
+    "link": "https://en.wikipedia.org/wiki/Escaping_set"
+   }
+  ],
+  "milestones": [
+   {
+    "year": 1545,
+    "title": "Square roots of negatives",
+    "text": "Cardano meets square roots of negative numbers while solving cubic equations.",
+    "wiki": "Complex_number"
+   },
+   {
+    "year": 1748,
+    "title": "Euler’s formula",
+    "text": "Euler shows e^(iθ) = cos θ + i sin θ.",
+    "wiki": "Euler's_formula"
+   },
+   {
+    "year": 1806,
+    "title": "The complex plane",
+    "text": "Argand pictures complex numbers as points in a plane.",
+    "wiki": "Complex_plane"
+   },
+   {
+    "year": 1825,
+    "title": "Cauchy’s integral theorem",
+    "text": "Cauchy shows integrals of holomorphic functions around closed loops vanish.",
+    "wiki": "Cauchy's_integral_theorem"
+   },
+   {
+    "year": 1851,
+    "title": "Riemann’s thesis",
+    "text": "Riemann introduces Riemann surfaces and states the mapping theorem.",
+    "wiki": "Riemann_mapping_theorem"
+   },
+   {
+    "year": 1918,
+    "title": "Iterating maps",
+    "text": "Julia and Fatou study iterating rational functions, founding complex dynamics.",
+    "wiki": "Julia_set"
+   },
+   {
+    "year": 1980,
+    "title": "The Mandelbrot set",
+    "text": "Computer images of the Mandelbrot set reveal its intricate structure.",
+    "wiki": "Mandelbrot_set"
+   },
+   {
+    "year": 1985,
+    "title": "Bieberbach conjecture",
+    "text": "De Branges proves the coefficient bound for univalent functions.",
+    "wiki": "De_Branges's_theorem"
+   }
+  ]
+ },
+ "measure": {
+  "name": "Measure & integration",
+  "label": "arXiv math.CA · Measure & geometric measure theory (MSC 28)",
+  "query": "(cat:math.CA OR cat:math.MG OR cat:math.FA OR cat:math.DS) AND (abs:\"Hausdorff dimension\" OR abs:\"geometric measure theory\" OR abs:\"Lebesgue measure\" OR abs:\"rectifiable\")",
+  "listing": "math.CA",
+  "field": "measure theory and geometric measure theory: dimension, rectifiability, fractals, covering problems and optimal transport",
+  "peopleNote": "Six researchers who shaped geometric measure theory, fractal dimension and optimal transport and who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Pertti Mattila",
+    "wiki": "Pertti_Mattila",
+    "arxiv": "au:\"Pertti Mattila\"",
+    "area": "Geometric measure theory"
+   },
+   {
+    "name": "Xavier Tolsa",
+    "wiki": "Xavier_Tolsa",
+    "arxiv": "au:\"Xavier Tolsa\"",
+    "area": "Analytic capacity & rectifiability"
+   },
+   {
+    "name": "Kenneth Falconer",
+    "wiki": "Kenneth_Falconer_(mathematician)",
+    "arxiv": "(au:\"Kenneth Falconer\" OR au:\"Kenneth J. Falconer\")",
+    "area": "Fractal geometry"
+   },
+   {
+    "name": "Camillo De Lellis",
+    "wiki": "Camillo_De_Lellis",
+    "arxiv": "au:\"Camillo De Lellis\"",
+    "area": "Geometric measure theory"
+   },
+   {
+    "name": "Guido De Philippis",
+    "wiki": "Guido_De_Philippis",
+    "arxiv": "au:\"Guido De Philippis\"",
+    "area": "Geometric measure theory"
+   },
+   {
+    "name": "Alessio Figalli",
+    "wiki": "Alessio_Figalli",
+    "arxiv": "au:\"Alessio Figalli\"",
+    "area": "Optimal transport"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "falconer-distance",
+    "title": "Falconer’s distance problem",
+    "status": "open",
+    "q": "If a planar set has Hausdorff dimension above 1, must its set of pairwise distances have positive length?",
+    "known": "Falconer (1985) showed dimension above 3/2 suffices. Guth, Iosevich, Ou and Wang (2020) lowered this to 5/4, but the conjectured threshold of 1 is open.",
+    "link": "https://en.wikipedia.org/wiki/Falconer%27s_conjecture"
+   },
+   {
+    "id": "inscribed-square",
+    "title": "The inscribed square problem",
+    "status": "open",
+    "q": "Does every simple closed curve in the plane pass through the four corners of some square?",
+    "known": "Toeplitz posed it in 1911. It is proved for convex and for smooth curves, and Greene and Lobb (2020) showed smooth curves contain rectangles of every aspect ratio, but for arbitrary continuous curves the question is open.",
+    "link": "https://en.wikipedia.org/wiki/Inscribed_square_problem"
+   },
+   {
+    "id": "mahler",
+    "title": "Mahler’s conjecture",
+    "status": "open",
+    "q": "Among centrally symmetric convex bodies, is the product of the volume and the volume of its polar body smallest for the cube?",
+    "known": "Mahler posed it in 1939 and proved the plane case. Iriyeh and Shibata (2020) proved dimension three; dimension four and above are open.",
+    "link": "https://en.wikipedia.org/wiki/Mahler_conjecture"
+   },
+   {
+    "id": "lebesgue-covering",
+    "title": "Lebesgue’s universal covering problem",
+    "status": "open",
+    "q": "What is the smallest area of a convex shape that can cover every planar set of diameter 1?",
+    "known": "Lebesgue posed it in 1914. Successive constructions have reduced the upper bound to about 0.8441 (Baez, Bagdasaryan and Gibbs, 2015), but the exact value is unknown.",
+    "link": "https://en.wikipedia.org/wiki/Lebesgue%27s_universal_covering_problem"
+   },
+   {
+    "id": "moser-worm",
+    "title": "Moser’s worm problem",
+    "status": "open",
+    "q": "What is the smallest area of a region that can be moved to cover every curve of length 1?",
+    "known": "Moser posed it in 1966. Upper and lower bounds have been improved many times, but the exact minimum area, and even its shape, are unknown.",
+    "link": "https://en.wikipedia.org/wiki/Moser%27s_worm_problem"
+   },
+   {
+    "id": "heilbronn",
+    "title": "Heilbronn’s triangle problem",
+    "status": "open",
+    "q": "How large can the smallest triangle formed by n points in a unit square be made?",
+    "known": "Heilbronn posed it around 1950. Komlós, Pintz and Szemerédi (1982) gave a lower bound of order log n / n², and recent work by Cohen, Pohoata and Zakharov (2023) improved the upper bound, but the true order is open.",
+    "link": "https://en.wikipedia.org/wiki/Heilbronn_triangle_problem"
+   }
+  ],
+  "milestones": [
+   {
+    "year": 1883,
+    "title": "The Cantor set",
+    "text": "Cantor describes an uncountable set of total length zero.",
+    "wiki": "Cantor_set"
+   },
+   {
+    "year": 1898,
+    "title": "Borel sets",
+    "text": "Borel defines measurable sets built from intervals by countable operations.",
+    "wiki": "Borel_set"
+   },
+   {
+    "year": 1902,
+    "title": "The Lebesgue integral",
+    "text": "Lebesgue’s thesis defines integration through measure, handling far more functions than Riemann’s.",
+    "wiki": "Lebesgue_integration"
+   },
+   {
+    "year": 1905,
+    "title": "A non-measurable set",
+    "text": "Vitali constructs a set of reals with no sensible length, using the axiom of choice.",
+    "wiki": "Vitali_set"
+   },
+   {
+    "year": 1918,
+    "title": "Hausdorff dimension",
+    "text": "Hausdorff defines a notion of dimension that can take fractional values.",
+    "wiki": "Hausdorff_dimension"
+   },
+   {
+    "year": 1924,
+    "title": "Banach–Tarski",
+    "text": "Banach and Tarski show a ball can be cut into finitely many pieces and reassembled into two balls.",
+    "wiki": "Banach–Tarski_paradox"
+   },
+   {
+    "year": 1930,
+    "title": "Radon–Nikodym",
+    "text": "Nikodym proves densities exist between absolutely continuous measures in full generality.",
+    "wiki": "Radon–Nikodym_theorem"
+   },
+   {
+    "year": 1960,
+    "title": "Integral currents",
+    "text": "Federer and Fleming introduce currents, transforming the study of minimal surfaces.",
+    "wiki": "Current_(mathematics)"
+   }
+  ]
+ },
+ "probability": {
+  "name": "Probability & stochastic processes",
+  "label": "arXiv math.PR · Probability (MSC 60)",
+  "query": "cat:math.PR",
+  "listing": "math.PR",
+  "field": "probability theory: random walks, percolation, random geometry, stochastic PDE, random matrices and statistical physics models",
+  "peopleNote": "Six probabilists behind major advances in percolation, random geometry and stochastic PDE who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Hugo Duminil-Copin",
+    "wiki": "Hugo_Duminil-Copin",
+    "arxiv": "au:\"Hugo Duminil-Copin\"",
+    "area": "Percolation & statistical physics"
+   },
+   {
+    "name": "Martin Hairer",
+    "wiki": "Martin_Hairer",
+    "arxiv": "au:\"Martin Hairer\"",
+    "area": "Stochastic PDE"
+   },
+   {
+    "name": "Gregory Lawler",
+    "wiki": "Gregory_Lawler",
+    "arxiv": "(au:\"Gregory F. Lawler\" OR au:\"Gregory Lawler\")",
+    "area": "Random walks & SLE"
+   },
+   {
+    "name": "Scott Sheffield",
+    "wiki": "Scott_Sheffield",
+    "arxiv": "au:\"Scott Sheffield\" AND cat:math.*",
+    "area": "Random geometry"
+   },
+   {
+    "name": "Nina Holden",
+    "wiki": "Nina_Holden",
+    "arxiv": "au:\"Nina Holden\" AND cat:math.*",
+    "area": "Random planar maps"
+   },
+   {
+    "name": "Ivan Corwin",
+    "wiki": "Ivan_Corwin",
+    "arxiv": "au:\"Ivan Corwin\"",
+    "area": "KPZ universality"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "percolation-3d",
+    "title": "Critical percolation in three dimensions",
+    "status": "open",
+    "q": "In bond percolation on the three-dimensional cubic lattice at the critical density, is there almost surely no infinite cluster?",
+    "known": "The answer is yes in two dimensions (Harris and Kesten, 1960 and 1980) and in high dimensions via the lace expansion (now dimension 11 and above, Fitzner and van der Hofstad, 2017). Dimensions 3 to 10 are open.",
+    "link": "https://en.wikipedia.org/wiki/Percolation_theory"
+   },
+   {
+    "id": "saw-sle",
+    "title": "Self-avoiding walk in the plane",
+    "status": "open",
+    "q": "Does the uniform self-avoiding walk on a planar lattice converge, when rescaled, to the random curve SLE(8/3)?",
+    "known": "Lawler, Schramm and Werner (2002) conjectured this and showed it would follow from a suitable continuum limit. Duminil-Copin and Smirnov (2010) computed the connective constant of the hexagonal lattice, √(2 + √2).",
+    "link": "https://en.wikipedia.org/wiki/Self-avoiding_walk"
+   },
+   {
+    "id": "percolation-universality",
+    "title": "Universality of critical percolation",
+    "status": "open",
+    "q": "Is critical percolation conformally invariant on the square lattice, as Smirnov proved for the triangular lattice?",
+    "known": "Smirnov (2001) proved Cardy’s formula and conformal invariance for site percolation on the triangular lattice. Extending this to other planar lattices is a central open problem.",
+    "link": "https://en.wikipedia.org/wiki/Schramm%E2%80%93Loewner_evolution"
+   },
+   {
+    "id": "kpz-universality",
+    "title": "KPZ universality",
+    "status": "open",
+    "q": "Do all models of randomly growing interfaces in the KPZ class share the same large-scale fluctuations?",
+    "known": "Kardar, Parisi and Zhang (1986) predicted universal behaviour. Exactly solvable models have been analysed in detail, and Matetski, Quastel and Remenik (2021) constructed the KPZ fixed point, but universality is unproved for general models.",
+    "link": "https://en.wikipedia.org/wiki/Kardar%E2%80%93Parisi%E2%80%93Zhang_equation"
+   },
+   {
+    "id": "anderson-3d",
+    "title": "Delocalisation in the Anderson model",
+    "status": "open",
+    "q": "In three dimensions with weak disorder, does the Anderson model have extended states, so electrons can still conduct?",
+    "known": "Anderson (1958) predicted localisation for strong disorder, now proved. The existence of extended states for weak disorder in three dimensions, expected by physicists, has never been proved.",
+    "link": "https://en.wikipedia.org/wiki/Anderson_localization"
+   },
+   {
+    "id": "cutoff",
+    "title": "The cutoff phenomenon",
+    "status": "open",
+    "q": "Which Markov chains mix abruptly, staying far from equilibrium and then reaching it within a short window?",
+    "known": "Aldous and Diaconis (1986) identified cutoff, for example in card shuffling. Peres conjectured a simple criterion for reversible chains, which is known to fail in general and holds for some classes, but a characterisation is open.",
+    "link": "https://en.wikipedia.org/wiki/Markov_chain_mixing_time"
+   }
+  ],
+  "milestones": [
+   {
+    "year": 1654,
+    "title": "The problem of points",
+    "text": "Pascal and Fermat correspond on dividing stakes in an unfinished game, founding probability theory.",
+    "wiki": "Problem_of_points"
+   },
+   {
+    "year": 1713,
+    "title": "The law of large numbers",
+    "text": "Bernoulli’s Ars Conjectandi proves averages of repeated trials settle down.",
+    "wiki": "Ars_Conjectandi"
+   },
+   {
+    "year": 1733,
+    "title": "The normal curve",
+    "text": "De Moivre approximates binomial probabilities by the bell-shaped normal curve.",
+    "wiki": "De_Moivre–Laplace_theorem"
+   },
+   {
+    "year": 1906,
+    "title": "Markov chains",
+    "text": "Markov studies sequences in which the next state depends only on the present.",
+    "wiki": "Markov_chain"
+   },
+   {
+    "year": 1923,
+    "title": "Brownian motion",
+    "text": "Wiener constructs Brownian motion as a rigorous random process.",
+    "wiki": "Wiener_process"
+   },
+   {
+    "year": 1933,
+    "title": "Axioms for probability",
+    "text": "Kolmogorov founds probability on measure theory.",
+    "wiki": "Probability_axioms"
+   },
+   {
+    "year": 1944,
+    "title": "Stochastic calculus",
+    "text": "Itô defines integrals with respect to Brownian motion.",
+    "wiki": "Itô_calculus"
+   },
+   {
+    "year": 2000,
+    "title": "Schramm–Loewner evolution",
+    "text": "Schramm introduces SLE, random curves describing critical planar models.",
+    "wiki": "Schramm–Loewner_evolution"
+   },
+   {
+    "year": 2014,
+    "title": "Regularity structures",
+    "text": "Hairer develops a theory giving meaning to singular stochastic PDE.",
+    "wiki": "Regularity_structure"
+   }
+  ]
+ },
+ "equations": {
+  "name": "Differential & difference equations",
+  "label": "arXiv math.AP · Analysis of PDEs (MSC 34, 35)",
+  "query": "cat:math.AP",
+  "listing": "math.AP",
+  "field": "differential equations: existence, regularity and long-time behaviour of ODE and PDE, including fluids, waves and free boundaries",
+  "peopleNote": "Six analysts whose work on regularity, fluids and waves defines modern PDE and who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Luis Caffarelli",
+    "wiki": "Luis_Caffarelli",
+    "arxiv": "(au:\"Luis Caffarelli\" OR au:\"Luis A. Caffarelli\")",
+    "area": "Free boundaries & regularity"
+   },
+   {
+    "name": "Carlos Kenig",
+    "wiki": "Carlos_Kenig",
+    "arxiv": "(au:\"Carlos E. Kenig\" OR au:\"Carlos Kenig\")",
+    "area": "Dispersive equations"
+   },
+   {
+    "name": "Sergiu Klainerman",
+    "wiki": "Sergiu_Klainerman",
+    "arxiv": "au:\"Sergiu Klainerman\"",
+    "area": "Hyperbolic PDE & relativity"
+   },
+   {
+    "name": "Gigliola Staffilani",
+    "wiki": "Gigliola_Staffilani",
+    "arxiv": "au:\"Gigliola Staffilani\"",
+    "area": "Nonlinear Schrödinger & wave equations"
+   },
+   {
+    "name": "Thomas Y. Hou",
+    "wiki": "Thomas_Yizhao_Hou",
+    "arxiv": "au:\"Thomas Y. Hou\"",
+    "area": "Fluid singularities & computation"
+   },
+   {
+    "name": "Laure Saint-Raymond",
+    "wiki": "Laure_Saint-Raymond",
+    "arxiv": "au:\"Laure Saint-Raymond\"",
+    "area": "Kinetic theory"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "navier-stokes",
+    "title": "Navier–Stokes existence and smoothness",
+    "status": "claimed",
+    "q": "Do smooth initial flows of an incompressible fluid in three dimensions always stay smooth for all time?",
+    "known": "Leray (1934) constructed weak solutions that exist forever, but their uniqueness and smoothness are unknown. It is a Clay Millennium Problem. In September 2026 OpenAI proposed a solution to one of the official formulations, the variant with a smooth external force; the claim is not yet verified and is the subject of a priority controversy.",
+    "link": "https://en.wikipedia.org/wiki/Navier%E2%80%93Stokes_existence_and_smoothness"
+   },
+   {
+    "id": "euler-blowup",
+    "title": "Blow-up for the Euler equations",
+    "status": "open",
+    "q": "Can a smooth, finite-energy solution of the three-dimensional incompressible Euler equations, with no boundary, develop a singularity in finite time?",
+    "known": "Elgindi (2021) proved blow-up for slightly less smooth data, and Chen and Hou (2022) gave a computer-assisted proof of blow-up in a domain with a boundary. The smooth case without boundary is open.",
+    "link": "https://en.wikipedia.org/wiki/Euler_equations_(fluid_dynamics)"
+   },
+   {
+    "id": "hilbert-16",
+    "title": "Hilbert’s sixteenth problem",
+    "status": "open",
+    "q": "Is there a bound, depending only on the degree, for the number of limit cycles of a planar polynomial vector field?",
+    "known": "Hilbert posed it in 1900. Ilyashenko (1991) and Écalle (1992) proved each such field has finitely many limit cycles, but no uniform bound is known even for quadratic fields.",
+    "link": "https://en.wikipedia.org/wiki/Hilbert%27s_sixteenth_problem"
+   },
+   {
+    "id": "calderon",
+    "title": "Calderón’s inverse problem",
+    "status": "open",
+    "q": "Can the electrical conductivity inside a body be determined uniquely from voltage and current measurements on its surface, for any bounded conductivity?",
+    "known": "Calderón posed it in 1980. Sylvester and Uhlmann (1987) proved uniqueness for smooth conductivities in three dimensions and Astala and Päivärinta (2006) for all bounded conductivities in the plane; rough conductivities in three dimensions are open.",
+    "link": "https://en.wikipedia.org/wiki/Electrical_impedance_tomography"
+   },
+   {
+    "id": "drum",
+    "title": "Hearing the shape of a convex drum",
+    "status": "open",
+    "q": "Do the vibration frequencies of a smooth convex drum determine its shape?",
+    "known": "Kac asked the general question in 1966. Gordon, Webb and Wolpert (1992) built different polygons with the same frequencies, but for smooth convex drums the answer is unknown.",
+    "link": "https://en.wikipedia.org/wiki/Hearing_the_shape_of_a_drum"
+   },
+   {
+    "id": "yang-mills",
+    "title": "Yang–Mills existence and mass gap",
+    "status": "open",
+    "q": "Does quantum Yang–Mills theory on four-dimensional space exist rigorously, with a positive lowest energy above the vacuum?",
+    "known": "Physicists use Yang–Mills theory to describe the strong force, and the mass gap is supported by experiment and simulation. A mathematical construction is a Clay Millennium Problem.",
+    "link": "https://en.wikipedia.org/wiki/Yang%E2%80%93Mills_existence_and_mass_gap"
+   }
+  ],
+  "milestones": [
+   {
+    "year": 1747,
+    "title": "The wave equation",
+    "text": "D’Alembert writes down and solves the equation of a vibrating string.",
+    "wiki": "Wave_equation"
+   },
+   {
+    "year": 1757,
+    "title": "Fluid motion",
+    "text": "Euler formulates the equations of motion of an ideal fluid.",
+    "wiki": "Euler_equations_(fluid_dynamics)"
+   },
+   {
+    "year": 1822,
+    "title": "The heat equation",
+    "text": "Fourier publishes his analytical theory of heat and its equation.",
+    "wiki": "Heat_equation"
+   },
+   {
+    "year": 1845,
+    "title": "Viscous fluids",
+    "text": "Stokes completes the derivation of the Navier–Stokes equations.",
+    "wiki": "Navier–Stokes_equations"
+   },
+   {
+    "year": 1901,
+    "title": "Limit cycles",
+    "text": "Bendixson completes the Poincaré–Bendixson theorem on long-term planar behaviour.",
+    "wiki": "Poincaré–Bendixson_theorem"
+   },
+   {
+    "year": 1934,
+    "title": "Weak solutions",
+    "text": "Leray constructs global weak solutions of the Navier–Stokes equations.",
+    "wiki": "Jean_Leray"
+   },
+   {
+    "year": 1938,
+    "title": "Sobolev spaces",
+    "text": "Sobolev introduces function spaces that underpin modern PDE theory.",
+    "wiki": "Sobolev_space"
+   }
+  ]
+ },
+ "dynamics": {
+  "name": "Dynamical systems",
+  "label": "arXiv math.DS · Dynamical systems (MSC 37)",
+  "query": "cat:math.DS",
+  "listing": "math.DS",
+  "field": "dynamical systems and ergodic theory: chaos, stability, homogeneous dynamics, billiards and one-dimensional dynamics",
+  "peopleNote": "Six researchers whose work on ergodic theory, chaos and homogeneous dynamics shapes the field and who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Artur Avila",
+    "wiki": "Artur_Avila",
+    "arxiv": "au:\"Artur Avila\"",
+    "area": "One-dimensional & spectral dynamics"
+   },
+   {
+    "name": "Elon Lindenstrauss",
+    "wiki": "Elon_Lindenstrauss",
+    "arxiv": "au:\"Elon Lindenstrauss\"",
+    "area": "Homogeneous dynamics"
+   },
+   {
+    "name": "Amie Wilkinson",
+    "wiki": "Amie_Wilkinson",
+    "arxiv": "au:\"Amie Wilkinson\"",
+    "area": "Smooth ergodic theory"
+   },
+   {
+    "name": "Yakov Pesin",
+    "wiki": "Yakov_Pesin",
+    "arxiv": "au:\"Yakov Pesin\"",
+    "area": "Non-uniform hyperbolicity"
+   },
+   {
+    "name": "Alex Eskin",
+    "wiki": "Alex_Eskin",
+    "arxiv": "au:\"Alex Eskin\" AND cat:math.*",
+    "area": "Teichmüller dynamics"
+   },
+   {
+    "name": "Dmitry Dolgopyat",
+    "wiki": "Dmitry_Dolgopyat",
+    "arxiv": "au:\"Dmitry Dolgopyat\"",
+    "area": "Hyperbolic dynamics & statistics"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "furstenberg-x2x3",
+    "title": "Furstenberg’s ×2 ×3 conjecture",
+    "status": "open",
+    "q": "Is Lebesgue measure the only non-atomic probability measure on the circle invariant under both doubling and tripling?",
+    "known": "Furstenberg (1967) proved the analogous statement for closed invariant sets. Rudolph (1990) proved it for measures of positive entropy; the zero-entropy case is open.",
+    "link": "https://en.wikipedia.org/wiki/Hillel_Furstenberg"
+   },
+   {
+    "id": "standard-map",
+    "title": "Chaos in the standard map",
+    "status": "open",
+    "q": "For large parameter values, does the Chirikov standard map have positive Lyapunov exponent on a set of positive area?",
+    "known": "Numerical experiments strongly suggest widespread chaos. Elliptic islands persist for many parameters, and proving positive metric entropy remains a famous open problem.",
+    "link": "https://en.wikipedia.org/wiki/Standard_map"
+   },
+   {
+    "id": "arnold-diffusion",
+    "title": "Arnold diffusion",
+    "status": "open",
+    "q": "In generic nearly integrable Hamiltonian systems with three or more degrees of freedom, can orbits drift a long way in action?",
+    "known": "Arnold (1964) gave an example of such drift. Mather announced results for generic systems, and significant progress was made by Bernard, Kaloshin and Zhang and others, but the general conjecture is open.",
+    "link": "https://en.wikipedia.org/wiki/Arnold_diffusion"
+   },
+   {
+    "id": "triangular-billiards",
+    "title": "Periodic billiards in triangles",
+    "status": "open",
+    "q": "Does every triangular billiard table have a periodic trajectory?",
+    "known": "Fagnano’s orbit works for acute triangles, and Schwartz (2009) proved the answer is yes for triangles with all angles at most 100°. Obtuse triangles in general are open.",
+    "link": "https://en.wikipedia.org/wiki/Dynamical_billiards"
+   },
+   {
+    "id": "multiple-mixing",
+    "title": "Rokhlin’s multiple mixing problem",
+    "status": "open",
+    "q": "Does every mixing measure-preserving transformation mix sets of all orders?",
+    "known": "Rokhlin asked this in 1949. Kalikow (1984) proved it for rank-one transformations and Host (1991) for systems with singular spectrum, but it is open in general.",
+    "link": "https://en.wikipedia.org/wiki/Mixing_(mathematics)"
+   },
+   {
+    "id": "density-hyperbolicity",
+    "title": "Density of hyperbolicity in complex dynamics",
+    "status": "open",
+    "q": "Can every complex quadratic polynomial be approximated by ones whose orbits settle onto attracting cycles?",
+    "known": "For real polynomials this was proved by Lyubich and by Graczyk and Świątek (1997), and generally by Kozlovski, Shen and van Strien (2007). The complex case is open and is implied by local connectivity of the Mandelbrot set.",
+    "link": "https://en.wikipedia.org/wiki/Smale%27s_problems"
+   }
+  ],
+  "milestones": [
+   {
+    "year": 1890,
+    "title": "Chaos in the three-body problem",
+    "text": "Poincaré discovers complicated orbits while studying the stability of the solar system.",
+    "wiki": "Three-body_problem"
+   },
+   {
+    "year": 1931,
+    "title": "The ergodic theorem",
+    "text": "Birkhoff proves time averages equal space averages almost everywhere for measure-preserving systems.",
+    "wiki": "Ergodic_theory"
+   },
+   {
+    "year": 1954,
+    "title": "KAM theory",
+    "text": "Kolmogorov announces that most quasi-periodic motions survive small perturbations.",
+    "wiki": "Kolmogorov–Arnold–Moser_theorem"
+   },
+   {
+    "year": 1963,
+    "title": "The Lorenz attractor",
+    "text": "Lorenz finds sensitive dependence on initial conditions in a simple weather model.",
+    "wiki": "Lorenz_system"
+   },
+   {
+    "year": 1967,
+    "title": "The horseshoe",
+    "text": "Smale’s survey makes hyperbolic dynamics, including his horseshoe map, a central theory.",
+    "wiki": "Horseshoe_map"
+   },
+   {
+    "year": 1978,
+    "title": "Universality in period doubling",
+    "text": "Feigenbaum discovers universal constants governing the route to chaos.",
+    "wiki": "Feigenbaum_constants"
+   },
+   {
+    "year": 2002,
+    "title": "Lorenz attractor proved",
+    "text": "Tucker gives a computer-assisted proof that the Lorenz attractor exists.",
+    "wiki": "Lorenz_system"
+   }
+  ]
+ }
+}

@@ -1,0 +1,2186 @@
+{
+ "optimisation": {
+  "name": "Optimisation & operations research",
+  "label": "arXiv math.OC · Optimisation & control (MSC 90, 49)",
+  "query": "cat:math.OC",
+  "listing": "math.OC",
+  "field": "mathematical optimisation and operations research: convex and nonconvex optimisation, linear and integer programming, and the design and complexity of optimisation algorithms",
+  "peopleNote": "Six researchers whose methods and theorems underpin modern optimisation, from interior-point and first-order methods to approximation algorithms, and who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Stephen Boyd",
+    "wiki": "Stephen_P._Boyd",
+    "arxiv": "au:\"Stephen Boyd\"",
+    "area": "Convex optimisation"
+   },
+   {
+    "name": "Yurii Nesterov",
+    "wiki": "Yurii_Nesterov",
+    "arxiv": "au:\"Yurii Nesterov\"",
+    "area": "First-order & interior-point methods"
+   },
+   {
+    "name": "Arkadi Nemirovski",
+    "wiki": "Arkadi_Nemirovski",
+    "arxiv": "au:\"Arkadi Nemirovski\"",
+    "area": "Robust & convex optimisation"
+   },
+   {
+    "name": "Éva Tardos",
+    "wiki": "Éva_Tardos",
+    "arxiv": "au:\"Eva Tardos\"",
+    "area": "Network flows & approximation"
+   },
+   {
+    "name": "Jorge Nocedal",
+    "wiki": "Jorge_Nocedal",
+    "arxiv": "au:\"Jorge Nocedal\"",
+    "area": "Nonlinear & stochastic optimisation"
+   },
+   {
+    "name": "Michel Goemans",
+    "wiki": "Michel_Goemans",
+    "arxiv": "au:\"Michel Goemans\"",
+    "area": "Combinatorial optimisation & approximation"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "strongly-polynomial-lp",
+    "title": "A strongly polynomial algorithm for linear programming",
+    "status": "open",
+    "q": "Can every linear programme be solved in a number of arithmetic steps bounded by a polynomial in the number of variables and constraints alone?",
+    "known": "Khachiyan (1979) and Karmarkar (1984) gave algorithms polynomial in the input’s bit length, but their step counts grow with the size of the numbers. Smale listed a strongly polynomial algorithm as his ninth problem for the 21st century (1998); it is still open.",
+    "link": "https://en.wikipedia.org/wiki/Smale%27s_problems"
+   },
+   {
+    "id": "polynomial-hirsch",
+    "title": "The polynomial Hirsch conjecture",
+    "status": "open",
+    "q": "Is the diameter of every polytope bounded by a polynomial in its dimension and number of facets?",
+    "known": "Santos (2010) disproved the original Hirsch bound, but the best known general upper bound remains quasi-polynomial (Kalai and Kleitman, 1992). A polynomial bound is necessary for any simplex-type method to run in polynomial time.",
+    "link": "https://en.wikipedia.org/wiki/Hirsch_conjecture"
+   },
+   {
+    "id": "simplex-pivot",
+    "title": "A polynomial pivot rule for the simplex method",
+    "status": "open",
+    "q": "Is there a rule for choosing simplex pivots that always finishes in polynomially many steps?",
+    "known": "Klee and Minty (1972) showed Dantzig’s original rule can take exponentially many steps, and many later rules have similar bad examples. Spielman and Teng (2004) explained the method’s practical speed through smoothed analysis, but no polynomial worst-case rule is known.",
+    "link": "https://en.wikipedia.org/wiki/Simplex_algorithm"
+   },
+   {
+    "id": "unique-games",
+    "title": "The unique games conjecture",
+    "status": "open",
+    "q": "Is it NP-hard to approximately satisfy unique-games constraint systems, as Khot conjectured in 2002?",
+    "known": "If true, it fixes the best possible approximation ratios for many problems, including Goemans and Williamson’s 0.878 for max-cut. The 2-to-2 games theorem (Khot, Minzer and Safra, 2018) proved a closely related weaker statement.",
+    "link": "https://en.wikipedia.org/wiki/Unique_games_conjecture"
+   },
+   {
+    "id": "metric-tsp-approx",
+    "title": "How well can the travelling salesman be approximated?",
+    "status": "open",
+    "q": "What is the best approximation ratio achievable in polynomial time for the metric travelling salesman problem?",
+    "known": "Christofides’ 3/2 algorithm (1976) was only beaten by a tiny constant by Karlin, Klein and Oveis Gharan (2020). Known hardness results rule out ratios below 123/122 unless P = NP (Karpinski, Lampis and Schmied, 2015), leaving a wide gap.",
+    "link": "https://en.wikipedia.org/wiki/Travelling_salesman_problem"
+   },
+   {
+    "id": "four-thirds-tsp",
+    "title": "The 4/3 conjecture for the subtour relaxation",
+    "status": "open",
+    "q": "Is the Held–Karp linear-programming bound for metric travelling salesman tours always within a factor 4/3 of the true optimum?",
+    "known": "The gap is known to be at least 4/3 and at most 3/2 (Wolsey, 1980; Shmoys and Williamson, 1990). Proving 4/3 would likely yield a matching approximation algorithm.",
+    "link": "https://en.wikipedia.org/wiki/Travelling_salesman_problem"
+   }
+  ],
+  "milestones": [
+   {
+    "year": 1847,
+    "title": "Steepest descent",
+    "text": "Cauchy proposes moving repeatedly against the gradient to minimise a function, the ancestor of today’s training algorithms.",
+    "wiki": "Gradient_descent"
+   },
+   {
+    "year": 1939,
+    "title": "Linear programming is born",
+    "text": "Kantorovich formulates production planning as optimising a linear objective under linear constraints.",
+    "wiki": "Linear_programming"
+   },
+   {
+    "year": 1947,
+    "title": "The simplex method",
+    "text": "Dantzig devises the simplex algorithm, which walks along the edges of the feasible polytope.",
+    "wiki": "Simplex_algorithm"
+   },
+   {
+    "year": 1951,
+    "title": "Optimality conditions",
+    "text": "Kuhn and Tucker publish necessary conditions for constrained optima, anticipated by Karush in 1939.",
+    "wiki": "Karush–Kuhn–Tucker_conditions"
+   },
+   {
+    "year": 1957,
+    "title": "Dynamic programming",
+    "text": "Bellman’s book sets out the principle of optimality for multi-stage decisions.",
+    "wiki": "Dynamic_programming"
+   },
+   {
+    "year": 1979,
+    "title": "LP in polynomial time",
+    "text": "Khachiyan shows the ellipsoid method solves linear programmes in polynomial time.",
+    "wiki": "Ellipsoid_method"
+   },
+   {
+    "year": 1984,
+    "title": "Interior-point methods",
+    "text": "Karmarkar’s algorithm makes polynomial-time linear programming practical by cutting through the interior.",
+    "wiki": "Karmarkar's_algorithm"
+   }
+  ]
+ },
+ "games": {
+  "name": "Game theory & decisions",
+  "label": "arXiv cs.GT · Computer science and game theory (MSC 91)",
+  "query": "cat:cs.GT",
+  "listing": "cs.GT",
+  "field": "game theory and decision-making: equilibria, mechanism and auction design, social choice, fair division and the computational complexity of strategic behaviour",
+  "peopleNote": "Six researchers who shaped algorithmic and economic game theory, from the complexity of equilibria to auctions and fair division, and who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Christos Papadimitriou",
+    "wiki": "Christos_Papadimitriou",
+    "arxiv": "au:\"Christos Papadimitriou\"",
+    "area": "Complexity of equilibria"
+   },
+   {
+    "name": "Tim Roughgarden",
+    "wiki": "Tim_Roughgarden",
+    "arxiv": "au:\"Tim Roughgarden\"",
+    "area": "Price of anarchy & mechanism design"
+   },
+   {
+    "name": "Noam Nisan",
+    "wiki": "Noam_Nisan",
+    "arxiv": "au:\"Noam Nisan\"",
+    "area": "Algorithmic mechanism design"
+   },
+   {
+    "name": "Constantinos Daskalakis",
+    "wiki": "Constantinos_Daskalakis",
+    "arxiv": "au:\"Constantinos Daskalakis\"",
+    "area": "Equilibria & learning in games"
+   },
+   {
+    "name": "Sergiu Hart",
+    "wiki": "Sergiu_Hart",
+    "arxiv": "au:\"Sergiu Hart\"",
+    "area": "Game dynamics & correlated equilibrium"
+   },
+   {
+    "name": "Ariel Procaccia",
+    "wiki": "Ariel_Procaccia",
+    "arxiv": "au:\"Ariel Procaccia\"",
+    "area": "Fair division & social choice"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "ppad-vs-p",
+    "title": "Can Nash equilibria be found efficiently?",
+    "status": "open",
+    "q": "Is there a polynomial-time algorithm for finding a Nash equilibrium of a two-player game?",
+    "known": "Computing one is PPAD-complete (Daskalakis, Goldberg and Papadimitriou, 2006; Chen and Deng, 2006), so an efficient algorithm would collapse PPAD into P. Most researchers expect no such algorithm, but it is unproved.",
+    "link": "https://en.wikipedia.org/wiki/PPAD_(complexity)"
+   },
+   {
+    "id": "parity-games",
+    "title": "Solving parity games in polynomial time",
+    "status": "open",
+    "q": "Can the winner of a parity game on a finite graph be determined in polynomial time?",
+    "known": "The problem lies in NP ∩ coNP, and Calude, Jain, Khoussainov, Li and Stephan (2017) found a quasi-polynomial algorithm. Whether it is in P remains open, with consequences for verifying reactive software.",
+    "link": "https://en.wikipedia.org/wiki/Parity_game"
+   },
+   {
+    "id": "multi-item-auctions",
+    "title": "Optimal auctions for several items",
+    "status": "open",
+    "q": "What auction maximises a seller’s expected revenue when selling two or more items to bidders with private values?",
+    "known": "Myerson (1981) solved the single-item case completely. With several items optimal mechanisms can require randomisation and be computationally hard to find, and no comparably clean characterisation is known.",
+    "link": "https://en.wikipedia.org/wiki/Mechanism_design"
+   },
+   {
+    "id": "efx-allocations",
+    "title": "Envy-free up to any good (EFX)",
+    "status": "open",
+    "q": "When indivisible goods are shared, is there always an allocation in which no one envies another after removing any single good from the other’s bundle?",
+    "known": "EFX allocations are known to exist for two agents and for three agents with additive values (Chaudhury, Garg and Mehlhorn, 2020). Existence for four or more agents is open.",
+    "link": "https://en.wikipedia.org/wiki/Envy-free_item_allocation"
+   },
+   {
+    "id": "cake-cutting-bounds",
+    "title": "How hard is fair cake-cutting?",
+    "status": "open",
+    "q": "How many cuts and queries does an envy-free division of a cake among n people need in the worst case?",
+    "known": "Aziz and Mackenzie (2016) gave the first bounded protocol for any n, but its bound is a tower of exponentials. The best lower bound is of order n² queries (Procaccia, 2009), leaving an enormous gap.",
+    "link": "https://en.wikipedia.org/wiki/Envy-free_cake-cutting"
+   },
+   {
+    "id": "stochastic-games-p",
+    "title": "Simple stochastic games",
+    "status": "open",
+    "q": "Can the value of Condon’s simple stochastic games be computed in polynomial time?",
+    "known": "Condon (1992) showed the problem lies in NP ∩ coNP. Despite decades of algorithms that work well in practice, no polynomial-time method is known.",
+    "link": "https://en.wikipedia.org/wiki/Stochastic_game"
+   }
+  ],
+  "milestones": [
+   {
+    "year": 1928,
+    "title": "The minimax theorem",
+    "text": "Von Neumann proves every finite two-player zero-sum game has a value achieved by mixed strategies.",
+    "wiki": "Minimax_theorem"
+   },
+   {
+    "year": 1944,
+    "title": "Game theory as a field",
+    "text": "Von Neumann and Morgenstern’s book founds game theory as a mathematical theory of economic behaviour.",
+    "wiki": "Theory_of_Games_and_Economic_Behavior"
+   },
+   {
+    "year": 1950,
+    "title": "Nash equilibrium",
+    "text": "Nash proves every finite game has an equilibrium in mixed strategies.",
+    "wiki": "Nash_equilibrium"
+   },
+   {
+    "year": 1953,
+    "title": "The Shapley value",
+    "text": "Shapley defines a unique fair way to share a coalition’s gains among its members.",
+    "wiki": "Shapley_value"
+   },
+   {
+    "year": 1962,
+    "title": "Stable matching",
+    "text": "Gale and Shapley give an algorithm that always finds a stable marriage between two groups.",
+    "wiki": "Stable_marriage_problem"
+   },
+   {
+    "year": 1973,
+    "title": "Evolutionary stability",
+    "text": "Maynard Smith and Price introduce evolutionarily stable strategies, bringing game theory to biology.",
+    "wiki": "Evolutionarily_stable_strategy"
+   },
+   {
+    "year": 1981,
+    "title": "Optimal auctions",
+    "text": "Myerson characterises the revenue-maximising auction for a single item.",
+    "wiki": "Roger_Myerson"
+   },
+   {
+    "year": 2006,
+    "title": "Equilibria are hard to compute",
+    "text": "Computing a Nash equilibrium is shown to be PPAD-complete, even for two players.",
+    "wiki": "PPAD_(complexity)"
+   }
+  ]
+ },
+ "control": {
+  "name": "Control & systems theory",
+  "label": "arXiv eess.SY · Systems and control (MSC 93)",
+  "query": "cat:eess.SY",
+  "listing": "eess.SY",
+  "field": "control and systems theory: feedback, stability, optimal and robust control, estimation, networked and learning-based control",
+  "peopleNote": "Six researchers who shaped feedback, nonlinear, robust and multi-agent control and who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Richard M. Murray",
+    "wiki": "Richard_M._Murray",
+    "arxiv": "au:\"Richard M. Murray\"",
+    "area": "Feedback & networked control"
+   },
+   {
+    "name": "Eduardo Sontag",
+    "wiki": "Eduardo_D._Sontag",
+    "arxiv": "au:\"Eduardo D. Sontag\"",
+    "area": "Nonlinear control & systems biology"
+   },
+   {
+    "name": "Naomi Leonard",
+    "wiki": "Naomi_Leonard",
+    "arxiv": "au:\"Naomi Leonard\"",
+    "area": "Multi-agent & collective dynamics"
+   },
+   {
+    "name": "Manfred Morari",
+    "wiki": "Manfred_Morari",
+    "arxiv": "au:\"Manfred Morari\"",
+    "area": "Model predictive control"
+   },
+   {
+    "name": "Claire Tomlin",
+    "wiki": "Claire_Tomlin",
+    "arxiv": "au:\"Claire Tomlin\"",
+    "area": "Safety of hybrid systems"
+   },
+   {
+    "name": "Magnus Egerstedt",
+    "wiki": "Magnus_Egerstedt",
+    "arxiv": "au:\"Magnus Egerstedt\"",
+    "area": "Robot swarms & networked systems"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "witsenhausen",
+    "title": "Witsenhausen’s counterexample",
+    "status": "open",
+    "q": "What is the optimal controller in Witsenhausen’s simple two-stage problem with a decentralised linear system, quadratic cost and Gaussian noise?",
+    "known": "Witsenhausen (1968) showed nonlinear controllers beat every linear one, overturning the expectation from centralised control. The optimal strategy is still unknown, a benchmark for the difficulty of decentralised decision-making.",
+    "link": "https://en.wikipedia.org/wiki/Witsenhausen%27s_counterexample"
+   },
+   {
+    "id": "jsr-decidability",
+    "title": "Stability of switching systems",
+    "status": "open",
+    "q": "Is there an algorithm that decides whether every product of matrices from a given finite set eventually shrinks to zero (joint spectral radius below 1)?",
+    "known": "Blondel and Tsitsiklis (2000) proved the closely related question of whether the joint spectral radius is at most 1 undecidable. The strict version, which captures stability under arbitrary switching, remains open.",
+    "link": "https://en.wikipedia.org/wiki/Joint_spectral_radius"
+   },
+   {
+    "id": "skolem",
+    "title": "The Skolem problem",
+    "status": "open",
+    "q": "Is there an algorithm to decide whether a linear recurrence with integer coefficients ever reaches zero?",
+    "known": "This asks whether a discrete-time linear system can ever hit a hyperplane. It is decidable up to order 4 (Mignotte, Shorey and Tijdeman; Vereshchagin, 1985) but open in general.",
+    "link": "https://en.wikipedia.org/wiki/Skolem_problem"
+   },
+   {
+    "id": "matrix-mortality-2x2",
+    "title": "Mortality of 2×2 matrices",
+    "status": "open",
+    "q": "Given a finite set of 2×2 integer matrices, can some product of them equal the zero matrix, and can this be decided?",
+    "known": "Paterson (1970) showed mortality is undecidable for 3×3 integer matrices. Decidability for 2×2 matrices remains open.",
+    "link": "https://en.wikipedia.org/wiki/Matrix_mortality_problem"
+   },
+   {
+    "id": "static-output-feedback",
+    "title": "Static output feedback stabilisation",
+    "status": "open",
+    "q": "Is there an efficient test for whether a linear system can be stabilised by feeding back a fixed linear combination of its measured outputs?",
+    "known": "The question is decidable in principle via real algebraic geometry, and Blondel and Tsitsiklis (1997) showed bounded-gain versions are NP-hard. No efficient general algorithm or simple criterion is known.",
+    "link": "https://en.wikipedia.org/wiki/Control_theory"
+   },
+   {
+    "id": "kuramoto-threshold",
+    "title": "Synchronisation thresholds in networks",
+    "status": "open",
+    "q": "For coupled oscillators on a general network, what coupling strength guarantees they synchronise?",
+    "known": "Kuramoto (1975) solved the all-to-all limit of infinitely many oscillators. For finite, general networks only sufficient conditions and special cases are known.",
+    "link": "https://en.wikipedia.org/wiki/Kuramoto_model"
+   }
+  ],
+  "milestones": [
+   {
+    "year": 1868,
+    "title": "Governors analysed",
+    "text": "Maxwell’s paper on governors gives the first mathematical stability analysis of a feedback device.",
+    "wiki": "Centrifugal_governor"
+   },
+   {
+    "year": 1877,
+    "title": "An algebraic stability test",
+    "text": "Routh gives a criterion for when a linear system is stable, later found independently by Hurwitz (1895).",
+    "wiki": "Routh–Hurwitz_stability_criterion"
+   },
+   {
+    "year": 1892,
+    "title": "Lyapunov stability",
+    "text": "Lyapunov introduces energy-like functions to prove stability without solving the equations.",
+    "wiki": "Lyapunov_stability"
+   },
+   {
+    "year": 1932,
+    "title": "Frequency-domain stability",
+    "text": "Nyquist’s criterion reads closed-loop stability off the open-loop frequency response.",
+    "wiki": "Nyquist_stability_criterion"
+   },
+   {
+    "year": 1956,
+    "title": "The maximum principle",
+    "text": "Pontryagin and colleagues formulate necessary conditions for optimal control.",
+    "wiki": "Pontryagin's_maximum_principle"
+   },
+   {
+    "year": 1960,
+    "title": "State space and filtering",
+    "text": "Kalman introduces the Kalman filter and the state-space ideas of controllability and observability.",
+    "wiki": "Kalman_filter"
+   },
+   {
+    "year": 1981,
+    "title": "Robust control",
+    "text": "Zames poses the H∞ problem, designing controllers that guarantee performance under model uncertainty.",
+    "wiki": "H-infinity_methods_in_control_theory"
+   }
+  ]
+ },
+ "information": {
+  "name": "Information & signals",
+  "label": "arXiv cs.IT · Information theory (MSC 94)",
+  "query": "cat:cs.IT",
+  "listing": "cs.IT",
+  "field": "information theory and signal processing: entropy, channel capacity, coding theory, compression, sampling and multi-user communication",
+  "peopleNote": "Six researchers behind capacity results, modern codes, wireless theory and signal processing who still publish on arXiv.",
+  "people": [
+   {
+    "name": "David Tse",
+    "wiki": "David_Tse",
+    "arxiv": "au:\"David Tse\"",
+    "area": "Wireless & network information theory"
+   },
+   {
+    "name": "Erdal Arıkan",
+    "wiki": "Erdal_Arıkan",
+    "arxiv": "au:\"Erdal Arikan\"",
+    "area": "Polar codes"
+   },
+   {
+    "name": "Andrea Goldsmith",
+    "wiki": "Andrea_Goldsmith_(engineer)",
+    "arxiv": "au:\"Andrea Goldsmith\"",
+    "area": "Wireless communications"
+   },
+   {
+    "name": "Robert Calderbank",
+    "wiki": "Robert_Calderbank",
+    "arxiv": "au:\"Robert Calderbank\"",
+    "area": "Coding theory & quantum codes"
+   },
+   {
+    "name": "Martin Vetterli",
+    "wiki": "Martin_Vetterli",
+    "arxiv": "au:\"Martin Vetterli\"",
+    "area": "Signal processing & sampling"
+   },
+   {
+    "name": "Venkatesan Guruswami",
+    "wiki": "Venkatesan_Guruswami",
+    "arxiv": "au:\"Venkatesan Guruswami\"",
+    "area": "Error-correcting codes & complexity"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "interference-channel",
+    "title": "Capacity of the interference channel",
+    "status": "open",
+    "q": "What is the exact capacity region when two transmitter–receiver pairs share a channel and interfere with each other?",
+    "known": "Han and Kobayashi (1981) gave the best known achievable scheme, and Etkin, Tse and Wang (2008) determined the Gaussian case to within one bit. The exact region is still unknown even for two users.",
+    "link": "https://en.wikipedia.org/wiki/Channel_capacity"
+   },
+   {
+    "id": "relay-channel",
+    "title": "Capacity of the relay channel",
+    "status": "open",
+    "q": "How fast can information flow from a sender to a receiver when a third node can help by relaying?",
+    "known": "The model goes back to van der Meulen (1971), and Cover and El Gamal (1979) proved the main bounds still used today. Apart from special cases, the capacity remains unknown.",
+    "link": "https://en.wikipedia.org/wiki/Relay_channel"
+   },
+   {
+    "id": "broadcast-channel",
+    "title": "Capacity of the broadcast channel",
+    "status": "open",
+    "q": "What rates can one transmitter achieve when sending different messages to several receivers at once?",
+    "known": "Cover (1972) introduced the problem and degraded broadcast channels are solved, as is the Gaussian MIMO case (Weingarten, Steinberg and Shamai, 2006). The general two-receiver capacity region is still open.",
+    "link": "https://en.wikipedia.org/wiki/Information_theory"
+   },
+   {
+    "id": "shannon-capacity-graph",
+    "title": "Shannon capacity of graphs",
+    "status": "open",
+    "q": "What is the zero-error capacity of a channel whose confusable symbols form the seven-cycle C₇?",
+    "known": "Lovász (1979) showed the five-cycle has capacity √5 using his theta function. For C₇ and most other graphs the value is unknown, and Alon (1998) showed the capacity can behave very irregularly.",
+    "link": "https://en.wikipedia.org/wiki/Shannon_capacity_of_a_graph"
+   },
+   {
+    "id": "gilbert-varshamov",
+    "title": "Beating the Gilbert–Varshamov bound",
+    "status": "open",
+    "q": "Are there long binary error-correcting codes with a better trade-off between rate and minimum distance than random codes give?",
+    "known": "For alphabets of size 49 and above, algebraic-geometry codes beat the bound (Tsfasman, Vlăduţ and Zink, 1982). For binary codes no improvement is known, nor a matching upper bound.",
+    "link": "https://en.wikipedia.org/wiki/Gilbert%E2%80%93Varshamov_bound"
+   },
+   {
+    "id": "deletion-channel",
+    "title": "Capacity of the deletion channel",
+    "status": "open",
+    "q": "What is the capacity of a binary channel that randomly deletes bits, so the receiver does not know where the gaps are?",
+    "known": "Unlike erasures, deletions destroy synchronisation, and no closed form is known even for independent deletions. Only upper and lower bounds exist, surveyed by Mitzenmacher (2009).",
+    "link": "https://en.wikipedia.org/wiki/Deletion_channel"
+   }
+  ],
+  "milestones": [
+   {
+    "year": 1928,
+    "title": "Measuring information",
+    "text": "Hartley proposes a logarithmic measure of information transmitted over a channel.",
+    "wiki": "Ralph_Hartley"
+   },
+   {
+    "year": 1948,
+    "title": "Information theory begins",
+    "text": "Shannon’s paper defines entropy and channel capacity and proves reliable communication is possible below capacity.",
+    "wiki": "A_Mathematical_Theory_of_Communication"
+   },
+   {
+    "year": 1949,
+    "title": "The sampling theorem",
+    "text": "Shannon publishes the theorem that band-limited signals are determined by regularly spaced samples.",
+    "wiki": "Nyquist–Shannon_sampling_theorem"
+   },
+   {
+    "year": 1950,
+    "title": "Error-correcting codes",
+    "text": "Hamming introduces codes that correct single bit errors automatically.",
+    "wiki": "Hamming_code"
+   },
+   {
+    "year": 1952,
+    "title": "Optimal prefix codes",
+    "text": "Huffman gives an algorithm for the shortest average-length prefix code.",
+    "wiki": "Huffman_coding"
+   },
+   {
+    "year": 1960,
+    "title": "Reed–Solomon codes",
+    "text": "Reed and Solomon introduce polynomial-based codes later used in CDs, QR codes and deep-space links.",
+    "wiki": "Reed–Solomon_error_correction"
+   },
+   {
+    "year": 1993,
+    "title": "Turbo codes",
+    "text": "Berrou, Glavieux and Thitimajshima show iterative decoding can approach Shannon capacity in practice.",
+    "wiki": "Turbo_code"
+   },
+   {
+    "year": 2006,
+    "title": "Compressed sensing",
+    "text": "Candès, Romberg and Tao, and Donoho, show sparse signals can be recovered from far fewer samples than classical theory demands.",
+    "wiki": "Compressed_sensing"
+   },
+   {
+    "year": 2009,
+    "title": "Polar codes",
+    "text": "Arıkan constructs the first explicit codes provably achieving capacity with efficient encoding and decoding.",
+    "wiki": "Polar_code_(coding_theory)"
+   }
+  ]
+ },
+ "biology": {
+  "name": "Mathematical biology",
+  "label": "arXiv q-bio.PE · Populations and evolution (MSC 92)",
+  "query": "cat:q-bio.PE",
+  "listing": "q-bio.PE",
+  "field": "mathematical biology: population dynamics, epidemiology, evolutionary theory, ecology and pattern formation",
+  "peopleNote": "Six researchers whose models of evolution, epidemics, ecology and development are widely used and who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Martin Nowak",
+    "wiki": "Martin_Nowak",
+    "arxiv": "au:\"Martin A. Nowak\"",
+    "area": "Evolutionary dynamics"
+   },
+   {
+    "name": "Simon Levin",
+    "wiki": "Simon_A._Levin",
+    "arxiv": "au:\"Simon A. Levin\"",
+    "area": "Theoretical ecology"
+   },
+   {
+    "name": "Lior Pachter",
+    "wiki": "Lior_Pachter",
+    "arxiv": "au:\"Lior Pachter\"",
+    "area": "Computational genomics"
+   },
+   {
+    "name": "Mark Newman",
+    "wiki": "Mark_Newman",
+    "arxiv": "au:\"Mark Newman\" AND cat:physics.soc-ph",
+    "area": "Networks & epidemics"
+   },
+   {
+    "name": "Philip Maini",
+    "wiki": "Philip_Maini",
+    "arxiv": "au:\"Philip Maini\"",
+    "area": "Pattern formation & cancer modelling"
+   },
+   {
+    "name": "Alan Perelson",
+    "wiki": "Alan_Perelson",
+    "arxiv": "au:\"Alan Perelson\"",
+    "area": "Viral dynamics & immunology"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "evolution-of-sex",
+    "title": "Why sex?",
+    "status": "open",
+    "q": "Why is sexual reproduction so common when asexual organisms can, in principle, grow twice as fast?",
+    "known": "Leading explanations include the Red Queen hypothesis (Van Valen, 1973; Hamilton, 1980) and the accumulation of harmful mutations in asexual lines (Muller’s ratchet, 1964). Which effects dominate in nature is still debated.",
+    "link": "https://en.wikipedia.org/wiki/Evolution_of_sexual_reproduction"
+   },
+   {
+    "id": "paradox-of-plankton",
+    "title": "The paradox of the plankton",
+    "status": "open",
+    "q": "How can so many plankton species coexist while competing for just a few resources?",
+    "known": "Hutchinson (1961) noted this contradicts the competitive exclusion principle. Proposed mechanisms include fluctuating environments and chaotic population dynamics (Huisman and Weissing, 1999), but no single explanation is accepted.",
+    "link": "https://en.wikipedia.org/wiki/Paradox_of_the_plankton"
+   },
+   {
+    "id": "neutral-biodiversity",
+    "title": "Neutral versus niche biodiversity",
+    "status": "open",
+    "q": "Are species abundance patterns explained mainly by chance births and deaths, or by species occupying different niches?",
+    "known": "Hubbell’s unified neutral theory (2001) reproduces many abundance curves while ignoring species differences. Distinguishing it from niche-based models with real data remains contested.",
+    "link": "https://en.wikipedia.org/wiki/Unified_neutral_theory_of_biodiversity"
+   },
+   {
+    "id": "evolution-of-cooperation",
+    "title": "How does cooperation evolve?",
+    "status": "open",
+    "q": "How does natural selection, which favours individuals, produce widespread cooperation among unrelated organisms?",
+    "known": "Kin selection (Hamilton, 1964), reciprocity (Trivers, 1971; Axelrod and Hamilton, 1981) and network structure all promote cooperation in models. Their relative importance in real populations is still argued over.",
+    "link": "https://en.wikipedia.org/wiki/Cooperation_(evolution)"
+   },
+   {
+    "id": "turing-patterns-in-vivo",
+    "title": "Turing patterns in living tissue",
+    "status": "open",
+    "q": "How many biological patterns, such as stripes, spots and digits, are really produced by Turing’s reaction–diffusion mechanism?",
+    "known": "Turing (1952) showed diffusing chemicals can create patterns spontaneously, and experiments support it in cases such as digit patterning (Sheth et al., 2012). For most patterns the responsible molecules and mechanism remain unconfirmed.",
+    "link": "https://en.wikipedia.org/wiki/Turing_pattern"
+   },
+   {
+    "id": "abiogenesis",
+    "title": "The origin of life",
+    "status": "open",
+    "q": "How did self-replicating, evolving life first arise from non-living chemistry?",
+    "known": "The Miller–Urey experiment (1952) produced amino acids from simple chemistry, and the RNA world hypothesis (Gilbert, 1986) proposes RNA as the first replicator. No continuous pathway has been demonstrated.",
+    "link": "https://en.wikipedia.org/wiki/Abiogenesis"
+   }
+  ],
+  "milestones": [
+   {
+    "year": 1798,
+    "title": "Populations outrun resources",
+    "text": "Malthus argues populations grow geometrically while food supplies grow only arithmetically.",
+    "wiki": "An_Essay_on_the_Principle_of_Population"
+   },
+   {
+    "year": 1838,
+    "title": "Logistic growth",
+    "text": "Verhulst proposes the logistic equation, in which growth slows as a population nears its carrying capacity.",
+    "wiki": "Logistic_function"
+   },
+   {
+    "year": 1908,
+    "title": "Genetic equilibrium",
+    "text": "Hardy and Weinberg independently show allele frequencies stay constant without evolutionary forces.",
+    "wiki": "Hardy–Weinberg_principle"
+   },
+   {
+    "year": 1926,
+    "title": "Predators and prey",
+    "text": "Volterra, following Lotka (1925), models oscillating predator and prey populations.",
+    "wiki": "Lotka–Volterra_equations"
+   },
+   {
+    "year": 1927,
+    "title": "Epidemic thresholds",
+    "text": "Kermack and McKendrick’s compartmental model shows an epidemic needs a threshold density of susceptibles.",
+    "wiki": "Compartmental_models_in_epidemiology"
+   },
+   {
+    "year": 1952,
+    "title": "Morphogenesis",
+    "text": "Turing shows reacting, diffusing chemicals can form stable patterns from uniformity.",
+    "wiki": "The_Chemical_Basis_of_Morphogenesis"
+   },
+   {
+    "year": 1952,
+    "title": "Modelling the nerve impulse",
+    "text": "Hodgkin and Huxley model the action potential with nonlinear differential equations.",
+    "wiki": "Hodgkin–Huxley_model"
+   },
+   {
+    "year": 1968,
+    "title": "Neutral molecular evolution",
+    "text": "Kimura argues most molecular changes are selectively neutral and fixed by random drift.",
+    "wiki": "Neutral_theory_of_molecular_evolution"
+   }
+  ]
+ },
+ "mechanics": {
+  "name": "Classical mechanics",
+  "label": "arXiv physics.class-ph · Classical physics (MSC 70)",
+  "query": "cat:physics.class-ph",
+  "listing": "physics.class-ph",
+  "field": "classical mechanics: Newtonian, Lagrangian and Hamiltonian dynamics, the n-body problem, integrability, chaos and stability",
+  "peopleNote": "Six researchers working on the mathematical core of classical mechanics, from the n-body problem to Hamiltonian chaos, who publish on arXiv.",
+  "people": [
+   {
+    "name": "Vadim Kaloshin",
+    "wiki": "Vadim_Kaloshin",
+    "arxiv": "au:\"Vadim Kaloshin\"",
+    "area": "Hamiltonian dynamics & billiards"
+   },
+   {
+    "name": "Darryl Holm",
+    "wiki": "Darryl_Holm",
+    "arxiv": "au:\"Darryl Holm\"",
+    "area": "Geometric mechanics"
+   },
+   {
+    "name": "Lai-Sang Young",
+    "wiki": "Lai-Sang_Young",
+    "arxiv": "au:\"Lai-Sang Young\"",
+    "area": "Chaotic dynamics"
+   },
+   {
+    "name": "Alain Chenciner",
+    "wiki": "Alain_Chenciner",
+    "arxiv": "au:\"Alain Chenciner\"",
+    "area": "Celestial mechanics & choreographies"
+   },
+   {
+    "name": "Steven Strogatz",
+    "wiki": "Steven_Strogatz",
+    "arxiv": "au:\"Steven Strogatz\"",
+    "area": "Nonlinear dynamics & synchronisation"
+   },
+   {
+    "name": "Amie Wilkinson",
+    "wiki": "Amie_Wilkinson",
+    "arxiv": "au:\"Amie Wilkinson\"",
+    "area": "Smooth ergodic theory"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "arnold-diffusion",
+    "title": "Is Arnold diffusion typical?",
+    "status": "open",
+    "q": "In a nearly integrable Hamiltonian system with three or more degrees of freedom, do generic small perturbations allow orbits to drift a long way?",
+    "known": "Arnold (1964) built the first example of such drift. Major progress for typical systems has come from Mather’s variational methods and Kaloshin and Zhang’s work, but a complete proof of genericity is still not settled.",
+    "link": "https://en.wikipedia.org/wiki/Arnold_diffusion"
+   },
+   {
+    "id": "central-configurations",
+    "title": "Finiteness of central configurations",
+    "status": "open",
+    "q": "For n bodies with given masses, are there only finitely many shapes that rotate rigidly under gravity (central configurations)?",
+    "known": "This is Smale’s sixth problem for the 21st century. It is proved for four bodies (Hampton and Moeckel, 2006) and for generic masses with five bodies (Albouy and Kaloshin, 2012), and open beyond.",
+    "link": "https://en.wikipedia.org/wiki/Smale%27s_problems"
+   },
+   {
+    "id": "birkhoff-billiards",
+    "title": "Birkhoff’s billiards conjecture",
+    "status": "open",
+    "q": "Are ellipses the only smooth convex tables on which billiards is integrable?",
+    "known": "Avila, De Simoi and Kaloshin (2016) proved a local version near circles, and Kaloshin and Sorrentino (2018) extended it to tables near ellipses. The full conjecture is open.",
+    "link": "https://en.wikipedia.org/wiki/Dynamical_billiards"
+   },
+   {
+    "id": "standard-map-chaos",
+    "title": "Chaos in the standard map",
+    "status": "open",
+    "q": "Does Chirikov’s standard map have a chaotic region of positive area for large kicks?",
+    "known": "Numerical experiments show a large chaotic sea, but proving positive measure (positive metric entropy) is a long-standing open problem in smooth dynamics. Stable islands are known to persist for many parameter values.",
+    "link": "https://en.wikipedia.org/wiki/Standard_map"
+   },
+   {
+    "id": "saari-conjecture",
+    "title": "Saari’s conjecture",
+    "status": "open",
+    "q": "If the moment of inertia of an n-body system stays constant, must the bodies move as a rigidly rotating configuration?",
+    "known": "Saari conjectured this in 1970. Moeckel proved it for three bodies with a computer-assisted argument (2005); the general case remains open.",
+    "link": "https://en.wikipedia.org/wiki/N-body_problem"
+   },
+   {
+    "id": "weinstein-conjecture",
+    "title": "The Weinstein conjecture",
+    "status": "open",
+    "q": "Does every compact, suitably convex energy level of a Hamiltonian system carry at least one periodic orbit?",
+    "known": "Weinstein (1978) conjectured this for contact hypersurfaces after Rabinowitz’s results. Taubes proved it in dimension three (2007); it is open in higher dimensions.",
+    "link": "https://en.wikipedia.org/wiki/Weinstein_conjecture"
+   }
+  ],
+  "milestones": [
+   {
+    "year": 1687,
+    "title": "Newton’s laws",
+    "text": "The Principia sets out the laws of motion and universal gravitation.",
+    "wiki": "Philosophiæ_Naturalis_Principia_Mathematica"
+   },
+   {
+    "year": 1788,
+    "title": "Analytical mechanics",
+    "text": "Lagrange reformulates mechanics through generalised coordinates and energy, without diagrams.",
+    "wiki": "Lagrangian_mechanics"
+   },
+   {
+    "year": 1834,
+    "title": "Hamilton’s mechanics",
+    "text": "Hamilton recasts dynamics as first-order equations in positions and momenta.",
+    "wiki": "Hamiltonian_mechanics"
+   },
+   {
+    "year": 1890,
+    "title": "Chaos in the three-body problem",
+    "text": "Poincaré’s prize memoir uncovers homoclinic tangles, the first glimpse of chaos.",
+    "wiki": "Three-body_problem"
+   },
+   {
+    "year": 1918,
+    "title": "Symmetry and conservation",
+    "text": "Noether proves that each continuous symmetry yields a conserved quantity.",
+    "wiki": "Noether's_theorem"
+   },
+   {
+    "year": 1954,
+    "title": "KAM theory",
+    "text": "Kolmogorov announces that most quasi-periodic motions survive small perturbations, later proved by Arnold and Moser.",
+    "wiki": "Kolmogorov–Arnold–Moser_theorem"
+   },
+   {
+    "year": 2000,
+    "title": "The figure-eight orbit",
+    "text": "Chenciner and Montgomery prove three equal masses can chase each other around a figure-eight.",
+    "wiki": "Three-body_problem"
+   }
+  ]
+ },
+ "continuum": {
+  "name": "Elasticity & continuum mechanics",
+  "label": "arXiv cond-mat.soft · Elasticity & continuum mechanics (MSC 74)",
+  "query": "(cat:cond-mat.soft OR cat:physics.class-ph OR cat:math.AP) AND abs:elasticity",
+  "listing": "cond-mat.soft",
+  "field": "elasticity and continuum mechanics: nonlinear elasticity, fracture, plasticity, thin structures, soft matter and the calculus of variations for materials",
+  "peopleNote": "Six researchers who shaped the mathematics and physics of deformable solids, from nonlinear elasticity and microstructure to thin sheets and metamaterials.",
+  "people": [
+   {
+    "name": "John M. Ball",
+    "wiki": "John_M._Ball",
+    "arxiv": "au:\"John M. Ball\"",
+    "area": "Nonlinear elasticity"
+   },
+   {
+    "name": "L. Mahadevan",
+    "wiki": "L._Mahadevan",
+    "arxiv": "au:\"L. Mahadevan\"",
+    "area": "Soft matter & thin sheets"
+   },
+   {
+    "name": "Stefan Müller",
+    "wiki": "Stefan_Müller_(mathematician)",
+    "arxiv": "au:\"Stefan Muller\" AND cat:math.AP",
+    "area": "Calculus of variations & microstructure"
+   },
+   {
+    "name": "Irene Fonseca",
+    "wiki": "Irene_Fonseca",
+    "arxiv": "au:\"Irene Fonseca\"",
+    "area": "Calculus of variations for materials"
+   },
+   {
+    "name": "Katia Bertoldi",
+    "wiki": "Katia_Bertoldi",
+    "arxiv": "au:\"Katia Bertoldi\"",
+    "area": "Mechanical metamaterials"
+   },
+   {
+    "name": "Thomas A. Witten",
+    "wiki": "Thomas_A._Witten",
+    "arxiv": "au:\"Thomas A. Witten\" AND cat:cond-mat.soft",
+    "area": "Crumpling & soft matter"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "elastic-regularity",
+    "title": "Do elastic minimisers satisfy the equilibrium equations?",
+    "status": "open",
+    "q": "Do energy-minimising deformations in nonlinear elasticity solve the equations of equilibrium, and how smooth are they?",
+    "known": "Ball (1977) proved minimisers exist for polyconvex materials, but whether they satisfy the Euler–Lagrange equations and are smooth is largely open. Ball’s survey of open problems in elasticity (2002) lists these among the central questions.",
+    "link": "https://en.wikipedia.org/wiki/Hyperelastic_material"
+   },
+   {
+    "id": "morrey-2x2",
+    "title": "Morrey’s conjecture in two dimensions",
+    "status": "open",
+    "q": "For maps between planes, is every rank-one convex energy also quasiconvex?",
+    "known": "Šverák (1992) showed rank-one convexity does not imply quasiconvexity when the target has dimension three or more. The planar 2×2 case, important for two-dimensional elasticity, remains open.",
+    "link": "https://en.wikipedia.org/wiki/Quasiconvexity_(calculus_of_variations)"
+   },
+   {
+    "id": "crack-paths",
+    "title": "Predicting crack paths",
+    "status": "open",
+    "q": "Can the path, branching and speed of a running crack be predicted from first principles?",
+    "known": "Griffith (1921) related crack growth to surface energy, and Francfort and Marigo (1998) recast fracture as energy minimisation. A complete theory of dynamic branching and path selection is still lacking.",
+    "link": "https://en.wikipedia.org/wiki/Fracture_mechanics"
+   },
+   {
+    "id": "plasticity-from-dislocations",
+    "title": "Plasticity from dislocations",
+    "status": "open",
+    "q": "Can the laws of plastic flow in metals be derived from the motion of large numbers of dislocations?",
+    "known": "Dislocations were proposed as the carriers of plasticity in 1934 by Taylor, Orowan and Polanyi. Rigorous passage from many interacting dislocations to macroscopic plasticity laws is known only in simplified settings.",
+    "link": "https://en.wikipedia.org/wiki/Plasticity_(physics)"
+   },
+   {
+    "id": "jamming-transition",
+    "title": "The jamming transition",
+    "status": "open",
+    "q": "What is the nature of the transition at which a loose granular or foam-like material becomes rigid?",
+    "known": "Liu and Nagel (1998) proposed a unifying jamming phase diagram, and simulations show striking scaling near the transition. A complete theory linking it to glasses remains open.",
+    "link": "https://en.wikipedia.org/wiki/Jamming_(physics)"
+   },
+   {
+    "id": "crumpling",
+    "title": "How does a thin sheet crumple?",
+    "status": "open",
+    "q": "What governs the network of ridges and folds when a thin sheet is crushed, and how much energy does it store?",
+    "known": "Lobkovsky, Witten and colleagues (1995) derived scaling laws for single stretching ridges. Predicting a whole crumpled sheet’s structure and its slow relaxation remains open.",
+    "link": "https://en.wikipedia.org/wiki/Crumpling"
+   }
+  ],
+  "milestones": [
+   {
+    "year": 1638,
+    "title": "Strength of beams",
+    "text": "Galileo’s Two New Sciences analyses the breaking strength of beams.",
+    "wiki": "Two_New_Sciences"
+   },
+   {
+    "year": 1678,
+    "title": "Hooke’s law",
+    "text": "Hooke publishes that a spring’s extension is proportional to the force applied.",
+    "wiki": "Hooke's_law"
+   },
+   {
+    "year": 1757,
+    "title": "Buckling",
+    "text": "Euler derives the critical load at which a slender column suddenly bows.",
+    "wiki": "Euler's_critical_load"
+   },
+   {
+    "year": 1822,
+    "title": "Stress",
+    "text": "Cauchy introduces the stress tensor, describing internal forces across any surface.",
+    "wiki": "Cauchy_stress_tensor"
+   },
+   {
+    "year": 1921,
+    "title": "Fracture as energy balance",
+    "text": "Griffith explains brittle fracture by balancing released elastic energy against new surface energy.",
+    "wiki": "Fracture_mechanics"
+   },
+   {
+    "year": 1934,
+    "title": "Dislocations",
+    "text": "Taylor, Orowan and Polanyi independently propose dislocations to explain why metals deform easily.",
+    "wiki": "Dislocation"
+   },
+   {
+    "year": 1957,
+    "title": "Inclusions",
+    "text": "Eshelby shows an ellipsoidal inclusion in an elastic body has uniform strain, a cornerstone of composite theory.",
+    "wiki": "Eshelby's_inclusion"
+   }
+  ]
+ },
+ "fluids": {
+  "name": "Fluid mechanics",
+  "label": "arXiv physics.flu-dyn · Fluid dynamics (MSC 76)",
+  "query": "cat:physics.flu-dyn",
+  "listing": "physics.flu-dyn",
+  "field": "fluid mechanics: the Navier–Stokes and Euler equations, turbulence, transition, boundary layers, multiphase and geophysical flows",
+  "peopleNote": "Six researchers spanning turbulence, singularities of the fluid equations, interfaces and microfluidics who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Detlef Lohse",
+    "wiki": "Detlef_Lohse",
+    "arxiv": "au:\"Detlef Lohse\"",
+    "area": "Turbulence & multiphase flow"
+   },
+   {
+    "name": "Thomas Y. Hou",
+    "wiki": "Thomas_Yizhao_Hou",
+    "arxiv": "au:\"Thomas Y. Hou\"",
+    "area": "Singularities of the Euler equations"
+   },
+   {
+    "name": "Katepalli Sreenivasan",
+    "wiki": "Katepalli_R._Sreenivasan",
+    "arxiv": "au:\"Sreenivasan\" AND cat:physics.flu-dyn",
+    "area": "Turbulence experiments"
+   },
+   {
+    "name": "Howard A. Stone",
+    "wiki": "Howard_A._Stone",
+    "arxiv": "au:\"Howard A. Stone\"",
+    "area": "Microfluidics & interfaces"
+   },
+   {
+    "name": "Tarek Elgindi",
+    "wiki": "Tarek_Elgindi",
+    "arxiv": "au:\"Tarek Elgindi\"",
+    "area": "Singularities of the Euler equations"
+   },
+   {
+    "name": "Bérengère Dubrulle",
+    "wiki": "Bérengère_Dubrulle",
+    "arxiv": "au:\"Berengere Dubrulle\"",
+    "area": "Turbulence & dissipation"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "navier-stokes-smoothness",
+    "title": "Navier–Stokes existence and smoothness",
+    "status": "open",
+    "q": "Do smooth solutions of the three-dimensional Navier–Stokes equations always stay smooth, or can they blow up in finite time?",
+    "known": "Leray (1934) proved weak solutions exist for all time, and Caffarelli, Kohn and Nirenberg (1982) showed any singular set is very small. Global smoothness is one of the Clay Millennium Prize problems.",
+    "link": "https://en.wikipedia.org/wiki/Navier%E2%80%93Stokes_existence_and_smoothness"
+   },
+   {
+    "id": "euler-blow-up",
+    "title": "Blow-up for the Euler equations",
+    "status": "open",
+    "q": "Can a smooth flow of an ideal fluid in all of three-dimensional space develop a singularity in finite time?",
+    "known": "Elgindi (2021) proved blow-up for slightly rough initial data, and Chen and Hou (2022) gave a computer-assisted proof for smooth data in a cylinder with a boundary. Smooth data without boundaries remain open.",
+    "link": "https://en.wikipedia.org/wiki/Euler_equations_(fluid_dynamics)"
+   },
+   {
+    "id": "anomalous-dissipation",
+    "title": "Turbulence from the equations",
+    "status": "open",
+    "q": "Can Kolmogorov’s scaling laws and the persistence of energy dissipation as viscosity vanishes be derived from the Navier–Stokes equations?",
+    "known": "Kolmogorov (1941) predicted the energy spectrum from scaling arguments, later corrected for intermittency. Isett (2018) proved Onsager’s conjecture for the Euler equations, but deriving turbulence statistics from Navier–Stokes remains open.",
+    "link": "https://en.wikipedia.org/wiki/Turbulence"
+   },
+   {
+    "id": "pipe-flow-transition",
+    "title": "Transition to turbulence in pipes",
+    "status": "open",
+    "q": "Why and how does flow in a pipe become turbulent, when smooth pipe flow is stable to small disturbances at every speed?",
+    "known": "Reynolds (1883) observed the transition experimentally. Avila et al. (2011) located the onset of sustained turbulence near Reynolds number 2040 through the competition of puff decay and splitting, but a mathematical theory is incomplete.",
+    "link": "https://en.wikipedia.org/wiki/Laminar%E2%80%93turbulent_transition"
+   },
+   {
+    "id": "couette-threshold",
+    "title": "How big a push destabilises shear flow?",
+    "status": "open",
+    "q": "How large must a disturbance be, as a function of Reynolds number, to make plane Couette flow turbulent?",
+    "known": "Couette flow is linearly stable at all Reynolds numbers yet becomes turbulent in experiments. Bedrossian, Germain and Masmoudi (2017 onwards) proved stability thresholds, but the sharp exponent is still unknown.",
+    "link": "https://en.wikipedia.org/wiki/Couette_flow"
+   },
+   {
+    "id": "sqg-singularity",
+    "title": "Singularities in surface quasi-geostrophic flow",
+    "status": "open",
+    "q": "Can smooth solutions of the surface quasi-geostrophic equation, a model of atmospheric fronts, form singularities in finite time?",
+    "known": "Constantin, Majda and Tabak (1994) proposed the equation as a two-dimensional analogue of three-dimensional Euler. Global regularity for smooth data remains open.",
+    "link": "https://en.wikipedia.org/wiki/Quasi-geostrophic_equations"
+   }
+  ],
+  "milestones": [
+   {
+    "year": 1738,
+    "title": "Bernoulli’s principle",
+    "text": "Daniel Bernoulli’s Hydrodynamica links fluid speed and pressure.",
+    "wiki": "Bernoulli's_principle"
+   },
+   {
+    "year": 1757,
+    "title": "Equations of ideal fluids",
+    "text": "Euler writes down the partial differential equations of inviscid flow.",
+    "wiki": "Euler_equations_(fluid_dynamics)"
+   },
+   {
+    "year": 1845,
+    "title": "Viscous flow",
+    "text": "Stokes completes the Navier–Stokes equations, begun by Navier in 1822, adding internal friction.",
+    "wiki": "Navier–Stokes_equations"
+   },
+   {
+    "year": 1883,
+    "title": "Reynolds’ experiment",
+    "text": "Reynolds shows the transition to turbulence in pipes depends on a single dimensionless number.",
+    "wiki": "Reynolds_number"
+   },
+   {
+    "year": 1904,
+    "title": "Boundary layers",
+    "text": "Prandtl shows viscosity matters in a thin layer next to surfaces, explaining drag and separation.",
+    "wiki": "Boundary_layer"
+   },
+   {
+    "year": 1941,
+    "title": "Kolmogorov’s theory",
+    "text": "Kolmogorov predicts the universal energy spectrum of fully developed turbulence.",
+    "wiki": "Turbulence"
+   },
+   {
+    "year": 2018,
+    "title": "Onsager’s conjecture",
+    "text": "Isett proves rough Euler flows can dissipate energy, confirming Onsager’s 1949 prediction.",
+    "wiki": "Turbulence"
+   }
+  ]
+ },
+ "electromagnetism": {
+  "name": "Electromagnetism & optics",
+  "label": "arXiv physics.optics · Optics (MSC 78)",
+  "query": "cat:physics.optics",
+  "listing": "physics.optics",
+  "field": "electromagnetism and optics: Maxwell’s equations, light–matter interaction, photonics, metamaterials, lasers and ultrafast optics",
+  "peopleNote": "Six researchers who opened new areas of optics, from metamaterials and metasurfaces to attosecond pulses and topological photonics, and who publish on arXiv.",
+  "people": [
+   {
+    "name": "John Pendry",
+    "wiki": "John_Pendry",
+    "arxiv": "au:\"John Pendry\"",
+    "area": "Metamaterials & cloaking"
+   },
+   {
+    "name": "Federico Capasso",
+    "wiki": "Federico_Capasso",
+    "arxiv": "au:\"Federico Capasso\"",
+    "area": "Metasurfaces & quantum cascade lasers"
+   },
+   {
+    "name": "Michal Lipson",
+    "wiki": "Michal_Lipson",
+    "arxiv": "au:\"Michal Lipson\"",
+    "area": "Silicon photonics"
+   },
+   {
+    "name": "Ursula Keller",
+    "wiki": "Ursula_Keller",
+    "arxiv": "au:\"Ursula Keller\"",
+    "area": "Ultrafast lasers"
+   },
+   {
+    "name": "Paul Corkum",
+    "wiki": "Paul_Corkum",
+    "arxiv": "au:\"Paul Corkum\"",
+    "area": "Attosecond science"
+   },
+   {
+    "name": "Mordechai Segev",
+    "wiki": "Mordechai_Segev",
+    "arxiv": "au:\"Mordechai Segev\"",
+    "area": "Nonlinear & topological photonics"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "magnetic-monopoles",
+    "title": "Do magnetic monopoles exist?",
+    "status": "open",
+    "q": "Are there particles carrying an isolated north or south magnetic pole?",
+    "known": "Dirac (1931) showed a single monopole anywhere would explain why electric charge is quantised, and many grand unified theories predict them. Despite searches, including a single unconfirmed event (Cabrera, 1982), none has been found.",
+    "link": "https://en.wikipedia.org/wiki/Magnetic_monopole"
+   },
+   {
+    "id": "schwinger-effect",
+    "title": "Creating matter from a strong electric field",
+    "status": "open",
+    "q": "Can a static electric field strong enough tear electron–positron pairs out of the vacuum, as Schwinger predicted in 1951?",
+    "known": "The required field, about 10¹⁸ volts per metre, is far beyond current lasers. The effect has not been observed directly, though analogues have been studied in graphene and other systems.",
+    "link": "https://en.wikipedia.org/wiki/Schwinger_effect"
+   },
+   {
+    "id": "radiation-reaction",
+    "title": "Self-force on a point charge",
+    "status": "open",
+    "q": "Is there a consistent classical description of how an accelerating point charge is pushed back by its own radiation?",
+    "known": "The Abraham–Lorentz–Dirac equation (1938 form by Dirac) admits runaway and acausal solutions. Reduced-order fixes such as the Landau–Lifshitz equation work in practice, and laser experiments now probe the regime, but no fully satisfactory classical theory exists.",
+    "link": "https://en.wikipedia.org/wiki/Abraham%E2%80%93Lorentz_force"
+   },
+   {
+    "id": "abraham-minkowski",
+    "title": "The momentum of light in matter",
+    "status": "open",
+    "q": "When light enters glass, does its momentum increase (Minkowski, 1908) or decrease (Abraham, 1909)?",
+    "known": "Barnett (2010) argued both are correct, as kinetic and canonical momenta. Experiments still disagree on interpretation, and the debate continues.",
+    "link": "https://en.wikipedia.org/wiki/Abraham%E2%80%93Minkowski_controversy"
+   },
+   {
+    "id": "calderon-problem",
+    "title": "The Calderón problem",
+    "status": "open",
+    "q": "Can the electrical conductivity inside a body always be recovered from voltage and current measurements on its surface?",
+    "known": "Calderón (1980) posed the problem. Sylvester and Uhlmann (1987) solved it for smooth conductivities in three or more dimensions and Astala and Päivärinta (2006) for rough ones in the plane; rough and anisotropic cases in higher dimensions remain open.",
+    "link": "https://en.wikipedia.org/wiki/Electrical_impedance_tomography"
+   },
+   {
+    "id": "photon-mass",
+    "title": "Is the photon exactly massless?",
+    "status": "open",
+    "q": "Is the mass of the photon exactly zero, or just very small?",
+    "known": "Maxwell’s equations assume zero mass, and experiments bound it below about 10⁻¹⁸ eV. A zero mass cannot be proved by measurement, only bounded ever more tightly.",
+    "link": "https://en.wikipedia.org/wiki/Photon"
+   }
+  ],
+  "milestones": [
+   {
+    "year": 1785,
+    "title": "Coulomb’s law",
+    "text": "Coulomb measures the inverse-square force between electric charges.",
+    "wiki": "Coulomb's_law"
+   },
+   {
+    "year": 1820,
+    "title": "Electricity makes magnetism",
+    "text": "Ørsted sees a compass needle deflected by an electric current.",
+    "wiki": "Hans_Christian_Ørsted"
+   },
+   {
+    "year": 1831,
+    "title": "Induction",
+    "text": "Faraday finds that a changing magnetic field drives a current.",
+    "wiki": "Faraday's_law_of_induction"
+   },
+   {
+    "year": 1865,
+    "title": "Maxwell’s theory",
+    "text": "Maxwell unifies electricity and magnetism and identifies light as an electromagnetic wave.",
+    "wiki": "A_Dynamical_Theory_of_the_Electromagnetic_Field"
+   },
+   {
+    "year": 1887,
+    "title": "Radio waves",
+    "text": "Hertz generates and detects electromagnetic waves, confirming Maxwell.",
+    "wiki": "Heinrich_Hertz"
+   },
+   {
+    "year": 1960,
+    "title": "The laser",
+    "text": "Maiman builds the first working laser, using a ruby crystal.",
+    "wiki": "Laser"
+   },
+   {
+    "year": 2000,
+    "title": "Negative refraction",
+    "text": "Smith and colleagues build a metamaterial with negative refractive index, following Pendry’s and Veselago’s ideas.",
+    "wiki": "Metamaterial"
+   }
+  ]
+ },
+ "thermodynamics": {
+  "name": "Thermodynamics",
+  "label": "arXiv cond-mat.stat-mech · Thermodynamics (MSC 80)",
+  "query": "cat:cond-mat.stat-mech AND abs:thermodynamics",
+  "listing": "cond-mat.stat-mech",
+  "field": "thermodynamics: entropy and the second law, non-equilibrium and stochastic thermodynamics, the thermodynamics of information and quantum thermodynamics",
+  "peopleNote": "Six researchers who reshaped thermodynamics, from fluctuation theorems and axiomatic foundations to quantum and biological thermodynamics.",
+  "people": [
+   {
+    "name": "Christopher Jarzynski",
+    "wiki": "Christopher_Jarzynski",
+    "arxiv": "au:\"Christopher Jarzynski\"",
+    "area": "Fluctuation theorems"
+   },
+   {
+    "name": "Gavin Crooks",
+    "wiki": "Gavin_Crooks",
+    "arxiv": "au:\"Gavin Crooks\"",
+    "area": "Fluctuation theorems & stochastic thermodynamics"
+   },
+   {
+    "name": "Jeremy England",
+    "wiki": "Jeremy_England",
+    "arxiv": "au:\"Jeremy England\"",
+    "area": "Dissipation & self-organisation"
+   },
+   {
+    "name": "Sandu Popescu",
+    "wiki": "Sandu_Popescu",
+    "arxiv": "au:\"Sandu Popescu\"",
+    "area": "Quantum thermodynamics"
+   },
+   {
+    "name": "Elliott H. Lieb",
+    "wiki": "Elliott_H._Lieb",
+    "arxiv": "au:\"Elliott H. Lieb\"",
+    "area": "Mathematical foundations of entropy"
+   },
+   {
+    "name": "Jakob Yngvason",
+    "wiki": "Jakob_Yngvason",
+    "arxiv": "au:\"Jakob Yngvason\"",
+    "area": "Axiomatic thermodynamics"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "arrow-of-time",
+    "title": "The arrow of time",
+    "status": "open",
+    "q": "Why does entropy increase towards the future, when the underlying laws of motion work equally well backwards?",
+    "known": "Loschmidt (1876) raised the objection to Boltzmann’s H-theorem. A common answer appeals to a very low-entropy early universe (the past hypothesis), but whether this fully explains the arrow of time is still debated.",
+    "link": "https://en.wikipedia.org/wiki/Loschmidt%27s_paradox"
+   },
+   {
+    "id": "nonequilibrium-principle",
+    "title": "A variational principle far from equilibrium",
+    "status": "open",
+    "q": "Is there a general principle, like maximising entropy at equilibrium, that selects the steady states of systems driven far from equilibrium?",
+    "known": "Onsager (1931) and Prigogine’s minimum entropy production cover only near-equilibrium cases. Proposed principles such as maximum entropy production have known counterexamples, and no general principle is accepted.",
+    "link": "https://en.wikipedia.org/wiki/Non-equilibrium_thermodynamics"
+   },
+   {
+    "id": "glass-transition",
+    "title": "Is the glass transition a true phase transition?",
+    "status": "open",
+    "q": "When a liquid cools into a glass, is there an underlying thermodynamic phase transition, or is it purely a slowing-down of dynamics?",
+    "known": "Kauzmann (1948) noted that extrapolated liquid entropy would fall below the crystal’s, suggesting an ideal glass transition. Random first-order theory supports one, but no direct evidence settles the question.",
+    "link": "https://en.wikipedia.org/wiki/Glass_transition"
+   },
+   {
+    "id": "eth-proof",
+    "title": "Why isolated quantum systems thermalise",
+    "status": "open",
+    "q": "Why do closed quantum many-body systems, evolving unitarily, come to look thermal?",
+    "known": "The eigenstate thermalisation hypothesis (Deutsch, 1991; Srednicki, 1994) explains this and is strongly supported numerically. It has not been proved for realistic interacting systems, and some systems such as integrable ones evade it.",
+    "link": "https://en.wikipedia.org/wiki/Eigenstate_thermalization_hypothesis"
+   },
+   {
+    "id": "finite-time-landauer",
+    "title": "The cost of computing quickly",
+    "status": "open",
+    "q": "What is the minimum heat that must be dissipated to erase or process information in a finite time?",
+    "known": "Landauer (1961) showed erasing one bit costs at least kT ln 2 in the slow limit, confirmed experimentally by Bérut et al. (2012). Tight general bounds for fast, realistic computation are still being established.",
+    "link": "https://en.wikipedia.org/wiki/Landauer%27s_principle"
+   },
+   {
+    "id": "negative-temperature",
+    "title": "Do negative temperatures make sense?",
+    "status": "open",
+    "q": "Are the negative absolute temperatures reported in spin and cold-atom systems genuine thermodynamic temperatures?",
+    "known": "Purcell and Pound (1951) observed population inversion in nuclear spins, and Braun et al. (2013) produced it for atomic motion. Dunkel and Hilbert (2014) argued the Gibbs entropy forbids negative temperatures, and the debate is unresolved.",
+    "link": "https://en.wikipedia.org/wiki/Negative_temperature"
+   }
+  ],
+  "milestones": [
+   {
+    "year": 1824,
+    "title": "Heat engines",
+    "text": "Carnot shows the efficiency of an ideal heat engine depends only on its two temperatures.",
+    "wiki": "Reflections_on_the_Motive_Power_of_Fire"
+   },
+   {
+    "year": 1845,
+    "title": "Heat is energy",
+    "text": "Joule measures the mechanical equivalent of heat.",
+    "wiki": "Mechanical_equivalent_of_heat"
+   },
+   {
+    "year": 1850,
+    "title": "The second law",
+    "text": "Clausius states that heat does not flow spontaneously from cold to hot.",
+    "wiki": "Rudolf_Clausius"
+   },
+   {
+    "year": 1865,
+    "title": "Entropy",
+    "text": "Clausius names entropy and states that the entropy of the universe tends to a maximum.",
+    "wiki": "Entropy"
+   },
+   {
+    "year": 1876,
+    "title": "Chemical thermodynamics",
+    "text": "Gibbs publishes his work on the equilibrium of heterogeneous substances.",
+    "wiki": "Josiah_Willard_Gibbs"
+   },
+   {
+    "year": 1906,
+    "title": "The third law",
+    "text": "Nernst proposes his heat theorem on entropy changes near absolute zero.",
+    "wiki": "Third_law_of_thermodynamics"
+   },
+   {
+    "year": 1931,
+    "title": "Reciprocal relations",
+    "text": "Onsager proves symmetry relations between coupled flows near equilibrium.",
+    "wiki": "Onsager_reciprocal_relations"
+   },
+   {
+    "year": 1961,
+    "title": "Information has a cost",
+    "text": "Landauer argues erasing a bit must dissipate at least kT ln 2 of heat.",
+    "wiki": "Landauer's_principle"
+   },
+   {
+    "year": 1997,
+    "title": "Fluctuation theorems",
+    "text": "Jarzynski derives an exact equality linking non-equilibrium work to free-energy differences.",
+    "wiki": "Jarzynski_equality"
+   }
+  ]
+ },
+ "quantum": {
+  "name": "Quantum theory",
+  "label": "arXiv quant-ph · Quantum physics (MSC 81)",
+  "query": "cat:quant-ph",
+  "listing": "quant-ph",
+  "field": "quantum theory: foundations, quantum information and computation, quantum many-body physics and mathematical quantum mechanics",
+  "peopleNote": "Six researchers who founded and shaped quantum computing and quantum information and who remain active on arXiv.",
+  "people": [
+   {
+    "name": "John Preskill",
+    "wiki": "John_Preskill",
+    "arxiv": "au:\"John Preskill\"",
+    "area": "Quantum error correction & computing"
+   },
+   {
+    "name": "Peter Shor",
+    "wiki": "Peter_Shor",
+    "arxiv": "au:\"Peter Shor\"",
+    "area": "Quantum algorithms"
+   },
+   {
+    "name": "Scott Aaronson",
+    "wiki": "Scott_Aaronson",
+    "arxiv": "au:\"Scott Aaronson\"",
+    "area": "Quantum complexity theory"
+   },
+   {
+    "name": "Dorit Aharonov",
+    "wiki": "Dorit_Aharonov",
+    "arxiv": "au:\"Dorit Aharonov\"",
+    "area": "Quantum complexity & fault tolerance"
+   },
+   {
+    "name": "Umesh Vazirani",
+    "wiki": "Umesh_Vazirani",
+    "arxiv": "au:\"Umesh Vazirani\"",
+    "area": "Quantum computation & cryptography"
+   },
+   {
+    "name": "Ignacio Cirac",
+    "wiki": "Juan_Ignacio_Cirac",
+    "arxiv": "au:\"Ignacio Cirac\"",
+    "area": "Quantum simulation & many-body physics"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "measurement-problem",
+    "title": "The measurement problem",
+    "status": "open",
+    "q": "Why does measuring a quantum system give one definite result, when the Schrödinger equation alone predicts a superposition of all outcomes?",
+    "known": "Decoherence theory (Zeh, 1970; Zurek, 1981) explains why superpositions become unobservable, but not why one outcome occurs. Interpretations such as Copenhagen, many-worlds, pilot-wave and collapse models still compete.",
+    "link": "https://en.wikipedia.org/wiki/Measurement_problem"
+   },
+   {
+    "id": "yang-mills-mass-gap",
+    "title": "Yang–Mills existence and mass gap",
+    "status": "open",
+    "q": "Does quantum Yang–Mills theory exist rigorously in four dimensions, and do its lightest particles have positive mass?",
+    "known": "The theory underlies the strong force and lattice simulations strongly suggest a mass gap. A rigorous construction with a proof of the gap is a Clay Millennium Prize problem.",
+    "link": "https://en.wikipedia.org/wiki/Yang%E2%80%93Mills_existence_and_mass_gap"
+   },
+   {
+    "id": "bqp-vs-bpp",
+    "title": "Are quantum computers genuinely more powerful?",
+    "status": "open",
+    "q": "Can quantum computers efficiently solve problems that classical randomised computers cannot (is BQP larger than BPP)?",
+    "known": "Shor’s algorithm (1994) factors integers efficiently, a task believed hard classically, and Raz and Tal (2018) gave an oracle separation. An unconditional proof would require major breakthroughs in complexity theory.",
+    "link": "https://en.wikipedia.org/wiki/BQP"
+   },
+   {
+    "id": "quantum-np",
+    "title": "Can quantum computers solve NP-complete problems efficiently?",
+    "status": "open",
+    "q": "Is there a quantum algorithm that solves NP-complete problems such as satisfiability in polynomial time?",
+    "known": "Grover’s algorithm (1996) gives only a quadratic speed-up for unstructured search, and Bennett, Bernstein, Brassard and Vazirani (1997) showed this is optimal for black-box search. Most researchers expect the answer is no, but it is unproved.",
+    "link": "https://en.wikipedia.org/wiki/Grover%27s_algorithm"
+   },
+   {
+    "id": "quantum-pcp",
+    "title": "The quantum PCP conjecture",
+    "status": "open",
+    "q": "Is it hard for quantum computers even to approximate the ground-state energy of local Hamiltonians to within a constant fraction?",
+    "known": "Kitaev (1999) showed exact versions are QMA-complete. The NLTS theorem of Anshu, Breuckmann and Nirkhe (2022) settled a key precursor, but the full conjecture remains open.",
+    "link": "https://en.wikipedia.org/wiki/QMA"
+   },
+   {
+    "id": "sic-povm",
+    "title": "Do SIC-POVMs exist in every dimension?",
+    "status": "open",
+    "q": "In every finite dimension, is there a maximal set of equally spaced quantum states forming a symmetric informationally complete measurement?",
+    "known": "Zauner (1999) conjectured they always exist. Exact solutions are known in many dimensions and numerical ones in many more, but there is no general proof.",
+    "link": "https://en.wikipedia.org/wiki/SIC-POVM"
+   }
+  ],
+  "milestones": [
+   {
+    "year": 1900,
+    "title": "Energy comes in quanta",
+    "text": "Planck explains black-body radiation by assuming energy is emitted in discrete quanta.",
+    "wiki": "Planck's_law"
+   },
+   {
+    "year": 1913,
+    "title": "The Bohr atom",
+    "text": "Bohr explains hydrogen’s spectral lines with quantised electron orbits.",
+    "wiki": "Bohr_model"
+   },
+   {
+    "year": 1925,
+    "title": "Matrix mechanics",
+    "text": "Heisenberg, Born and Jordan formulate quantum mechanics with matrices.",
+    "wiki": "Matrix_mechanics"
+   },
+   {
+    "year": 1926,
+    "title": "The wave equation",
+    "text": "Schrödinger publishes his wave equation for quantum systems.",
+    "wiki": "Schrödinger_equation"
+   },
+   {
+    "year": 1927,
+    "title": "Uncertainty",
+    "text": "Heisenberg shows position and momentum cannot both be sharply defined.",
+    "wiki": "Uncertainty_principle"
+   },
+   {
+    "year": 1932,
+    "title": "Mathematical foundations",
+    "text": "Von Neumann sets quantum mechanics on Hilbert spaces and operators.",
+    "wiki": "Mathematical_Foundations_of_Quantum_Mechanics"
+   },
+   {
+    "year": 1964,
+    "title": "Bell’s theorem",
+    "text": "Bell proves no local hidden-variable theory can reproduce all quantum predictions.",
+    "wiki": "Bell's_theorem"
+   },
+   {
+    "year": 1994,
+    "title": "Quantum factoring",
+    "text": "Shor gives a quantum algorithm that factors integers in polynomial time.",
+    "wiki": "Shor's_algorithm"
+   },
+   {
+    "year": 2015,
+    "title": "Loophole-free Bell tests",
+    "text": "Experiments close the main loopholes and confirm quantum violations of Bell inequalities.",
+    "wiki": "Bell_test"
+   }
+  ]
+ },
+ "statmech": {
+  "name": "Statistical mechanics",
+  "label": "arXiv cond-mat.stat-mech · Statistical mechanics (MSC 82)",
+  "query": "cat:cond-mat.stat-mech",
+  "listing": "cond-mat.stat-mech",
+  "field": "statistical mechanics: phase transitions and critical phenomena, lattice models, disordered systems, kinetic theory and non-equilibrium dynamics",
+  "peopleNote": "Six researchers whose work on critical phenomena, disordered systems and exactly solvable models defines modern statistical mechanics.",
+  "people": [
+   {
+    "name": "Hugo Duminil-Copin",
+    "wiki": "Hugo_Duminil-Copin",
+    "arxiv": "au:\"Hugo Duminil-Copin\"",
+    "area": "Percolation & lattice models"
+   },
+   {
+    "name": "Stanislav Smirnov",
+    "wiki": "Stanislav_Smirnov",
+    "arxiv": "au:\"Stanislav Smirnov\"",
+    "area": "Conformal invariance"
+   },
+   {
+    "name": "Giorgio Parisi",
+    "wiki": "Giorgio_Parisi",
+    "arxiv": "au:\"Giorgio Parisi\"",
+    "area": "Spin glasses & disordered systems"
+   },
+   {
+    "name": "John Cardy",
+    "wiki": "John_Cardy",
+    "arxiv": "au:\"John Cardy\"",
+    "area": "Conformal field theory"
+   },
+   {
+    "name": "Mehran Kardar",
+    "wiki": "Mehran_Kardar",
+    "arxiv": "au:\"Mehran Kardar\"",
+    "area": "Non-equilibrium growth (KPZ)"
+   },
+   {
+    "name": "Herbert Spohn",
+    "wiki": "Herbert_Spohn",
+    "arxiv": "au:\"Herbert Spohn\"",
+    "area": "Kinetic theory & hydrodynamics"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "ising-3d",
+    "title": "The three-dimensional Ising model",
+    "status": "open",
+    "q": "What are the exact critical exponents of the Ising model in three dimensions, and is there an exact solution?",
+    "known": "Onsager (1944) solved the two-dimensional model exactly, but no exact solution is known in three dimensions. The conformal bootstrap (El-Showk et al., 2012 onwards) has computed the exponents to very high precision without a proof.",
+    "link": "https://en.wikipedia.org/wiki/Ising_model"
+   },
+   {
+    "id": "hilbert-sixth",
+    "title": "Fluids from particles (Hilbert’s sixth problem)",
+    "status": "claimed",
+    "q": "Can the equations of fluid flow be rigorously derived from Newton’s laws for very many colliding particles?",
+    "known": "Lanford (1975) derived the Boltzmann equation for hard spheres, but only for very short times. Deng, Hani and Ma (2025) posted preprints claiming a derivation valid for long times and on to the fluid equations; these are still being checked.",
+    "link": "https://en.wikipedia.org/wiki/Hilbert%27s_sixth_problem"
+   },
+   {
+    "id": "spin-glass-finite-d",
+    "title": "Spin glasses in finite dimensions",
+    "status": "open",
+    "q": "Do realistic short-range spin glasses in three dimensions have Parisi’s many-state structure, or the simpler droplet picture?",
+    "known": "Parisi’s solution (1979) of the mean-field model was proved by Talagrand (2006). Whether it describes finite-dimensional spin glasses is still disputed.",
+    "link": "https://en.wikipedia.org/wiki/Spin_glass"
+   },
+   {
+    "id": "percolation-3d",
+    "title": "Continuity of percolation in three dimensions",
+    "status": "open",
+    "q": "At the critical density of three-dimensional percolation, is there no infinite cluster, so the transition is continuous?",
+    "known": "This is known in two dimensions (Kesten, 1980) and in high dimensions via the lace expansion (Hara and Slade, 1990, now down to dimension 11). Dimensions 3 to 10 remain open.",
+    "link": "https://en.wikipedia.org/wiki/Percolation_theory"
+   },
+   {
+    "id": "saw-2d",
+    "title": "Self-avoiding walks in the plane",
+    "status": "open",
+    "q": "How far does a typical n-step self-avoiding walk in the plane travel, and is the exponent exactly 3/4?",
+    "known": "Nienhuis (1982) predicted end-to-end distance growing like n^(3/4). Duminil-Copin and Smirnov (2012) proved the honeycomb connective constant is √(2+√2), but the exponent is unproved.",
+    "link": "https://en.wikipedia.org/wiki/Self-avoiding_walk"
+   },
+   {
+    "id": "mbl-stability",
+    "title": "Does many-body localisation exist?",
+    "status": "open",
+    "q": "Can strong disorder stop an interacting quantum system from ever thermalising?",
+    "known": "Basko, Aleiner and Altshuler (2006) argued it can, and Imbrie (2016) gave a proof under an assumption for one dimension. De Roeck and Huveneers (2017) argued rare thermal regions destabilise it, and its existence is now debated.",
+    "link": "https://en.wikipedia.org/wiki/Many-body_localization"
+   }
+  ],
+  "milestones": [
+   {
+    "year": 1872,
+    "title": "The H-theorem",
+    "text": "Boltzmann derives entropy increase from molecular collisions.",
+    "wiki": "H-theorem"
+   },
+   {
+    "year": 1902,
+    "title": "Statistical ensembles",
+    "text": "Gibbs sets out statistical mechanics in terms of ensembles of systems.",
+    "wiki": "Canonical_ensemble"
+   },
+   {
+    "year": 1905,
+    "title": "Brownian motion",
+    "text": "Einstein explains Brownian motion statistically, giving strong evidence for atoms.",
+    "wiki": "Brownian_motion"
+   },
+   {
+    "year": 1944,
+    "title": "An exact phase transition",
+    "text": "Onsager solves the two-dimensional Ising model exactly.",
+    "wiki": "Square_lattice_Ising_model"
+   },
+   {
+    "year": 1957,
+    "title": "Percolation",
+    "text": "Broadbent and Hammersley introduce percolation to model flow through random media.",
+    "wiki": "Percolation_theory"
+   },
+   {
+    "year": 1971,
+    "title": "The renormalisation group",
+    "text": "Wilson explains universality of critical phenomena with the renormalisation group.",
+    "wiki": "Renormalization_group"
+   },
+   {
+    "year": 1979,
+    "title": "Spin-glass solution",
+    "text": "Parisi proposes replica symmetry breaking to solve the Sherrington–Kirkpatrick model.",
+    "wiki": "Spin_glass"
+   },
+   {
+    "year": 2000,
+    "title": "Random curves",
+    "text": "Schramm introduces SLE, describing the scaling limits of critical interfaces in the plane.",
+    "wiki": "Schramm–Loewner_evolution"
+   }
+  ]
+ },
+ "relativity": {
+  "name": "Relativity & gravitation",
+  "label": "arXiv gr-qc · General relativity and quantum cosmology (MSC 83)",
+  "query": "cat:gr-qc",
+  "listing": "gr-qc",
+  "field": "relativity and gravitation: Einstein’s equations, black holes, gravitational waves, cosmology and quantum gravity",
+  "peopleNote": "Six researchers spanning mathematical relativity, numerical relativity, gravitational waves and quantum gravity who publish on arXiv.",
+  "people": [
+   {
+    "name": "Sergiu Klainerman",
+    "wiki": "Sergiu_Klainerman",
+    "arxiv": "au:\"Sergiu Klainerman\"",
+    "area": "Stability of black holes"
+   },
+   {
+    "name": "Mihalis Dafermos",
+    "wiki": "Mihalis_Dafermos",
+    "arxiv": "au:\"Mihalis Dafermos\"",
+    "area": "Mathematical general relativity"
+   },
+   {
+    "name": "Juan Maldacena",
+    "wiki": "Juan_Maldacena",
+    "arxiv": "au:\"Juan Maldacena\"",
+    "area": "Holography & quantum gravity"
+   },
+   {
+    "name": "Abhay Ashtekar",
+    "wiki": "Abhay_Ashtekar",
+    "arxiv": "au:\"Abhay Ashtekar\"",
+    "area": "Loop quantum gravity"
+   },
+   {
+    "name": "Frans Pretorius",
+    "wiki": "Frans_Pretorius",
+    "arxiv": "au:\"Frans Pretorius\"",
+    "area": "Numerical relativity"
+   },
+   {
+    "name": "Kip Thorne",
+    "wiki": "Kip_Thorne",
+    "arxiv": "au:\"Kip S. Thorne\"",
+    "area": "Gravitational waves"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "quantum-gravity",
+    "title": "Quantum gravity",
+    "status": "open",
+    "q": "What is the quantum theory of gravity that agrees with general relativity at large scales?",
+    "known": "General relativity is not renormalisable as a quantum field theory (’t Hooft and Veltman, 1974; Goroff and Sagnotti, 1986). String theory and loop quantum gravity are leading candidates, but neither has experimental confirmation.",
+    "link": "https://en.wikipedia.org/wiki/Quantum_gravity"
+   },
+   {
+    "id": "weak-cosmic-censorship",
+    "title": "Weak cosmic censorship",
+    "status": "open",
+    "q": "Are singularities formed by realistic gravitational collapse always hidden inside black-hole horizons?",
+    "known": "Penrose (1969) proposed it. Christodoulou (1999) showed naked singularities can form but only for special, unstable initial data; the generic statement remains unproved.",
+    "link": "https://en.wikipedia.org/wiki/Cosmic_censorship_hypothesis"
+   },
+   {
+    "id": "information-paradox",
+    "title": "The black-hole information paradox",
+    "status": "open",
+    "q": "Is information that falls into a black hole lost when it evaporates, or does it escape in the radiation?",
+    "known": "Hawking (1976) argued it is lost, in tension with quantum unitarity. Calculations using quantum extremal surfaces (2019) recover the Page curve expected if information escapes, but the mechanism is still debated.",
+    "link": "https://en.wikipedia.org/wiki/Black_hole_information_paradox"
+   },
+   {
+    "id": "kerr-stability",
+    "title": "Is the Kerr black hole stable?",
+    "status": "claimed",
+    "q": "Do slightly disturbed rotating black holes settle back down to a Kerr black hole?",
+    "known": "Klainerman and Szeftel, with Giorgi, posted a proof for slowly rotating Kerr black holes (2022), part of which is still under review. Stability for all rotation rates below the extremal limit remains open.",
+    "link": "https://en.wikipedia.org/wiki/Kerr_metric"
+   },
+   {
+    "id": "penrose-inequality",
+    "title": "The Penrose inequality",
+    "status": "open",
+    "q": "Is the total mass of a spacetime always at least that of a black hole whose horizon has the same area?",
+    "known": "Huisken and Ilmanen (1997) and Bray (2001) proved the time-symmetric (Riemannian) case. The general case, proposed by Penrose (1973), is open.",
+    "link": "https://en.wikipedia.org/wiki/Penrose_inequality"
+   },
+   {
+    "id": "cosmological-constant",
+    "title": "The cosmological constant problem",
+    "status": "open",
+    "q": "Why is the observed vacuum energy driving cosmic acceleration so much smaller than quantum field theory estimates?",
+    "known": "Naive estimates exceed the observed value by around 120 orders of magnitude (Weinberg, 1989). No accepted mechanism explains the discrepancy.",
+    "link": "https://en.wikipedia.org/wiki/Cosmological_constant_problem"
+   }
+  ],
+  "milestones": [
+   {
+    "year": 1905,
+    "title": "Special relativity",
+    "text": "Einstein shows space and time measurements depend on the observer’s motion.",
+    "wiki": "Special_relativity"
+   },
+   {
+    "year": 1908,
+    "title": "Spacetime",
+    "text": "Minkowski recasts special relativity as the geometry of four-dimensional spacetime.",
+    "wiki": "Minkowski_space"
+   },
+   {
+    "year": 1915,
+    "title": "General relativity",
+    "text": "Einstein publishes the field equations describing gravity as spacetime curvature.",
+    "wiki": "Einstein_field_equations"
+   },
+   {
+    "year": 1916,
+    "title": "Schwarzschild solution",
+    "text": "Schwarzschild finds the exact solution for a non-rotating mass, later understood as a black hole.",
+    "wiki": "Schwarzschild_metric"
+   },
+   {
+    "year": 1919,
+    "title": "Light bends",
+    "text": "Eddington’s eclipse expedition measures the deflection of starlight predicted by Einstein.",
+    "wiki": "Eddington_experiment"
+   },
+   {
+    "year": 1963,
+    "title": "Rotating black holes",
+    "text": "Kerr finds the exact solution for a rotating black hole.",
+    "wiki": "Kerr_metric"
+   },
+   {
+    "year": 1965,
+    "title": "Singularity theorem",
+    "text": "Penrose proves gravitational collapse inevitably produces a singularity under general conditions.",
+    "wiki": "Penrose–Hawking_singularity_theorems"
+   },
+   {
+    "year": 1974,
+    "title": "Hawking radiation",
+    "text": "Hawking shows black holes emit thermal radiation through quantum effects.",
+    "wiki": "Hawking_radiation"
+   },
+   {
+    "year": 2015,
+    "title": "Gravitational waves detected",
+    "text": "LIGO detects waves from two merging black holes.",
+    "wiki": "First_observation_of_gravitational_waves"
+   }
+  ]
+ },
+ "astronomy": {
+  "name": "Celestial mechanics & astrophysics",
+  "label": "arXiv astro-ph.EP · Earth and planetary astrophysics (MSC 85, 70F15)",
+  "query": "cat:astro-ph.EP",
+  "listing": "astro-ph.EP",
+  "field": "celestial mechanics and astrophysics: planetary dynamics, exoplanets, the stability of planetary systems and cosmology",
+  "peopleNote": "Six researchers spanning solar-system dynamics, exoplanets and cosmological expansion who publish on arXiv.",
+  "people": [
+   {
+    "name": "Jacques Laskar",
+    "wiki": "Jacques_Laskar",
+    "arxiv": "au:\"Jacques Laskar\"",
+    "area": "Solar-system stability"
+   },
+   {
+    "name": "Scott Tremaine",
+    "wiki": "Scott_Tremaine",
+    "arxiv": "au:\"Scott Tremaine\"",
+    "area": "Galactic & planetary dynamics"
+   },
+   {
+    "name": "Konstantin Batygin",
+    "wiki": "Konstantin_Batygin",
+    "arxiv": "au:\"Konstantin Batygin\"",
+    "area": "Planetary dynamics"
+   },
+   {
+    "name": "Didier Queloz",
+    "wiki": "Didier_Queloz",
+    "arxiv": "au:\"Didier Queloz\"",
+    "area": "Exoplanet discovery"
+   },
+   {
+    "name": "Sara Seager",
+    "wiki": "Sara_Seager",
+    "arxiv": "au:\"Sara Seager\"",
+    "area": "Exoplanet atmospheres"
+   },
+   {
+    "name": "Adam Riess",
+    "wiki": "Adam_Riess",
+    "arxiv": "au:\"Adam Riess\"",
+    "area": "Cosmic expansion"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "solar-system-stability",
+    "title": "Will the Solar System stay stable?",
+    "status": "open",
+    "q": "Will the planets keep roughly their present orbits for the Sun’s remaining lifetime?",
+    "known": "Laskar (1989) showed the planetary orbits are chaotic, with predictability lost after tens of millions of years. Laskar and Gastineau (2009) found about a 1% chance that Mercury’s orbit destabilises within 5 billion years, so only probabilistic answers are known.",
+    "link": "https://en.wikipedia.org/wiki/Stability_of_the_Solar_System"
+   },
+   {
+    "id": "hubble-tension",
+    "title": "The Hubble tension",
+    "status": "open",
+    "q": "Why do measurements of the universe’s current expansion rate disagree depending on the method used?",
+    "known": "Local distance-ladder measurements (Riess and colleagues) give about 73 km/s/Mpc, while the cosmic microwave background with the standard model gives about 67 (Planck, 2018). The discrepancy may signal new physics or unrecognised errors.",
+    "link": "https://en.wikipedia.org/wiki/Hubble%27s_law"
+   },
+   {
+    "id": "dark-matter",
+    "title": "What is dark matter?",
+    "status": "open",
+    "q": "What is the unseen matter whose gravity holds galaxies and clusters together?",
+    "known": "Zwicky (1933) inferred it from galaxy clusters and Rubin and Ford (1970s) from galaxy rotation curves. Direct-detection experiments have not found the proposed particles.",
+    "link": "https://en.wikipedia.org/wiki/Dark_matter"
+   },
+   {
+    "id": "dark-energy",
+    "title": "What is dark energy?",
+    "status": "open",
+    "q": "What drives the accelerating expansion of the universe?",
+    "known": "Accelerating expansion was discovered in 1998 from distant supernovae (Riess et al.; Perlmutter et al.). Whether it is a cosmological constant or a changing field is unknown, and recent surveys hint it may evolve.",
+    "link": "https://en.wikipedia.org/wiki/Dark_energy"
+   },
+   {
+    "id": "planet-nine",
+    "title": "Is there a ninth planet?",
+    "status": "open",
+    "q": "Is an undiscovered planet several times Earth’s mass shaping the orbits of distant trans-Neptunian objects?",
+    "known": "Batygin and Brown (2016) proposed it to explain clustered orbits of distant objects. It has not been observed, and some argue the clustering is an observational bias.",
+    "link": "https://en.wikipedia.org/wiki/Planet_Nine"
+   },
+   {
+    "id": "final-parsec",
+    "title": "The final parsec problem",
+    "status": "open",
+    "q": "How do pairs of supermassive black holes close the last parsec of separation and merge within the age of the universe?",
+    "known": "Begelman, Blandford and Rees (1980) noted stellar interactions may stall the binary. Proposed solutions include triaxial galaxy shapes and gas, and evidence for a gravitational-wave background from pulsar timing (2023) suggests mergers do happen.",
+    "link": "https://en.wikipedia.org/wiki/Final_parsec_problem"
+   }
+  ],
+  "milestones": [
+   {
+    "year": 1543,
+    "title": "A Sun-centred system",
+    "text": "Copernicus places the Sun at the centre of planetary orbits.",
+    "wiki": "De_revolutionibus_orbium_coelestium"
+   },
+   {
+    "year": 1609,
+    "title": "Kepler’s laws",
+    "text": "Kepler shows planets move on ellipses, sweeping out equal areas in equal times.",
+    "wiki": "Kepler's_laws_of_planetary_motion"
+   },
+   {
+    "year": 1687,
+    "title": "Universal gravitation",
+    "text": "Newton explains Kepler’s laws with an inverse-square law of gravity.",
+    "wiki": "Newton's_law_of_universal_gravitation"
+   },
+   {
+    "year": 1846,
+    "title": "Neptune predicted",
+    "text": "Le Verrier and Adams predict Neptune from irregularities in Uranus’s orbit.",
+    "wiki": "Discovery_of_Neptune"
+   },
+   {
+    "year": 1929,
+    "title": "The expanding universe",
+    "text": "Hubble shows galaxies recede with speeds proportional to their distance.",
+    "wiki": "Hubble's_law"
+   },
+   {
+    "year": 1965,
+    "title": "The cosmic microwave background",
+    "text": "Penzias and Wilson detect the afterglow of the Big Bang.",
+    "wiki": "Cosmic_microwave_background"
+   },
+   {
+    "year": 1995,
+    "title": "A planet around a Sun-like star",
+    "text": "Mayor and Queloz discover 51 Pegasi b.",
+    "wiki": "51_Pegasi_b"
+   },
+   {
+    "year": 1998,
+    "title": "Accelerating expansion",
+    "text": "Two supernova teams find the universe’s expansion is speeding up.",
+    "wiki": "Accelerating_expansion_of_the_universe"
+   }
+  ]
+ },
+ "geophysics": {
+  "name": "Geophysics & climate models",
+  "label": "arXiv physics.geo-ph · Geophysics (MSC 86)",
+  "query": "cat:physics.geo-ph OR cat:physics.ao-ph",
+  "listing": "physics.geo-ph",
+  "field": "geophysics and climate science: seismology, the geodynamo, atmosphere and ocean dynamics, climate sensitivity and predictability",
+  "peopleNote": "Six researchers whose work on climate dynamics, predictability and planetary atmospheres is widely cited and who publish on arXiv.",
+  "people": [
+   {
+    "name": "Michael Ghil",
+    "wiki": "Michael_Ghil",
+    "arxiv": "au:\"Michael Ghil\"",
+    "area": "Climate dynamics"
+   },
+   {
+    "name": "Tim Palmer",
+    "wiki": "Tim_Palmer_(physicist)",
+    "arxiv": "au:\"T. N. Palmer\"",
+    "area": "Predictability & weather prediction"
+   },
+   {
+    "name": "Raymond Pierrehumbert",
+    "wiki": "Raymond_Pierrehumbert",
+    "arxiv": "au:\"Raymond Pierrehumbert\"",
+    "area": "Planetary climate"
+   },
+   {
+    "name": "Kerry Emanuel",
+    "wiki": "Kerry_Emanuel",
+    "arxiv": "au:\"Kerry Emanuel\"",
+    "area": "Tropical cyclones"
+   },
+   {
+    "name": "Anders Levermann",
+    "wiki": "Anders_Levermann",
+    "arxiv": "au:\"Anders Levermann\"",
+    "area": "Ocean circulation & tipping points"
+   },
+   {
+    "name": "Stefan Rahmstorf",
+    "wiki": "Stefan_Rahmstorf",
+    "arxiv": "au:\"Stefan Rahmstorf\"",
+    "area": "Ocean circulation"
+   }
+  ],
+  "openQuestions": [
+   {
+    "id": "climate-sensitivity",
+    "title": "How sensitive is the climate?",
+    "status": "open",
+    "q": "How much will global temperature eventually rise if atmospheric carbon dioxide doubles?",
+    "known": "Charney’s 1979 report gave 1.5–4.5 °C, and the IPCC Sixth Assessment Report (2021) narrowed the likely range to 2.5–4 °C. Cloud feedbacks remain the largest uncertainty.",
+    "link": "https://en.wikipedia.org/wiki/Climate_sensitivity"
+   },
+   {
+    "id": "amoc-tipping",
+    "title": "Will the Atlantic overturning collapse?",
+    "status": "open",
+    "q": "Could warming push the Atlantic meridional overturning circulation past a tipping point this century?",
+    "known": "Stommel (1961) showed such circulations can have two stable states. Models and observations disagree on how close the present circulation is to a threshold.",
+    "link": "https://en.wikipedia.org/wiki/Atlantic_meridional_overturning_circulation"
+   },
+   {
+    "id": "earthquake-prediction",
+    "title": "Can earthquakes be predicted?",
+    "status": "open",
+    "q": "Can the time, place and size of large earthquakes be forecast reliably enough to give warnings?",
+    "known": "Statistical laws such as Omori’s law (1894) and the Gutenberg–Richter law describe aftershocks and magnitudes well. No method has yet reliably predicted individual large earthquakes.",
+    "link": "https://en.wikipedia.org/wiki/Earthquake_prediction"
+   },
+   {
+    "id": "geodynamo-reversals",
+    "title": "Why does Earth’s magnetic field reverse?",
+    "status": "open",
+    "q": "What controls the irregular reversals of Earth’s magnetic field?",
+    "known": "Glatzmaier and Roberts (1995) produced a spontaneous reversal in a computer simulation of the geodynamo. Why reversals occur at irregular intervals of thousands to millions of years is not understood.",
+    "link": "https://en.wikipedia.org/wiki/Geomagnetic_reversal"
+   },
+   {
+    "id": "weather-predictability",
+    "title": "The limit of weather prediction",
+    "status": "open",
+    "q": "Is there a hard limit, around two weeks, beyond which day-to-day weather cannot be predicted?",
+    "known": "Lorenz (1969) argued small-scale errors grow and spread upscale, setting a finite predictability horizon. How sharp this limit is, and how much skill lies beyond it, is actively studied.",
+    "link": "https://en.wikipedia.org/wiki/Numerical_weather_prediction"
+   },
+   {
+    "id": "plate-tectonics-onset",
+    "title": "When did plate tectonics begin?",
+    "status": "open",
+    "q": "When did Earth’s surface start moving as rigid plates, and why does Earth have plate tectonics when other rocky planets do not?",
+    "known": "Estimates for the onset range from over 4 billion to under 1 billion years ago. Venus and Mars lack plate tectonics, and the reasons are not settled.",
+    "link": "https://en.wikipedia.org/wiki/Plate_tectonics"
+   }
+  ],
+  "milestones": [
+   {
+    "year": 1735,
+    "title": "Trade winds explained",
+    "text": "Hadley explains the trade winds using Earth’s rotation and heated rising air.",
+    "wiki": "Hadley_cell"
+   },
+   {
+    "year": 1835,
+    "title": "The Coriolis force",
+    "text": "Coriolis describes the apparent force on bodies moving in a rotating frame.",
+    "wiki": "Coriolis_force"
+   },
+   {
+    "year": 1896,
+    "title": "Carbon dioxide warms Earth",
+    "text": "Arrhenius calculates the warming from increased atmospheric carbon dioxide.",
+    "wiki": "Svante_Arrhenius"
+   },
+   {
+    "year": 1906,
+    "title": "Earth’s core",
+    "text": "Oldham uses seismic waves to show Earth has a distinct central core.",
+    "wiki": "Richard_Dixon_Oldham"
+   },
+   {
+    "year": 1912,
+    "title": "Continental drift",
+    "text": "Wegener proposes that continents move across Earth’s surface.",
+    "wiki": "Continental_drift"
+   },
+   {
+    "year": 1922,
+    "title": "Weather by numbers",
+    "text": "Richardson attempts weather forecasting by solving equations by hand.",
+    "wiki": "Lewis_Fry_Richardson"
+   },
+   {
+    "year": 1950,
+    "title": "Computer forecasts",
+    "text": "The first numerical weather forecasts run on the ENIAC computer.",
+    "wiki": "Numerical_weather_prediction"
+   },
+   {
+    "year": 1963,
+    "title": "Chaos in the atmosphere",
+    "text": "Lorenz finds sensitive dependence on initial conditions in a simple convection model.",
+    "wiki": "Edward_Norton_Lorenz"
+   },
+   {
+    "year": 1967,
+    "title": "Climate models",
+    "text": "Manabe and Wetherald compute the warming from doubled carbon dioxide with a radiative–convective model.",
+    "wiki": "Syukuro_Manabe"
+   }
+  ]
+ }
+}
