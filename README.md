@@ -20,3 +20,10 @@ Below the research panel, the same lessons show six researchers in the area. The
 is curated in the worker (`TOPICS.<lesson>.people`); `/people/:id` enriches it live with the
 Wikipedia summary and photo, and the arXiv paper count and newest paper (refreshed weekly).
 LinkedIn has no public API, so cards link to a LinkedIn people search for the name.
+
+## Open questions panels (v0.15)
+
+Two panels follow the who's who. **Leading open questions** is curated in the page
+(`OPEN_QUESTIONS`) so it works offline; review it when the field moves. **Open questions in
+the latest papers** calls the worker's `/open/:id`, which takes the six newest abstracts
+matching the lesson's `openQuery` and AI-extracts the question and the paper's claim about it.

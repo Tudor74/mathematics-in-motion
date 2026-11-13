@@ -15,6 +15,7 @@ const TOPICS = {
     query: 'cat:math.LO',
     field: 'mathematical logic and the foundations of mathematics: set theory, proof theory, model theory, computability and their applications',
     // Who's who: a curated roster (influential, living, active on arXiv), enriched live from Wikipedia and arXiv.
+    openQuery: 'cat:math.LO AND (abs:"open problem" OR abs:"open question" OR abs:conjecture)',
     peopleNote: 'Six researchers with widely recognised influence on set theory, model theory and formal proof who are still publishing on arXiv.',
     people: [
       { name: 'Saharon Shelah', wiki: 'Saharon_Shelah', arxiv: 'au:Shelah AND au:Saharon', area: 'Set theory & model theory' },
@@ -193,7 +194,46 @@ async function people(id, topic) {
   return { lesson: id, name: topic.name, note: topic.peopleNote, people: list, complete: list.every(p => p.arxiv.count != null && p.bio), updated: new Date().toISOString() };
 }
 
+async function extractQuestions(topic, papers) {
+  const list = papers.map((p, i) => `[${i + 1}] "${p.title}"\n${p.abstract.slice(0, 1400)}`).join('\n\n');
+  const prompt = `Field: ${topic.field}. For each arXiv abstract below, identify the open problem, open question or conjecture it is about, using ONLY what the abstract says.
+Return a JSON array with one object per abstract, in order: {"i": number, "question": string, "status": "settles" | "progress" | "poses" | "uses"}.
+- question: one plain-English sentence (max 30 words) stating the open question itself, understandable by a strong undergraduate; British English; no LaTeX.
+- status: "settles" if the abstract claims to fully answer it, "progress" if it claims partial results, "poses" if it raises it as new or still open, "uses" if it only assumes or applies a conjecture.
+Output the JSON array only.
+
+${list}`;
+  const r = await me.puter.ai.chat(prompt, { model: MODEL, max_tokens: 900, temperature: 0.1 });
+  const raw = text(r), m = raw.match(/\[[\s\S]*\]/);
+  const arr = m ? JSON.parse(m[0]) : [];
+  return papers.map((p, i) => {
+    const q = arr.find(x => x && x.i === i + 1) || arr[i] || {};
+    const status = ['settles', 'progress', 'poses', 'uses'].includes(q.status) ? q.status : 'poses';
+    return { question: String(q.question || '').trim(), status, paper: { title: p.title, url: p.url, published: p.published, category: p.category, authors: p.authors } };
+  }).filter(x => x.question);
+}
+
+async function openQuestions(id, topic) {
+  const kv = me.puter.kv;
+  let cache = await kv.get(K(id, 'open'));
+  if (!cache || Date.now() - cache.at > PAPERS_TTL) {
+    const xml = await arxiv({ search_query: topic.openQuery, sortBy: 'submittedDate', sortOrder: 'descending', start: 0, max_results: 6 });
+    const papers = parseEntries(xml), sig = papers.map(p => p.id).join(',');
+    if (!cache || cache.sig !== sig) cache = { sig, at: Date.now(), model: MODEL, items: await extractQuestions(topic, papers) };
+    else cache.at = Date.now();
+    await kv.set(K(id, 'open'), cache);
+  }
+  return { lesson: id, query: topic.openQuery, model: cache.model, at: new Date(cache.at).toISOString(), items: cache.items };
+}
+
 router.get('/health', async () => ({ ok: true, lessons: Object.keys(TOPICS) }));
+
+router.get('/open/:id', async ({ params }) => {
+  const topic = TOPICS[params.id];
+  if (!topic || !topic.openQuery) return json({ error: 'No open-questions feed for this lesson yet', lesson: params.id }, 404);
+  try { return json(await openQuestions(params.id, topic)); }
+  catch (e) { return json({ error: 'Open-questions feed failed', message: String(e && e.message || e) }, 502); }
+});
 
 router.get('/people/:id', async ({ params }) => {
   const topic = TOPICS[params.id];
@@ -209,4 +249,4 @@ router.get('/lesson/:id', async ({ params }) => {
   catch (e) { return json({ error: 'Research feed failed', message: String(e && e.message || e) }, 502); }
 });
 
-router.get('/*rest', async ({ params }) => json({ error: 'Not found', path: params.rest, endpoints: ['/health', '/lesson/:id', '/people/:id'] }, 404));
+router.get('/*rest', async ({ params }) => json({ error: 'Not found', path: params.rest, endpoints: ['/health', '/lesson/:id', '/people/:id', '/open/:id'] }, 404));

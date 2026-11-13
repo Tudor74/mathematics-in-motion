@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light">
-<title>Mathematics In Motion — v0.14</title>
-<meta name="application-version" content="0.14">
+<title>Mathematics In Motion — v0.15</title>
+<meta name="application-version" content="0.15">
 <style>
 :root{--ink:#192c37;--muted:#546873;--blue:#1772b7;--pale:#e8f2f8;--line:#c7d8e3;--paper:#fff;--bg:#f3f6f7;--warm:#ad472a;--thumb:46px;--zero:17%;--rewind:#f3e7e1}
 *{box-sizing:border-box}html{background:var(--bg);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}body{margin:0;padding:22px}button,select,input{font:inherit}button,select{min-height:44px}button{background:white;border:1px solid #aec3cf;border-radius:10px;padding:10px 17px;cursor:pointer;color:var(--ink);font-weight:600}button:hover{background:#edf5fa}button:active{background:#dfedf5}button:disabled{cursor:default;opacity:.5}button.primary{background:var(--blue);border-color:var(--blue);color:#fff;min-width:112px}button.primary:hover{background:#115c95}button:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid #a44289;outline-offset:4px}
@@ -352,7 +352,7 @@ svg .svg-word{cursor:pointer!important;text-decoration-line:underline!important;
 .research-panel[hidden]{display:none}
 .research-panel [hidden]{display:none!important}
 .research-panel .eyebrow{margin:0 0 4px}
-#research-heading,#people-heading{font-size:24px;line-height:1.15;margin:0 0 4px;letter-spacing:-.02em}
+#research-heading,#people-heading,#open-heading,#frontier-heading{font-size:24px;line-height:1.15;margin:0 0 4px;letter-spacing:-.02em}
 .research-source{font-size:14px;color:var(--muted);margin:0 0 14px}
 .research-source a{color:#155e93}
 .research-panel h3{font-size:12px;text-transform:uppercase;letter-spacing:.08em;font-weight:750;color:var(--muted);margin:20px 0 8px}
@@ -389,8 +389,21 @@ svg .svg-word{cursor:pointer!important;text-decoration-line:underline!important;
 .people-links{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
 .people-links a{font-size:13px;font-weight:650;color:#155e93;text-decoration:none;border:1px solid #c9dbe7;border-radius:6px;padding:4px 9px;min-height:32px;display:inline-flex;align-items:center}
 .people-links a:hover,.people-links a:focus-visible{background:#e8f2f8}
+.open-list{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,1fr);gap:12px;counter-reset:q}
+.open-list li{border:1px solid #dbe6ec;border-radius:12px;padding:14px 16px 12px 52px;position:relative;background:#fff;counter-increment:q}
+.open-list li::before{content:counter(q);position:absolute;left:14px;top:14px;width:26px;height:26px;border-radius:50%;background:#1772b7;color:#fff;font-weight:750;font-size:14px;display:grid;place-items:center}
+.open-list h3{margin:0 0 4px;font-size:17px;letter-spacing:0;text-transform:none;color:var(--ink)}
+.open-q{margin:0 0 8px;font-size:15.5px;line-height:1.45;font-weight:560;color:#1b3b50}
+.open-known{margin:0;font-size:14px;line-height:1.5;color:#33454f}
+.open-meta{margin:8px 0 0;font-size:13px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.open-meta a{color:#155e93;font-weight:650}
+.open-status{display:inline-block;font-size:11px;font-weight:750;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:5px;background:#e1eef7;color:#1d5d8a}
+.open-status.st-settles{background:#dceee8;color:#1f5f55}.open-status.st-progress{background:#e1eef7;color:#1d5d8a}.open-status.st-poses{background:#f9e2d9;color:#8e3a25}.open-status.st-uses{background:#eee9f6;color:#5a4590}
+.open-known a{color:#155e93}
+.open-status.st-independent,.open-status.st-claimed{background:#eee9f6;color:#5a4590}.open-status.st-open{background:#f9e2d9;color:#8e3a25}
+.frontier li::before{background:#c45238}
 @media(max-width:1000px){.research-columns{grid-template-columns:1fr}.research-papers,.people-list{grid-template-columns:1fr 1fr}}
-@media(max-width:760px){.research-panel{margin-top:10px;padding:16px 14px}.research-charts,.research-papers,.people-list{grid-template-columns:1fr}}
+@media(max-width:760px){.research-panel{margin-top:10px;padding:16px 14px}.research-charts,.research-papers,.people-list,.open-list{grid-template-columns:1fr}}
 @media print{.research-panel{display:none}}
 </style>
 </head>
@@ -499,6 +512,22 @@ svg .svg-word{cursor:pointer!important;text-decoration-line:underline!important;
  <p class="research-status" id="people-status" role="status" aria-live="polite"></p>
  <ol class="people-list" id="people-list" hidden></ol>
  <div class="research-footer"><span>Bios and photos: Wikipedia (CC BY-SA). Paper counts: arXiv author search, which can include namesakes.</span><span>LinkedIn links open a people search; check the profile is the right person.</span></div>
+</section>
+
+<section class="frame research-panel" id="open-panel" aria-labelledby="open-heading" hidden>
+ <p class="eyebrow">Open questions · the big picture</p>
+ <h2 id="open-heading">Leading open questions</h2>
+ <p class="research-source">Long-standing questions that shape the area, with what is already known. Curated and checked in November 2026; links go to Wikipedia.</p>
+ <ol class="open-list" id="open-list"></ol>
+</section>
+
+<section class="frame research-panel" id="frontier-panel" aria-labelledby="frontier-heading" hidden>
+ <p class="eyebrow">Open questions · this month on arXiv</p>
+ <h2 id="frontier-heading">Open questions in the latest papers</h2>
+ <p class="research-source" id="frontier-note">The six newest math.LO abstracts that mention an open problem, open question or conjecture, and what each paper claims about it.</p>
+ <p class="research-status" id="frontier-status" role="status" aria-live="polite"></p>
+ <ol class="open-list frontier" id="frontier-list" hidden></ol>
+ <div class="research-footer"><span id="frontier-updated"></span><span>Questions and status are AI-extracted from abstracts; read the paper before relying on a claim.</span></div>
 </section>
 
 <dialog id="word-dialog" aria-labelledby="word-title">
@@ -2506,7 +2535,7 @@ function updateControls(){
  $('play').setAttribute('aria-label',isPlaying?'Pause playback':atRouteEnd()?'Play the route again':`Play at ${fmt(lastForward||1)} times normal speed`);
  $('play').title=$('play').getAttribute('aria-label');
  updateDestinations();
- $('status').textContent=`v0.14 · Offline`;
+ $('status').textContent=`v0.15 · Offline`;
 }
 function atRouteEnd(){return branchKey===branchOrder.at(-1)&&t>=TOTAL}
 function advance(now){
@@ -2783,13 +2812,63 @@ function peopleFor(key){
  if(peopleVisible)startPeople();
 }
 function startPeople(){if(!peopleLesson||peopleShown)return;peopleShown=true;const run=++peopleRun,status=$('people-status');status.hidden=false;status.className='research-status';status.textContent='Loading profiles from Wikipedia and arXiv…';loadPeople(peopleLesson,run)}
-function updateResearchButton(){researchFor(branchKey);peopleFor(branchKey)}
+// v0.15 · Open questions: a curated panel (static, works offline) and a live arXiv panel.
+const OPEN_QUESTIONS={foundations:[
+ {title:'The continuum hypothesis and new axioms',status:'independent',q:'Is there an infinite set larger than the natural numbers but smaller than the real numbers?',
+  known:'Gödel (1940) and Cohen (1963) showed the usual axioms (ZFC) can neither prove nor refute the continuum hypothesis. The live question is which new axioms mathematicians should accept: forcing axioms such as Martin’s Maximum imply the continuum has size ℵ₂, whereas Woodin’s Ultimate L programme points towards the hypothesis being true.',
+  link:'https://en.wikipedia.org/wiki/Continuum_hypothesis'},
+ {title:'An “ultimate” canonical universe',status:'open',q:'Is there a canonical, fine-structural model of set theory, like Gödel’s L, that is compatible with the strongest large cardinals?',
+  known:'Inner models of this kind are known for large cardinals up to roughly Woodin cardinals and somewhat beyond. Woodin’s Ultimate L conjecture predicts such a model exists even for a supercompact cardinal; it remains unproved.',
+  link:'https://en.wikipedia.org/wiki/Inner_model_theory'},
+ {title:'Short proofs and NP versus coNP',status:'open',q:'Does every proof system for propositional logic have true statements whose shortest proofs are exponentially long?',
+  known:'Cook and Reckhow (1979) showed this holds for every proof system exactly when NP ≠ coNP. Exponential lower bounds are proved for weaker systems such as resolution (Haken, 1985), but the question is open for Frege systems, the standard textbook proof systems.',
+  link:'https://en.wikipedia.org/wiki/Proof_complexity'},
+ {title:'Vaught’s conjecture',status:'open',q:'Can a complete theory in a countable language have more than countably many, but fewer than continuum many, countable models?',
+  known:'Vaught (1961) conjectured that it cannot. It is proved for ω-stable theories (Shelah, Harrington and Makkai, 1984) and for o-minimal theories (Mayer, 1988), but remains open in general.',
+  link:'https://en.wikipedia.org/wiki/Vaught_conjecture'},
+ {title:'Hilbert’s tenth problem over the rationals',status:'claimed',q:'Is there an algorithm that decides whether a polynomial equation with rational coefficients has a rational solution?',
+  known:'Over the integers the answer is no (Matiyasevich, 1970, completing work of Davis, Putnam and Robinson). Over the rationals a Diophantine definition of ℤ inside ℚ would settle it negatively. Until recently such definitions were known only under unproved conjectures; a preprint posted on 12 November 2026 (Burungale) claims an unconditional one, which has not yet been peer reviewed.',
+  extra:{label:'The Nov 2026 preprint',url:'https://arxiv.org/abs/2611.16130'},
+  link:'https://en.wikipedia.org/wiki/Hilbert%27s_tenth_problem'},
+ {title:'Tarski’s exponential function problem',status:'open',q:'Is there an algorithm that decides every first-order statement about the real numbers with addition, multiplication and the exponential function?',
+  known:'Without the exponential, Tarski showed the answer is yes. Wilkie (1996) proved the theory with exp is model complete, and Macintyre and Wilkie (1996) proved it decidable assuming Schanuel’s conjecture, which is itself unproved.',
+  link:'https://en.wikipedia.org/wiki/Tarski%27s_exponential_function_problem'}
+]};
+const OPEN_STATUS={independent:'Independent of ZFC',open:'Open',claimed:'Proof claimed, unverified',settles:'Claims to settle',progress:'Partial progress',poses:'Raised as open',uses:'Assumes a conjecture'};
+const FRONTIER_API='https://mim-research.puter.work/open/';
+let frontierLesson=null,frontierRun=0,frontierVisible=false,frontierShown=false;
+function openFor(key){
+ const list=OPEN_QUESTIONS[key],panel=$('open-panel');panel.hidden=!list;if(!list)return;
+ $('open-list').innerHTML=list.map(o=>`<li><h3>${esc(o.title)}</h3><p class="open-q">${esc(o.q)}</p><p class="open-known">${esc(o.known)}</p><p class="open-meta"><span class="open-status st-${o.status}">${esc(OPEN_STATUS[o.status])}</span><a href="${esc(o.link)}" target="_blank" rel="noopener">Wikipedia</a>${o.extra?`<a href="${esc(o.extra.url)}" target="_blank" rel="noopener">${esc(o.extra.label)}</a>`:''}</p></li>`).join('');
+}
+async function loadFrontier(key,run){
+ const status=$('frontier-status');
+ try{const res=await fetch(FRONTIER_API+encodeURIComponent(key),{cache:'no-store'});const d=await res.json();if(run!==frontierRun)return;
+  if(!res.ok)throw new Error(d.message||d.error||('HTTP '+res.status));
+  $('frontier-list').innerHTML=d.items.map(it=>{const p=it.paper,au=p.authors.map(a=>a.replace(/[{}]/g,'')),who=au.length>2?au[0]+' et al.':au.join(' & ');
+   return `<li><p class="open-q">${esc(it.question)}</p><p class="open-known"><a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(plainTeX(p.title))}</a> — ${esc(who)}, ${esc(new Date(p.published+'T12:00Z').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}))}</p><p class="open-meta"><span class="open-status st-${esc(it.status)}">${esc(OPEN_STATUS[it.status]||it.status)}</span><span>${esc(p.category)}</span></p></li>`}).join('');
+  $('frontier-list').hidden=false;status.hidden=true;
+  $('frontier-updated').textContent=`AI-extracted (${d.model}) · checked ${new Date(d.at).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}`;
+ }catch(err){if(run!==frontierRun)return;frontierShown=false;status.hidden=false;status.className='research-status error';
+  status.textContent=(navigator.onLine===false?'You are offline. ':'')+'The latest open questions could not be loaded'+(err&&err.message?` (${err.message})`:'')+'. Try again when connected.'}
+}
+function frontierFor(key){
+ const panel=$('frontier-panel'),on=RESEARCH_LESSONS.has(key);panel.hidden=!on;frontierRun++;
+ if(!on){frontierLesson=null;return}
+ if(frontierLesson===key)return;
+ frontierLesson=key;frontierShown=false;$('frontier-list').hidden=true;$('frontier-updated').textContent='';
+ const status=$('frontier-status');status.hidden=false;status.className='research-status';status.textContent='Scroll here to load open questions from the latest papers.';
+ if(frontierVisible)startFrontier();
+}
+function startFrontier(){if(!frontierLesson||frontierShown)return;frontierShown=true;const run=++frontierRun,status=$('frontier-status');status.hidden=false;status.className='research-status';status.textContent='Reading the latest abstracts… the first visit of the day can take a little while.';loadFrontier(frontierLesson,run)}
+function updateResearchButton(){researchFor(branchKey);peopleFor(branchKey);openFor(branchKey);frontierFor(branchKey)}
 function installResearch(){
  if('IntersectionObserver' in window){
   new IntersectionObserver(es=>{researchVisible=es.some(e=>e.isIntersecting);if(researchVisible)startResearch()},{rootMargin:'200px'}).observe($('research-panel'));
   new IntersectionObserver(es=>{peopleVisible=es.some(e=>e.isIntersecting);if(peopleVisible)startPeople()},{rootMargin:'200px'}).observe($('people-panel'));
- }else researchVisible=peopleVisible=true;
- researchLesson=null;peopleLesson=null;updateResearchButton();
+  new IntersectionObserver(es=>{frontierVisible=es.some(e=>e.isIntersecting);if(frontierVisible)startFrontier()},{rootMargin:'200px'}).observe($('frontier-panel'));
+ }else researchVisible=peopleVisible=frontierVisible=true;
+ researchLesson=null;peopleLesson=null;frontierLesson=null;updateResearchButton();
 }
 function installWordHelp(){
  $('words').addEventListener('click',e=>showAllWords(e.currentTarget));
