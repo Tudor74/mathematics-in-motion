@@ -458,6 +458,900 @@ const GLOSSARY=[{"key": "statistics", "title": "Statistics", "aliases": ["statis
 // Each part supplies lessons, scenes, glossary entries and one renderer per scene (visual: 'applied').
 const APPLIED_PARTS=[],APPLIED_DRAW={};
 /*APPLIED-PARTS:BEGIN*/
+// ── applied-a ──
+{
+const L='decide';
+// ── shared helpers for part A ──
+const rngA=seed=>{let s=seed>>>0;return()=>{s=(Math.imul(s,1664525)+1013904223)>>>0;return s/4294967296}};
+const normA=r=>(r()+r()+r()+r()-2)*Math.sqrt(3); // mean 0, sd 1 (sum of four uniforms)
+const erfA=x=>{const s=Math.sign(x);x=Math.abs(x);const t=1/(1+.3275911*x);const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-.284496736)*t+.254829592)*t*Math.exp(-x*x);return s*y};
+const PhiA=z=>.5*(1+erfA(z/Math.SQRT2));
+function axesA(xmin,xmax,ymin,ymax,title,{left=85,right=515,top=82,bottom=300,xticks=null,yticks=null}={}){
+ const X=x=>left+(right-left)*(x-xmin)/(xmax-xmin),Y=y=>bottom-(bottom-top)*(y-ymin)/(ymax-ymin);
+ const y0=clamp(0,ymin,ymax),x0=clamp(0,xmin,xmax);
+ let out=heading(title)+line(left,Y(y0),right,Y(y0),C.muted,2)+line(X(x0),top,X(x0),bottom+4,C.muted,2);
+ for(const x of (xticks||[xmin,(xmin+xmax)/2,xmax]))out+=text(X(x),bottom+28,fmt(x),15,C.muted);
+ for(const y of (yticks||[ymin,ymax]))out+=text(left-14,Y(y)+5,fmt(y),14,C.muted,'end');
+ const id='clipA'+Math.round(left)+'_'+Math.round(top);
+ const clip=c=>`<defs><clipPath id="${id}"><rect x="${left-1}" y="${top-2}" width="${right-left+2}" height="${bottom-top+4}"/></clipPath></defs><g clip-path="url(#${id})">${c}</g>`;
+ return {out,X,Y,clip};
+}
+const curveA=(A,f,a,b,col=C.blue,w=3,n=120)=>path2(sample2(u=>{const x=a+u*(b-a);return [A.X(x),A.Y(f(x))]},1,n),col,w);
+function matrixA(rows,cols,cells,fillFn,{x0=170,y0=100,cw=150,ch=78,single=false}={}){
+ let out='';cols.forEach((c,j)=>out+=text(x0+cw*j+cw/2,y0-14,c,17,C.coral));
+ rows.forEach((r,i)=>{out+=text(x0-14,y0+ch*i+ch/2+6,r,17,C.blue,'end');
+  cols.forEach((_,j)=>{const v=cells[i][j];out+=rect(x0+cw*j+3,y0+ch*i+3,cw-6,ch-6,fillFn(i,j),C.line,8,'stroke-width="1.5"');
+   if(single)out+=text(x0+cw*j+cw/2,y0+ch*i+ch/2+7,v>0?'+'+v:String(v),21,v>0?C.blue:v<0?C.coral:C.muted);
+   else out+=text(x0+cw*j+cw/2-24,y0+ch*i+ch/2+7,String(v[0]),21,C.blue)+text(x0+cw*j+cw/2,y0+ch*i+ch/2+7,',',21,C.muted)+text(x0+cw*j+cw/2+24,y0+ch*i+ch/2+7,String(v[1]),21,C.coral)})});
+ return out;
+}
+const along=(pts,u)=>{let segs=[],tot=0;for(let i=1;i<pts.length;i++){const d=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);segs.push(d);tot+=d}
+ let r=clamp(u,0,1)*tot;for(let i=0;i<segs.length;i++){if(r<=segs[i]){const k=segs[i]?r/segs[i]:0;return [pts[i][0]+k*(pts[i+1][0]-pts[i][0]),pts[i][1]+k*(pts[i+1][1]-pts[i][1])]}r-=segs[i]}return pts.at(-1)};
+const box=(x,y,w,h,label,fill=C.pale)=>rect(x-w/2,y-h/2,w,h,fill,C.blue,10,'stroke-width="2"')+text(x,y+6,label,17);
+
+// ── data shared by several scenes ──
+const STAG=[[[4,4],[0,3]],[[3,0],[3,3]]];
+const PD=[[[-1,-1],[-3,0]],[[0,-3],[-2,-2]]];
+const REG_X=[1,2,3,4,5,6,7,8],REG_Y=[2.9,2.8,4.1,3.7,5.2,4.8,6.1,5.9];
+const regFit=(()=>{const n=8,mx=REG_X.reduce((a,b)=>a+b)/n,my=REG_Y.reduce((a,b)=>a+b)/n;let sxy=0,sxx=0;REG_X.forEach((x,i)=>{sxy+=(x-mx)*(REG_Y[i]-my);sxx+=(x-mx)**2});const b=sxy/sxx;return {mx,my,b,a:my-b*mx}})();
+const GRAPH={nodes:{A:[95,205],B:[225,110],C:[225,300],D:[375,110],E:[375,300],F:[510,205]},
+ edges:[['A','B',4],['A','C',2],['B','C',1],['B','D',5],['C','E',10],['D','E',3],['D','F',6],['E','F',2]]};
+const dijkstra=(()=>{const dist={},prev={},done=[];for(const k in GRAPH.nodes)dist[k]=Infinity;dist.A=0;
+ while(done.length<6){let u=null;for(const k in dist)if(!done.includes(k)&&(u===null||dist[k]<dist[u]))u=k;done.push(u);
+  for(const [a,b,w] of GRAPH.edges){const v=a===u?b:b===u?a:null;if(v&&!done.includes(v)&&dist[u]+w<dist[v]){dist[v]=dist[u]+w;prev[v]=u}}}
+ return {dist,prev,order:done}})();
+const SUBSET=[3,34,4,12,5,2];
+
+APPLIED_PARTS.push({
+ lessons:[
+  {id:'statistics',name:'Statistics & inference',short:'Statistics',tab:'Statistics',stage:L,msc:['62'],why:'Reverse the direction of probability: start from data and ask what can be learned about the model.',prior:['probability'],context:'general',ids:['estimator','sampling-distribution','confidence-interval','hypothesis-test','likelihood-function','regression'],level:'Introduction',references:['statistics','probability']},
+  {id:'numerical',name:'Numerical analysis',short:'Numerical analysis',tab:'Numerical analysis',stage:L,msc:['65'],why:'Replace exact limits by finite computations, and measure the error that remains.',prior:['analysis','algebra'],context:'general',ids:['floating-point','newton-method','quadrature','euler-method','condition-number'],level:'Introduction',references:['numerical']},
+  {id:'computing',name:'Algorithms & computation',short:'Algorithms',tab:'Algorithms',stage:L,msc:['68'],why:'Ask not only whether a problem can be solved, but how many steps it takes.',prior:['logic','discrete'],context:'general',ids:['algorithm','complexity','divide-and-conquer','shortest-path','p-versus-np'],level:'Introduction',references:['algorithms','logic']},
+  {id:'optimisation',name:'Optimisation & operations research',short:'Optimisation',tab:'Optimisation',stage:L,msc:['90'],why:'Choose the best option among those allowed, using geometry and derivatives.',prior:['calculus','algebra','geometry'],context:'general',ids:['optimisation-problem','linear-programme','gradient-descent','lagrange-multiplier','convex-function'],level:'Introduction',references:['optimisation']},
+  {id:'games',name:'Game theory & decisions',short:'Game theory',tab:'Game theory',stage:L,msc:['91'],why:'Optimise when the outcome also depends on other decision-makers.',prior:['probability','optimisation'],context:'general',ids:['strategic-game','dominant-strategy','nash-equilibrium','mixed-strategy','zero-sum'],level:'Introduction',references:['games']},
+  {id:'control',name:'Control & systems theory',short:'Control',tab:'Control',stage:L,msc:['93'],why:'Steer a dynamical system by measuring its output and adjusting its input.',prior:['dynamics','operators'],context:'general',ids:['feedback','transfer-function','pid-controller','closed-loop-stability','optimal-control'],level:'Introduction',references:['control']}
+ ],
+ scenes:[
+  // statistics
+  {id:'estimator',branch:'statistics',name:'Estimator',tag:'A rule that turns data into a guess',definition:'A function of the observed data used to estimate an unknown parameter of the model.',example:'The sample mean (x₁ + … + xₙ)/n estimates a population mean μ. For data 4, 6, 5, 7 it gives 5.5.',visual:'applied',variant:'estimator',contrast:'An estimator is the rule; an estimate is the number it produces from one particular dataset.',three:null,aliases:['Estimator'],wordKey:'estimator'},
+  {id:'sampling-distribution',branch:'statistics',name:'Sampling distribution',tag:'How an estimate varies between samples',definition:'The probability distribution of a statistic over all the samples that could have been drawn.',example:'Means of 10 values from Uniform[0,1] centre on 0.5 with standard deviation about 0.289/√10 ≈ 0.091.',visual:'applied',variant:'sampling-distribution',contrast:'It is not the distribution of the data. It describes the statistic, which is usually far less spread out.',three:null,aliases:['Sampling distribution'],wordKey:'sampling-distribution'},
+  {id:'confidence-interval',branch:'statistics',name:'Confidence interval',tag:'A range produced by a reliable procedure',definition:'An interval computed from data by a method that, over repeated samples, contains the true parameter with a stated probability.',example:'With known σ = 2 and n = 16, the 95% interval is x̄ ± 1.96·2/4 = x̄ ± 0.98.',visual:'applied',variant:'confidence-interval',contrast:'95% describes the procedure. Once computed, a particular interval either contains μ or it does not.',three:null,aliases:['Confidence interval'],wordKey:'confidence-interval'},
+  {id:'hypothesis-test',branch:'statistics',name:'Hypothesis test',tag:'How surprising are the data under a default model?',definition:'A procedure that measures how incompatible the data are with a null hypothesis, often summarised by a p-value.',example:'62 heads in 100 fair tosses gives z = (62 − 50)/5 = 2.4 and a two-sided p-value of about 0.016.',visual:'applied',variant:'hypothesis-test',contrast:'A p-value is not the probability that the null hypothesis is true.',three:null,aliases:['Hypothesis test'],wordKey:'hypothesis-test'},
+  {id:'likelihood-function',branch:'statistics',name:'Likelihood function',tag:'Fixed data, varying parameter',definition:'The probability (or density) of the observed data, viewed as a function of the unknown parameter.',example:'7 heads in 10 tosses gives L(θ) ∝ θ⁷(1 − θ)³, which is largest at θ = 0.7: the maximum likelihood estimate.',visual:'applied',variant:'likelihood-function',contrast:'L(θ) is not a probability distribution for θ; it need not integrate to 1.',three:null,aliases:['Likelihood function'],wordKey:'likelihood-function'},
+  {id:'regression',branch:'statistics',name:'Least-squares regression',tag:'The line with the smallest squared residuals',definition:'Fitting a line y = a + bx by choosing a and b to minimise the sum of squared vertical residuals.',example:'The fitted slope is b = Σ(x − x̄)(y − ȳ)/Σ(x − x̄)², and the line always passes through (x̄, ȳ).',visual:'applied',variant:'regression',contrast:'A good fit shows association, not causation, and does not justify predictions far outside the data.',three:null,aliases:['Least-squares regression'],wordKey:'regression'},
+  // numerical
+  {id:'floating-point',branch:'numerical',name:'Floating-point number',tag:'Finitely many numbers stand in for the reals',definition:'A number stored as a fixed number of significant binary digits times a power of two, so real inputs are rounded to the nearest representable value.',example:'In standard double precision, 0.1 + 0.2 evaluates to 0.30000000000000004.',visual:'applied',variant:'floating-point',contrast:'The gaps are not equal: they double with each power of two, so the relative error stays bounded instead of the absolute error.',three:null,aliases:['Floating-point number'],wordKey:'floating-point'},
+  {id:'newton-method',branch:'numerical',name:'Newton’s method',tag:'Follow the tangent to its root',definition:'An iteration xₙ₊₁ = xₙ − f(xₙ)/f′(xₙ) that replaces f by its tangent line and solves that instead.',example:'For f(x) = x² − 2 from x₀ = 3: 1.8333, 1.4621, 1.4150, 1.4142 — the correct digits roughly double each step.',visual:'applied',variant:'newton-method',contrast:'Fast convergence is local: a poor starting point or a zero derivative can make the iteration fail.',three:null,aliases:['Newton’s method',"Newton's method",'Newton–Raphson method'],wordKey:'newton-method'},
+  {id:'quadrature',branch:'numerical',name:'Numerical quadrature',tag:'Approximate an integral by a weighted sum',definition:'An estimate of a definite integral from finitely many function values, such as the trapezium rule.',example:'For ∫₀^π sin x dx = 2, the trapezium rule gives 1.571 with 2 strips and 1.896 with 4.',visual:'applied',variant:'quadrature',contrast:'More strips reduce the error but never make it exactly zero for a general function.',three:null,aliases:['Numerical quadrature','Trapezium rule','Trapezoidal rule'],wordKey:'quadrature'},
+  {id:'euler-method',branch:'numerical',name:'Euler’s method',tag:'Step along the slope you are given',definition:'A numerical solution of y′ = f(t, y) by repeated steps yₙ₊₁ = yₙ + h·f(tₙ, yₙ).',example:'For y′ = y, y(0) = 1 and h = 0.5, Euler gives 1.5⁴ = 5.0625 at t = 2; the exact value is e² ≈ 7.389.',visual:'applied',variant:'euler-method',contrast:'The error at a fixed time shrinks roughly in proportion to h; it does not vanish after a few steps.',three:null,aliases:['Euler’s method',"Euler's method",'Euler method'],wordKey:'euler-method'},
+  {id:'condition-number',branch:'numerical',name:'Condition number',tag:'How much a problem amplifies small changes',definition:'A measure of the worst-case ratio between relative change in the output and relative change in the input.',example:'For the matrix [[1, 1], [1, 1.01]] the condition number is about 402: a change of 0.01 in b moves the solution from (2, 0) to (1, 1).',visual:'applied',variant:'condition-number',contrast:'Ill-conditioning belongs to the problem itself; even a perfect algorithm cannot remove it.',three:null,aliases:['Condition number','Ill-conditioned'],wordKey:'condition-number'},
+  // computing
+  {id:'algorithm',branch:'computing',name:'Algorithm',tag:'A finite, precise recipe',definition:'A finite sequence of unambiguous steps that transforms any valid input into the required output.',example:'Euclid’s algorithm: gcd(252, 105) → gcd(105, 42) → gcd(42, 21) → gcd(21, 0) = 21.',visual:'applied',variant:'algorithm',contrast:'An algorithm is not a program in a particular language; one algorithm can have many implementations.',three:null,aliases:['Algorithm','Algorithms'],wordKey:'algorithm'},
+  {id:'complexity',branch:'computing',name:'Asymptotic complexity',tag:'How cost grows with input size',definition:'The growth rate of an algorithm’s running time or memory as the input size n increases, described up to constant factors.',example:'At n = 32, n log₂ n = 160 while n² = 1024; at n = 1000 the gap is about 10 000 versus 1 000 000.',visual:'applied',variant:'complexity',contrast:'Big-O describes growth for large n, not exact running time; a slower-growing method can lose on small inputs.',three:null,aliases:['Asymptotic complexity','Time complexity','Big-O notation'],wordKey:'complexity'},
+  {id:'divide-and-conquer',branch:'computing',name:'Divide and conquer',tag:'Split, solve the halves, combine',definition:'A strategy that splits a problem into smaller instances of itself, solves them recursively and combines the answers.',example:'Merge sort sorts 8 numbers by merging sorted pairs, then sorted fours: about n log₂ n comparisons in total.',visual:'applied',variant:'divide-and-conquer',contrast:'The pieces must be the same kind of problem; splitting work into unrelated tasks is not divide and conquer.',three:null,aliases:['Divide and conquer','Merge sort'],wordKey:'divide-and-conquer'},
+  {id:'shortest-path',branch:'computing',name:'Shortest path',tag:'Least total weight through a network',definition:'A path between two vertices of a weighted graph whose edge weights have the smallest possible sum.',example:'Dijkstra’s algorithm settles vertices in order of distance: here A 0, C 2, B 3, D 8, E 11, F 13.',visual:'applied',variant:'shortest-path',contrast:'Shortest means least total weight, not fewest edges; A → C → B uses two edges but is shorter than A → B.',three:null,aliases:['Shortest path','Dijkstra’s algorithm',"Dijkstra's algorithm"],wordKey:'shortest-path'},
+  {id:'p-versus-np',branch:'computing',name:'P versus NP',tag:'Is checking as hard as finding?',definition:'The open question of whether every problem whose solutions can be verified in polynomial time can also be solved in polynomial time.',example:'For {3, 34, 4, 12, 5, 2} and target 9, checking {4, 5} takes one addition; a naive search tries up to 2⁶ = 64 subsets.',visual:'applied',variant:'p-versus-np',contrast:'NP does not mean “not polynomial”; it means solutions can be checked quickly.',three:null,aliases:['P versus NP','P vs NP','NP-complete'],wordKey:'p-versus-np'},
+  // optimisation
+  {id:'optimisation-problem',branch:'optimisation',name:'Optimisation problem',tag:'An objective, a set of allowed choices',definition:'The task of finding a point in a feasible set at which an objective function is as small (or as large) as possible.',example:'Minimise (x − 1)² + 1 subject to 1.5 ≤ x ≤ 3: the answer is x = 1.5 with value 1.25, on the boundary.',visual:'applied',variant:'optimisation-problem',contrast:'The constrained optimum need not be where the derivative is zero; it can sit on the edge of the feasible set.',three:null,aliases:['Optimisation problem','Optimization problem','Objective function'],wordKey:'optimisation-problem'},
+  {id:'linear-programme',branch:'optimisation',name:'Linear programme',tag:'Linear objective over a polygon',definition:'An optimisation problem with a linear objective and linear inequality constraints, so the feasible set is a convex polytope.',example:'Maximise 2x + 3y with x + y ≤ 4, x + 3y ≤ 6, x, y ≥ 0: the best vertex is (3, 1), value 9.',visual:'applied',variant:'linear-programme',contrast:'A linear programme cannot capture curved trade-offs; its optimum, when it exists, can always be found at a vertex.',three:null,aliases:['Linear programme','Linear program','Linear programming'],wordKey:'linear-programme'},
+  {id:'gradient-descent',branch:'optimisation',name:'Gradient descent',tag:'Walk downhill in small steps',definition:'An iteration xₖ₊₁ = xₖ − α∇f(xₖ) that moves against the gradient to reduce f.',example:'For f = x² + 4y² with α = 0.1, each step multiplies x by 0.8 and y by 0.2.',visual:'applied',variant:'gradient-descent',contrast:'It finds a local minimum, not necessarily the global one, and a step size that is too large can diverge.',three:null,aliases:['Gradient descent'],wordKey:'gradient-descent'},
+  {id:'lagrange-multiplier',branch:'optimisation',name:'Lagrange multiplier',tag:'At the optimum, gradients line up',definition:'A number λ with ∇f = λ∇g at a constrained optimum of f on the curve or surface g = c.',example:'Maximising x + y on x² + y² = 2 gives (1, 1): (1, 1) = λ(2, 2), so λ = 1/2.',visual:'applied',variant:'lagrange-multiplier',contrast:'λ is not a free tuning parameter; it measures how the optimum value changes as the constraint level c changes.',three:null,aliases:['Lagrange multiplier','Lagrange multipliers'],wordKey:'lagrange-multiplier'},
+  {id:'convex-function',branch:'optimisation',name:'Convex function',tag:'Every chord lies above the graph',definition:'A function with f(λa + (1 − λ)b) ≤ λf(a) + (1 − λ)f(b) for all a, b and 0 ≤ λ ≤ 1.',example:'f(x) = x² is convex: at the midpoint of −1.5 and 1.8, f(0.15) = 0.0225 while the chord gives 2.745.',visual:'applied',variant:'convex-function',contrast:'Convex is a property of a function here, not only of a set; for convex functions every local minimum is global.',three:null,aliases:['Convex function','Convex optimisation','Convex optimization'],wordKey:'convex-function'},
+  // games
+  {id:'strategic-game',branch:'games',name:'Strategic game',tag:'Players, choices, payoffs',definition:'A model listing players, the strategies available to each, and every player’s payoff for each combination of choices.',example:'In the stag hunt, both hunting stag pays (4, 4), both hunting hare pays (3, 3), and hunting stag alone pays 0.',visual:'applied',variant:'strategic-game',contrast:'A payoff ranks outcomes for a player; it need not be money, and higher is simply preferred.',three:null,aliases:['Strategic game','Normal-form game','Payoff matrix'],wordKey:'strategic-game'},
+  {id:'dominant-strategy',branch:'games',name:'Dominant strategy',tag:'Best whatever the others do',definition:'A strategy that gives a player a strictly higher payoff than another strategy against every choice of the other players.',example:'In the prisoner’s dilemma, defecting pays 0 > −1 and −2 > −3, so both defect — even though both cooperating would be better.',visual:'applied',variant:'dominant-strategy',contrast:'Individually dominant choices can produce a collectively worse outcome.',three:null,aliases:['Dominant strategy','Prisoner’s dilemma',"Prisoner's dilemma"],wordKey:'dominant-strategy'},
+  {id:'nash-equilibrium',branch:'games',name:'Nash equilibrium',tag:'No one gains by deviating alone',definition:'A choice of strategies, one per player, in which each strategy is a best response to the others.',example:'The stag hunt has two pure Nash equilibria: (stag, stag) paying 4 each and (hare, hare) paying 3 each.',visual:'applied',variant:'nash-equilibrium',contrast:'A Nash equilibrium need not be the best outcome for the group, and a game can have several.',three:null,aliases:['Nash equilibrium','Best response'],wordKey:'nash-equilibrium'},
+  {id:'mixed-strategy',branch:'games',name:'Mixed strategy',tag:'Choose at random, on purpose',definition:'A probability distribution over a player’s pure strategies.',example:'In matching pennies, if the opponent plays heads with probability q, heads earns 2q − 1 and tails 1 − 2q; only q = 1/2 leaves no exploitable bias.',visual:'applied',variant:'mixed-strategy',contrast:'Randomising is not indecision: unpredictability itself is what protects the player.',three:null,aliases:['Mixed strategy','Mixed strategies','Matching pennies'],wordKey:'mixed-strategy'},
+  {id:'zero-sum',branch:'games',name:'Zero-sum game',tag:'One player’s gain is the other’s loss',definition:'A two-player game in which the payoffs in every outcome add to zero, so only one number per outcome is needed.',example:'In rock–paper–scissors the optimal mix is 1/3 each; every pure reply to it then earns expected payoff 0, the value of the game.',visual:'applied',variant:'zero-sum',contrast:'Many real interactions are not zero-sum: trade and cooperation can make both sides better off.',three:null,aliases:['Zero-sum game','Minimax theorem'],wordKey:'zero-sum'},
+  // control
+  {id:'feedback',branch:'control',name:'Feedback loop',tag:'Measure, compare, correct',definition:'An arrangement in which a system’s measured output is compared with a target and the difference is used to adjust its input.',example:'A thermostat compares room temperature with the set point and switches the heating according to the error.',visual:'applied',variant:'feedback',contrast:'Negative feedback reduces the error; it is not the same as praise or criticism, and positive feedback amplifies deviations.',three:null,aliases:['Feedback loop','Negative feedback','Closed loop'],wordKey:'feedback'},
+  {id:'transfer-function',branch:'control',name:'Transfer function',tag:'Input-to-output ratio in the Laplace domain',definition:'For a linear time-invariant system, the ratio Y(s)/U(s) of the Laplace transforms of output and input, with zero initial conditions.',example:'For y′ + y = u, G(s) = 1/(s + 1). A sine of frequency 2 comes out scaled by 1/√5 ≈ 0.447 and delayed by about 63°.',visual:'applied',variant:'transfer-function',contrast:'It describes only linear time-invariant behaviour; it is not a formula for arbitrary nonlinear systems.',three:null,aliases:['Transfer function'],wordKey:'transfer-function'},
+  {id:'pid-controller',branch:'control',name:'PID controller',tag:'Present, past and trend of the error',definition:'A controller whose input is Kp·e + Ki·∫e dt + Kd·de/dt, combining the current error, its accumulation and its rate of change.',example:'For y′ = −y + u with proportional gain 2 alone, the output settles at 2/3; adding integral action removes this steady-state error.',visual:'applied',variant:'pid-controller',contrast:'Larger gains are not always better: they can cause overshoot, noise amplification or instability.',three:null,aliases:['PID controller','PID control'],wordKey:'pid-controller'},
+  {id:'closed-loop-stability',branch:'control',name:'Closed-loop stability',tag:'Feedback can calm a system or shake it apart',definition:'The property that the feedback system’s output stays bounded and settles, which for linear systems means all closed-loop poles have negative real part.',example:'Gain k around 1/(s(s + 1)(s + 2)) gives s³ + 3s² + 2s + k = 0, stable exactly when 0 < k < 6.',visual:'applied',variant:'closed-loop-stability',contrast:'A stable plant can become unstable under feedback, and an unstable plant can be stabilised by it.',three:null,aliases:['Closed-loop stability','Routh–Hurwitz criterion'],wordKey:'closed-loop-stability'},
+  {id:'optimal-control',branch:'control',name:'Optimal control',tag:'Steer at the least total cost',definition:'Choosing an input over time to minimise a cost that balances how far the state strays against how much control is used.',example:'For x′ = u, x(0) = 1 and cost ∫(x² + u²) dt, the feedback u = −kx costs (1 + k²)/(2k), minimised at k = 1 with cost 1.',visual:'applied',variant:'optimal-control',contrast:'Optimal is relative to the chosen cost; a different weighting of effort and error gives a different optimum.',three:null,aliases:['Optimal control','Linear–quadratic regulator','LQR'],wordKey:'optimal-control'}
+ ],
+ glossary:[
+  {key:'estimator',title:'Estimator',aliases:['estimator','estimators'],here:'A rule that computes a guess for an unknown parameter from data.',contrast:'The rule is the estimator; the number it gives for one dataset is the estimate.',example:'The sample mean estimates the population mean.',linkContext:'statistics'},
+  {key:'sampling-distribution',title:'Sampling distribution',aliases:['sampling distribution'],here:'The distribution of a statistic across all possible samples.',contrast:'Not the distribution of individual data values.',example:'Sample means of size 10 from Uniform[0,1] have standard deviation about 0.091.',linkContext:'statistics'},
+  {key:'confidence-interval',title:'Confidence interval',aliases:['confidence interval','confidence intervals'],here:'An interval from a procedure that captures the true parameter with a stated long-run frequency.',contrast:'The confidence level describes the method, not one computed interval.',example:'x̄ ± 1.96σ/√n is a 95% interval when σ is known.',linkContext:'statistics'},
+  {key:'hypothesis-test',title:'Hypothesis test',aliases:['hypothesis test','hypothesis testing','null hypothesis','p-value'],here:'A measure of how surprising the data would be if a default (null) model were true.',contrast:'A small p-value does not give the probability that the null hypothesis is false.',example:'z = 2.4 has a two-sided p-value of about 0.016.',linkContext:'statistics'},
+  {key:'likelihood-function',title:'Likelihood function',aliases:['likelihood function','maximum likelihood','maximum likelihood estimate'],here:'The probability of the observed data as a function of the parameter.',contrast:'It is not a probability distribution over the parameter.',example:'7 heads in 10 tosses: L(θ) ∝ θ⁷(1 − θ)³, maximised at 0.7.',linkContext:'statistics'},
+  {key:'regression',title:'Least-squares regression',aliases:['least-squares regression','least squares','linear regression','regression line'],here:'Fitting a line by minimising the sum of squared vertical residuals.',contrast:'Association in a fit is not evidence of causation.',example:'The least-squares line passes through (x̄, ȳ).',linkContext:'statistics'},
+  {key:'floating-point',title:'Floating-point number',aliases:['floating-point number','floating-point','floating point','rounding error'],here:'A number with a fixed count of significant binary digits and an exponent.',contrast:'Spacing between floating-point numbers grows with their size.',example:'0.1 + 0.2 = 0.30000000000000004 in double precision.',linkContext:'numerical'},
+  {key:'newton-method',title:'Newton’s method',aliases:['Newton’s method',"Newton's method",'Newton–Raphson method','Newton iteration'],here:'Root-finding by repeatedly solving the tangent-line approximation.',contrast:'Convergence is guaranteed only near a simple root.',example:'x² − 2 from 3 reaches 1.4142 in four steps.',linkContext:'numerical'},
+  {key:'quadrature',title:'Numerical quadrature',aliases:['numerical quadrature','numerical integration','trapezium rule','trapezoidal rule'],here:'Approximating an integral by a weighted sum of function values.',contrast:'An approximation with an error term, not an exact antiderivative.',example:'Four trapezia give 1.896 for ∫₀^π sin x dx = 2.',linkContext:'numerical'},
+  {key:'euler-method',title:'Euler’s method',aliases:['Euler’s method',"Euler's method",'Euler method','forward Euler'],here:'Solving a differential equation by straight steps along the current slope.',contrast:'Each step introduces error; the errors accumulate.',example:'y′ = y with h = 0.5 gives 5.0625 at t = 2 instead of 7.389.',linkContext:'numerical'},
+  {key:'condition-number',title:'Condition number',aliases:['condition number','ill-conditioned','ill-conditioning'],here:'How strongly a problem magnifies relative changes in its data.',contrast:'A property of the problem, not of the algorithm used to solve it.',example:'[[1, 1], [1, 1.01]] has condition number about 402.',linkContext:'numerical'},
+  {key:'algorithm',title:'Algorithm',aliases:['algorithm','algorithms'],here:'A finite list of unambiguous steps that solves every instance of a problem.',contrast:'Not tied to one programming language or machine.',example:'Euclid’s algorithm computes greatest common divisors.',linkContext:'computing'},
+  {key:'complexity',title:'Asymptotic complexity',aliases:['asymptotic complexity','time complexity','computational complexity','big-O notation','Big-O'],here:'How resource use grows with input size, ignoring constant factors.',contrast:'Not the exact running time on a given computer.',example:'n log n grows far more slowly than n².',linkContext:'computing'},
+  {key:'divide-and-conquer',title:'Divide and conquer',aliases:['divide and conquer','divide-and-conquer','merge sort'],here:'Solving a problem by recursively solving smaller copies and combining the results.',contrast:'The subproblems are smaller instances of the same problem.',example:'Merge sort uses about n log₂ n comparisons.',linkContext:'computing'},
+  {key:'shortest-path',title:'Shortest path',aliases:['shortest path','shortest paths','Dijkstra’s algorithm',"Dijkstra's algorithm"],here:'A route of least total edge weight between two vertices.',contrast:'Least weight, not necessarily fewest edges.',example:'Dijkstra’s algorithm finds shortest paths when weights are non-negative.',linkContext:'computing'},
+  {key:'p-versus-np',title:'P versus NP',aliases:['P versus NP','P vs NP','NP-complete','NP-hard'],here:'The unsolved question of whether quickly checkable problems are always quickly solvable.',contrast:'NP means “verifiable in polynomial time”, not “not polynomial”.',example:'Subset sum is NP-complete.',linkContext:'computing'},
+  {key:'optimisation-problem',title:'Optimisation problem',aliases:['optimisation problem','optimization problem','objective function','feasible set','feasible region'],here:'Finding the best value of an objective over a set of allowed choices.',contrast:'The best allowed point may lie on the boundary, where the derivative need not vanish.',example:'Minimise (x − 1)² + 1 on [1.5, 3]: x = 1.5.',linkContext:'optimisation'},
+  {key:'linear-programme',title:'Linear programme',aliases:['linear programme','linear program','linear programming','simplex method'],here:'Optimising a linear objective subject to linear inequalities.',contrast:'Not about computer programming; “programme” here means plan.',example:'Maximise 2x + 3y on a polygon: the optimum is at a vertex.',linkContext:'optimisation'},
+  {key:'gradient-descent',title:'Gradient descent',aliases:['gradient descent','steepest descent','learning rate'],here:'Iteratively stepping opposite the gradient to decrease a function.',contrast:'May stop at a local minimum or diverge if the step is too large.',example:'On x² + 4y² with step 0.1, y shrinks five times faster than x.',linkContext:'optimisation'},
+  {key:'lagrange-multiplier',title:'Lagrange multiplier',aliases:['Lagrange multiplier','Lagrange multipliers','Lagrangian multiplier'],here:'The scalar λ with ∇f = λ∇g at a constrained optimum.',contrast:'λ is determined by the problem, not chosen freely.',example:'x + y on x² + y² = 2: optimum (1, 1), λ = 1/2.',linkContext:'optimisation'},
+  {key:'convex-function',title:'Convex function',aliases:['convex function','convex functions','convex optimisation','convex optimization'],here:'A function whose chords never dip below its graph.',contrast:'For convex functions, any local minimum is a global minimum.',example:'x², eˣ and |x| are convex.',linkContext:'optimisation'},
+  {key:'strategic-game',title:'Strategic game',aliases:['strategic game','normal-form game','payoff matrix','game theory'],here:'Players, their strategies, and a payoff for each player in every outcome.',contrast:'Payoffs encode preferences, not necessarily money.',example:'The stag hunt is a 2 × 2 strategic game.',linkContext:'games'},
+  {key:'dominant-strategy',title:'Dominant strategy',aliases:['dominant strategy','dominated strategy','prisoner’s dilemma',"prisoner's dilemma"],here:'A strategy better than an alternative whatever the other players choose.',contrast:'Rational individual choices can still give a poor joint outcome.',example:'Defection dominates in the prisoner’s dilemma.',linkContext:'games'},
+  {key:'nash-equilibrium',title:'Nash equilibrium',aliases:['Nash equilibrium','Nash equilibria','best response'],here:'A strategy profile where no player can gain by changing only their own strategy.',contrast:'Not necessarily efficient or unique.',example:'(hare, hare) is a Nash equilibrium of the stag hunt.',linkContext:'games'},
+  {key:'mixed-strategy',title:'Mixed strategy',aliases:['mixed strategy','mixed strategies','matching pennies'],here:'A probability distribution over a player’s available actions.',contrast:'Deliberate randomisation, not hesitation.',example:'Matching pennies: heads and tails with probability 1/2 each.',linkContext:'games'},
+  {key:'zero-sum',title:'Zero-sum game',aliases:['zero-sum game','zero-sum','minimax theorem','value of the game'],here:'A two-player game whose payoffs sum to zero in every outcome.',contrast:'Most economic exchanges are not zero-sum.',example:'Rock–paper–scissors has value 0.',linkContext:'games'},
+  {key:'feedback',title:'Feedback loop',aliases:['feedback loop','negative feedback','positive feedback','closed loop','closed-loop'],here:'Using the measured output to adjust the input of a system.',contrast:'Negative feedback reduces errors; positive feedback amplifies them.',example:'A thermostat is a negative feedback loop.',linkContext:'control'},
+  {key:'transfer-function',title:'Transfer function',aliases:['transfer function','transfer functions'],here:'Output over input in the Laplace domain for a linear time-invariant system.',contrast:'Only for linear time-invariant systems with zero initial state.',example:'y′ + y = u has G(s) = 1/(s + 1).',linkContext:'control'},
+  {key:'pid-controller',title:'PID controller',aliases:['PID controller','PID control','integral action','steady-state error'],here:'A controller using proportional, integral and derivative terms of the error.',contrast:'Tuning matters: high gains can destabilise the loop.',example:'Integral action removes a constant steady-state error.',linkContext:'control'},
+  {key:'closed-loop-stability',title:'Closed-loop stability',aliases:['closed-loop stability','Routh–Hurwitz criterion','closed-loop poles'],here:'Bounded, settling behaviour of a system under feedback.',contrast:'Feedback can create instability as well as cure it.',example:'s³ + 3s² + 2s + k is stable for 0 < k < 6.',linkContext:'control'},
+  {key:'optimal-control',title:'Optimal control',aliases:['optimal control','linear–quadratic regulator','LQR','cost functional'],here:'Choosing inputs over time to minimise a cost of state error and effort.',contrast:'The answer depends on how the cost weights error against effort.',example:'x′ = u with cost ∫(x² + u²) dt gives u = −x.',linkContext:'control'}
+ ],
+ draw:{
+  // ── statistics ──
+  'estimator':p=>{
+   const r=rngA(4242),data=Array.from({length:24},()=>5+1.5*normA(r));const n=1+Math.floor(p*23.999),mean=data.slice(0,n).reduce((a,b)=>a+b)/n;
+   const X=v=>80+440*(v-1)/8;let out=heading('The sample mean as data arrive')+line(70,240,530,240,C.muted,2);
+   for(const v of [1,3,5,7,9])out+=line(X(v),236,X(v),246,C.muted,2)+text(X(v),268,v,15,C.muted);
+   out+=line(X(5),80,X(5),240,C.green,2,'stroke-dasharray="6 5"')+text(X(5),76,'true μ = 5',15,C.green);
+   data.slice(0,n).forEach((v,i)=>out+=circle(X(v),222-(i%6)*20,7,i===n-1?C.coral:C.blue,'none','opacity="0.85"'));
+   out+=arrow2([X(mean),310],[X(mean),252],C.coral,3)+text(X(mean),334,'x̄ = '+mean.toFixed(2),17,C.coral);
+   return {svg:out,phase:`Seeded illustrative data from a model with μ = 5. After ${n} values the estimate is ${mean.toFixed(2)}.`}},
+  'sampling-distribution':p=>{
+   const r=rngA(777),bins=new Array(20).fill(0),total=300,k=Math.round(p*total);
+   for(let i=0;i<total;i++){let s=0;for(let j=0;j<10;j++)s+=r();if(i<k)bins[Math.min(19,Math.floor(s/10*20))]++}
+   let out=heading('Means of 10 draws from Uniform[0, 1]');const X=v=>90+420*v;
+   out+=rect(X(0),88,420,26,C.greenp,C.green,4)+text(300,106,'population: flat on [0, 1]',15,C.green);
+   out+=line(85,300,515,300,C.muted,2);for(const v of [0,.5,1])out+=text(X(v),325,fmt(v),15,C.muted);
+   bins.forEach((c,i)=>out+=rect(X(i/20)+2,300-c*2.6,17,c*2.6,C.blue,'none',2));
+   out+=line(X(.5),128,X(.5),300,C.coral,2,'stroke-dasharray="5 5"');
+   return {svg:out,phase:`${k} of 300 seeded samples. The means pile up near 0.5 with spread about 0.091, much narrower than the data.`}},
+  'confidence-interval':p=>{
+   const r=rngA(2030),X=v=>100+400*(v-8)/4;let out=heading('Twenty 95% intervals: x̄ ± 0.98 (σ = 2, n = 16)');
+   out+=line(X(10),70,X(10),340,C.green,2,'stroke-dasharray="6 5"')+text(X(10),64,'μ = 10',15,C.green);
+   for(const v of [8,9,11,12])out+=text(X(v),358,v,14,C.muted);
+   const shown=Math.floor(p*20.999);let miss=0;
+   for(let i=0;i<20;i++){let s=0;for(let j=0;j<16;j++)s+=10+2*normA(r);const m=s/16,hit=Math.abs(m-10)<=.98;if(i>=shown)continue;if(!hit)miss++;const y=78+i*13.2,col=hit?C.blue:C.coral;
+    out+=line(X(clamp(m-.98,8,12)),y,X(clamp(m+.98,8,12)),y,col,3)+circle(X(m),y,4,col)}
+   return {svg:out,phase:`${shown} seeded intervals shown; ${shown-miss} contain μ. In the long run about 95% would.`}},
+  'hypothesis-test':p=>{
+   const z=2.4*smooth(p),pv=2*(1-PhiA(z)),A=axesA(-3.5,3.5,0,.45,'Null model: z ~ N(0, 1)',{xticks:[-3,-1.96,0,1.96,3],yticks:[]}),phi=x=>Math.exp(-x*x/2)/Math.sqrt(TAU);
+   const tail=(a,b)=>polygon2([[A.X(a),A.Y(0)],...sample2(u=>{const x=a+u*(b-a);return [A.X(x),A.Y(phi(x))]},1,40),[A.X(b),A.Y(0)]],C.coralp,'none');
+   let out=A.out+tail(-3.5,-z)+tail(z,3.5)+curveA(A,phi,-3.5,3.5);
+   out+=line(A.X(z),A.Y(0),A.X(z),A.Y(.43),C.coral,3)+line(A.X(-z),A.Y(0),A.X(-z),A.Y(.43),C.coral,1.5,'stroke-dasharray="4 4"')+text(A.X(z)+8,A.Y(.40),'z = '+z.toFixed(2),17,C.coral,'start');
+   out+=text(300,358,'two-sided p-value = '+pv.toFixed(3),17);
+   return {svg:out,phase:z>=1.96?'Beyond ±1.96: data this extreme would occur under 5% of the time if the coin were fair.':'Shaded tails: probability, under the null model, of a result at least this extreme.'}},
+  'likelihood-function':p=>{
+   const Lr=t=>Math.pow(t/.7,7)*Math.pow((1-t)/.3,3),A=axesA(0,1,0,1.1,'7 heads in 10 tosses: L(θ) ∝ θ⁷(1 − θ)³',{yticks:[0,1]});const th=.02+.96*p;
+   let out=A.out+line(A.X(.7),A.Y(0),A.X(.7),A.Y(1),C.green,2,'stroke-dasharray="6 5"')+text(A.X(.7),A.Y(1.06),'θ̂ = 0.7',15,C.green);
+   out+=A.clip(curveA(A,Lr,0,1))+line(A.X(th),A.Y(0),A.X(th),A.Y(Lr(th)),C.coral,2)+circle(A.X(th),A.Y(Lr(th)),7,C.coral);
+   out+=text(300,358,'θ = '+th.toFixed(2)+' · relative likelihood '+Lr(th).toFixed(3),16,C.muted);
+   return {svg:out,phase:'Scaled so the maximum is 1. The data are fixed; only the candidate θ moves.'}},
+  'regression':p=>{
+   const {mx,my,b,a}=regFit,s=b*smooth(p),A=axesA(0,9,0,7,`Fitted: ŷ = ${a.toFixed(2)} + ${b.toFixed(3)}x`,{xticks:[0,3,6,9],yticks:[0,7]});const yhat=x=>my+s*(x-mx);
+   let out=A.out,sse=0;REG_X.forEach((x,i)=>{const y=REG_Y[i];sse+=(y-yhat(x))**2;out+=line(A.X(x),A.Y(y),A.X(x),A.Y(yhat(x)),C.coral,2)});
+   out+=A.clip(path2([[A.X(0),A.Y(yhat(0))],[A.X(9),A.Y(yhat(9))]],C.blue,3));REG_X.forEach((x,i)=>out+=circle(A.X(x),A.Y(REG_Y[i]),6,C.ink));
+   out+=circle(A.X(mx),A.Y(my),7,'#fff',C.green,'stroke-width="3"')+text(300,358,'slope '+s.toFixed(3)+' · sum of squared residuals '+sse.toFixed(2),16,C.muted);
+   return {svg:out,phase:'The line pivots about (x̄, ȳ). The squared residuals shrink until the least-squares slope is reached.'}},
+  // ── numerical ──
+  'floating-point':p=>{
+   const vals=[];for(const e of [-1,0,1,2])for(const m of [1,1.25,1.5,1.75])vals.push(m*2**e);vals.push(8);
+   const X=v=>70+460*v/8,x=.5+7.2*p;let best=vals[0];for(const v of vals)if(Math.abs(v-x)<Math.abs(best-x))best=v;
+   let out=heading('A toy format: 3 significant bits × 2ᵉ')+line(60,220,540,220,C.muted,2);
+   [[.5,1],[1,2],[2,4],[4,8]].forEach(([a,b],i)=>out+=rect(X(a),232,X(b)-X(a),14,i%2?C.greenp:C.pale,'none',3));
+   for(const v of vals)out+=line(X(v),206,X(v),234,v===best?C.coral:C.blue,v===best?4:2);
+   for(const v of [0,1,2,4,8])out+=text(X(v),270,v,15,C.muted);
+   out+=circle(X(x),150,7,C.ink)+text(X(x),132,'x = '+x.toFixed(3),16)+arrow2([X(x),158],[X(best),200],C.coral,2.5);
+   out+=text(300,320,`stored as ${fmt(best)} · relative error ${(Math.abs(best-x)/x*100).toFixed(1)}%`,17,C.coral);
+   return {svg:out,phase:'Each shaded band is a binade: four values, and the gap doubles from one band to the next. Relative error never exceeds 12.5% here.'}},
+  'newton-method':p=>{
+   const f=x=>x*x-2,A=axesA(0,3.4,-2.5,9.5,'Newton on f(x) = x² − 2 from x₀ = 3',{xticks:[0,1,2,3],yticks:[0,9]});const xs=[3];for(let i=0;i<4;i++){const x=xs.at(-1);xs.push(x-f(x)/(2*x))}
+   const k=Math.min(4,Math.floor(p*5));let out=A.out+A.clip(curveA(A,f,0,3.4));
+   for(let i=0;i<k;i++){const x=xs[i];out+=A.clip(line(A.X(x),A.Y(f(x)),A.X(xs[i+1]),A.Y(0),C.coral,2.5))+line(A.X(xs[i+1]),A.Y(0),A.X(xs[i+1]),A.Y(f(xs[i+1])),C.line,1.5,'stroke-dasharray="4 4"')}
+   xs.slice(0,k+1).forEach((x,i)=>out+=circle(A.X(x),A.Y(0),5,i===k?C.coral:C.blue));
+   xs.slice(0,k+1).forEach((x,i)=>out+=text(110,100+i*22,`x${'₀₁₂₃₄'[i]} = ${x.toFixed(6)}`,15,i===k?C.coral:C.muted,'start'));
+   return {svg:out,phase:`Step ${k}: each tangent line is followed down to the axis. √2 = 1.414214…`}},
+  'quadrature':p=>{
+   const n=2**Math.min(4,Math.floor(p*5)),h=Math.PI/n,A=axesA(0,Math.PI,0,1.2,`Trapezium rule, ∫ sin x on [0, π] = 2 · n = ${n}`,{xticks:[0,Math.PI/2,Math.PI].map(x=>+x.toFixed(2)),yticks:[0,1]});
+   let out=A.out,T=0;for(let i=0;i<n;i++){const a=i*h,b=a+h;T+=h*(Math.sin(a)+Math.sin(b))/2;out+=polygon2([[A.X(a),A.Y(0)],[A.X(a),A.Y(Math.sin(a))],[A.X(b),A.Y(Math.sin(b))],[A.X(b),A.Y(0)]],C.coralp,C.coral,'stroke-width="1.5"')}
+   out+=curveA(A,Math.sin,0,Math.PI)+text(300,358,`estimate ${T.toFixed(4)} · error ${(2-T).toFixed(4)}`,17,C.coral);
+   return {svg:out,phase:'Doubling the strips cuts the error by about a factor of four for this smooth integrand.'}},
+  'euler-method':p=>{
+   const A=axesA(0,2,0,8,'y′ = y, y(0) = 1 · Euler with h = 0.5',{xticks:[0,.5,1,1.5,2],yticks:[0,8]});const k=Math.min(4,Math.floor(p*5));const pts=[[0,1]];for(let i=0;i<4;i++){const [t,y]=pts.at(-1);pts.push([t+.5,y*1.5])}
+   let out=A.out+curveA(A,Math.exp,0,2,C.green,3)+text(A.X(1.85),A.Y(7.6),'eᵗ',17,C.green);
+   out+=path2(pts.slice(0,k+1).map(([t,y])=>[A.X(t),A.Y(y)]),C.coral,3);pts.slice(0,k+1).forEach(([t,y])=>out+=circle(A.X(t),A.Y(y),6,C.coral));
+   const [t,y]=pts[k];out+=text(300,358,`Euler y(${fmt(t)}) = ${y.toFixed(4)} · exact ${Math.exp(t).toFixed(4)}`,17,C.coral);
+   return {svg:out,phase:'Each step uses the slope at its start, so the polygon falls further behind the growing exact solution.'}},
+  'condition-number':p=>{
+   const d=-.01+.02*p,yS=100*d,xS=2-yS,X=x=>110+380*(x+.5)/5,Y=y=>205-70*y;
+   let out=heading('x + y = 2 and x + 1.01y = 2 + δ');for(let k=-2;k<=2;k++)out+=line(X(-.5),Y(k*.75),X(4.5),Y(k*.75),'#dbe6ec',1);
+   out+=line(X(-.5),Y(0),X(4.5),Y(0),C.muted,2)+line(X(0),Y(1.6),X(0),Y(-1.6),C.muted,2);
+   const l1=x=>2-x,l2=x=>(2+d-x)/1.01;out+=line(X(.6),Y(l1(.6)),X(3.4),Y(l1(3.4)),C.blue,3)+line(X(.6),Y(l2(.6)),X(3.4),Y(l2(3.4)),C.coral,3,'stroke-dasharray="9 5"');
+   out+=circle(X(xS),Y(yS),8,C.ink)+text(300,334,`δ = ${d.toFixed(4)} → solution (${xS.toFixed(2)}, ${yS.toFixed(2)})`,17)+text(300,358,'condition number ≈ 402',16,C.muted);
+   return {svg:out,phase:'The lines are almost parallel, so a tiny change δ slides their crossing a long way.'}},
+  // ── computing ──
+  'algorithm':p=>{
+   const rows=[[252,105],[105,42],[42,21],[21,0]],k=Math.min(3,Math.floor(p*4));let out=heading('Euclid: replace (a, b) by (b, a mod b)');
+   rows.forEach(([a,b],i)=>{if(i>k)return;const y=100+i*62,cur=i===k;out+=rect(70,y-30,460,48,cur?C.coralp:C.pale,'none',10)+text(90,y+2,`gcd(${a}, ${b})`,18,cur?C.coral:C.ink,'start');
+    if(b)out+=text(510,y+2,`${a} = ${Math.floor(a/b)}·${b} + ${a%b}`,16,C.muted,'end');else out+=text(510,y+2,'stop: answer 21',16,C.green,'end')});
+   return {svg:out,phase:k<3?'Each step keeps the same gcd and makes the numbers smaller, so the loop must end.':'b reached 0, so the algorithm halts with gcd = 21.'}},
+  'complexity':p=>{
+   const A=axesA(0,32,0,1100,'Growth: n, n log₂ n and n²',{xticks:[0,8,16,24,32],yticks:[0,1000]}),n=Math.max(1,32*p),lg=x=>x<=1?0:x*Math.log2(x);
+   let out=A.out+A.clip(curveA(A,x=>x*x,0,32,C.coral))+A.clip(curveA(A,lg,0,32,C.blue))+A.clip(curveA(A,x=>x,0,32,C.green));
+   out+=line(A.X(n),A.Y(0),A.X(n),A.Y(1100),C.line,1.5,'stroke-dasharray="4 4"');
+   [[x=>x*x,C.coral,'n²'],[lg,C.blue,'n log₂ n'],[x=>x,C.green,'n']].forEach(([f,c,l],i)=>out+=circle(A.X(n),A.Y(Math.min(1100,f(n))),6,c)+text(110,100+i*22,`${l} = ${Math.round(f(n))}`,16,c,'start'));
+   return {svg:out,phase:`At n = ${Math.round(n)}. Constant factors are ignored; what matters is how fast each curve bends upward.`}},
+  'divide-and-conquer':p=>{
+   const rows=[[[38,27,43,3,9,82,10,15]],[[27,38],[3,43],[9,82],[10,15]],[[3,27,38,43],[9,10,15,82]],[[3,9,10,15,27,38,43,82]]],k=Math.min(3,Math.floor(p*4));
+   let out=heading('Merge sort: merge sorted runs, level by level');
+   rows.forEach((row,i)=>{if(i>k)return;const y=88+i*66;let x=88;row.forEach(run=>{run.forEach(v=>{out+=rect(x,y,46,42,i===k?C.coralp:C.pale,i===k?C.coral:C.line,6,'stroke-width="1.5"')+text(x+23,y+28,v,17);x+=51});x+=12});
+    out+=text(76,y+28,['start','pairs','fours','all'][i],13,C.muted,'end')});
+   return {svg:out,phase:'Each level merges two sorted runs in a single pass. With 8 items there are log₂ 8 = 3 merge levels.'}},
+  'shortest-path':p=>{
+   const {dist,prev,order}=dijkstra,k=Math.min(6,1+Math.floor(p*6)),done=order.slice(0,k),N=GRAPH.nodes;let out=heading('Dijkstra from A: settle the nearest vertex next');
+   for(const [a,b,w] of GRAPH.edges){const tree=(prev[b]===a&&done.includes(b))||(prev[a]===b&&done.includes(a));out+=line(...N[a],...N[b],tree?C.coral:C.line,tree?5:2.5);
+    out+=rect((N[a][0]+N[b][0])/2-13,(N[a][1]+N[b][1])/2-13,26,24,'#fff','none',6)+text((N[a][0]+N[b][0])/2,(N[a][1]+N[b][1])/2+5,w,15,C.muted)}
+   for(const v in N){const s=done.includes(v),last=v===done.at(-1);out+=circle(...N[v],24,last?C.coral:s?C.blue:C.pale,s?'none':C.line,'stroke-width="2"')+text(N[v][0],N[v][1]+6,v,18,s?'#fff':C.ink);
+    if(s)out+=text(N[v][0],N[v][1]+(N[v][1]<200?-32:46),'d = '+dist[v],15,last?C.coral:C.blue)}
+   return {svg:out,phase:`Settled in order ${done.join(', ')}. Red edges form the tree of shortest routes found so far.`}},
+  'p-versus-np':p=>{
+   const k=Math.floor(p*64.999),cell=34;let out=heading('Subset sum: reach 9 from {3, 34, 4, 12, 5, 2}'),found=0;
+   for(let m=0;m<64;m++){const x=164+(m%8)*cell,y=78+Math.floor(m/8)*cell,sum=SUBSET.reduce((s,v,i)=>s+(m>>i&1?v:0),0),seen=m<k,ok=sum===9;if(seen&&ok)found++;
+    out+=rect(x,y,cell-4,cell-4,!seen?'#fff':ok?C.green:C.pale,C.line,4,'stroke-width="1"')}
+   out+=text(300,368,'Check {4, 5}: 4 + 5 = 9 ✓ — one addition',16,C.coral)+text(110,170,`tried ${k}/64`,15,C.muted)+text(110,195,`found ${found}`,15,C.green);
+   return {svg:out,phase:'Searching may need every one of the 2ⁿ subsets; checking a proposed answer is quick. Whether search can always be made fast is open.'}},
+  // ── optimisation ──
+  'optimisation-problem':p=>{
+   const f=x=>(x-1)**2+1,A=axesA(-.5,3.5,0,6,'Minimise (x − 1)² + 1 subject to 1.5 ≤ x ≤ 3',{xticks:[0,1,1.5,3],yticks:[0,6]}),x=1.5+1.5*p;
+   let out=A.out+rect(A.X(1.5),82,A.X(3)-A.X(1.5),218,C.greenp,'none',0)+text((A.X(1.5)+A.X(3))/2,100,'feasible',15,C.green)+A.clip(curveA(A,f,-.5,3.5));
+   out+=circle(A.X(1),A.Y(1),7,'#fff',C.muted,'stroke-width="2"')+text(A.X(1),A.Y(1)+26,'not allowed',14,C.muted);
+   out+=circle(A.X(1.5),A.Y(1.25),8,C.green)+circle(A.X(x),A.Y(f(x)),7,C.coral)+text(300,358,`f(${x.toFixed(2)}) = ${f(x).toFixed(3)} · best allowed 1.25 at x = 1.5`,16,C.coral);
+   return {svg:out,phase:'The unconstrained minimum at x = 1 is infeasible, so the optimum sits on the boundary where f′ ≠ 0.'}},
+  'linear-programme':p=>{
+   const X=x=>95+420*x/6.5,Y=y=>318-235*y/4.5,c=9*Math.min(1,p*1.15),P=pts=>pts.map(([x,y])=>[X(x),Y(y)]);
+   let out=heading('Maximise 2x + 3y on the feasible polygon')+line(X(0),Y(0),X(6.5),Y(0),C.muted,2)+line(X(0),Y(0),X(0),Y(4.5),C.muted,2);
+   out+=polygon2(P([[0,0],[4,0],[3,1],[0,2]]),C.greenp,C.green)+line(X(0),Y(4),X(4),Y(0),C.line,1.5)+line(X(0),Y(2),X(6),Y(0),C.line,1.5);
+   out+=text(X(1.15),Y(3.3),'x + y ≤ 4',15,C.muted,'start')+text(X(5.4),Y(.75),'x + 3y ≤ 6',15,C.muted);
+   out+=line(X(0),Y(c/3),X(c/2),Y(0),C.coral,3,'stroke-dasharray="8 5"');
+   for(const [x,y,dx,dy] of [[0,0,-8,24],[4,0,0,26],[3,1,12,-12],[0,2,12,-12]])out+=circle(X(x),Y(y),6,x===3&&c>=9?C.coral:C.blue)+text(X(x)+dx,Y(y)+dy,`(${x}, ${y}) → ${2*x+3*y}`,14,C.muted,dx<0?'end':dx>0?'start':'middle');
+   return {svg:out,phase:`Level line 2x + 3y = ${c.toFixed(1)}. It leaves the polygon last at the vertex (3, 1), value 9.`}},
+  'gradient-descent':p=>{
+   let out=heading('Gradient descent on f = x² + 4y², step 0.1')+planeGrid();for(const c of [1,4,9])out+=`<ellipse cx="300" cy="205" rx="${65*Math.sqrt(c)}" ry="${65*Math.sqrt(c)/2}" fill="none" stroke="${C.line}" stroke-width="1.5"/>`;
+   const pts=[[2.5,1.5]];for(let i=0;i<10;i++){const [x,y]=pts.at(-1);pts.push([.8*x,.2*y])}const k=Math.min(10,Math.floor(p*11));
+   out+=path2(pts.slice(0,k+1).map(planePoint),C.coral,3);pts.slice(0,k+1).forEach((q,i)=>out+=circle(...planePoint(q),i===k?7:4,i===k?C.coral:C.blue));
+   const [x,y]=pts[k];out+=text(300,358,`step ${k}: (${x.toFixed(3)}, ${y.toFixed(3)}) · f = ${(x*x+4*y*y).toFixed(4)}`,16,C.coral);
+   return {svg:out,phase:'Steps go against the gradient (2x, 8y). The steep y-direction collapses fast; x decays slowly.'}},
+  'lagrange-multiplier':p=>{
+   const th=Math.PI/4+1.7*(1-Math.min(1,p*1.2)),r=Math.SQRT2,x=r*Math.cos(th),y=r*Math.sin(th),c=x+y,P=planePoint;
+   let out=heading('Maximise x + y on the circle x² + y² = 2')+planeGrid()+`<circle cx="300" cy="205" r="${65*r}" fill="none" stroke="${C.blue}" stroke-width="3"/>`;
+   out+=`<g clip-path="url(#lagClip)"><defs><clipPath id="lagClip"><rect x="75" y="70" width="450" height="265"/></clipPath></defs>`+line(...P([c-3,3]),...P([c+3,-3]),C.green,2,'stroke-dasharray="7 5"')+'</g>';
+   out+=arrow2(P([x,y]),P([x+.6,y+.6]),C.coral,3)+arrow2(P([x,y]),P([x+.42*x,y+.42*y]),C.blue,3)+circle(...P([x,y]),7,C.ink);
+   out+=text(520,90,'∇f',17,C.coral,'end')+text(520,112,'∇g',17,C.blue,'end')+text(300,358,`x + y = ${c.toFixed(3)}`+(Math.abs(th-Math.PI/4)<1e-6?' · ∇f = ½∇g at (1, 1)':''),16);
+   return {svg:out,phase:'Moving along the circle raises x + y until the two gradients point the same way; then λ = 1/2.'}},
+  'convex-function':p=>{
+   const f=x=>x*x,a=-1.5,b=1.8,A=axesA(-2,2.2,-.3,3.6,'A chord of f(x) = x² lies above the graph',{xticks:[-2,0,2],yticks:[0,3]}),l=p,x=(1-l)*a+l*b,ch=(1-l)*f(a)+l*f(b);
+   let out=A.out+A.clip(curveA(A,f,-2,2.2))+line(A.X(a),A.Y(f(a)),A.X(b),A.Y(f(b)),C.green,3);
+   out+=line(A.X(x),A.Y(f(x)),A.X(x),A.Y(ch),C.coral,3)+circle(A.X(x),A.Y(f(x)),6,C.blue)+circle(A.X(x),A.Y(ch),6,C.green);
+   out+=text(300,358,`at x = ${x.toFixed(2)}: f = ${f(x).toFixed(3)} ≤ chord ${ch.toFixed(3)}`,16,C.coral);
+   return {svg:out,phase:'The red gap is never negative. This is why a local minimum of a convex function is global.'}},
+  // ── games ──
+  'strategic-game':p=>{
+   const k=Math.min(3,Math.floor(p*4)),i=k>>1,j=k&1,notes=['Both hunt stag: 4 each.','Row hunts stag alone: 0; column gets a hare: 3.','Row gets a hare: 3; column hunts stag alone: 0.','Both hunt hare: 3 each.'];
+   let out=heading('Stag hunt · (row payoff, column payoff)')+matrixA(['Stag','Hare'],['Stag','Hare'],STAG,(a,b)=>a===i&&b===j?C.coralp:C.pale,{x0:180,y0:110});
+   out+=text(300,300,notes[k],17)+text(300,334,'blue: Row player · red: Column player',14,C.muted);
+   return {svg:out,phase:'Each cell is one combination of choices; a strategic game lists a payoff for every player in every cell.'}},
+  'dominant-strategy':p=>{
+   const k=Math.min(3,Math.floor(p*4));let out=heading('Prisoner’s dilemma · payoff = −years in prison');
+   out+=matrixA(['Cooperate','Defect'],['Cooperate','Defect'],PD,(a,b)=>k===3&&a===1&&b===1?C.coralp:k===1&&b===0?(a===1?C.greenp:C.pale):k===2&&b===1?(a===1?C.greenp:C.pale):k===3&&a===0&&b===0?C.greenp:C.pale,{x0:200,y0:100});
+   const msg=['Compare Row’s payoffs in each column.','Column cooperates: defect gives 0 > −1.','Column defects: defect gives −2 > −3.','Both defect: (−2, −2), not (−1, −1).'];
+   if(k===1||k===2){const x=200+150*(k-1)+75;out+=arrow2([x-48,195],[x-48,235],C.green,3)}
+   out+=text(300,300,msg[k],17,k===3?C.coral:C.ink);
+   return {svg:out,phase:'Defect is strictly better for each player whatever the other does: a dominant strategy.'}},
+  'nash-equilibrium':p=>{
+   const k=Math.min(4,Math.floor(p*5));let out=heading('Stag hunt · mark each player’s best responses');
+   out+=matrixA(['Stag','Hare'],['Stag','Hare'],STAG,(a,b)=>k===4&&a===b?C.greenp:C.pale,{x0:180,y0:100});
+   const cx=(j,dx)=>180+150*j+75+dx,cy=i=>100+78*i+39;
+   // row best responses: vs Stag → Stag (4>3); vs Hare → Hare (3>0). column symmetric.
+   if(k>=1)out+=line(cx(0,-38),cy(0)+14,cx(0,-10),cy(0)+14,C.blue,3);
+   if(k>=2)out+=line(cx(1,-38),cy(1)+14,cx(1,-10),cy(1)+14,C.blue,3);
+   if(k>=3)out+=line(cx(0,12),cy(0)+14,cx(0,38),cy(0)+14,C.coral,3)+line(cx(1,12),cy(1)+14,cx(1,38),cy(1)+14,C.coral,3);
+   const msg=['Underline each best response.','Against Stag, Row’s best is Stag (4 > 3).','Against Hare, Row’s best is Hare (3 > 0).','Column’s best responses mirror Row’s.','Equilibria: (Stag, Stag) and (Hare, Hare).'];
+   out+=text(300,300,msg[k],17,k===4?C.green:C.ink);
+   return {svg:out,phase:'In an equilibrium cell both payoffs are best responses, so neither player gains by switching alone.'}},
+  'mixed-strategy':p=>{
+   const A=axesA(0,1,-1.2,1.2,'Matching pennies: Row’s expected payoff',{xticks:[0,.5,1],yticks:[-1,1]}),q=p;
+   let out=A.out+curveA(A,x=>2*x-1,0,1,C.blue)+curveA(A,x=>1-2*x,0,1,C.coral)+text(A.X(.95),A.Y(.95)-8,'play Heads',15,C.blue,'end')+text(A.X(.95),A.Y(-.95)+22,'play Tails',15,C.coral,'end');
+   out+=line(A.X(q),A.Y(-1.2),A.X(q),A.Y(1.2),C.line,1.5,'stroke-dasharray="4 4"')+circle(A.X(q),A.Y(2*q-1),6,C.blue)+circle(A.X(q),A.Y(1-2*q),6,C.coral)+circle(A.X(.5),A.Y(0),6,C.green);
+   const best=Math.abs(q-.5)<.02?'either (indifferent)':q>.5?'Heads':'Tails';
+   out+=text(300,362,`q = ${q.toFixed(2)} → Row’s best reply: ${best}`,16);
+   return {svg:out,phase:'Any bias q ≠ 1/2 can be exploited. At q = 1/2 both replies earn 0, so mixing 50:50 is the equilibrium.'}},
+  'zero-sum':p=>{
+   const M=[[0,-1,1],[1,0,-1],[-1,1,0]],k=Math.min(2,Math.floor(p*3));let out=heading('Rock–paper–scissors · payoff to Row');
+   out+=matrixA(['Rock','Paper','Scissors'],['Rock','Paper','Scissors'],M,(a,b)=>a===k?C.coralp:C.pale,{x0:170,y0:92,cw:110,ch:58,single:true});
+   out+=text(300,300,`${['Rock','Paper','Scissors'][k]} against the 1/3 mix:`,17)+text(300,326,`(${M[k].map(v=>v>0?'+'+v:v).join(' ')})/3 = 0`,18,C.coral);
+   return {svg:out,phase:'Every pure reply to the uniform mix earns exactly 0, so the value of the game is 0 and neither side can do better.'}},
+  // ── control ──
+  'feedback':p=>{
+   let out=heading('Negative feedback: compare, then correct');const loop=[[105,170],[170,170],[245,170],[355,170],[390,170],[430,170],[500,170],[500,270],[170,270],[170,195]];
+   out+=arrow2([50,170],[118,170],C.ink,2.5)+text(40,150,'target r',15,C.muted,'start');
+   out+=circle(140,170,22,'#fff',C.blue,'stroke-width="2.5"')+text(140,176,'Σ',19)+text(122,214,'−',22,C.coral);
+   out+=arrow2([162,170],[228,170],C.blue,2.5)+box(290,170,120,52,'Controller')+arrow2([350,170],[398,170],C.blue,2.5)+box(450,170,100,52,'Plant',C.greenp);
+   out+=arrow2([500,170],[565,170],C.ink,2.5)+text(568,202,'output y',15,C.muted,'end');
+   out+=path2([[525,170],[525,270],[140,270]],C.coral,2.5)+arrow2([140,270],[140,193],C.coral,2.5)+text(330,292,'measured y',15,C.coral)+text(195,204,'e = r − y',14,C.muted);
+   const pos=along([[50,170],[162,170],[500,170],[525,170],[525,270],[140,270],[140,192]],p);out+=circle(...pos,8,C.coral);
+   return {svg:out,phase:'Schematic. The error e = r − y drives the controller; as y approaches r the correction shrinks.'}},
+  'transfer-function':p=>{
+   const g=1/Math.sqrt(5),ph=Math.atan(2),A=axesA(0,2*Math.PI,-1.2,1.2,'G(s) = 1/(s + 1) driven by sin 2t',{xticks:[0,3.14,6.28],yticks:[-1,1],top:120}),T=.05+p*(2*Math.PI-.05);
+   let out=A.out+A.clip(curveA(A,t=>Math.sin(2*t),0,T,C.blue,2.5,140)+curveA(A,t=>g*Math.sin(2*t-ph),0,T,C.coral,3,140));
+   out+=text(515,78,'input u',15,C.blue,'end')+text(515,100,'output y (steady state)',15,C.coral,'end');
+   out+=text(300,358,'|G(2i)| = 1/√5 ≈ 0.447 · phase lag arctan 2 ≈ 63.4°',16);
+   return {svg:out,phase:'After transients die out, a linear system returns the same frequency, scaled and delayed as G(iω) predicts.'}},
+  'pid-controller':p=>{
+   const dt=.01,N=1000,ysP=[0],ysPID=[0];let y=0;for(let i=0;i<N;i++){y+=dt*(-y+2*(1-y));ysP.push(y)}
+   y=0;let I=0;for(let i=0;i<N;i++){const dy=(-y+2*(1-y)+I)/1.2;I+=dt*1.5*(1-y);y+=dt*dy;ysPID.push(y)}
+   const A=axesA(0,10,0,1.3,'Step response of y′ = −y + u',{xticks:[0,5,10],yticks:[0,1],top:120}),k=Math.max(2,Math.round(p*N));
+   let out=A.out+line(A.X(0),A.Y(1),A.X(10),A.Y(1),C.line,2,'stroke-dasharray="6 5"')+line(A.X(0),A.Y(2/3),A.X(10),A.Y(2/3),C.green,1,'stroke-dasharray="3 5"');
+   out+=path2(ysP.slice(0,k+1).filter((_,i)=>i%5===0).map((v,i)=>[A.X(i*5*dt),A.Y(v)]),C.green,3)+path2(ysPID.slice(0,k+1).filter((_,i)=>i%5===0).map((v,i)=>[A.X(i*5*dt),A.Y(v)]),C.coral,3);
+   out+=text(515,78,'PID: Kp 2, Ki 1.5, Kd 0.2',15,C.coral,'end')+text(515,100,'P only: Kp 2 → settles at 2/3',15,C.green,'end');
+   out+=text(300,358,`t = ${(k*dt).toFixed(1)} · P-only y = ${ysP[k].toFixed(3)} · PID y = ${ysPID[k].toFixed(3)}`,16);
+   return {svg:out,phase:'Simulated with time step 0.01. Integral action keeps pushing until the error is zero.'}},
+  'closed-loop-stability':p=>{
+   const kk=1+7*p,dt=.01,N=2000,ys=[0];let x1=0,x2=0,x3=0;for(let i=0;i<N;i++){const e=1-x1,d3=kk*e-3*x3-2*x2;x1+=dt*x2;x2+=dt*x3;x3+=dt*d3;ys.push(x1)}
+   const A=axesA(0,20,-1,3,`Gain k = ${kk.toFixed(2)} around 1/(s(s + 1)(s + 2))`,{xticks:[0,10,20],yticks:[-1,0,1,3]});const st=kk<6;
+   let out=A.out+line(A.X(0),A.Y(1),A.X(20),A.Y(1),C.line,2,'stroke-dasharray="6 5"')+A.clip(path2(ys.filter((_,i)=>i%4===0).map((v,i)=>[A.X(i*4*dt),A.Y(clamp(v,-5,7))]),st?C.blue:C.coral,3));
+   out+=text(300,358,st?'stable: 3·2 > k (Routh–Hurwitz)':kk<6.05?'marginal: k ≈ 6':'unstable: k > 6, oscillations grow',17,st?C.green:C.coral);
+   return {svg:out,phase:'Same plant, larger gain: responses get faster, then oscillatory, then unbounded once k passes 6.'}},
+  'optimal-control':p=>{
+   const J=k=>(1+k*k)/(2*k),k=.25+3.75*p,A=axesA(0,4,0,2.4,'Cost of feedback u = −kx for x′ = u, x(0) = 1',{xticks:[0,1,2,3,4],yticks:[0,1,2]});
+   let out=A.out+curveA(A,J,.25,4)+circle(A.X(1),A.Y(1),7,C.green)+text(A.X(1),A.Y(1)+28,'k = 1, cost 1',15,C.green);
+   out+=line(A.X(k),A.Y(0),A.X(k),A.Y(J(k)),C.coral,2,'stroke-dasharray="4 4"')+circle(A.X(k),A.Y(J(k)),7,C.coral);
+   out+=text(300,358,`k = ${k.toFixed(2)}: ∫(x² + u²) dt = (1 + k²)/(2k) = ${J(k).toFixed(3)}`,16,C.coral);
+   return {svg:out,phase:'Small k wastes time away from 0; large k spends too much effort. The quadratic cost balances them at k = 1.'}}
+ }
+});
+}
+// ── applied-b ──
+{
+// Part B · lessons 35–40: information, biology, mechanics, continuum, fluids, electromagnetism.
+const L2=x=>x<=0?0:Math.log2(x);
+const Hb=q=>(q<=0||q>=1)?0:-q*L2(q)-(1-q)*L2(1-q);
+// Axes in a box; returns mapping functions and axis markup.
+function axesB(xmin,xmax,ymin,ymax,{x0=85,x1=515,y0=300,y1=82,xl='',yl='',ticksX=null,ticksY=null}={}){
+ const X=x=>x0+(x1-x0)*(x-xmin)/(xmax-xmin),Y=y=>y0-(y0-y1)*(y-ymin)/(ymax-ymin);
+ let out=line(x0,y0,x1,y0,C.muted,2)+line(x0,y0,x0,y1-4,C.muted,2);
+ for(const x of ticksX||[xmin,xmax]){const [v,l]=Array.isArray(x)?x:[x,fmt(x)];out+=text(X(v),y0+22,l,14,C.muted)}
+ for(const y of ticksY||[ymin,ymax])out+=text(x0-10,Y(y)+5,fmt(y),14,C.muted,'end');
+ if(xl)out+=text(x1,y0+40,xl,14,C.muted,'end');
+ if(yl)out+=text(x0+8,y1-10,yl,14,C.muted,'start');
+ return {X,Y,out};
+}
+function rk4(f,y,h){const k1=f(y),k2=f(y.map((v,i)=>v+h/2*k1[i])),k3=f(y.map((v,i)=>v+h/2*k2[i])),k4=f(y.map((v,i)=>v+h*k3[i]));return y.map((v,i)=>v+h/6*(k1[i]+2*k2[i]+2*k3[i]+k4[i]))}
+function orbit(f,y0,h,n){const pts=[y0];let y=y0;for(let i=0;i<n;i++){y=rk4(f,y,h);pts.push(y)}return pts}
+const memo=fn=>{let v=null;return()=>v||(v=fn())};
+const legend=(x,y,items)=>items.map(([label,col],i)=>rect(x,y+i*24-10,18,6,col,'none',3)+text(x+26,y+i*24-3,label,14,C.ink,'start')).join('');
+const deg=Math.PI/180;
+
+// Cached deterministic computations.
+const LV=memo(()=>orbit(([x,y])=>[x-x*y,x*y-y],[2,1],.02,331));
+const SIR=memo(()=>orbit(([s,i,r])=>[-.3*s*i,.3*s*i-.1*i,.1*i],[.999,.001,0],.5,320));
+const PEND=memo(()=>orbit(([q,p])=>[p,-Math.sin(q)],[0,1.4],.03,247));
+const GRAY=memo(()=>{const N=120,F=.04,k=.06,Du=.16,Dv=.08;let u=new Float64Array(N).fill(1),v=new Float64Array(N);for(let i=55;i<65;i++){u[i]=.5;v[i]=.25}const rows=[];
+ for(let s=0;s<=12000;s++){if(s%300===0)rows.push(Array.from(v));const nu=new Float64Array(N),nv=new Float64Array(N);
+  for(let i=0;i<N;i++){const l=(i+N-1)%N,r=(i+1)%N,uvv=u[i]*v[i]*v[i];nu[i]=u[i]+Du*(u[l]+u[r]-2*u[i])-uvv+F*(1-u[i]);nv[i]=v[i]+Dv*(v[l]+v[r]-2*v[i])+uvv-(F+k)*v[i]}u=nu;v=nv}
+ return rows;});
+
+const lessons=[
+ {id:'information',name:'Information & signals',short:'Information',tab:'Information',stage:'decide',msc:['94'],why:'Measure uncertainty in bits, then send and store messages reliably despite noise.',prior:['probability','harmonic'],context:'general',ids:['shannon-entropy','source-coding','channel-capacity','error-correcting-code','sampling-theorem'],level:'Introduction',references:['information']},
+ {id:'biology',name:'Mathematical biology',short:'Biology',tab:'Biology',stage:'decide',msc:['92'],why:'Turn growth, interaction, infection and inheritance into equations that can be analysed.',prior:['equations','dynamics','probability'],context:'general',ids:['logistic-growth','predator-prey','sir-model','hardy-weinberg','reaction-diffusion'],level:'Introduction',references:['ode']},
+ {id:'mechanics',name:'Classical mechanics',short:'Mechanics',tab:'Mechanics',stage:'physical',msc:['70'],why:'Describe motion by forces, then by energy and by the action of whole paths.',prior:['equations','variation','differential'],context:'general',ids:['newton-second-law','harmonic-oscillator','energy-conservation','least-action','hamiltonian'],level:'Introduction',references:['physics','feynman']},
+ {id:'continuum',name:'Elasticity & continuum mechanics',short:'Continuum',tab:'Continuum',stage:'physical',msc:['74'],why:'Treat a solid as a continuous medium whose internal forces and deformations are tensors.',prior:['mechanics','algebra'],context:'general',ids:['stress','strain','linear-elasticity','elastic-wave','buckling'],level:'Introduction',references:['physics']},
+ {id:'fluids',name:'Fluid mechanics',short:'Fluids',tab:'Fluids',stage:'physical',msc:['76'],why:'Describe flowing matter by velocity fields obeying conservation laws.',prior:['mechanics','equations'],context:'general',ids:['velocity-field','continuity-equation','vorticity','navier-stokes','reynolds-number'],level:'Introduction',references:['physics']},
+ {id:'electromagnetism',name:'Electromagnetism & optics',short:'Electromagnetism',tab:'Electromagnetism',stage:'physical',msc:['78'],why:'Unify electricity, magnetism and light through fields and their changes.',prior:['equations','differential'],context:'general',ids:['electric-field','gauss-law','faraday-law','maxwell-equations','refraction'],level:'Introduction',references:['physics','feynman']}
+];
+
+// [id, branch, name, tag, definition, example, contrast, aliases, glossary-here]
+const S=[
+ ['shannon-entropy','information','Shannon entropy','Average surprise, measured in bits','The average information of a random symbol, H = −Σ pᵢ log₂ pᵢ bits, where pᵢ are the symbol probabilities.','A fair coin has entropy 1 bit. A coin landing heads with probability 0.9 has about 0.47 bits.','Not the thermodynamic entropy of a gas, though the formulas are related. It measures uncertainty in a probability distribution.',['Shannon entropy','information entropy'],'The expected number of bits needed to describe one outcome drawn from a distribution.'],
+ ['source-coding','information','Source coding','Compress to the entropy, losslessly','Representing symbols by bit strings so that the original message can be recovered exactly and the average length approaches the entropy of the source.','For A, B, C, D with probabilities 1/2, 1/4, 1/8, 1/8, the code 0, 10, 110, 111 averages 1.75 bits per symbol, exactly the entropy.','Lossless compression cannot beat the entropy on average. It is not a trick that shrinks every possible file.',['source coding','lossless compression','Huffman code'],'Encoding a data source as compactly as possible while still allowing exact decoding.'],
+ ['channel-capacity','information','Channel capacity','The fastest reliable rate through noise','The largest rate, in bits per channel use, at which information can be sent with an error probability that can be made as small as desired.','A binary channel that flips each bit with probability 0.1 has capacity 1 − H(0.1) ≈ 0.53 bits per use.','Not the raw bit rate of a cable. It accounts for noise, and reaching it requires long, carefully designed codes.',['channel capacity','Shannon capacity'],'The supremum of reliable transmission rates for a noisy channel.'],
+ ['error-correcting-code','information','Error-correcting code','Structured redundancy that repairs errors','A scheme that adds structured redundancy to data so that errors introduced during transmission or storage can be detected and corrected.','The Hamming (7,4) code sends 4 data bits as 7 bits and corrects any single flipped bit.','Not encryption. The redundancy is public and protects against noise, not eavesdroppers.',['error-correcting code','error-correcting codes','Hamming code'],'A set of codewords spaced far enough apart that small corruptions can be undone.'],
+ ['sampling-theorem','information','Sampling theorem','Enough samples recover a band-limited signal','A signal with no frequencies above B can be reconstructed exactly from samples taken at any rate greater than 2B.','Audio CDs sample at 44.1 kHz, enough for frequencies up to 22.05 kHz, above the roughly 20 kHz limit of human hearing.','Sampling too slowly does not merely lose detail: high frequencies masquerade as false low ones, called aliasing.',['sampling theorem','Nyquist rate','Nyquist–Shannon sampling theorem','aliasing'],'The Nyquist–Shannon result linking sampling rate to the highest frequency present.'],
+ ['logistic-growth','biology','Logistic growth','Growth that levels off at a carrying capacity','Population growth N′ = rN(1 − N/K), in which the per-capita growth rate falls linearly to zero as N approaches the carrying capacity K.','With r = 1 per day, K = 100 and N(0) = 5, the population reaches 50 at t = ln 19 ≈ 2.94 days.','Not exponential growth forever. Growth is fastest at N = K/2 and stops at K.',['logistic growth','logistic equation','carrying capacity'],'A growth law with a self-limiting term.'],
+ ['predator-prey','biology','Predator–prey model','Two populations chase each other in cycles','The Lotka–Volterra equations x′ = αx − βxy and y′ = δxy − γy, in which predators y feed on prey x.','With all four rates equal to 1, populations circle the equilibrium of 1 prey and 1 predator (scaled units), with predator peaks lagging prey peaks.','The cycles are not caused by seasons or outside forcing. They arise from the interaction itself.',['predator–prey model','predator-prey model','Lotka–Volterra equations','Lotka-Volterra equations'],'A pair of coupled differential equations for interacting species.'],
+ ['sir-model','biology','SIR epidemic model','Susceptible → infected → recovered','A compartment model whose susceptible, infected and recovered fractions change through infection rate β and recovery rate γ: S′ = −βSI, I′ = βSI − γI, R′ = γI.','With β = 0.3 and γ = 0.1 per day, R₀ = 3; the infected fraction peaks near 30% and about 94% are eventually infected.','R₀ = β/γ is not the number of people ill on a given day. It is the average number infected by one case in a fully susceptible population.',['SIR model','SIR epidemic model','basic reproduction number'],'A deterministic epidemic model with three compartments.'],
+ ['hardy-weinberg','biology','Hardy–Weinberg equilibrium','Random mating keeps genotype proportions fixed','In a large randomly mating population without selection, mutation or migration, allele frequencies p and q = 1 − p give genotype frequencies p², 2pq and q², unchanged across generations.','If allele A has frequency 0.7, genotypes AA, Aa and aa occur at 0.49, 0.42 and 0.09.','It does not say dominant alleles become common. Allele frequencies stay where they started.',['Hardy–Weinberg equilibrium','Hardy-Weinberg equilibrium','Hardy–Weinberg principle'],'The null model of population genetics.'],
+ ['reaction-diffusion','biology','Reaction–diffusion pattern','Chemistry plus spreading makes spots','A system in which reacting substances also diffuse, so that unequal diffusion rates can turn a nearly uniform state into stable spots or stripes.','Turing (1952) showed that an activator diffusing more slowly than its inhibitor can produce regularly spaced patterns, a proposed mechanism for some animal markings.','Diffusion usually smooths differences out. Here it helps create pattern, which is why this is called diffusion-driven instability.',['reaction–diffusion','reaction-diffusion','Turing pattern','Turing patterns'],'Coupled partial differential equations combining local reactions with diffusion.'],
+ ['newton-second-law','mechanics','Newton’s second law','Force sets acceleration','The net force on a body equals its mass times its acceleration, F = ma, for constant mass in an inertial frame.','A 2 N net force gives a 1 kg cart an acceleration of 2 m/s² and a 2 kg cart 1 m/s².','Force determines acceleration, not velocity. With no net force a body keeps moving at constant velocity.',['Newton’s second law',"Newton's second law",'F = ma'],'The law relating net force, mass and acceleration.'],
+ ['harmonic-oscillator','mechanics','Harmonic oscillator','Restoring force proportional to displacement','A system obeying m x″ = −kx, which oscillates sinusoidally with angular frequency ω = √(k/m).','A 0.5 kg mass on a spring of stiffness 50 N/m has ω = 10 rad/s, so its period is 2π/10 ≈ 0.63 s.','The period does not depend on the amplitude, unlike a pendulum swinging through large angles.',['harmonic oscillator','simple harmonic motion'],'The model system for small vibrations.'],
+ ['energy-conservation','mechanics','Conservation of energy','Kinetic plus potential stays constant','In a system with only conservative forces, kinetic energy plus potential energy remains constant during the motion.','A 1 kg ball thrown up at 10 m/s has 50 J of kinetic energy; ignoring air resistance it rises 50/9.8 ≈ 5.1 m, where all 50 J is potential.','Energy is not destroyed by friction; it becomes heat, which the mechanical total leaves out.',['conservation of energy','energy conservation','mechanical energy'],'A first integral of motion for conservative systems.'],
+ ['least-action','mechanics','Principle of stationary action','The true path makes the action stationary','Among paths with the same endpoints and times, the physical motion makes the action S = ∫ (T − V) dt stationary.','For a 1 kg ball in flight for 1 s, bending its true path by ε sin(πt) raises the action by π²ε²/4 J·s.','Stationary, not always least: for long enough times the true path can be a saddle point of the action.',['principle of stationary action','principle of least action','stationary action'],'The variational formulation of mechanics, leading to the Euler–Lagrange equations.'],
+ ['hamiltonian','mechanics','Hamiltonian mechanics','Flow along energy levels in phase space','Motion described by Hamilton’s equations q′ = ∂H/∂p, p′ = −∂H/∂q, which carry each phase-space point along a level set of the energy H.','For a pendulum with H = p²/2 − cos q (scaled units), the curve H = 1 separates swinging from complete rotation.','Phase space is not physical space: each point records both a position and a momentum.',['Hamiltonian mechanics','Hamilton’s equations',"Hamilton's equations"],'A first-order formulation of mechanics on phase space.'],
+ ['stress','continuum','Stress','Internal force per unit area','The internal force per unit area acting across a surface inside a material; in general a tensor giving the force on every plane through a point.','A 10 kN pull on a rod of cross-section 1 cm² produces a tensile stress of 100 MPa.','Not the same as force: the same force on a thinner rod produces greater stress.',['mechanical stress','stress tensor','tensile stress'],'Internal traction in a continuous medium.'],
+ ['strain','continuum','Strain','Relative deformation','The relative deformation of a material, such as change in length divided by original length; in general a symmetric tensor built from displacement gradients.','A 2 m wire that stretches by 1 mm has strain 0.0005, often written 500 microstrain.','Strain is dimensionless and describes the change of shape, not the forces that cause it.',['mechanical strain','strain tensor'],'A measure of local stretching and shearing.'],
+ ['linear-elasticity','continuum','Linear elasticity','Stress proportional to strain','For small deformations stress is proportional to strain; in one dimension σ = Eε, where E is Young’s modulus.','Steel has Young’s modulus about 200 GPa, so a stress of 100 MPa produces strain 0.0005.','An approximation valid only up to the elastic limit. Beyond it, metals yield and deform permanently.',['linear elasticity','Hooke’s law',"Hooke's law",'Young’s modulus',"Young's modulus"],'The linear constitutive law of elastic solids.'],
+ ['elastic-wave','continuum','Elastic wave','Disturbances travel through solids','A disturbance that travels through a solid because neighbouring parts push and pull on each other, obeying the wave equation u_tt = c² u_xx in one dimension.','In a steel rod, c = √(E/ρ) ≈ √(200 GPa / 7850 kg/m³) ≈ 5.0 km/s.','The material does not travel with the wave. Each particle only oscillates about its rest position.',['elastic wave','elastic waves'],'Wave propagation in an elastic medium.'],
+ ['buckling','continuum','Buckling','A slender column suddenly bends','The sideways bending of a slender column when its compressive load reaches the critical value P = π²EI/L² for pinned ends.','A pinned steel rod 1 m long and 10 mm in diameter (I ≈ 491 mm⁴) buckles at about 0.97 kN.','Buckling is not crushing. A slender column fails by bending at a load far below what would crush the material.',['buckling','Euler buckling','critical buckling load'],'An elastic instability, a bifurcation of equilibrium shapes.'],
+ ['velocity-field','fluids','Velocity field','Velocity at every point of the flow','A function u(x, t) assigning to each point and time the velocity of the fluid there.','In ideal flow of speed U past a cylinder, the speed reaches 2U at the top and bottom of the cylinder.','It describes the flow at fixed places, not the history of one fluid parcel; that is a pathline.',['velocity field','flow field'],'The Eulerian description of a flow.'],
+ ['continuity-equation','fluids','Continuity equation','Mass is neither created nor destroyed','The local form of mass conservation, ∂ρ/∂t + ∇·(ρu) = 0, which for an incompressible fluid becomes ∇·u = 0.','Water at 1 m/s in a 4 cm² pipe speeds up to 2 m/s where the pipe narrows to 2 cm².','Faster flow in the narrow section is not extra fluid being created. The same volume per second passes every cross-section.',['continuity equation','mass conservation'],'A conservation law in differential form.'],
+ ['vorticity','fluids','Vorticity','Local spinning of the fluid','The curl of the velocity field, ω = ∇ × u, measuring the local rate of rotation of fluid elements.','Solid-body rotation at angular speed Ω has vorticity 2Ω everywhere; the flow v = Γ/(2πr) has zero vorticity away from the centre.','Moving in circles is not the same as having vorticity. In a free vortex the fluid circulates while small elements do not spin.',['vorticity','vortex'],'The curl of velocity in fluid mechanics.'],
+ ['navier-stokes','fluids','Navier–Stokes equations','Newton’s law for a viscous fluid','The equations ρ(∂u/∂t + (u·∇)u) = −∇p + μ∇²u + f together with ∇·u = 0, describing incompressible viscous flow.','Pressure-driven flow between parallel plates settles into a parabolic profile whose maximum speed is 1.5 times the average.','Writing the equations is easy. Whether smooth 3D solutions always exist is an open Millennium Prize problem.',['Navier–Stokes equations','Navier-Stokes equations','Navier–Stokes'],'The fundamental equations of viscous fluid flow.'],
+ ['reynolds-number','fluids','Reynolds number','Inertia versus viscosity','The dimensionless ratio Re = ρUL/μ of inertial to viscous effects, which predicts whether a flow is smooth (laminar) or turbulent.','Water (ν ≈ 1.0×10⁻⁶ m²/s) at 1 m/s in a 2 cm pipe has Re = UD/ν ≈ 20,000, well into turbulence.','There is no single universal threshold: about 2300 for pipe flow, but other geometries differ.',['Reynolds number','laminar flow','turbulent flow','turbulence'],'A similarity parameter of fluid flow.'],
+ ['electric-field','electromagnetism','Electric field','Force per unit charge','The force per unit charge, E = F/q, that a small test charge would experience at each point.','A 1 nC charge produces a field of about 9 N/C at 1 m, since E = kq/r² with k ≈ 8.99×10⁹ N·m²/C².','The field exists whether or not a test charge is present; the test charge only reveals it.',['electric field','electric fields'],'A vector field produced by charges.'],
+ ['gauss-law','electromagnetism','Gauss’s law','Enclosed charge fixes the outward flux','The electric flux out of any closed surface equals the enclosed charge divided by ε₀: ∮ E · dA = Q/ε₀.','A 1 μC charge gives a total flux of about 1.13×10⁵ N·m²/C through any closed surface around it.','It does not say the field is equal everywhere on the surface; only the total flux is fixed.',['Gauss’s law',"Gauss's law",'electric flux'],'An integral form of one of Maxwell’s equations.'],
+ ['faraday-law','electromagnetism','Faraday’s law of induction','Changing flux drives a current','A changing magnetic flux Φ through a circuit induces an electromotive force ℰ = −dΦ/dt around it.','A 0.01 m² loop turning 50 times per second in a 0.1 T field gives a peak EMF of 0.1 × 0.01 × 2π·50 ≈ 0.31 V.','A steady magnetic field through a stationary loop induces nothing. Only change matters.',['Faraday’s law',"Faraday's law",'electromagnetic induction','magnetic flux'],'The law behind generators and transformers.'],
+ ['maxwell-equations','electromagnetism','Maxwell’s equations','Four laws that predict light','Four equations relating electric and magnetic fields to charges, currents and each other’s changes, which together predict electromagnetic waves.','They predict waves travelling at c = 1/√(μ₀ε₀) ≈ 3.00×10⁸ m/s, matching the measured speed of light.','Light is not a separate phenomenon added to electromagnetism; it is a solution of these equations.',['Maxwell’s equations',"Maxwell's equations",'electromagnetic wave','electromagnetic waves'],'The field equations of classical electromagnetism.'],
+ ['refraction','electromagnetism','Refraction','Light bends where its speed changes','The change of direction of a wave crossing into a medium where it travels at a different speed, governed by n₁ sin θ₁ = n₂ sin θ₂ (Snell’s law).','Light entering water (n = 1.33) from air at 45° continues at about 32° from the normal, since sin θ₂ = sin 45°/1.33 ≈ 0.53.','Light is not pulled downward. The bending follows from the change in wave speed, and angles are measured from the normal.',['refraction','Snell’s law',"Snell's law",'refractive index'],'Bending of waves at an interface.']
+];
+const scenes=S.map(([id,branch,name,tag,definition,example,contrast,aliases])=>({id,branch,name,tag,definition,example,visual:'applied',variant:id,contrast,three:null,aliases:[name],wordKey:id}));
+const glossary=S.map(([id,branch,name,tag,definition,example,contrast,aliases,here])=>({key:id,title:name,aliases,here:here+' '+definition,contrast,example,linkContext:branch}));
+
+const draw={
+ 'shannon-entropy':p=>{const q=.02+.96*p,H=Hb(q);const A=atlasPlot(Hb,{xmin:0,xmax:1,ymin:0,ymax:1.15,title:'Entropy of a biased coin, in bits'});
+  return {svg:A.out+A.clip(line(A.X(q),A.Y(0),A.X(q),A.Y(H),C.coral,2,'stroke-dasharray="5 5"'))+circle(A.X(q),A.Y(H),7,C.coral)+text(A.X(q),A.Y(H)-16,`H = ${H.toFixed(2)}`,16,C.coral)+text(300,362,'probability of heads',14,C.muted),
+   phase:`Heads probability ${q.toFixed(2)}: H = ${H.toFixed(2)} bits. Uncertainty is greatest, 1 bit, for a fair coin.`}},
+ 'source-coding':p=>{const sym=[['A','1/2','0'],['B','1/4','10'],['C','1/8','110'],['D','1/8','111']];let out=heading('Short codewords for likely symbols');
+  sym.forEach(([s,pr,c],i)=>{const y=96+i*44;out+=rect(70,y-22,200,36,C.pale,'none',8)+text(98,y+2,s,19)+text(160,y+2,pr,16,C.muted)+text(238,y+2,c,18,C.blue)});
+  const msg='ABACADBA'.split(''),codes={A:'0',B:'10',C:'110',D:'111'};const n=Math.min(8,Math.floor(p*9));let x=300,bits=0;
+  out+=text(415,92,'message',14,C.muted);msg.forEach((m,i)=>{out+=text(312+i*28,120,m,19,i<n?C.coral:C.line)});
+  out+=text(415,170,'bits sent',14,C.muted);let col=0;for(let i=0;i<n;i++){const c=codes[msg[i]];out+=text(300+col*12,200,c,17,i%2?C.green:C.blue,'start');col+=c.length+.6;bits+=c.length}
+  out+=text(415,262,`${bits} bit${bits===1?'':'s'} for ${n} symbol${n===1?'':'s'}`,17)+text(415,292,'average 1.75 bits = entropy',16,C.muted);
+  return {svg:out,phase:'Each codeword is a prefix of no other, so the bit string decodes uniquely without separators.'}},
+ 'channel-capacity':p=>{const f=.5*p,Cap=1-Hb(f);const A=atlasPlot(x=>1-Hb(x),{xmin:0,xmax:.5,ymin:0,ymax:1.15,title:'Binary symmetric channel: capacity 1 − H(f)'});
+  return {svg:A.out+circle(A.X(f),A.Y(Cap),7,C.coral)+text(A.X(f)+10,A.Y(Cap)-14,`C = ${Cap.toFixed(2)}`,16,C.coral,'start')+text(300,362,'flip probability f',14,C.muted),
+   phase:`Flip probability ${f.toFixed(2)}: at most ${Cap.toFixed(2)} reliable bits per use. At f = 0.5 the output says nothing about the input.`}},
+ 'error-correcting-code':p=>{const word=[0,1,1,0,0,1,1],lab=['p₁','p₂','d₁','p₃','d₂','d₃','d₄'];const stage=Math.min(3,Math.floor(p*4));const w=word.slice();if(stage>=1&&stage<3)w[4]=1;
+  let out=heading(['Encode 1011 as 0110011','Noise flips bit 5','Parity checks point to bit 5','Bit 5 is corrected'][stage]);
+  w.forEach((b,i)=>{const x=105+i*65,bad=stage>=1&&stage<3&&i===4,fixed=stage===3&&i===4;out+=rect(x-26,120,52,58,bad?C.coralp:fixed?C.greenp:i===2||i>=4?C.pale:'#fff',bad?C.coral:C.line,8,'stroke-width="2"')+text(x,158,b,24,bad?C.coral:C.ink)+text(x,205,lab[i],15,C.muted)+text(x,104,i+1,14,C.muted)});
+  if(stage>=2){const fixed=stage===3;[['checks 1,3,5,7','1'],['checks 2,3,6,7','0'],['checks 4,5,6,7','1']].forEach(([t,v],j)=>{v=fixed?'0':v;out+=text(170+j*140,255,t,14,C.muted)+text(170+j*140,282,'parity '+v,16,v==='1'?C.coral:C.green)});out+=fixed?text(300,325,'all checks pass: syndrome 000',17,C.green):text(300,325,'syndrome 101 in binary = position 5',17,C.coral)}
+  return {svg:out,phase:'Hamming (7,4): three parity bits cover overlapping positions, so a single error gives a unique pattern of failed checks.'}},
+ 'sampling-theorem':p=>{const fs=8-6.8*p,k=Math.round(1/fs),fa=1-k*fs;const A=atlasPlot(t=>Math.sin(TAU*t),{xmin:0,xmax:3,ymin:-1.3,ymax:1.3,title:`1 Hz signal sampled at ${fs.toFixed(1)} Hz`});let out=A.out;
+  if(fs<2)out+=A.clip(path2(sample2(u=>[A.X(3*u),A.Y(Math.sin(TAU*fa*3*u))],1,150),C.green,2.5,'stroke-dasharray="7 5"'));
+  for(let n=0;n/fs<=3.0001;n++){const t=n/fs;out+=circle(A.X(t),A.Y(Math.sin(TAU*t)),6,C.coral)}
+  return {svg:out,phase:fs>2?`${fs.toFixed(1)} Hz exceeds twice the signal frequency, so the samples determine the 1 Hz sine.`:`Below 2 Hz the same samples also fit a ${Math.abs(fa).toFixed(2)} Hz sine (green): aliasing.`}},
+ 'logistic-growth':p=>{const N=t=>100/(1+19*Math.exp(-t));const t=10*p;const A=atlasPlot(N,{xmin:0,xmax:10,ymin:0,ymax:115,title:'N′ = N(1 − N/100), N(0) = 5'});
+  return {svg:A.out+line(A.X(0),A.Y(100),A.X(10),A.Y(100),C.green,2,'stroke-dasharray="6 5"')+text(A.X(10),A.Y(100)-8,'K = 100',15,C.green,'end')+circle(A.X(t),A.Y(N(t)),7,C.coral)+text(300,362,'time (days)',14,C.muted),
+   phase:`t = ${t.toFixed(1)} days: N = ${N(t).toFixed(1)}. The curve is steepest at N = 50, then slows towards K.`}},
+ 'predator-prey':p=>{const pts=LV(),n=Math.max(1,Math.round(p*(pts.length-1)));const A=axesB(0,2.6,0,2.6,{xl:'prey x',yl:'predators y',ticksX:[0,1,2],ticksY:[0,1,2]});let out=heading('Lotka–Volterra cycle around (1, 1)')+A.out;
+  out+=path2(pts.map(([x,y])=>[A.X(x),A.Y(y)]),C.line,2)+path2(pts.slice(0,n+1).map(([x,y])=>[A.X(x),A.Y(y)]),C.blue,3)+circle(A.X(1),A.Y(1),6,C.green);const [x,y]=pts[n];out+=circle(A.X(x),A.Y(y),8,C.coral);
+  return {svg:out,phase:`Prey ${x.toFixed(2)}, predators ${y.toFixed(2)} (scaled). The orbit is closed: x − ln x + y − ln y stays constant.`}},
+ 'sir-model':p=>{const pts=SIR(),n=Math.max(1,Math.round(p*(pts.length-1)));const A=axesB(0,160,0,1,{xl:'days',ticksX:[0,80,160],ticksY:[0,.5,1]});let out=heading('SIR with β = 0.3, γ = 0.1 per day')+A.out;
+  [[0,C.blue],[1,C.coral],[2,C.green]].forEach(([j,col])=>out+=path2(pts.slice(0,n+1).map((v,i)=>[A.X(i*.5),A.Y(v[j])]),col,3));
+  out+=legend(400,178,[['susceptible',C.blue],['infected',C.coral],['recovered',C.green]]);const v=pts[n];
+  return {svg:out,phase:`Day ${(n*.5).toFixed(0)}: S ${(100*v[0]).toFixed(0)}%, I ${(100*v[1]).toFixed(0)}%, R ${(100*v[2]).toFixed(0)}%. Infections fall once S drops below γ/β = 1/3.`}},
+ 'hardy-weinberg':p=>{const a=.05+.9*p;const A=atlasPlot(x=>x*x,{xmin:0,xmax:1,ymin:0,ymax:1.05,title:'Genotype frequencies from allele frequency'});let out=A.out;
+  out+=A.clip(path2(sample2(u=>[A.X(u),A.Y(2*u*(1-u))],1,100),C.green,3)+path2(sample2(u=>[A.X(u),A.Y((1-u)*(1-u))],1,100),C.coral,3));out+=line(A.X(a),A.Y(0),A.X(a),A.Y(1),C.muted,1.5,'stroke-dasharray="4 4"');
+  [[a*a,C.blue],[2*a*(1-a),C.green],[(1-a)*(1-a),C.coral]].forEach(([y,col])=>out+=circle(A.X(a),A.Y(y),6,col));out+=legend(250,100,[['AA = p²',C.blue],['Aa = 2pq',C.green],['aa = q²',C.coral]])+text(300,362,'frequency p of allele A',14,C.muted);
+  return {svg:out,phase:`p = ${a.toFixed(2)}: AA ${(a*a).toFixed(2)}, Aa ${(2*a*(1-a)).toFixed(2)}, aa ${((1-a)*(1-a)).toFixed(2)}. The three always sum to 1.`}},
+ 'reaction-diffusion':p=>{const rows=GRAY(),n=Math.max(1,Math.round(p*(rows.length-1)));let out=heading('Gray–Scott on a line: space across, time down');const cw=420/120,rh=250/rows.length;
+  for(let r=0;r<=n;r++)rows[r].forEach((v,i)=>{if(v>.06)out+=rect(90+i*cw,72+r*rh,cw+.4,rh+.4,v>.2?C.blue:C.line,'none',0)});
+  out+=rect(90,72,420,250,'none',C.line,4,'stroke-width="1.5"')+text(300,345,'position →',14,C.muted)+text(78,90,'t',14,C.muted,'end');
+  return {svg:out,phase:'Computed with F = 0.04, k = 0.06 from one central disturbance; spots split until the line is filled with regularly spaced spots.'}},
+ 'newton-second-law':p=>{const t=3*p;let out=heading('Same 2 N force, different masses');
+  [[1,2,C.blue,130],[2,1,C.coral,250]].forEach(([m,a,col,y])=>{const x=.5*a*t*t,X=90+40*x,w=m===1?44:62;out+=line(80,y+30,530,y+30,C.line,2)+rect(X,y-w+30,w,w,col==C.blue?C.pale:C.coralp,col,6,'stroke-width="2"')+text(X+w/2,y+36-w/2,m+' kg',15)+arrow2([X-48,y+30-w/2],[X-4,y+30-w/2],col,3)+text(470,y-30,`a = ${a} m/s² · v = ${fmt(a*t)} m/s`,15,col,'end')});
+  return {svg:out+text(300,345,`t = ${t.toFixed(2)} s · distances x = ½at²`,15,C.muted),phase:'Doubling the mass halves the acceleration for the same net force (frictionless track).'}},
+ 'harmonic-oscillator':p=>{const x=Math.cos(TAU*2*p);let out=heading('m x″ = −k x · x(t) = cos ωt');const X=300+110*x;
+  let z=[[90,120]];for(let i=1;i<=12;i++)z.push([90+(X-30-90)*i/12,120+(i%2?-14:14)]);z.push([X-30,120]);out+=line(90,90,90,150,C.ink,4)+path2(z,C.muted,2)+rect(X-30,95,60,50,C.pale,C.blue,6,'stroke-width="2"')+line(300,85,300,155,C.line,1,'stroke-dasharray="4 4"');
+  const A=axesB(0,1,-1.2,1.2,{y0:330,y1:190,xl:'time',ticksX:[],ticksY:[-1,1]});out+=A.out+line(85,260,515,260,C.line,1);
+  out+=path2(sample2(u=>[A.X(u*p),A.Y(Math.cos(TAU*2*u*p))],1,120),C.blue,3)+circle(A.X(p),A.Y(Math.cos(TAU*2*p)),6,C.coral);
+  return {svg:out,phase:'Two full periods. Displacement and restoring force always point in opposite directions.'}},
+ 'energy-conservation':p=>{const g=9.8,T=20/g,t=T*p,v=10-g*t,h=10*t-g*t*t/2,KE=.5*v*v,PE=g*h;let out=heading('Ball thrown up at 10 m/s, mass 1 kg');
+  const Y=y=>320-y*44;out+=line(80,320,240,320,C.ink,2)+line(160,Y(0),160,Y(5.1),C.line,1,'stroke-dasharray="4 4"')+text(150,Y(5.1)+4,'5.1 m',14,C.muted,'end')+circle(160,Y(h)-12,12,C.blue);
+  [['kinetic',KE,C.blue,330],['potential',PE,C.coral,410],['total',KE+PE,C.green,490]].forEach(([l,e,col,x])=>out+=rect(x-25,320-e*4.4,50,e*4.4,col,'none',4)+text(x,345,l,14,C.muted)+text(x,312-e*4.4,fmt(e.toFixed(0))+' J',15,col));
+  return {svg:out,phase:`t = ${t.toFixed(2)} s: kinetic ${KE.toFixed(1)} J + potential ${PE.toFixed(1)} J = 50 J (no air resistance, g = 9.8 m/s²).`}},
+ 'least-action':p=>{const g=9.8,e=-.8+1.6*p,y=t=>g/2*t*(1-t),A=axesB(0,1,-.9,2.1,{x1:390,ticksX:[0,1],ticksY:[0,2],xl:'time (s)',yl:'height (m)'});let out=heading('Vary the path, keep the endpoints')+A.out;
+  for(const k of [-.8,-.4,.4,.8])out+=path2(sample2(t=>[A.X(t),A.Y(y(t)+k*Math.sin(Math.PI*t))],1,60),C.line,1.5);
+  out+=path2(sample2(t=>[A.X(t),A.Y(y(t))],1,60),C.blue,3)+path2(sample2(t=>[A.X(t),A.Y(y(t)+e*Math.sin(Math.PI*t))],1,60),C.coral,3);
+  const S=x=>-g*g/24+Math.PI*Math.PI/4*x*x;
+  out+=line(420,300,560,300,C.muted,2)+text(490,322,'ε',15,C.muted)+path2(sample2(u=>{const x=-.8+1.6*u;return [490+87.5*x,300-170*(S(x)+4.2)/2]},1,60),C.green,2.5)+circle(490+87.5*e,300-170*(S(e)+4.2)/2,6,C.coral)+text(490,120,'action S(ε)',14,C.green);
+  return {svg:out,phase:`ε = ${e.toFixed(2)}: S = ${S(e).toFixed(2)} J·s. The true path (blue, ε = 0) gives the stationary value −g²/24 ≈ −4.00 J·s.`}},
+ 'hamiltonian':p=>{const A=axesB(-Math.PI,Math.PI,-2.5,2.5,{xl:'angle q',yl:'momentum p',ticksX:[[-Math.PI,'−π'],[0,'0'],[Math.PI,'π']],ticksY:[-2,2]});let out=heading('Pendulum: H = p²/2 − cos q');out+=A.out;
+  for(const E of [-.6,0,.6,1,1.6]){for(const s of [1,-1]){const pts=sample2(u=>{const q=-Math.PI+TAU*u,v=2*(E+Math.cos(q));return v>=0?[A.X(q),A.Y(s*Math.sqrt(v))]:null},1,240).filter(Boolean);if(pts.length>1)out+=path2(pts,E===1?C.green:C.line,E===1?2.5:1.8)}}
+  const pts=PEND(),n=Math.round(p*(pts.length-1)),[q,m]=pts[n];out+=path2(pts.slice(0,n+1).map(([a,b])=>[A.X(a),A.Y(b)]),C.blue,3)+circle(A.X(q),A.Y(m),8,C.coral);
+  return {svg:out,phase:`The point keeps H = ${(m*m/2-Math.cos(q)).toFixed(2)} as it moves. Green is the separatrix H = 1 between swinging and rotation (scaled units).`}},
+ 'stress':p=>{const F=10*p,sig=100*p;let out=heading('Cut the rod: force spreads over the area');
+  out+=rect(110,150,140,70,C.pale,C.blue,4,'stroke-width="2"')+rect(350,150,140,70,C.pale,C.blue,4,'stroke-width="2"')+line(250,140,250,230,C.coral,2,'stroke-dasharray="5 4"')+line(350,140,350,230,C.coral,2,'stroke-dasharray="5 4"');
+  const L=6+44*p;out+=arrow2([110,185],[110-L,185],C.ink,4)+arrow2([490,185],[490+L,185],C.ink,4);for(let i=0;i<5;i++){const y=158+i*13.5;out+=arrow2([250,y],[250+.6*L+4,y],C.coral,2)+arrow2([350,y],[350-.6*L-4,y],C.coral,2)}
+  out+=text(300,275,`pull F = ${F.toFixed(1)} kN · area A = 1 cm²`,17)+text(300,310,`stress σ = F/A = ${sig.toFixed(0)} MPa`,19,C.coral);
+  return {svg:out,phase:'Each side of the imaginary cut pulls the other with force per unit area σ; the arrows are schematic.'}},
+ 'strain':p=>{const e=.2*p,nu=.3;let out=heading('Stretch along x, contract along y');const W=200*(1+e),H=140*(1-nu*e),x0=300-W/2,y0=200-H/2;
+  out+=rect(x0,y0,W,H,C.pale,C.blue,0,'stroke-width="2"');for(let i=1;i<5;i++)out+=line(x0+W*i/5,y0,x0+W*i/5,y0+H,C.line,1)+(i<4?line(x0,y0+H*i/4,x0+W,y0+H*i/4,C.line,1):'');out+=rect(200,130,200,140,'none',C.coral,0,'stroke-dasharray="6 5" stroke-width="2"');
+  out+=text(300,310,`εx = ΔL/L = ${e.toFixed(3)} · εy = −0.3 εx = ${(-nu*e).toFixed(3)}`,17)+text(300,340,'deformation exaggerated for visibility',14,C.muted);
+  return {svg:out,phase:'Strain compares the deformed grid with the dashed coral original; it has no units.'}},
+ 'linear-elasticity':p=>{const e=.0025*p,s=x=>Math.min(200000*x,250);const A=atlasPlot(x=>s(x/1000),{xmin:0,xmax:2.5,ymin:0,ymax:300,title:'Mild steel: σ = Eε up to yield (schematic)'});
+  return {svg:A.out+A.clip(line(A.X(1.25),A.Y(0),A.X(1.25),A.Y(250),C.muted,1.5,'stroke-dasharray="4 4"'))+circle(A.X(e*1000),A.Y(s(e)),7,C.coral)+text(300,362,'strain (×10⁻³)',14,C.muted)+text(70,70,'σ (MPa)',14,C.muted,'start')+text(A.X(.05),A.Y(262),'slope E = 200 GPa',15,C.blue,'start'),
+   phase:e<.00125?`Strain ${(e*1000).toFixed(2)}×10⁻³ gives stress ${s(e).toFixed(0)} MPa: linear and reversible.`:'Past about 250 MPa mild steel yields: strain grows without more stress and is not fully recovered.'}},
+ 'elastic-wave':p=>{let out=heading('A compression pulse travels along a rod');const c=.06+.88*p;
+  out+=rect(70,150,460,80,C.pale,'none',6);for(let i=0;i<=40;i++){const x0=i/40,u=-.035*Math.exp(-(((x0-c)/.06)**2))*(x0-c)/.06,X=80+440*(x0+u);out+=line(X,158,X,222,Math.abs(u)>.005?C.coral:C.blue,2.5)}
+  out+=line(80,280,520,280,C.line,2)+path2(sample2(x0=>[80+440*x0,280-60*Math.exp(-(((x0-c)/.06)**2))],1,160),C.coral,2.5)+text(300,315,'density of the lines = compression',15,C.muted)+text(300,345,'steel: c = √(E/ρ) ≈ 5.0 km/s',16);
+  return {svg:out,phase:'Each line moves only slightly back and forth while the pulse moves the length of the rod.'}},
+ 'buckling':p=>{const P=1.6*p,amp=P<=1?0:70*Math.sqrt(P-1);let out=heading('Pinned column under compression P');
+  out+=path2(sample2(u=>[200+amp*Math.sin(Math.PI*u),300-210*u],1,60),C.blue,6)+polygon2([[185,315],[215,315],[200,300]],C.pale,C.ink)+circle(200,90,6,C.ink);const L=14+14*P;out+=arrow2([200,84-L],[200,84],C.coral,4);
+  const A=axesB(0,1.6,0,.9,{x0:330,x1:540,y0:300,y1:110,xl:'P / P_cr',yl:'sideways bend',ticksX:[0,1],ticksY:[]});out+=A.out+line(A.X(0),A.Y(0),A.X(1.6),A.Y(0),C.blue,2.5)+path2(sample2(u=>{const x=1+.6*u;return [A.X(x),A.Y(Math.sqrt(x-1))]},1,40),C.blue,2.5)+circle(A.X(P),A.Y(P<=1?0:Math.sqrt(P-1)),6,C.coral);
+  return {svg:out,phase:P<1?`P = ${P.toFixed(2)} P_cr: the straight column is stable.`:`Beyond P_cr = π²EI/L² the column bends sideways (bend amplitude schematic): a pitchfork bifurcation.`}},
+ 'velocity-field':p=>{let out=heading('Ideal flow past a cylinder');const a=.7,U=1,u=(x,y)=>{const r2=x*x+y*y,r4=r2*r2;return [U*(1-a*a*(x*x-y*y)/r4),-U*2*a*a*x*y/r4]};const P=([x,y])=>[300+80*x,205-80*y];
+  for(let i=-3;i<=3;i++)for(let j=-1.5;j<=1.5;j+=.75){if(i*i+j*j<a*a*1.6)continue;const [vx,vy]=u(i,j);out+=arrow2(P([i,j]),P([i+.3*vx,j+.3*vy]),C.line,1.8)}
+  out+=circle(300,205,80*a,C.pale,C.blue,'stroke-width="2"');
+  for(const y0 of [-1.2,-.6,-.2,.2,.6,1.2]){let s=[-3.4,y0];const tr=[P(s)];const steps=Math.round(140*p);for(let k=0;k<steps;k++){s=rk4(([x,y])=>u(x,y),s,.045);tr.push(P(s))}out+=path2(tr,C.blue,2.5)+circle(...tr[tr.length-1],6,C.coral)}
+  return {svg:out,phase:'Grey arrows show u at fixed points; tracers follow it. Speed doubles at the top and bottom of the cylinder in this inviscid model.'}},
+ 'continuity-equation':p=>{let out=heading('Area halves, speed doubles');const w=x=>x<220?60:x>380?30:60-30*(x-220)/160;
+  const top=sample2(u=>{const x=80+440*u;return [x,200-w(x)]},1,80),bot=sample2(u=>{const x=80+440*u;return [x,200+w(x)]},1,80);out+=path2(top,C.ink,3)+path2(bot,C.ink,3);
+  const pos=(s)=>{let x=80;const steps=Math.round(s/.004);for(let k=0;k<steps;k++)x+=.004*150*60/w(x);return x};
+  for(let k=0;k<10;k++){const s=((p*1.5+k*.1)%1)*2.2,x=pos(s);if(x<520)for(const dy of [-.5,0,.5])out+=circle(x,200+dy*w(x),6,k%2?C.blue:C.coral)}
+  out+=text(150,300,'A = 4 cm² · 1 m/s',16)+text(450,300,'A = 2 cm² · 2 m/s',16)+text(300,340,'Q = Av is the same at every section',16,C.muted);
+  return {svg:out,phase:'Tracers released at equal time intervals spread out where the pipe narrows, because each moves faster there.'}},
+ 'vorticity':p=>{let out=heading('Both flows go round; only one spins elements');const ang=TAU*p;
+  const cross=(x,y,a,col)=>line(x-14*Math.cos(a),y-14*Math.sin(a),x+14*Math.cos(a),y+14*Math.sin(a),col,3)+line(x+14*Math.sin(a),y-14*Math.cos(a),x-14*Math.sin(a),y+14*Math.cos(a),col,3);
+  for(const [cx,label,free] of [[160,'rigid rotation · ω = 2Ω',false],[440,'free vortex · ω = 0',true]]){out+=circle(cx,200,6,C.ink)+text(cx,340,label,16,free?C.green:C.coral);
+   for(const r of [45,95]){out+=circle(cx,200,r,'none',C.line,'stroke-dasharray="4 5"');const th=free?ang*(45/r)**2:ang;for(const k of [0,1,2]){const a=th+k*TAU/3;out+=cross(cx+r*Math.cos(a),200-r*Math.sin(a),free?0:-th,free?C.green:C.coral)}}}
+  return {svg:out,phase:'Left: the crosses turn with the flow. Right: inner rings move faster, yet each cross keeps its orientation.'}},
+ 'navier-stokes':p=>{const t=1.2*p,u=y=>{let s=1-y*y;for(let k=0;k<30;k++){const n=2*k+1;s-=32*(k%2?-1:1)/(n**3*Math.PI**3)*Math.cos(n*Math.PI*y/2)*Math.exp(-n*n*Math.PI*Math.PI*t/4)}return Math.max(0,s)};
+  let out=heading('Flow between plates starts from rest')+line(80,90,520,90,C.ink,4)+line(80,320,520,320,C.ink,4);
+  for(let j=0;j<=10;j++){const y=-1+j/5,Y=205-115*y,v=u(y);out+=arrow2([120,Y],[120+300*v+.01,Y],C.blue,2)}
+  out+=path2(sample2(s=>{const y=-1+2*s;return [120+300*u(y),205-115*y]},1,80),C.coral,2.5)+path2(sample2(s=>{const y=-1+2*s;return [120+300*(1-y*y),205-115*y]},1,80),C.line,1.5,'stroke-dasharray="5 5"');
+  return {svg:out,phase:`Scaled time ${t.toFixed(2)}: viscosity spreads momentum from the centre to the walls. Dashed: the final parabolic profile.`}},
+ 'reynolds-number':p=>{const lg=6*p,Re=10**lg;let out=heading(`Re = ${Re<10?Re.toFixed(1):Math.round(Re).toLocaleString('en-GB')}`);
+  const X=l=>80+440*l/6;out+=rect(80,250,440,22,C.pale,'none',6)+rect(X(Math.log10(2300)),250,X(Math.log10(4000))-X(Math.log10(2300)),22,C.coralp,'none',0)+rect(X(Math.log10(4000)),250,520-X(Math.log10(4000)),22,C.coral,'none',0);
+  for(let k=0;k<=6;k++)out+=text(X(k),300,'10'+'⁰¹²³⁴⁵⁶'[k],14,C.muted);out+=circle(X(lg),261,9,C.blue)+text(X(1.8),240,'laminar pipe flow',14,C.blue)+text(X(4.9),240,'turbulent',14,C.coral);
+  const wob=lg<Math.log10(2300)?0:lg<Math.log10(4000)?.3:1;
+  for(let j=0;j<5;j++){let seed=17+j*31;out+=path2(sample2(u=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;const noise=(seed/4294967296-.5);return [80+440*u,95+j*28+wob*(12*Math.sin(9*u+j)*u+10*noise*u)]},1,60),C.blue,2)}
+  return {svg:out,phase:'Schematic streaks. In pipes, flow is typically laminar below Re ≈ 2300 and turbulent above about 4000.'}},
+ 'electric-field':p=>{let out=heading('Field of a + and a − charge');const q=[[-1.4,0,1],[1.4,0,-1]],E=(x,y)=>q.reduce(([ex,ey],[a,b,s])=>{const dx=x-a,dy=y-b,r3=Math.pow(dx*dx+dy*dy,1.5)+1e-9;return [ex+s*dx/r3,ey+s*dy/r3]},[0,0]);const P=([x,y])=>[300+80*x,205-80*y];
+  for(let i=-3;i<=3;i+=.6)for(let j=-1.5;j<=1.5;j+=.6){const [ex,ey]=E(i,j),m=Math.hypot(ex,ey);if(Math.hypot(i+1.4,j)<.35||Math.hypot(i-1.4,j)<.35)continue;out+=arrow2(P([i,j]),P([i+.38*ex/m,j+.38*ey/m]),C.line,1.6)}
+  let s=[-1.4+.25*Math.cos(1),.25*Math.sin(1)];const tr=[P(s)];const n=Math.round(150*p);for(let k=0;k<n;k++){const [ex,ey]=E(...s),m=Math.hypot(ex,ey);s=[s[0]+.025*ex/m,s[1]+.025*ey/m];if(Math.hypot(s[0]-1.4,s[1])<.2)break;tr.push(P(s))}
+  out+=path2(tr,C.blue,3)+circle(...tr[tr.length-1],7,C.green)+circle(...P([-1.4,0]),18,C.coral)+text(...P([-1.4,-.08]),'+',24,'#fff')+circle(...P([1.4,0]),18,C.blue)+text(...P([1.4,-.08]),'−',24,'#fff');
+  return {svg:out,phase:'Arrows show field direction only; the traced line follows the field from + to −. Strength falls off as 1/r² from each charge.'}},
+ 'gauss-law':p=>{let out=heading('12 field lines leave every enclosing surface');const cx=300,cy=205,a=TAU*p,R=t=>95+35*Math.cos(2*t+a)+20*Math.sin(3*t-a);
+  for(let k=0;k<12;k++){const t=k*TAU/12;out+=arrow2([cx+20*Math.cos(t),cy-20*Math.sin(t)],[cx+165*Math.cos(t),cy-165*Math.sin(t)],C.line,2);out+=circle(cx+R(t)*Math.cos(t),cy-R(t)*Math.sin(t),5,C.coral)}
+  out+=polygon2(sample2(u=>{const t=TAU*u;return [cx+R(t)*Math.cos(t),cy-R(t)*Math.sin(t)]},1,120),'none',C.blue)+circle(cx,cy,16,C.coral)+text(cx,cy+7,'+',22,'#fff');
+  return {svg:out,phase:'The surface changes shape, yet every line crosses it once: total flux Q/ε₀ stays fixed. Lines are a schematic count of flux.'}},
+ 'faraday-law':p=>{const a=TAU*2*p;let out=heading('A loop turning in a uniform magnetic field');
+  for(let i=0;i<5;i++)out+=arrow2([80,105+i*22],[200,105+i*22],C.line,1.6);const w=60*Math.cos(a);out+=polygon2([[140-w/2,90],[140+w/2,90],[140+w/2,200],[140-w/2,200]],C.pale,C.blue)+line(140,80,140,210,C.ink,1.5,'stroke-dasharray="4 4"');
+  const A=axesB(0,2,-1.2,1.2,{x0:250,x1:540,y0:310,y1:90,xl:'turns',ticksX:[0,1,2],ticksY:[-1,1]});out+=A.out+line(250,200,540,200,C.line,1);
+  out+=path2(sample2(u=>[A.X(2*u*p),A.Y(Math.cos(TAU*2*u*p))],1,120),C.blue,2.5)+path2(sample2(u=>[A.X(2*u*p),A.Y(Math.sin(TAU*2*u*p))],1,120),C.coral,2.5);
+  out+=legend(90,262,[['flux Φ',C.blue],['EMF ℰ',C.coral]]);
+  return {svg:out,phase:'Φ ∝ cos ωt and ℰ = −dΦ/dt ∝ sin ωt: the EMF peaks when the flux is zero but changing fastest (loop edge-on to the field).'}},
+ 'maxwell-equations':p=>{let out=heading('An electromagnetic wave: E and B in step');const ph=TAU*2*p,P=(x,y,z)=>[80+x*440-z*.5*60,200-y-z*.35*60];
+  out+=line(...P(0,0,0),...P(1,0,0),C.muted,2);for(let i=0;i<=48;i++){const x=i/48,s=Math.sin(TAU*2*x-ph);out+=line(...P(x,0,0),...P(x,70*s,0),C.blue,1.6)+line(...P(x,0,0),...P(x,0,1.6*s),C.coral,1.6)}
+  out+=path2(sample2(x=>P(x,70*Math.sin(TAU*2*x-ph),0),1,120),C.blue,3)+path2(sample2(x=>P(x,0,1.6*Math.sin(TAU*2*x-ph)),1,120),C.coral,3);
+  out+=legend(90,300,[['E (electric)',C.blue],['B (magnetic)',C.coral]])+text(470,310,'c = 1/√(μ₀ε₀)',17)+text(470,338,'≈ 3.00×10⁸ m/s',16,C.muted);
+  return {svg:out,phase:'Schematic plane wave: each changing field regenerates the other, so the pattern moves at speed c.'}},
+ 'refraction':p=>{const t1=80*p*deg,n2=1.33,t2=Math.asin(Math.sin(t1)/n2),O=[300,200],L=150;let out=heading('Air (n = 1) into water (n = 1.33)');
+  out+=rect(60,200,480,140,C.pale,'none',0)+line(60,200,540,200,C.blue,2)+line(300,70,300,330,C.muted,1.5,'stroke-dasharray="5 5"');
+  const A=[O[0]-L*Math.sin(t1),O[1]-L*Math.cos(t1)],B=[O[0]+L*Math.sin(t2),O[1]+L*Math.cos(t2)];out+=arrow2(A,O,C.coral,3)+arrow2(O,B,C.coral,3);
+  out+=text(318,120,`θ₁ = ${(t1/deg).toFixed(0)}°`,17,C.coral,'start')+text(282,300,`θ₂ = ${(t2/deg).toFixed(1)}°`,17,C.coral,'end')+text(500,235,'water',15,C.blue)+text(500,170,'air',15,C.muted);
+  return {svg:out,phase:`sin θ₂ = sin θ₁ / 1.33 = ${Math.sin(t2).toFixed(2)}: the ray bends towards the normal as it slows down.`}}
+};
+APPLIED_PARTS.push({lessons,scenes,glossary,draw});
+}
+// ── applied-c ──
+{
+// Part C · lessons 41–46: thermodynamics, quantum theory, statistical mechanics,
+// relativity, celestial mechanics and geophysics. Every renderer is a pure function of p.
+const L=(id,name,short,msc,why,prior,ids,references)=>({id,name,short,tab:short,stage:'physical',msc,why,prior,context:'general',ids,level:'Introduction',references});
+const lessons=[
+ L('thermodynamics','Thermodynamics','Thermodynamics',['80'],'Track heat, work and the direction of spontaneous change in large systems.',['mechanics','calculus'],['temperature','first-law','second-law','heat-engine','free-energy'],['physics','feynman']),
+ L('quantum','Quantum theory','Quantum',['81'],'Describe states as vectors in a Hilbert space and measurements as operators.',['functional','operators','probability'],['wave-function','superposition','quantum-observable','uncertainty-principle','energy-levels'],['physics']),
+ L('statmech','Statistical mechanics','Statistical mechanics',['82'],'Derive heat and temperature from probabilities over enormous numbers of microscopic arrangements.',['probability','thermodynamics'],['microstate','boltzmann-distribution','partition-function','ising-model','phase-transition'],['physics']),
+ L('relativity','Relativity & gravitation','Relativity',['83'],'Merge space and time into one geometry, then let matter curve it.',['mechanics','electromagnetism','differential'],['spacetime-interval','lorentz-transformation','time-dilation','light-cone','spacetime-curvature'],['relativity','physics']),
+ L('astronomy','Celestial mechanics & astrophysics','Astronomy',['85'],'Apply gravity and dynamics to orbits, star systems and the expanding universe.',['relativity','dynamics'],['kepler-laws','escape-velocity','three-body-problem','orbital-resonance','hubble-law'],['physics']),
+ L('geophysics','Geophysics & climate models','Geophysics',['86'],'Model a rotating planet: its fluids, its interior waves and its energy budget.',['fluids','continuum','equations'],['coriolis-effect','seismic-wave','geostrophic-balance','energy-balance-model','inverse-problem'],['physics'])
+];
+// [id, lesson, name, tag, definition, example, contrast, aliases, glossary-here]
+const S=[
+ ['temperature','thermodynamics','Temperature','What systems share at thermal equilibrium','A quantity that two systems in thermal contact share once they stop exchanging heat; heat flows spontaneously from the higher temperature to the lower.','Mixing 1 kg of water at 80 °C with 1 kg at 20 °C, with no losses, gives 2 kg at 50 °C.','Temperature is not heat. Heat is energy in transit; a bath and a cup at 40 °C share a temperature but hold very different amounts of energy.',['temperature','absolute temperature'],'The quantity equalised by thermal contact, measured on the absolute (kelvin) scale in physical laws.'],
+ ['first-law','thermodynamics','First law of thermodynamics','Energy is conserved: ΔU = Q − W','The change in a system’s internal energy equals the heat supplied to it minus the work it does on its surroundings.','A gas absorbs 100 J of heat and does 40 J of work pushing a piston, so its internal energy rises by 60 J.','Heat and work are not stored in a body. Only the internal energy is a property of the state; Q and W depend on the path taken.',['first law of thermodynamics','internal energy'],'Energy conservation for thermodynamic processes: ΔU = Q − W, with W the work done by the system.'],
+ ['second-law','thermodynamics','Second law of thermodynamics','Total entropy never decreases','In an isolated system, the thermodynamic entropy cannot decrease; spontaneous processes increase it until equilibrium.','When 1 mol of ideal gas expands freely into twice its volume, its entropy rises by R ln 2 ≈ 5.76 J/K.','Entropy can fall locally, as inside a refrigerator, provided the surroundings gain at least as much.',['second law of thermodynamics','thermodynamic entropy'],'The law that the entropy of an isolated system does not decrease; it gives spontaneous change a direction.'],
+ ['heat-engine','thermodynamics','Heat engine','Turn part of a heat flow into work','A cyclic device that takes heat Qₕ from a hot reservoir, delivers work W and rejects heat Q꜀ to a cold one; its efficiency is at most 1 − T꜀/Tₕ (Carnot).','With Tₕ = 600 K and T꜀ = 300 K, no engine can exceed 1 − 300/600 = 50% efficiency.','The Carnot limit is an upper bound for an ideal reversible cycle, not the efficiency of a real engine; temperatures must be in kelvin.',['heat engine','Carnot efficiency','Carnot cycle'],'A cycle converting heat into work between two temperatures, bounded by the Carnot efficiency 1 − T꜀/Tₕ.'],
+ ['free-energy','thermodynamics','Free energy','Energy minus temperature times entropy','The Helmholtz free energy F = U − TS; at fixed temperature and volume a system settles where F is smallest.','For two levels separated by ε at kT = ε, minimising F puts a fraction 1/(1 + e) ≈ 0.27 of particles in the upper level.','The minimum of F is not the minimum of energy: at higher temperature the entropy term favours disorder.',['free energy','Helmholtz free energy','Gibbs free energy'],'A thermodynamic potential such as F = U − TS whose minimum picks the equilibrium at fixed temperature.'],
+ ['wave-function','quantum','Wave function','A complex amplitude over positions','A complex-valued function ψ whose squared modulus |ψ|² gives the probability density for finding the particle at each position.','In a box of width L, ψ₁ = √(2/L) sin(πx/L); the chance of finding the particle in the middle half is 1/2 + 1/π ≈ 0.82.','ψ itself is not a probability and can be negative or complex; only |ψ|² is a density.',['wave function','wavefunction'],'A normalised complex function whose squared modulus is a probability density.'],
+ ['superposition','quantum','Quantum superposition','Add states to make a new state','A linear combination of quantum states is again a state; probabilities come from the squared amplitudes, including interference terms.','Measuring the energy of (ψ₁ + ψ₂)/√2 in a box gives E₁ or E₂ = 4E₁, each with probability 1/2.','A superposition is a single definite state with fixed relative phase, not a population of particles split between states.',['quantum superposition','superposition principle'],'A linear combination of state vectors; relative phases produce interference.'],
+ ['quantum-observable','quantum','Quantum observable','Measurable quantity as a self-adjoint operator','A measurable quantity represented by a self-adjoint operator; a measurement yields one of its eigenvalues, with probability given by the squared overlap with the eigenvector.','A spin prepared along +x and measured along z gives +ħ/2 or −ħ/2, each with probability 1/2; the expected value is 0.','The result is an eigenvalue, not the average. The expected value 0 above is never itself observed.',['quantum observable','self-adjoint observable'],'A self-adjoint operator whose eigenvalues are the possible measurement results.'],
+ ['uncertainty-principle','quantum','Uncertainty principle','σₓ σₚ ≥ ħ/2','For any quantum state, the standard deviations of position and momentum satisfy σₓ σₚ ≥ ħ/2.','An electron confined to σₓ = 0.1 nm has σₚ ≥ ħ/(2σₓ) ≈ 5.3 × 10⁻²⁵ kg·m/s.','It is not about clumsy measuring instruments; it is a property of every state, following from the operators’ commutator.',['uncertainty principle','Heisenberg uncertainty principle'],'A lower bound on the product of position and momentum spreads in any quantum state.'],
+ ['energy-levels','quantum','Quantised energy levels','Only certain energies are allowed','For a bound system, the energy operator has a discrete set of eigenvalues; transitions between them emit or absorb definite amounts of energy.','An electron in a 1 nm box has Eₙ = n²h²/(8mL²), so E₁ ≈ 0.38 eV and E₂ = 4E₁.','Quantisation comes from confinement and boundary conditions; a free particle has a continuous range of energies.',['quantised energy levels','energy eigenvalue','energy level'],'The discrete eigenvalues of a bound system’s energy operator.'],
+ ['microstate','statmech','Microstate','One complete microscopic arrangement','A full specification of every particle’s state; a macrostate groups all microstates sharing the same bulk quantities.','For 4 coins there are 16 microstates; 6 of them have exactly 2 heads, so that macrostate is the most likely.','A macrostate is not one arrangement. Its multiplicity counts how many microstates realise it.',['microstate','macrostate','multiplicity'],'A complete microscopic configuration; macrostates collect many of them.'],
+ ['boltzmann-distribution','statmech','Boltzmann distribution','Probability falls as e^(−E/kT)','In thermal equilibrium at temperature T, a state of energy E occurs with probability proportional to e^(−E/kT).','When kT equals the level spacing, each level is e ≈ 2.72 times less likely than the one below it.','Higher energies are not forbidden, only exponentially less likely; populations become equal only as T grows without bound.',['Boltzmann distribution','Boltzmann factor'],'Equilibrium probabilities proportional to e^(−E/kT).'],
+ ['partition-function','statmech','Partition function','Sum the Boltzmann factors','The normalising sum Z = Σ e^(−Eᵢ/kT) over all states; thermodynamic quantities follow from derivatives of ln Z.','For two levels 0 and ε at kT = ε, Z = 1 + e⁻¹ ≈ 1.37 and the mean energy is ε e⁻¹/Z ≈ 0.27ε.','Z is not a probability. It is the normaliser whose logarithm generates averages, as in F = −kT ln Z.',['partition function'],'The sum of Boltzmann factors; F = −kT ln Z.'],
+ ['ising-model','statmech','Ising model','Spins aligned by neighbours','A lattice of spins sᵢ = ±1 with energy −J Σ sᵢsⱼ over neighbouring pairs; below a critical temperature, alignment spreads across the lattice.','On the square lattice the critical temperature is kT꜀/J = 2/ln(1 + √2) ≈ 2.269 (Onsager, 1944).','Each spin feels only its neighbours. Long-range order emerges collectively, not from a global force.',['Ising model'],'A lattice of ±1 spins coupled to neighbours; the simplest model with a phase transition.'],
+ ['phase-transition','statmech','Phase transition','A sudden change of bulk behaviour','A value of a control quantity, such as temperature, at which a system’s equilibrium properties change non-analytically in the limit of infinite size.','Water boils at 100 °C at 1 atm; the 2D Ising magnetisation vanishes at kT/J ≈ 2.269.','A finite system changes smoothly; the sharp transition is a property of the thermodynamic limit.',['phase transition','critical temperature','critical point'],'A non-analytic change of equilibrium properties, such as boiling or loss of magnetisation.'],
+ ['spacetime-interval','relativity','Spacetime interval','The separation all observers agree on','For two events, s² = (cΔt)² − Δx² − Δy² − Δz², which is the same in every inertial frame.','Events 5 years and 3 light-years apart have s² = 25 − 9 = 16, so every inertial observer measures an interval of 4 years.','It is not Euclidean distance; the minus sign lets s² be positive, zero or negative.',['spacetime interval','proper time','Minkowski spacetime'],'The invariant combination (cΔt)² − |Δx|² of two events’ separations.'],
+ ['lorentz-transformation','relativity','Lorentz transformation','Change frame without changing c','The linear map between inertial frames: t′ = γ(t − vx/c²), x′ = γ(x − vt), with γ = 1/√(1 − v²/c²).','At v = 0.6c, γ = 1/√(1 − 0.36) = 1.25.','It is not the Galilean shift x′ = x − vt; time and space mix, and the speed of light is the same in both frames.',['Lorentz transformation','Lorentz factor','Lorentz boost'],'The change of inertial frame preserving the spacetime interval, scaled by γ = 1/√(1 − v²/c²).'],
+ ['time-dilation','relativity','Time dilation','Moving clocks run slow','A clock moving at speed v records proper time Δτ while the observer’s clock records Δt = γΔτ.','At 0.8c, γ = 5/3: a 3-year trip by the ship’s clock lasts 5 years by Earth’s clocks.','Nothing is wrong with the moving clock. Each inertial observer sees the other’s clocks slowed.',['time dilation'],'The stretching Δt = γΔτ of a moving clock’s ticks as measured by an observer.'],
+ ['light-cone','relativity','Light cone','The reach of cause and effect','The set of events that light from a given event could reach or could have come from; it separates timelike, lightlike and spacelike separations.','The Sun is about 8.3 light-minutes away, so anything happening there now cannot affect Earth for 8.3 minutes.','A light cone is not a physical object; it is a set of events determined by the geometry.',['light cone','timelike','spacelike','lightlike'],'The cone of light paths through an event, bounding which events can influence it.'],
+ ['spacetime-curvature','relativity','Spacetime curvature','Matter tells spacetime how to curve','In general relativity, Einstein’s equations G_μν = 8πG T_μν / c⁴ link the curvature of spacetime to its energy and momentum; free bodies follow geodesics.','GPS satellite clocks gain about 38 μs per day relative to ground clocks (about +45 μs gravitational, −7 μs from motion).','The rubber-sheet picture is an analogy. Curvature involves time as well as space, and nothing pulls on a sheet.',['spacetime curvature','Einstein field equations','general relativity'],'Curvature of the spacetime metric, set by energy and momentum through Einstein’s equations.'],
+ ['kepler-laws','astronomy','Kepler’s laws','Ellipses, equal areas, T² ∝ a³','Planets move on ellipses with the Sun at a focus, sweep equal areas in equal times, and have periods with T² proportional to a³.','Mars has a ≈ 1.524 AU, so T ≈ 1.524^1.5 ≈ 1.88 years.','Planets do not move at constant speed, and the Sun is at a focus, not the centre of the ellipse.',['Kepler’s laws','Kepler orbit','Kepler’s equation'],'Three laws of planetary motion that follow from inverse-square gravity.'],
+ ['escape-velocity','astronomy','Escape velocity','Enough speed never to fall back','The launch speed √(2GM/r) at which kinetic energy equals the gravitational binding energy, so an unpowered body never returns.','From Earth’s surface it is about 11.2 km/s; from the Moon about 2.38 km/s.','It does not depend on the projectile’s mass or, ignoring air, its direction; it is a launch speed, not a speed that must be maintained.',['escape velocity','escape speed'],'The minimum launch speed √(2GM/r) to coast away from a mass for ever.'],
+ ['three-body-problem','astronomy','Three-body problem','Three masses, no general formula','Predicting the motion of three bodies under mutual gravity; unlike two bodies, there is no general closed-form solution and most motions are chaotic.','The figure-eight orbit, found numerically by Moore (1993) and proved by Chenciner and Montgomery (2000), is a rare periodic solution.','“No general formula” does not mean unsolvable: numerical integration predicts it well over limited times.',['three-body problem','n-body problem'],'Motion of three gravitating bodies; generally chaotic and without a closed-form solution.'],
+ ['orbital-resonance','astronomy','Orbital resonance','Periods in small whole-number ratios','A configuration in which orbiting bodies’ periods are close to a ratio of small integers, so their mutual tugs repeat in step.','Io, Europa and Ganymede have periods ≈ 1.77, 3.55 and 7.15 days, a 1 : 2 : 4 Laplace resonance.','The periods are not exactly equal or exactly fixed; repeated gravitational tugs maintain the ratio.',['orbital resonance','mean-motion resonance','Laplace resonance'],'Orbital periods locked near small-integer ratios by repeated mutual tugs.'],
+ ['hubble-law','astronomy','Hubble’s law','Recession speed ∝ distance','For distant galaxies, recession velocity is approximately v = H₀d, as expected for uniform expansion of space.','With H₀ ≈ 70 km/s per megaparsec, a galaxy 100 Mpc away recedes at about 7000 km/s.','There is no centre: every galaxy sees the same law, as dots on an expanding grid do.',['Hubble’s law','Hubble constant','Hubble–Lemaître law'],'The proportionality v = H₀d between recession speed and distance.'],
+ ['coriolis-effect','geophysics','Coriolis effect','Straight motion looks curved on a turning planet','In a rotating frame, a moving body appears deflected by the fictitious acceleration −2Ω × v, to the right in the Northern Hemisphere.','At latitude 45°, the Coriolis parameter f = 2Ω sin φ ≈ 1.03 × 10⁻⁴ s⁻¹.','It is far too weak to set the swirl direction of a draining sink; it matters for winds and currents over hundreds of kilometres.',['Coriolis effect','Coriolis force','Coriolis parameter'],'The apparent deflection −2Ω × v of moving bodies in a rotating frame.'],
+ ['seismic-wave','geophysics','Seismic waves','Compressions outrun shears','Elastic waves through Earth: P waves compress along the direction of travel and S waves shear across it, travelling more slowly.','With Vp ≈ 6 km/s and Vs ≈ 3.5 km/s, an S − P lag of 10 s means the source is about 84 km away.','S waves cannot cross liquid, which is how the liquid outer core was inferred; P waves are not surface waves.',['seismic wave','P wave','S wave'],'Elastic body waves: compressional P waves and slower shear S waves.'],
+ ['geostrophic-balance','geophysics','Geostrophic balance','Pressure push balanced by rotation','A large-scale flow in which the pressure-gradient force is balanced by the Coriolis effect, so the wind blows along isobars.','In the Northern Hemisphere, winds circulate anticlockwise around a low-pressure centre (Buys Ballot’s law).','Large-scale wind does not blow straight from high to low pressure; it runs along the isobars.',['geostrophic balance','geostrophic wind'],'Balance of pressure gradient and Coriolis acceleration; flow along isobars.'],
+ ['energy-balance-model','geophysics','Energy balance model','Absorbed sunlight equals emitted heat','The simplest climate model: S(1 − α)/4 = σT⁴ fixes the effective temperature T from solar input S and albedo α.','With S = 1361 W/m² and α = 0.3, T ≈ 255 K; the greenhouse effect raises the mean surface to about 288 K.','255 K is not the surface temperature; it is the effective radiating temperature, and real climate involves many feedbacks.',['energy balance model','albedo','effective temperature'],'A climate model equating absorbed solar and emitted thermal radiation.'],
+ ['inverse-problem','geophysics','Inverse problem','Infer causes from effects','Recovering a model’s inputs from its observed outputs; solutions may be non-unique or unstable, so extra assumptions (regularisation) are needed.','Seismic tomography infers wave speeds inside Earth from travel times along many ray paths.','It is not simply running the forward model backwards: different interiors can fit the same data.',['inverse problem','seismic tomography','regularisation'],'Inferring inputs from outputs, typically ill-posed and needing regularisation.']
+];
+const scenes=S.map(([id,branch,name,tag,definition,example,contrast])=>({id,branch,name,tag,definition,example,visual:'applied',variant:id,contrast,three:null,aliases:[name],wordKey:id}));
+const glossary=S.map(([id,branch,name,tag,definition,example,contrast,aliases,here])=>({key:id,title:name,aliases,here,contrast,example,linkContext:branch}));
+
+// ── drawing helpers (local) ──
+const f1=n=>Number(n).toFixed(1),f2=n=>Number(n).toFixed(2);
+const lcg=seed=>()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296};
+function box(x,y,w,h,xl,yl){ // simple axes box; returns mapping in unit coordinates
+ const X=u=>x+w*u,Y=v=>y+h-h*v;
+ let out=line(x,y+h,x+w,y+h,C.muted,2)+line(x,y,x,y+h,C.muted,2);
+ if(xl)out+=text(x+w/2,y+h+26,xl,15,C.muted);if(yl)out+=text(x-10,y-8,yl,15,C.muted,'start');
+ return {out,X,Y};
+}
+const curve=(f,X,Y,col=C.blue,w=3,n=90)=>path2(sample2(u=>[X(u),Y(f(u))],1,n),col,w);
+const hotCol=k=>{k=clamp(k,0,1);const a=[23,114,183],b=[196,82,56];return `rgb(${a.map((v,i)=>Math.round(v+(b[i]-v)*k)).join(',')})`};
+const onsager=T=>T>=2/Math.log(1+Math.SQRT2)?0:Math.pow(1-Math.pow(Math.sinh(2/T),-4),1/8);
+
+// Figure-eight three-body orbit (G = m = 1), integrated once with RK4 and cached.
+let eight=null;
+function figureEight(){
+ if(eight)return eight;
+ const v3=[-0.93240737,-0.86473146];
+ let s=[0.97000436,-0.24308753,-0.97000436,0.24308753,0,0, -v3[0]/2,-v3[1]/2,-v3[0]/2,-v3[1]/2,v3[0],v3[1]];
+ const acc=q=>{const a=[0,0,0,0,0,0];for(let i=0;i<3;i++)for(let j=0;j<3;j++)if(i!==j){const dx=q[2*j]-q[2*i],dy=q[2*j+1]-q[2*i+1],r3=Math.pow(dx*dx+dy*dy,1.5);a[2*i]+=dx/r3;a[2*i+1]+=dy/r3}return a};
+ const d=y=>[...y.slice(6),...acc(y)];
+ const T=6.32591398,N=1200,h=T/N,out=[s.slice(0,6)];
+ for(let k=0;k<N;k++){const k1=d(s),k2=d(s.map((v,i)=>v+h/2*k1[i])),k3=d(s.map((v,i)=>v+h/2*k2[i])),k4=d(s.map((v,i)=>v+h*k3[i]));s=s.map((v,i)=>v+h/6*(k1[i]+2*k2[i]+2*k3[i]+k4[i]));out.push(s.slice(0,6))}
+ return eight=out;
+}
+// Fixed Ising backdrop: smoothed seeded noise ranked once, so a magnetisation m colours the
+// (1+m)/2 lowest-ranked cells up. Clusters come from the smoothing; this is illustrative only.
+let isingRank=null;
+function isingRanks(nx,ny){
+ if(isingRank)return isingRank;const r=lcg(4242),raw=Array.from({length:nx*ny},()=>r());
+ const sm=raw.map((_,k)=>{const i=k%nx,j=Math.floor(k/nx);let s=0,n=0;for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++){const ii=(i+a+nx)%nx,jj=(j+b+ny)%ny;s+=raw[jj*nx+ii]*(a===0&&b===0?2:1);n+=a===0&&b===0?2:1}return s/n});
+ const order=sm.map((v,k)=>[v,k]).sort((a,b)=>a[0]-b[0]);isingRank=new Array(nx*ny);order.forEach(([,k],i)=>isingRank[k]=i/(nx*ny));return isingRank;
+}
+
+const draw={
+ // ───────── Thermodynamics ─────────
+ 'temperature':p=>{
+  const s=1-Math.exp(-4*p),Ta=80-30*s,Tb=20+30*s;let out=heading('Heat flows from hot to cold');
+  out+=rect(70,110,170,150,hotCol((Ta-20)/60),'none',14)+rect(360,110,170,150,hotCol((Tb-20)/60),'none',14);
+  out+=text(155,190,f1(Ta)+' °C',26,'#fff')+text(445,190,f1(Tb)+' °C',26,'#fff');
+  out+=text(155,288,'1 kg water',16,C.muted)+text(445,288,'1 kg water',16,C.muted);
+  const w=1+7*(Ta-Tb)/60;out+=Ta-Tb>.5?arrow2([250,185],[350,185],C.coral,w)+text(300,165,'heat',16,C.coral):text(300,190,'=',30,C.green);
+  out+=text(300,340,'equal heat capacities → final (80 + 20)/2 = 50 °C',16,C.muted);
+  return {svg:out,phase:'Illustrative exponential approach. With no losses the common final temperature is 50 °C.'};
+ },
+ 'first-law':p=>{
+  const q=100*smooth(clamp(p/.5,0,1)),w=40*smooth(clamp((p-.4)/.5,0,1)),du=q-w;let out=heading('ΔU = Q − W');
+  const px=150+70*w/40;out+=rect(60,120,240,120,'#fff',C.line,6,'stroke-width="3"')+rect(62,122,px-62,116,C.coralp,'none',4)+rect(px,112,14,136,C.ink,'none',3)+line(px+14,180,330,180,C.ink,5);
+  out+=arrow2([180,320],[180,248],C.coral,4)+text(180,342,'Q in',16,C.coral);
+  const bars=[['Q',q,C.coral],['W',w,C.blue],['ΔU',du,C.green]];
+  bars.forEach(([n,v,c],i)=>{const y=110+i*62;out+=text(375,y+26,n,19,C.ink,'end')+rect(390,y,1.2*v,34,c,'none',6)+text(400+1.2*v,y+24,Math.round(v)+' J',16,C.ink,'start')});
+  return {svg:out,phase:'Heat of 100 J enters; the gas does 40 J of work pushing the piston; 60 J remains as internal energy.'};
+ },
+ 'second-law':p=>{
+  const r=lcg(77),N=60;let out=heading('Remove the wall: the gas spreads out'),left=0;
+  out+=rect(60,80,340,220,'#fff',C.line,8,'stroke-width="2"');if(p<.08)out+=line(230,80,230,300,C.ink,4);
+  const s=smooth(clamp((p-.08)/.8,0,1));
+  for(let i=0;i<N;i++){const x0=70+150*r(),y0=90+200*r(),x1=70+320*r(),y1=90+200*r(),x=x0+(x1-x0)*s,y=y0+(y1-y0)*s;if(x<230)left++;out+=circle(x,y,5,C.blue)}
+  const B=box(440,100,120,170,'time','S');out+=B.out;
+  out+=path2(sample2(u=>[B.X(u),B.Y(.15+.7*smooth(clamp((u-.08)/.8,0,1)))],p,60),C.coral,3)+line(B.X(0),B.Y(.85),B.X(1),B.Y(.85),C.line,1,'stroke-dasharray="4 4"');
+  out+=text(230,330,'left half: '+left+' of '+N,16,C.muted);
+  return {svg:out,phase:'Illustrative particles. For one mole doubling its volume, ΔS = R ln 2 ≈ 5.76 J/K; the reverse is never observed.'};
+ },
+ 'heat-engine':p=>{
+  const Th=400+400*p,Tc=300,eta=1-Tc/Th;let out=heading('Carnot limit: efficiency ≤ 1 − T꜀/Tₕ');
+  out+=rect(160,70,280,46,C.coralp,'none',10)+text(300,99,'hot reservoir Tₕ = '+Math.round(Th)+' K',18,C.coral);
+  out+=rect(160,300,280,46,C.pale,'none',10)+text(300,329,'cold reservoir T꜀ = 300 K',18,C.blue);
+  out+=circle(300,208,46,'#fff',C.ink,'stroke-width="3"')+text(300,214,'engine',16);
+  out+=arrow2([300,118],[300,160],C.coral,14)+arrow2([300,256],[300,296],C.blue,Math.max(3,14*(1-eta)));
+  out+=arrow2([348,208],[348+160*eta+20,208],C.green,Math.max(3,14*eta))+text(380+160*eta,190,'W',19,C.green);
+  out+=text(110,215,'max η = '+Math.round(100*eta)+'%',21,C.ink);
+  return {svg:out,phase:`Arrow widths are proportional to energy per cycle for an ideal engine. η = 1 − 300/${Math.round(Th)} = ${f2(eta)}.`};
+ },
+ 'free-energy':p=>{
+  const kT=.25+1.75*p,xs=1/(1+Math.exp(1/kT));let out=heading('F = U − TS for two levels · kT/ε = '+f2(kT));
+  const H=x=>x<=0||x>=1?0:-(x*Math.log(x)+(1-x)*Math.log(1-x)),F=x=>x-kT*H(x);
+  const B=box(110,80,400,220,'fraction in upper level x','F/ε');out+=B.out;
+  const lo=-kT*Math.log(2)-.05,hi=1.05,Yn=v=>(v-lo)/(hi-lo);out+=curve(u=>Yn(F(u)),B.X,B.Y);
+  out+=circle(B.X(xs),B.Y(Yn(F(xs))),8,C.coral)+line(B.X(xs),B.Y(Yn(F(xs)))+10,B.X(xs),B.Y(0),C.coral,1,'stroke-dasharray="4 4"')+text(B.X(xs),B.Y(0)+50,'x* = '+f2(xs),15,C.coral);
+  out+=text(110,320,'0',14,C.muted)+text(510,320,'1',14,C.muted);
+  return {svg:out,phase:'The minimum x* = 1/(1 + e^(ε/kT)) moves towards 1/2 as temperature rises and entropy wins.'};
+ },
+ // ───────── Quantum ─────────
+ 'wave-function':p=>{
+  const c=Math.cos(TAU*2*p);let out=heading('Box ground state: Re ψ swings, |ψ|² is fixed');
+  const B=box(90,80,420,230,'position x / L','');out+=B.out;const Y=v=>B.Y((v+1.5)/3.6);
+  out+=line(B.X(0),Y(0),B.X(1),Y(0),C.line,1);
+  out+=polygonFill(sample2(u=>[B.X(u),Y(2*Math.sin(Math.PI*u)**2)],1,90),B.X,Y);
+  out+=curve(u=>(Math.SQRT2*Math.sin(Math.PI*u)*c+1.5)/3.6,B.X,B.Y,C.blue,3);
+  out+=rect(B.X(.25),Y(-1.3),B.X(.75)-B.X(.25),10,C.green,'none',3)+text(300,Y(-1.3)-8,'middle half: probability 0.82',15,C.green);
+  out+=text(520,Y(2)+4,'|ψ|²',16,C.coral,'start')+text(520,Y(Math.SQRT2*c)+4,'Re ψ',16,C.blue,'start');
+  return {svg:out,phase:'The overall phase e^(−iEt/ħ) rotates, so Re ψ swings, but the probability density never changes.'};
+ },
+ 'superposition':p=>{
+  const ph=TAU*2*p,c=Math.cos(ph);let out=heading('(ψ₁ + ψ₂)/√2: the density sloshes');
+  const B=box(90,80,420,230,'position x / L','');out+=B.out;
+  const d=u=>Math.sin(Math.PI*u)**2+Math.sin(2*Math.PI*u)**2+2*Math.sin(Math.PI*u)*Math.sin(2*Math.PI*u)*c,Y=v=>B.Y(v/4.2);
+  out+=polygonFill(sample2(u=>[B.X(u),Y(d(u))],1,90),B.X,Y)+curve(u=>d(u)/4.2,B.X,B.Y,C.coral,3);
+  let left=0;for(let i=0;i<200;i++){const u=(i+.5)/400;left+=d(u)/400}
+  out+=text(B.X(.25),105,'left: '+f2(left),16,C.blue)+text(B.X(.75),105,'right: '+f2(1-left),16,C.blue);
+  return {svg:out,phase:'Interference term 2ψ₁ψ₂cos((E₂ − E₁)t/ħ). Energy measurements still give E₁ or 4E₁ with probability 1/2 each.'};
+ },
+ 'quantum-observable':p=>{
+  const th=Math.PI*p,P=Math.cos(th/2)**2;let out=heading('Measure spin along z: outcomes ±ħ/2 only');
+  out+=circle(170,205,100,C.pale,C.line,'stroke-width="2"')+line(170,95,170,315,C.muted,1,'stroke-dasharray="4 4"')+text(170,88,'+z',15,C.muted)+text(170,333,'−z',15,C.muted);
+  out+=arrow2([170,205],[170+92*Math.sin(th),205-92*Math.cos(th)],C.coral,4)+text(170,355,'state angle θ = '+Math.round(180*p)+'°',15,C.muted);
+  out+=rect(360,300-180*P,70,180*P,C.blue,'none',4)+rect(460,300-180*(1-P),70,180*(1-P),C.coral,'none',4)+line(345,300,545,300,C.muted,2);
+  out+=text(395,325,'+ħ/2',17)+text(495,325,'−ħ/2',17)+text(395,290-180*P,f2(P),15,C.blue)+text(495,290-180*(1-P),f2(1-P),15,C.coral);
+  return {svg:out,phase:`Probabilities cos²(θ/2) and sin²(θ/2). The expected value is ${f2(P-(1-P)).replace('-','−')}·ħ/2, but each result is an eigenvalue.`};
+ },
+ 'uncertainty-principle':p=>{
+  const sx=.35+1.3*(1-p),sp=.5/sx;let out=heading('σₓ σₚ = ħ/2 for a Gaussian packet (ħ = 1)');
+  const g=(u,s)=>Math.exp(-(((u-.5)*8)**2)/(2*s*s));
+  const A=box(60,80,220,180,'position','');const Bb=box(330,80,220,180,'momentum','');out+=A.out+Bb.out;
+  out+=curve(u=>.9*g(u,sx),A.X,A.Y,C.blue,3)+curve(u=>.9*g(u,sp),Bb.X,Bb.Y,C.coral,3);
+  out+=text(170,322,'σₓ = '+f2(sx),17,C.blue)+text(440,322,'σₚ = '+f2(sp),17,C.coral)+text(300,352,'product = '+f2(sx*sp),16,C.muted);
+  return {svg:out,phase:'Squeezing the position spread widens the momentum spread; Gaussians attain the minimum product ħ/2.'};
+ },
+ 'energy-levels':p=>{
+  let out=heading('Particle in a box: Eₙ = n²E₁');const Y=n=>320-n*n*14;
+  for(let n=1;n<=4;n++){out+=line(120,Y(n),360,Y(n),C.ink,2)+text(105,Y(n)+5,'n = '+n,15,C.muted,'end')+text(375,Y(n)+5,n*n+'E₁',15,C.muted,'start');
+   out+=path2(sample2(u=>[120+240*u,Y(n)-9*Math.sin(n*Math.PI*u)],1,60),C.line,1.5)}
+  const s=clamp(p/.6,0,1),y=Y(3)+(Y(2)-Y(3))*smooth(s);out+=circle(240,y,9,C.coral);
+  if(p>.55){const k=smooth(clamp((p-.55)/.4,0,1)),x0=420,x1=420+150*k;out+=path2(sample2(u=>[x0+(x1-x0)*u,(Y(2)+Y(3))/2+8*Math.sin(u*(x1-x0)/8)],1,80),C.green,2.5)+text(495,(Y(2)+Y(3))/2-20,'photon 5E₁',16,C.green)}
+  return {svg:out,phase:'Dropping from n = 3 to n = 2 releases exactly 9E₁ − 4E₁ = 5E₁. Faint curves sketch each ψₙ.'};
+ },
+ // ───────── Statistical mechanics ─────────
+ 'microstate':p=>{
+  let out=heading('4 coins: 16 microstates in 5 macrostates');const k=Math.min(15,Math.floor(p*16)),cols=[0,0,0,0,0];
+  const counts=[1,4,6,4,1];for(let m=0;m<5;m++)out+=text(90+105*m,346,m+' heads',15,C.muted)+text(90+105*m,368,counts[m]+(counts[m]>1?' states':' state'),13,C.muted);
+  for(let i=0;i<16;i++){const h=[0,1,2,3].map(b=>(i>>b)&1),m=h.reduce((a,b)=>a+b,0),row=cols[m]++,x=90+105*m,y=304-row*40,on=i<=k;
+   h.forEach((b,j)=>out+=circle(x-33+22*j,y,9,on?(b?C.coral:C.blue):'#eef3f6'));if(i===k)out+=rect(x-48,y-17,96,34,'none',C.ink,8,'stroke-width="2"')}
+  return {svg:out,phase:'Coral = heads. Each arrangement is a microstate; the column it joins is its macrostate, with multiplicities 1, 4, 6, 4, 1.'};
+ },
+ 'boltzmann-distribution':p=>{
+  const kT=.3+2.7*p,w=[0,1,2,3,4,5].map(n=>Math.exp(-n/kT)),Z=w.reduce((a,b)=>a+b,0);let out=heading('P(Eₙ) ∝ e^(−Eₙ/kT) · kT = '+f2(kT)+' × spacing');
+  out+=line(80,300,520,300,C.muted,2);w.forEach((v,n)=>{const h=220*v/Z;out+=rect(95+72*n,300-h,52,h,n===0?C.blue:C.coral,'none',4)+text(121+72*n,325,'E'+'₀₁₂₃₄₅'[n],16,C.muted)+text(121+72*n,292-h,f2(v/Z),14)});
+  return {svg:out,phase:'Six equally spaced levels. Cold: the ground level dominates; hot: populations even out, but never invert.'};
+ },
+ 'partition-function':p=>{
+  const kT=.1+2.9*p,Z=1+Math.exp(-1/kT),U=Math.exp(-1/kT)/Z;let out=heading('Two levels 0 and ε: Z = 1 + e^(−ε/kT)');
+  const B=box(100,85,400,195,'kT/ε (0 to 3)','⟨E⟩/ε');out+=B.out;
+  out+=curve(u=>{const t=.1+2.9*u;return 2*Math.exp(-1/t)/(1+Math.exp(-1/t))},B.X,B.Y)+line(B.X(0),B.Y(1),B.X(1),B.Y(1),C.line,1,'stroke-dasharray="4 4"')+text(B.X(1)+6,B.Y(1)+5,'ε/2',14,C.muted,'start');
+  out+=circle(B.X(p),B.Y(2*U),8,C.coral)+text(300,350,'Z = '+f2(Z)+'   ⟨E⟩ = '+f2(U)+'ε',18);
+  return {svg:out,phase:'⟨E⟩ = −∂ ln Z/∂β with β = 1/kT. As temperature rises the mean energy approaches ε/2.'};
+ },
+ 'ising-model':p=>{
+  const T=1.2+2.3*p,m=onsager(T),nx=24,ny=12,R=isingRanks(nx,ny);let out=heading('Ising spins · kT/J = '+f2(T)+' · |m| = '+f2(m));
+  for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){const up=R[j*nx+i]<(1+m)/2;out+=rect(84+18*i,80+18*j,16,16,up?C.coral:C.blue,'none',2)}
+  out+=text(300,330,T<2.269?'below T꜀: one orientation dominates':'above T꜀ ≈ 2.269: no net alignment',17,C.muted);
+  return {svg:out,phase:'Illustrative configuration whose up-fraction matches Onsager’s exact magnetisation; not a simulation.'};
+ },
+ 'phase-transition':p=>{
+  const T=.5+3*p,m=onsager(T),Tc=2/Math.log(1+Math.SQRT2);let out=heading('2D Ising magnetisation vanishes at T꜀');
+  const B=box(100,85,400,195,'kT/J (0.5 to 3.5)','|m|'),u=t=>(t-.5)/3;out+=B.out;
+  out+=curve(x=>onsager(.5+3*x)*.95,B.X,B.Y,C.blue,3,200)+line(B.X(u(Tc)),B.Y(0),B.X(u(Tc)),B.Y(1),C.coral,1.5,'stroke-dasharray="5 5"')+text(B.X(u(Tc)),B.Y(1)-6,'T꜀ ≈ 2.269',15,C.coral);
+  out+=circle(B.X(p),B.Y(m*.95),8,C.coral)+text(300,350,'|m| = '+f2(m),18);
+  return {svg:out,phase:'Onsager–Yang: |m| = (1 − sinh⁻⁴(2J/kT))^(1/8) below T꜀; the kink appears only for an infinite lattice.'};
+ },
+ // ───────── Relativity (c = 1) ─────────
+ 'spacetime-interval':p=>{
+  const v=-.6+1.2*p,g=1/Math.sqrt(1-v*v),t=5,x=3,tp=g*(t-v*x),xp=g*(x-v*t);let out=heading('Every frame: (cΔt)² − Δx² = 16');
+  const O=[300,320],S=26,P=([a,b])=>[O[0]+S*a,O[1]-S*b];
+  out+=line(80,320,520,320,C.muted,2)+line(300,330,300,70,C.muted,2)+line(...P([-8,8]),...P([0,0]),C.line,1,'stroke-dasharray="4 4"')+line(...P([0,0]),...P([8,8]),C.line,1,'stroke-dasharray="4 4"');
+  out+=path2(sample2(u=>{const a=-1.6+3.2*u;return P([4*Math.sinh(a),4*Math.cosh(a)])},1,80).filter(q=>q[1]>70&&q[0]>70&&q[0]<530),C.green,2)+circle(...P([x,t]),6,'#fff',C.coral,'stroke-width="2"')+circle(...P([xp,tp]),8,C.coral);
+  out+=text(80,262,'frame v = '+f2(v).replace('-','−')+'c',16,C.ink,'start')+text(80,286,'t′ = '+f2(tp)+'   x′ = '+f2(xp).replace('-','−'),16,C.ink,'start')+text(80,310,'t′² − x′² = '+f1(tp*tp-xp*xp),16,C.green,'start');
+  return {svg:out,phase:'Hollow: the event at t = 5, x = 3. Coral: its coordinates in a frame moving at v. Every frame puts it on the same hyperbola.'};
+ },
+ 'lorentz-transformation':p=>{
+  const v=.8*p,g=1/Math.sqrt(1-v*v);let out=heading(`Boost to v = ${f2(v)}c · γ = ${f2(g)}`);
+  const O=[300,300],S=48,P=([a,b])=>[O[0]+S*a,O[1]-S*b];
+  out+=line(...P([-4.5,0]),...P([4.5,0]),C.muted,2)+line(...P([0,-.5]),...P([0,4.8]),C.muted,2)+text(...P([4.6,-.35]),'x',16,C.muted)+text(...P([-.3,4.7]),'t',16,C.muted);
+  out+=line(...P([0,0]),...P([4.6,4.6]),C.coralp,2)+line(...P([0,0]),...P([-4.6,4.6]),C.coralp,2);
+  out+=arrow2(P([0,0]),P([4.4*v,4.4]),C.blue,3)+arrow2(P([0,0]),P([4.4,4.4*v]),C.blue,3)+text(...P([4.4*v+.3,4.5]),"t′",17,C.blue)+text(...P([4.5,4.4*v+.25]),"x′",17,C.blue);
+  for(let k=1;k<=3;k++){const tick=P([g*v*k,g*k]);out+=circle(tick[0],tick[1],4,C.blue)}
+  return {svg:out,phase:'Primed axes tilt symmetrically towards the light line (pale). Dots mark t′ = 1, 2, 3: they sit further out, at t = γt′.'};
+ },
+ 'time-dilation':p=>{
+  const g=5/3,tE=5*p,tS=tE/g;let out=heading('At v = 0.8c, γ = 5/3');
+  const clock=(x,y,val,lab,col)=>{let s=circle(x,y,74,'#fff',col,'stroke-width="4"');for(let i=0;i<12;i++){const a=TAU*i/12;s+=line(x+64*Math.sin(a),y-64*Math.cos(a),x+70*Math.sin(a),y-70*Math.cos(a),C.line,2)}const a=TAU*val/5;return s+line(x,y,x+58*Math.sin(a),y-58*Math.cos(a),col,4)+circle(x,y,5,col)+text(x,y+110,lab,17,C.muted)+text(x,y+134,f2(val)+' years',18,col)};
+  out+=clock(170,180,tE,'Earth clock',C.blue)+clock(430,180,tS,'ship clock',C.coral);
+  return {svg:out,phase:'Each hand completes a turn in 5 years of its own time. When Earth reads 5 years, the ship reads 3.'};
+ },
+ 'light-cone':p=>{
+  const O=[300,205],S=55;let out=heading('Future and past light cones of an event');
+  out+=polygon2([[300,205],[300-2.2*S,205-2.2*S],[300+2.2*S,205-2.2*S]],C.coralp,'none')+polygon2([[300,205],[300-2.2*S,205+2.2*S],[300+2.2*S,205+2.2*S]],C.pale,'none');
+  out+=line(300-2.3*S,205-2.3*S,300+2.3*S,205+2.3*S,C.ink,2)+line(300+2.3*S,205-2.3*S,300-2.3*S,205+2.3*S,C.ink,2)+line(130,205,470,205,C.muted,1)+circle(300,205,7,C.ink);
+  out+=text(300,95,'future',17,C.coral)+text(300,330,'past',17,C.blue)+text(500,210,'elsewhere',16,C.muted,'start');
+  const a=TAU*p,ex=1.8*Math.cos(a),et=1.5*Math.sin(a),cls=Math.abs(et)>Math.abs(ex)+.05?'timelike':Math.abs(Math.abs(et)-Math.abs(ex))<=.05?'lightlike':'spacelike';
+  out+=circle(300+S*ex,205-S*et,8,C.green)+text(300+S*ex,205-S*et-14,cls,15,C.green);
+  return {svg:out,phase:'Inside the cones: timelike, causally connectable. On them: lightlike. Outside: spacelike, beyond any influence.'};
+ },
+ 'spacetime-curvature':p=>{
+  let out=heading('Free paths near a mass converge');const M=[300,240],def=(x,y)=>{const dx=x-M[0],dy=y-M[1],r2=dx*dx+dy*dy;const k=1800/(r2+1600);return [x-dx*k*.9,y-dy*k*.9]};
+  for(let i=0;i<=10;i++){out+=path2(sample2(u=>def(80+44*i,90+u*260),1,30),C.line,1);out+=path2(sample2(u=>def(80+u*440,90+26*i),1,40),C.line,1)}
+  out+=circle(...M,22,C.ink);
+  for(const x0 of [250,350]){const pts=sample2(u=>def(x0,90+u*230),1,50);const n=Math.max(2,Math.floor(p*50));out+=path2(pts.slice(0,n),C.coral,3)+circle(...pts[n-1],6,C.coral)}
+  return {svg:out,phase:'Schematic: a grid distorted around a mass, with two initially parallel free paths drawn together. Not to scale; time is curved too.'};
+ },
+ // ───────── Astronomy ─────────
+ 'kepler-laws':p=>{
+  const e=.6,a=170,b=a*Math.sqrt(1-e*e),cx=330,cy=205,F=[cx+a*e,cy];let out=heading('Kepler orbit e = 0.6: equal areas in equal times');
+  const pos=M=>{let E=M;for(let k=0;k<30;k++)E-=(E-e*Math.sin(E)-M)/(1-e*Math.cos(E));return [cx+a*Math.cos(E),cy-b*Math.sin(E)]};
+  out+=path2(sample2(u=>[cx+a*Math.cos(TAU*u),cy-b*Math.sin(TAU*u)],1,120),C.line,2);
+  for(let k=0;k<8;k++){if(k/8>p)break;const pts=[F,...sample2(u=>pos(TAU*(k+Math.min(1,(p-k/8)*8)*u)/8),1,20)];out+=polygon2(pts,k%2?C.pale:C.coralp,'none')}
+  out+=circle(...F,13,'#e7a83a')+text(F[0],F[1]+34,'Sun at a focus',14,C.muted);const P=pos(TAU*p);out+=circle(...P,9,C.blue);
+  return {svg:out,phase:'Position from Kepler’s equation M = E − e sin E. Each shaded sector takes one eighth of the period and has the same area.'};
+ },
+ 'escape-velocity':p=>{
+  const r=1+5*p,v=11.2/Math.sqrt(r);let out=heading('Escape speed v = √(2GM/r) from Earth');
+  const B=box(100,85,400,195,'distance from Earth’s centre (radii, 1 to 6)','km/s');out+=B.out;
+  out+=curve(u=>11.2/Math.sqrt(1+5*u)/12,B.X,B.Y)+circle(B.X(p),B.Y(v/12),8,C.coral)+text(B.X(0)+10,B.Y(11.2/12)+4,'11.2',14,C.muted,'start');
+  out+=text(300,350,'r = '+f2(r)+' Earth radii   escape speed = '+f2(v)+' km/s',18);
+  return {svg:out,phase:'Escape speed falls as 1/√r and does not depend on the projectile’s mass. Air resistance is ignored.'};
+ },
+ 'three-body-problem':p=>{
+  const E=figureEight(),k=Math.round(p*(E.length-1)),P=([x,y])=>[300+190*x,205-190*y];let out=heading('Figure-eight orbit: three equal masses');
+  out+=path2(E.map(s=>P([s[0],s[1]])),C.line,2);
+  const cols=[C.blue,C.coral,C.green];for(let i=0;i<3;i++){const tail=E.slice(Math.max(0,k-80),k+1).map(s=>P([s[2*i],s[2*i+1]]));if(tail.length>1)out+=path2(tail,cols[i],3);out+=circle(...P([E[k][2*i],E[k][2*i+1]]),10,cols[i])}
+  return {svg:out,phase:'Integrated numerically (RK4, G = m = 1). This periodic orbit is exceptional; most three-body starts are chaotic.'};
+ },
+ 'orbital-resonance':p=>{
+  let out=heading('Io : Europa : Ganymede periods ≈ 1 : 2 : 4');const R=[70,110,160],T=[1,2,4],names=['Io','Europa','Ganymede'],cols=[C.coral,C.blue,C.green];
+  out+=circle(300,205,22,'#e7a83a');
+  for(let i=0;i<3;i++){const a=TAU*4*p/T[i];out+=circle(300,205,R[i],'none',C.line,'stroke-width="1.5"');const x=300+R[i]*Math.cos(a),y=205-R[i]*Math.sin(a);out+=line(300,205,x,y,cols[i],1,'opacity=".4"')+circle(x,y,9,cols[i])}
+  names.forEach((n,i)=>out+=text(30,90+24*i,n+' · '+T[i]+'P',16,cols[i],'start'));
+  out+=text(300,360,'elapsed: '+f2(4*p)+' Io periods',16,C.muted);
+  return {svg:out,phase:'Schematic circular orbits, not to scale. After four Io periods all three return together; the tugs repeat in step.'};
+ },
+ 'hubble-law':p=>{
+  const a=1+.6*p;let out=heading('Uniform expansion: speed ∝ distance');const r=lcg(31),G=[];
+  for(let i=0;i<5;i++)for(let j=0;j<4;j++)G.push([-2+i+.25*(r()-.5),-1.5+j+.25*(r()-.5)]);
+  const P=([x,y])=>[300+75*a*x,205-62*a*y],ref=G[9];
+  out+=rect(40,70,520,280,'none',C.line,8);
+  G.forEach(q=>{const s=P(q),s0=[300+75*q[0],205-62*q[1]];if(s[0]>45&&s[0]<555&&s[1]>75&&s[1]<345){out+=line(...s0,...s,C.line,1);out+=circle(...s,q===ref?9:6,q===ref?C.coral:C.blue)}});
+  G.forEach(q=>{if(q===ref)return;const s=P(q),R=P(ref);if(s[0]>45&&s[0]<555&&s[1]>75&&s[1]<345&&Math.hypot(q[0]-ref[0],q[1]-ref[1])<1.6)out+=line(...R,...s,C.coral,1,'opacity=".5"')});
+  out+=text(300,368,'scale factor a = '+f2(a),15,C.muted);
+  return {svg:out,phase:'Every separation grows by the same factor, so a galaxy twice as far recedes twice as fast, seen from any galaxy (coral).'};
+ },
+ // ───────── Geophysics ─────────
+ 'coriolis-effect':p=>{
+  let out=heading('Straight in space, curved on the turning disc');const R=100,w=TAU*.35;
+  out+=text(170,330,'inertial view (disc turns)',16,C.muted)+text(430,330,'view from the disc',16,C.muted);
+  for(const [cx,rot] of [[170,true],[430,false]]){out+=circle(cx,195,R,C.pale,C.line,'stroke-width="2"');const ang=rot?-w*p:0;out+=line(cx,195,cx+R*Math.cos(ang),195+R*Math.sin(ang),C.muted,2)}
+  out+=path2(sample2(u=>[170+R*u*p,195-0],1,20),C.coral,3)+circle(170+R*p,195,7,C.coral);
+  const rp=u=>{const r=R*u,phi=w*u;return [430+r*Math.cos(phi),195+r*Math.sin(phi)]};out+=path2(sample2(rp,p,40),C.coral,3)+circle(...rp(p),7,C.coral);
+  return {svg:out,phase:'The disc turns anticlockwise. Seen from it, the straight path bends right, as in the Northern Hemisphere.'};
+ },
+ 'seismic-wave':p=>{
+  let out=heading('P waves compress · S waves shear');const vp=6,vs=3.5,L=480;
+  for(const [y,lab,v,P] of [[130,'P wave · 6 km/s',vp,true],[265,'S wave · 3.5 km/s',vs,false]]){
+   out+=text(60,y-55,lab,16,C.ink,'start');const front=L*p*v/6;
+   for(let i=0;i<=40;i++){const x0=60+12*i,d=x0-60,ph=front-d,amp=ph>0?Math.sin(ph/14)*Math.exp(-ph/200)*(P?8:22):0;out+=P?line(x0+amp,y-26,x0+amp,y+26,C.blue,2):circle(x0,y+amp,5,C.coral)}
+   out+=line(60+front,y-40,60+front,y+40,C.line,1,'stroke-dasharray="3 3"')}
+  out+=text(300,355,'S − P lag of 10 s → distance ≈ 10 / (1/3.5 − 1/6) ≈ 84 km',15,C.muted);
+  return {svg:out,phase:'Schematic: P motion is along the travel direction, S motion across it. The P front leads at all times.'};
+ },
+ 'geostrophic-balance':p=>{
+  let out=heading('Around a northern low, wind follows isobars');
+  for(let k=1;k<=4;k++)out+=circle(300,205,36*k,'none',C.line,'stroke-width="2"');out+=text(300,212,'L',26,C.coral);
+  const a=TAU*p,R=108,x=300+R*Math.cos(a),y=205-R*Math.sin(a),ux=Math.cos(a),uy=-Math.sin(a);
+  out+=arrow2([x,y],[x-40*ux,y-40*uy],C.coral,3)+arrow2([x,y],[x+40*ux,y+40*uy],C.blue,3)+arrow2([x,y],[x+50*uy,y-50*ux],C.green,4)+circle(x,y,7,C.ink);
+  out+=text(470,300,'pressure',15,C.coral,'start')+text(470,322,'Coriolis',15,C.blue,'start')+text(470,344,'wind',15,C.green,'start');
+  return {svg:out,phase:'Pressure-gradient force (inward) balances the Coriolis effect (outward); the resulting wind circles anticlockwise.'};
+ },
+ 'energy-balance-model':p=>{
+  const al=.2+.2*p,T=Math.pow(1361*(1-al)/4/5.670e-8,.25);let out=heading('S(1 − α)/4 = σT⁴');
+  const B=box(100,85,400,195,'albedo α (0.2 to 0.4)','T (K)'),Yn=t=>(t-235)/35;out+=B.out;
+  out+=curve(u=>Yn(Math.pow(1361*(1-.2-.2*u)/4/5.670e-8,.25)),B.X,B.Y)+circle(B.X(p),B.Y(Yn(T)),8,C.coral);
+  out+=line(B.X(.5),B.Y(0),B.X(.5),B.Y(1),C.line,1,'stroke-dasharray="4 4"')+text(B.X(.5),B.Y(1)-6,'Earth α ≈ 0.3 → 255 K',14,C.muted);
+  out+=text(300,350,'α = '+f2(al)+'   T = '+Math.round(T)+' K',18);
+  return {svg:out,phase:'Effective radiating temperature with S = 1361 W/m². The observed mean surface, about 288 K, is warmer because of the greenhouse effect.'};
+ },
+ 'inverse-problem':p=>{
+  const A=[[1,0,0],[0,1,0],[0,0,1]],Bm=[[0,1,0],[1,0,0],[0,0,1]],M=p<.5?A:Bm;let out=heading('Same ray data, different interiors');
+  for(let i=0;i<3;i++)for(let j=0;j<3;j++)out+=rect(190+60*j,90+60*i,56,56,M[i][j]?C.coral:C.pale,'none',6);
+  for(let i=0;i<3;i++){out+=arrow2([120,118+60*i],[180,118+60*i],C.muted,2)+text(395,124+60*i,'sum 1',15,C.blue,'start');out+=arrow2([218+60*i,330],[218+60*i,280],C.muted,2)+text(218+60*i,355,'1',15,C.blue)}
+  out+=text(300,74,p<.5?'model A':'model B',18,C.ink);
+  return {svg:out,phase:'Six row and column travel-time sums cannot pin down nine cells: both models fit the data. Extra assumptions are needed.'};
+ }
+};
+function polygonFill(pts,X,Y){return `<polygon points="${[...pts,[pts[pts.length-1][0],Y(0)],[pts[0][0],Y(0)]].map(q=>q.join(',')).join(' ')}" fill="${C.coralp}" stroke="none"/>`}
+APPLIED_PARTS.push({lessons,scenes,glossary,draw});
+}
 /*APPLIED-PARTS:END*/
 CURRICULUM.stages.push(
  {id:'decide',name:'8 · Infer, compute, decide',why:'Learn from data, compute reliably, optimise choices and control systems.'},
@@ -477,6 +1371,22 @@ Object.assign(CURRICULUM.references,{
 });
 for(const part of APPLIED_PARTS){CURRICULUM.lessons.push(...part.lessons);CURRICULUM.scenes.push(...part.scenes);GLOSSARY.push(...part.glossary);Object.assign(APPLIED_DRAW,part.draw);}
 /*APPLIED-THREADS*/
+CURRICULUM.threads.push(
+ {id:'learn-from-data',name:'Learning from data',ids:['law-large-numbers','sampling-distribution','estimator','confidence-interval','likelihood-function','bayes']},
+ {id:'iterate-settle',name:'Iterate until it settles',ids:['fixed-point','newton-method','gradient-descent','convergence','attractor']},
+ {id:'best-choice',name:'Choosing the best',ids:['optimisation-problem','lagrange-multiplier','euler-lagrange','least-action','optimal-control']},
+ {id:'feedback-loops',name:'Feedback and stability',ids:['feedback','closed-loop-stability','stability','predator-prey','energy-balance-model']},
+ {id:'entropy-meanings',name:'Different meanings of entropy',ids:['shannon-entropy','source-coding','microstate','second-law','boltzmann-distribution']},
+ {id:'waves-everywhere',name:'Waves and frequencies',ids:['fourier-series','sampling-theorem','elastic-wave','maxwell-equations','seismic-wave','wave-function']},
+ {id:'conserved',name:'Conserved quantities',ids:['invariant','energy-conservation','hamiltonian','continuity-equation','first-law']},
+ {id:'newton-to-cosmos',name:'From falling apples to the cosmos',ids:['newton-second-law','kepler-laws','three-body-problem','spacetime-curvature','hubble-law']},
+ {id:'equilibrium-senses',name:'Equilibrium in different senses',ids:['fixed-point','nash-equilibrium','hardy-weinberg','geostrophic-balance','free-energy']},
+ {id:'continua',name:'Equations of continuous media',ids:['pde','linear-elasticity','navier-stokes','reaction-diffusion','maxwell-equations']},
+ {id:'measure-operators',name:'Measurements as operators',ids:['operator','operator-spectrum','quantum-observable','energy-levels','transfer-function']},
+ {id:'symmetry-spacetime',name:'Symmetry of space and time',ids:['group','lie-group','lorentz-transformation','spacetime-interval','light-cone']},
+ {id:'cost-of-computing',name:'What computation costs',ids:['computable','algorithm','complexity','p-versus-np','floating-point']}
+);
+// end applied threads
 const WORDS=Object.fromEntries(GLOSSARY.map(g=>[g.key,g]));
 // Match longest complete terms; each link stores a semantic context when rendered.
 // No entry is selected by an array index or by the currently open tab at click time.
