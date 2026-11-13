@@ -21,37 +21,37 @@ const TOPICS = {
    {
     "name": "Saharon Shelah",
     "wiki": "Saharon_Shelah",
-    "arxiv": "au:Shelah AND au:Saharon",
+    "arxiv": "au:\"Saharon Shelah\"",
     "area": "Set theory & model theory"
    },
    {
     "name": "W. Hugh Woodin",
     "wiki": "W._Hugh_Woodin",
-    "arxiv": "au:Woodin AND au:Hugh",
+    "arxiv": "(au:\"W. Hugh Woodin\" OR au:\"Hugh Woodin\")",
     "area": "Set theory & large cardinals"
    },
    {
     "name": "Ehud Hrushovski",
     "wiki": "Ehud_Hrushovski",
-    "arxiv": "au:Hrushovski AND au:Ehud",
+    "arxiv": "au:\"Ehud Hrushovski\"",
     "area": "Model theory"
    },
    {
     "name": "Maryanthe Malliaris",
     "wiki": "Maryanthe_Malliaris",
-    "arxiv": "au:Malliaris AND au:Maryanthe",
+    "arxiv": "au:\"Maryanthe Malliaris\"",
     "area": "Model theory & combinatorics"
    },
    {
     "name": "Joel David Hamkins",
     "wiki": "Joel_David_Hamkins",
-    "arxiv": "au:Hamkins AND au:Joel",
+    "arxiv": "au:\"Joel David Hamkins\"",
     "area": "Set theory & philosophy of mathematics"
    },
    {
     "name": "Kevin Buzzard",
     "wiki": "Kevin_Buzzard",
-    "arxiv": "au:Buzzard AND au:Kevin",
+    "arxiv": "au:\"Kevin Buzzard\"",
     "area": "Formalised proof (Lean)"
    }
   ],
@@ -85,6 +85,3516 @@ const TOPICS = {
     "id": "tarski-exp",
     "title": "Tarski’s exponential function problem",
     "q": "Is there an algorithm that decides every first-order statement about the real numbers with addition, multiplication and the exponential function?"
+   }
+  ]
+ },
+ "order": {
+  "name": "Order & lattices",
+  "label": "arXiv math.CO · Order & lattices (MSC 06)",
+  "query": "(cat:math.CO OR cat:math.RA OR cat:math.LO) AND (abs:poset OR abs:posets OR abs:\"partially ordered\" OR abs:\"distributive lattice\" OR abs:\"lattice theory\")",
+  "listing": "math.CO",
+  "field": "order theory and lattice theory: partially ordered sets, lattices, Boolean algebras, linear extensions and their combinatorics",
+  "peopleNote": "Six researchers whose work on posets, lattices and their combinatorics is widely cited and who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Richard P. Stanley",
+    "wiki": "Richard_P._Stanley",
+    "arxiv": "(au:\"Richard P. Stanley\" OR au:\"Richard Stanley\") AND cat:math.*",
+    "area": "Posets & algebraic combinatorics"
+   },
+   {
+    "name": "George Grätzer",
+    "wiki": "George_Grätzer",
+    "arxiv": "(au:\"George Grätzer\" OR au:\"G. Grätzer\" OR au:\"George Gratzer\")",
+    "area": "Lattice theory"
+   },
+   {
+    "name": "William T. Trotter",
+    "wiki": "William_T._Trotter",
+    "arxiv": "(au:\"William T. Trotter\" OR au:\"William Trotter\")",
+    "area": "Dimension theory of posets"
+   },
+   {
+    "name": "Jeff Kahn",
+    "wiki": "Jeff_Kahn_(mathematician)",
+    "arxiv": "au:\"Jeff Kahn\" AND cat:math.*",
+    "area": "Probabilistic combinatorics & posets"
+   },
+   {
+    "name": "Igor Pak",
+    "wiki": "Igor_Pak",
+    "arxiv": "au:\"Igor Pak\" AND cat:math.*",
+    "area": "Linear extensions & enumeration"
+   },
+   {
+    "name": "Sergey Fomin",
+    "wiki": "Sergey_Fomin",
+    "arxiv": "au:\"Sergey Fomin\"",
+    "area": "Algebraic combinatorics"
+   }
+  ],
+  "open": [
+   {
+    "id": "one-third-two-thirds",
+    "title": "The 1/3–2/3 conjecture",
+    "q": "In every finite partial order that is not a total order, are there two elements x and y such that x comes before y in between a third and two thirds of all compatible total orders?"
+   },
+   {
+    "id": "union-closed",
+    "title": "Frankl’s union-closed sets conjecture",
+    "q": "If a finite family of sets is closed under unions, must some element belong to at least half of the sets?"
+   },
+   {
+    "id": "finite-lattice-representation",
+    "title": "Finite lattice representation problem",
+    "q": "Is every finite lattice the lattice of congruences of some finite algebra?"
+   },
+   {
+    "id": "rota-basis",
+    "title": "Rota’s basis conjecture",
+    "q": "Given n bases of an n-dimensional vector space, can the vectors always be arranged in an n×n grid so that every row and every column is a basis?"
+   },
+   {
+    "id": "sunflower",
+    "title": "The sunflower conjecture",
+    "q": "Is there a constant C such that any family of more than Cᵏ sets of size k contains three sets whose pairwise intersections are all the same?"
+   },
+   {
+    "id": "stanley-stembridge",
+    "title": "The Stanley–Stembridge conjecture",
+    "q": "Are the chromatic symmetric functions of incomparability graphs of (3+1)-free posets always positive combinations of elementary symmetric functions?"
+   }
+  ]
+ },
+ "discrete": {
+  "name": "Counting & graphs",
+  "label": "arXiv math.CO · Combinatorics (MSC 05)",
+  "query": "cat:math.CO",
+  "listing": "math.CO",
+  "field": "combinatorics and graph theory: enumeration, extremal and probabilistic combinatorics, Ramsey theory, graph structure and colouring",
+  "peopleNote": "Six combinatorialists whose results on graphs, Ramsey theory and probabilistic methods shape the field and who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Noga Alon",
+    "wiki": "Noga_Alon",
+    "arxiv": "au:\"Noga Alon\"",
+    "area": "Probabilistic & extremal combinatorics"
+   },
+   {
+    "name": "Maria Chudnovsky",
+    "wiki": "Maria_Chudnovsky",
+    "arxiv": "au:\"Maria Chudnovsky\"",
+    "area": "Structural graph theory"
+   },
+   {
+    "name": "Benny Sudakov",
+    "wiki": "Benny_Sudakov",
+    "arxiv": "au:\"Benny Sudakov\"",
+    "area": "Extremal & Ramsey theory"
+   },
+   {
+    "name": "Peter Keevash",
+    "wiki": "Peter_Keevash",
+    "arxiv": "au:\"Peter Keevash\"",
+    "area": "Designs & hypergraphs"
+   },
+   {
+    "name": "Jacob Fox",
+    "wiki": "Jacob_Fox",
+    "arxiv": "au:\"Jacob Fox\" AND cat:math.*",
+    "area": "Ramsey theory & regularity"
+   },
+   {
+    "name": "Lisa Sauermann",
+    "wiki": "Lisa_Sauermann",
+    "arxiv": "au:\"Lisa Sauermann\"",
+    "area": "Additive & extremal combinatorics"
+   }
+  ],
+  "open": [
+   {
+    "id": "hadwiger",
+    "title": "Hadwiger’s conjecture",
+    "q": "If a graph has no complete graph on t vertices as a minor, can it always be coloured with t − 1 colours?"
+   },
+   {
+    "id": "ramsey-r55",
+    "title": "Diagonal Ramsey numbers",
+    "q": "What is the smallest number of people guaranteeing five mutual friends or five mutual strangers, and how fast do these Ramsey numbers grow?"
+   },
+   {
+    "id": "erdos-hajnal",
+    "title": "The Erdős–Hajnal conjecture",
+    "q": "If a graph avoids some fixed induced subgraph, must it contain a clique or an independent set of polynomial size?"
+   },
+   {
+    "id": "reconstruction",
+    "title": "The reconstruction conjecture",
+    "q": "Is every graph with at least three vertices determined by the collection of graphs obtained by deleting one vertex at a time?"
+   },
+   {
+    "id": "graceful-tree",
+    "title": "The graceful tree conjecture",
+    "q": "Can the vertices of every tree with n edges be labelled 0 to n so that the edge differences are exactly 1 to n?"
+   },
+   {
+    "id": "cycle-double-cover",
+    "title": "The cycle double cover conjecture",
+    "q": "Does every graph without a bridge have a collection of cycles that covers every edge exactly twice?"
+   }
+  ]
+ },
+ "number": {
+  "name": "Number theory",
+  "label": "arXiv math.NT · Number theory (MSC 11)",
+  "query": "cat:math.NT",
+  "listing": "math.NT",
+  "field": "number theory: primes, Diophantine equations, L-functions, modular forms, arithmetic geometry and analytic methods",
+  "peopleNote": "Six number theorists behind major recent advances on primes, L-functions and arithmetic geometry who still publish on arXiv.",
+  "people": [
+   {
+    "name": "James Maynard",
+    "wiki": "James_Maynard_(mathematician)",
+    "arxiv": "au:\"James Maynard\"",
+    "area": "Prime gaps & analytic number theory"
+   },
+   {
+    "name": "Peter Scholze",
+    "wiki": "Peter_Scholze",
+    "arxiv": "au:\"Peter Scholze\"",
+    "area": "Arithmetic geometry"
+   },
+   {
+    "name": "Kannan Soundararajan",
+    "wiki": "Kannan_Soundararajan",
+    "arxiv": "au:\"Kannan Soundararajan\"",
+    "area": "L-functions"
+   },
+   {
+    "name": "Manjul Bhargava",
+    "wiki": "Manjul_Bhargava",
+    "arxiv": "au:\"Manjul Bhargava\"",
+    "area": "Arithmetic statistics"
+   },
+   {
+    "name": "Ken Ono",
+    "wiki": "Ken_Ono",
+    "arxiv": "au:\"Ken Ono\" AND cat:math.*",
+    "area": "Modular forms & partitions"
+   },
+   {
+    "name": "Andrew Granville",
+    "wiki": "Andrew_Granville",
+    "arxiv": "au:\"Andrew Granville\"",
+    "area": "Analytic number theory"
+   }
+  ],
+  "open": [
+   {
+    "id": "riemann-hypothesis",
+    "title": "The Riemann hypothesis",
+    "q": "Do all non-trivial zeros of the Riemann zeta function lie on the line with real part 1/2?"
+   },
+   {
+    "id": "twin-primes",
+    "title": "The twin prime conjecture",
+    "q": "Are there infinitely many pairs of primes that differ by 2?"
+   },
+   {
+    "id": "goldbach",
+    "title": "Goldbach’s conjecture",
+    "q": "Is every even number greater than 2 the sum of two primes?"
+   },
+   {
+    "id": "abc",
+    "title": "The abc conjecture",
+    "q": "When a + b = c for coprime positive integers, is c almost always smaller than a fixed power, slightly above 1, of the product of the distinct primes dividing abc?"
+   },
+   {
+    "id": "bsd",
+    "title": "The Birch and Swinnerton-Dyer conjecture",
+    "q": "Does the order of vanishing of an elliptic curve’s L-function at s = 1 equal the number of independent rational points of infinite order?"
+   },
+   {
+    "id": "collatz",
+    "title": "The Collatz conjecture",
+    "q": "If you repeatedly halve even numbers and send odd n to 3n + 1, do you always reach 1?"
+   }
+  ]
+ },
+ "geometry": {
+  "name": "Geometry",
+  "label": "arXiv math.MG · Metric, convex & discrete geometry (MSC 51, 52)",
+  "query": "cat:math.MG",
+  "listing": "math.MG",
+  "field": "geometry: metric, convex and discrete geometry, polytopes, packings and incidence problems",
+  "peopleNote": "Six geometers known for landmark results on packings, polytopes and discrete geometry who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Gil Kalai",
+    "wiki": "Gil_Kalai",
+    "arxiv": "au:\"Gil Kalai\"",
+    "area": "Polytopes & combinatorial geometry"
+   },
+   {
+    "name": "János Pach",
+    "wiki": "János_Pach",
+    "arxiv": "(au:\"János Pach\" OR au:\"Janos Pach\")",
+    "area": "Discrete & computational geometry"
+   },
+   {
+    "name": "Imre Bárány",
+    "wiki": "Imre_Bárány",
+    "arxiv": "(au:\"Imre Bárány\" OR au:\"Imre Barany\")",
+    "area": "Convex geometry"
+   },
+   {
+    "name": "Maryna Viazovska",
+    "wiki": "Maryna_Viazovska",
+    "arxiv": "au:\"Maryna Viazovska\"",
+    "area": "Sphere packing"
+   },
+   {
+    "name": "Henry Cohn",
+    "wiki": "Henry_Cohn",
+    "arxiv": "au:\"Henry Cohn\" AND cat:math.*",
+    "area": "Packings & energy minimisation"
+   },
+   {
+    "name": "Károly Bezdek",
+    "wiki": "Károly_Bezdek",
+    "arxiv": "(au:\"Károly Bezdek\" OR au:\"Karoly Bezdek\")",
+    "area": "Discrete geometry"
+   }
+  ],
+  "open": [
+   {
+    "id": "hadwiger-nelson",
+    "title": "The Hadwiger–Nelson problem",
+    "q": "How many colours are needed to colour the plane so that no two points exactly one unit apart share a colour?"
+   },
+   {
+    "id": "polynomial-hirsch",
+    "title": "The polynomial Hirsch conjecture",
+    "q": "Is the diameter of the graph of every polytope bounded by a polynomial in its dimension and number of facets?"
+   },
+   {
+    "id": "kalai-3d",
+    "title": "Kalai’s 3ᵈ conjecture",
+    "q": "Does every centrally symmetric d-dimensional polytope have at least 3ᵈ non-empty faces in total?"
+   },
+   {
+    "id": "happy-ending",
+    "title": "The Erdős–Szekeres conjecture",
+    "q": "Do 2ⁿ⁻² + 1 points in the plane, no three on a line, always contain n points forming a convex polygon?"
+   },
+   {
+    "id": "unit-distance",
+    "title": "The Erdős unit distance problem",
+    "q": "How many pairs of points at distance exactly one can n points in the plane determine?"
+   },
+   {
+    "id": "kissing-numbers",
+    "title": "Kissing numbers",
+    "q": "How many equal spheres can touch a central sphere of the same size in dimensions 5, 6 and 7?"
+   }
+  ]
+ },
+ "algebra": {
+  "name": "Linear algebra",
+  "label": "arXiv math.RA · Matrix theory & linear algebra (MSC 15)",
+  "query": "(cat:math.RA OR cat:math.SP OR cat:math.NA OR cat:math.CO) AND (abs:\"matrix theory\" OR abs:\"linear algebra\" OR abs:\"eigenvalues of\" OR abs:\"Hadamard matrix\" OR abs:\"matrix multiplication\")",
+  "listing": "math.RA",
+  "field": "linear algebra and matrix theory: eigenvalues, matrix inequalities, random matrices, special matrices and the complexity of matrix computations",
+  "peopleNote": "Six researchers whose work on matrices, spectra and linear-algebra algorithms is widely influential and who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Daniel Spielman",
+    "wiki": "Daniel_Spielman",
+    "arxiv": "(au:\"Daniel A. Spielman\" OR au:\"Daniel Spielman\")",
+    "area": "Spectral graph theory"
+   },
+   {
+    "name": "Nikhil Srivastava",
+    "wiki": "Nikhil_Srivastava",
+    "arxiv": "au:\"Nikhil Srivastava\"",
+    "area": "Interlacing polynomials"
+   },
+   {
+    "name": "Adam Marcus",
+    "wiki": "Adam_Marcus_(mathematician)",
+    "arxiv": "au:\"Adam W. Marcus\"",
+    "area": "Interlacing & Kadison–Singer"
+   },
+   {
+    "name": "Lloyd N. Trefethen",
+    "wiki": "Lloyd_N._Trefethen",
+    "arxiv": "(au:\"Lloyd N. Trefethen\" OR au:\"Nick Trefethen\")",
+    "area": "Numerical linear algebra"
+   },
+   {
+    "name": "Gilbert Strang",
+    "wiki": "Gilbert_Strang",
+    "arxiv": "au:\"Gilbert Strang\"",
+    "area": "Linear algebra & its teaching"
+   },
+   {
+    "name": "Van H. Vu",
+    "wiki": "Van_H._Vu",
+    "arxiv": "(au:\"Van Vu\" OR au:\"Van H. Vu\") AND cat:math.*",
+    "area": "Random matrices"
+   }
+  ],
+  "open": [
+   {
+    "id": "hadamard",
+    "title": "The Hadamard conjecture",
+    "q": "Is there a square matrix of ±1 entries with mutually orthogonal rows in every size that is a multiple of 4?"
+   },
+   {
+    "id": "omega",
+    "title": "The exponent of matrix multiplication",
+    "q": "Can two n × n matrices be multiplied using about n² arithmetic operations?"
+   },
+   {
+    "id": "crouzeix",
+    "title": "Crouzeix’s conjecture",
+    "q": "For any square matrix and polynomial, is the norm of p(A) at most twice the largest value of |p| on the numerical range of A?"
+   },
+   {
+    "id": "permanent-determinant",
+    "title": "Permanent versus determinant",
+    "q": "Can the permanent of an n × n matrix be written as the determinant of a matrix only polynomially larger?"
+   },
+   {
+    "id": "mub-6",
+    "title": "Mutually unbiased bases in dimension 6",
+    "q": "In six-dimensional complex space, how many orthonormal bases can be chosen so that every pair is mutually unbiased?"
+   },
+   {
+    "id": "sic-povm",
+    "title": "Zauner’s conjecture",
+    "q": "Does every dimension d admit d² equiangular lines in complex d-dimensional space, giving a symmetric informationally complete measurement?"
+   }
+  ]
+ },
+ "groups": {
+  "name": "Groups & symmetry",
+  "label": "arXiv math.GR · Group theory (MSC 20)",
+  "query": "cat:math.GR",
+  "listing": "math.GR",
+  "field": "group theory: finite groups, geometric and combinatorial group theory, growth, representations and symmetry",
+  "peopleNote": "Six group theorists spanning finite, geometric and asymptotic group theory who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Martin Bridson",
+    "wiki": "Martin_Bridson",
+    "arxiv": "(au:\"Martin R. Bridson\" OR au:\"Martin Bridson\")",
+    "area": "Geometric group theory"
+   },
+   {
+    "name": "Emmanuel Breuillard",
+    "wiki": "Emmanuel_Breuillard",
+    "arxiv": "au:\"Emmanuel Breuillard\"",
+    "area": "Approximate groups"
+   },
+   {
+    "name": "Aner Shalev",
+    "wiki": "Aner_Shalev",
+    "arxiv": "au:\"Aner Shalev\"",
+    "area": "Finite & profinite groups"
+   },
+   {
+    "name": "Martin Liebeck",
+    "wiki": "Martin_Liebeck",
+    "arxiv": "(au:\"Martin W. Liebeck\" OR au:\"Martin Liebeck\")",
+    "area": "Finite simple groups"
+   },
+   {
+    "name": "Alexander Lubotzky",
+    "wiki": "Alexander_Lubotzky",
+    "arxiv": "au:\"Alexander Lubotzky\"",
+    "area": "Expanders & arithmetic groups"
+   },
+   {
+    "name": "Mladen Bestvina",
+    "wiki": "Mladen_Bestvina",
+    "arxiv": "au:\"Mladen Bestvina\"",
+    "area": "Outer automorphism groups"
+   }
+  ],
+  "open": [
+   {
+    "id": "burnside-b25",
+    "title": "The Burnside problem for B(2,5)",
+    "q": "Is the largest group generated by two elements in which every element satisfies x⁵ = 1 finite?"
+   },
+   {
+    "id": "kaplansky-zero-divisor",
+    "title": "Kaplansky’s zero-divisor conjecture",
+    "q": "If a group has no elements of finite order, can the product of two non-zero elements of its group ring be zero?"
+   },
+   {
+    "id": "hyperbolic-residually-finite",
+    "title": "Are hyperbolic groups residually finite?",
+    "q": "In every word-hyperbolic group, can each non-identity element be detected in some finite quotient?"
+   },
+   {
+    "id": "whitehead-asphericity",
+    "title": "Whitehead’s asphericity conjecture",
+    "q": "Is every connected subcomplex of a two-dimensional aspherical complex itself aspherical?"
+   },
+   {
+    "id": "andrews-curtis",
+    "title": "The Andrews–Curtis conjecture",
+    "q": "Can every balanced presentation of the trivial group be reduced to the trivial presentation using a standard list of moves?"
+   },
+   {
+    "id": "sofic",
+    "title": "Are all groups sofic?",
+    "q": "Can every group be approximated, in a precise statistical sense, by permutation groups of finite sets?"
+   }
+  ]
+ },
+ "rings": {
+  "name": "Rings, fields & polynomials",
+  "label": "arXiv math.AC · Commutative & noncommutative algebra (MSC 12, 13, 16)",
+  "query": "cat:math.AC OR cat:math.RA",
+  "listing": "math.AC",
+  "field": "ring theory and field theory: commutative algebra, noncommutative rings, polynomial equations, Galois theory and homological methods",
+  "peopleNote": "Six algebraists central to commutative and computational algebra who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Melvin Hochster",
+    "wiki": "Melvin_Hochster",
+    "arxiv": "au:\"Melvin Hochster\"",
+    "area": "Commutative algebra"
+   },
+   {
+    "name": "Craig Huneke",
+    "wiki": "Craig_Huneke",
+    "arxiv": "au:\"Craig Huneke\"",
+    "area": "Commutative algebra"
+   },
+   {
+    "name": "Karen E. Smith",
+    "wiki": "Karen_E._Smith",
+    "arxiv": "au:\"Karen E. Smith\" AND cat:math.*",
+    "area": "Singularities in positive characteristic"
+   },
+   {
+    "name": "Irena Peeva",
+    "wiki": "Irena_Peeva",
+    "arxiv": "au:\"Irena Peeva\"",
+    "area": "Syzygies & free resolutions"
+   },
+   {
+    "name": "David Eisenbud",
+    "wiki": "David_Eisenbud",
+    "arxiv": "au:\"David Eisenbud\"",
+    "area": "Commutative algebra & geometry"
+   },
+   {
+    "name": "Bernd Sturmfels",
+    "wiki": "Bernd_Sturmfels",
+    "arxiv": "au:\"Bernd Sturmfels\"",
+    "area": "Computational & applied algebra"
+   }
+  ],
+  "open": [
+   {
+    "id": "jacobian",
+    "title": "The Jacobian conjecture",
+    "q": "If a polynomial map from ℂⁿ to itself has a Jacobian determinant that is a non-zero constant, must it have a polynomial inverse?"
+   },
+   {
+    "id": "inverse-galois",
+    "title": "The inverse Galois problem",
+    "q": "Does every finite group arise as the Galois group of some extension of the rational numbers?"
+   },
+   {
+    "id": "hilbert-12",
+    "title": "Hilbert’s twelfth problem",
+    "q": "Can all abelian extensions of an arbitrary number field be generated explicitly by special values of analytic functions, as roots of unity do for the rationals?"
+   },
+   {
+    "id": "dixmier",
+    "title": "The Dixmier conjecture",
+    "q": "Is every endomorphism of the first Weyl algebra over a field of characteristic zero an automorphism?"
+   },
+   {
+    "id": "serre-multiplicity",
+    "title": "Serre’s positivity conjecture",
+    "q": "For two modules intersecting properly over a regular local ring, is Serre’s intersection multiplicity always positive?"
+   },
+   {
+    "id": "casas-alvero",
+    "title": "The Casas-Alvero conjecture",
+    "q": "If a complex polynomial of degree n shares a root with each of its first n − 1 derivatives, must it be (x − a)ⁿ?"
+   }
+  ]
+ },
+ "calculus": {
+  "name": "Limits & calculus",
+  "label": "arXiv math.CA · Classical analysis (MSC 26)",
+  "query": "cat:math.CA",
+  "listing": "math.CA",
+  "field": "classical analysis: real functions, inequalities, special functions, approximation and harmonic analysis",
+  "peopleNote": "Six analysts whose work on classical and harmonic analysis is widely influential and who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Terence Tao",
+    "wiki": "Terence_Tao",
+    "arxiv": "au:\"Terence Tao\"",
+    "area": "Harmonic analysis & more"
+   },
+   {
+    "name": "Charles Fefferman",
+    "wiki": "Charles_Fefferman",
+    "arxiv": "au:\"Charles Fefferman\"",
+    "area": "Harmonic analysis & interpolation"
+   },
+   {
+    "name": "Steven G. Krantz",
+    "wiki": "Steven_G._Krantz",
+    "arxiv": "(au:\"Steven G. Krantz\" OR au:\"Steven Krantz\")",
+    "area": "Real & complex analysis"
+   },
+   {
+    "name": "Fedor Nazarov",
+    "wiki": "Fedor_Nazarov",
+    "arxiv": "(au:\"Fedor Nazarov\" OR au:\"F. Nazarov\") AND cat:math.*",
+    "area": "Harmonic analysis & probability"
+   },
+   {
+    "name": "Wilhelm Schlag",
+    "wiki": "Wilhelm_Schlag",
+    "arxiv": "au:\"Wilhelm Schlag\"",
+    "area": "Harmonic analysis & dispersive equations"
+   },
+   {
+    "name": "Alexander Volberg",
+    "wiki": "Alexander_Volberg",
+    "arxiv": "au:\"Alexander Volberg\"",
+    "area": "Harmonic analysis"
+   }
+  ],
+  "open": [
+   {
+    "id": "pi-plus-e",
+    "title": "Is π + e irrational?",
+    "q": "Is the sum of the two most famous constants of calculus an irrational number?"
+   },
+   {
+    "id": "euler-gamma",
+    "title": "Is Euler’s constant irrational?",
+    "q": "Is the limit of 1 + 1/2 + … + 1/n − log n, about 0.5772, an irrational number?"
+   },
+   {
+    "id": "schanuel",
+    "title": "Schanuel’s conjecture",
+    "q": "If complex numbers z₁, …, zₙ are linearly independent over the rationals, do zᵢ and e^(zᵢ) together contain at least n algebraically independent numbers?"
+   },
+   {
+    "id": "zeta-5",
+    "title": "Irrationality of ζ(5)",
+    "q": "Is 1 + 1/2⁵ + 1/3⁵ + … an irrational number?"
+   },
+   {
+    "id": "catalan",
+    "title": "Is Catalan’s constant irrational?",
+    "q": "Is 1 − 1/3² + 1/5² − 1/7² + …, about 0.9160, an irrational number?"
+   },
+   {
+    "id": "pompeiu",
+    "title": "The Pompeiu problem",
+    "q": "If a bounded smooth region has the property that a continuous function integrating to zero over every rigid motion of it must vanish, does that fail only for discs?"
+   }
+  ]
+ },
+ "analysis": {
+  "name": "Real analysis & series",
+  "label": "arXiv math.CA · Real analysis, series & approximation (MSC 26, 40, 41)",
+  "query": "cat:math.CA AND (abs:series OR abs:approximation OR abs:convergence OR abs:\"Fourier\")",
+  "listing": "math.CA",
+  "field": "real analysis: series, convergence, Fourier analysis, approximation and geometric harmonic analysis",
+  "peopleNote": "Six analysts behind recent advances in Fourier analysis, approximation and additive problems who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Larry Guth",
+    "wiki": "Larry_Guth",
+    "arxiv": "au:\"Larry Guth\"",
+    "area": "Polynomial methods & harmonic analysis"
+   },
+   {
+    "name": "Hong Wang",
+    "wiki": "Hong_Wang_(mathematician)",
+    "arxiv": "au:\"Hong Wang\" AND cat:math.*",
+    "area": "Kakeya & restriction problems"
+   },
+   {
+    "name": "Svitlana Mayboroda",
+    "wiki": "Svitlana_Mayboroda",
+    "arxiv": "au:\"Svitlana Mayboroda\"",
+    "area": "Harmonic analysis & localisation"
+   },
+   {
+    "name": "Kristian Seip",
+    "wiki": "Kristian_Seip",
+    "arxiv": "au:\"Kristian Seip\"",
+    "area": "Function spaces & Dirichlet series"
+   },
+   {
+    "name": "Ben Green",
+    "wiki": "Ben_Green_(mathematician)",
+    "arxiv": "au:\"Ben Green\" AND cat:math.*",
+    "area": "Additive combinatorics"
+   },
+   {
+    "name": "Assaf Naor",
+    "wiki": "Assaf_Naor",
+    "arxiv": "au:\"Assaf Naor\"",
+    "area": "Metric geometry & analysis"
+   }
+  ],
+  "open": [
+   {
+    "id": "kakeya",
+    "title": "The Kakeya conjecture",
+    "q": "Must a set in n-dimensional space that contains a unit line segment in every direction have full dimension n?"
+   },
+   {
+    "id": "bochner-riesz",
+    "title": "The Bochner–Riesz conjecture",
+    "q": "For which exponents do Bochner–Riesz means of Fourier series and integrals converge in Lᵖ?"
+   },
+   {
+    "id": "littlewood",
+    "title": "The Littlewood conjecture",
+    "q": "For any two real numbers α and β, does n·‖nα‖·‖nβ‖ get arbitrarily close to zero?"
+   },
+   {
+    "id": "erdos-ap",
+    "title": "Erdős’s conjecture on arithmetic progressions",
+    "q": "If the sum of the reciprocals of a set of positive integers diverges, must the set contain arithmetic progressions of every length?"
+   },
+   {
+    "id": "flint-hills",
+    "title": "The Flint Hills series",
+    "q": "Does the series 1/(n³ sin² n), summed over all positive integers n, converge?"
+   },
+   {
+    "id": "lonely-runner",
+    "title": "The lonely runner conjecture",
+    "q": "If k runners with distinct constant speeds circle a unit track, is every runner at some time at least 1/k away from all others?"
+   }
+  ]
+ },
+ "topology": {
+  "name": "Topology",
+  "label": "arXiv math.GT · Geometric & general topology (MSC 54)",
+  "query": "cat:math.GT OR cat:math.GN",
+  "listing": "math.GT",
+  "field": "topology: general and geometric topology, knots, three- and four-manifolds, and invariants of spaces",
+  "peopleNote": "Six topologists behind landmark results on knots, three-manifolds and four-manifolds who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Ian Agol",
+    "wiki": "Ian_Agol",
+    "arxiv": "au:\"Ian Agol\"",
+    "area": "Three-manifolds"
+   },
+   {
+    "name": "Danny Calegari",
+    "wiki": "Danny_Calegari",
+    "arxiv": "au:\"Danny Calegari\"",
+    "area": "Low-dimensional topology"
+   },
+   {
+    "name": "Peter Kronheimer",
+    "wiki": "Peter_Kronheimer",
+    "arxiv": "(au:\"Peter Kronheimer\" OR au:\"P. B. Kronheimer\" OR au:\"Peter B. Kronheimer\")",
+    "area": "Gauge theory & four-manifolds"
+   },
+   {
+    "name": "Tomasz Mrowka",
+    "wiki": "Tomasz_Mrowka",
+    "arxiv": "(au:\"Tomasz Mrowka\" OR au:\"Tomasz S. Mrowka\" OR au:\"T. S. Mrowka\")",
+    "area": "Gauge theory & knots"
+   },
+   {
+    "name": "Ciprian Manolescu",
+    "wiki": "Ciprian_Manolescu",
+    "arxiv": "au:\"Ciprian Manolescu\"",
+    "area": "Floer homology"
+   },
+   {
+    "name": "Lisa Piccirillo",
+    "wiki": "Lisa_Piccirillo",
+    "arxiv": "au:\"Lisa Piccirillo\"",
+    "area": "Knots & four-manifolds"
+   }
+  ],
+  "open": [
+   {
+    "id": "smooth-poincare-4",
+    "title": "The smooth four-dimensional Poincaré conjecture",
+    "q": "Is every smooth four-dimensional manifold that is a homotopy sphere actually the standard smooth four-sphere?"
+   },
+   {
+    "id": "unknotting",
+    "title": "The unknotting problem",
+    "q": "Is there a polynomial-time algorithm to decide whether a knot diagram represents the unknot?"
+   },
+   {
+    "id": "slice-ribbon",
+    "title": "The slice–ribbon conjecture",
+    "q": "Is every slice knot a ribbon knot?"
+   },
+   {
+    "id": "volume-conjecture",
+    "title": "The volume conjecture",
+    "q": "Do the coloured Jones polynomials of a hyperbolic knot determine the volume of its complement through their growth rate?"
+   },
+   {
+    "id": "hilbert-smith",
+    "title": "The Hilbert–Smith conjecture",
+    "q": "Can a compact group that acts faithfully on a manifold fail to be a Lie group?"
+   },
+   {
+    "id": "borel",
+    "title": "The Borel conjecture",
+    "q": "Are closed aspherical manifolds with isomorphic fundamental groups always homeomorphic?"
+   }
+  ]
+ },
+ "complex": {
+  "name": "Complex analysis",
+  "label": "arXiv math.CV · Complex variables (MSC 30, 32)",
+  "query": "cat:math.CV",
+  "listing": "math.CV",
+  "field": "complex analysis: holomorphic functions, conformal maps, complex dynamics, potential theory and several complex variables",
+  "peopleNote": "Six complex analysts, including leaders in complex dynamics and function theory, who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Mikhail Lyubich",
+    "wiki": "Mikhail_Lyubich",
+    "arxiv": "au:\"Mikhail Lyubich\"",
+    "area": "Complex dynamics"
+   },
+   {
+    "name": "Curtis T. McMullen",
+    "wiki": "Curtis_T._McMullen",
+    "arxiv": "(au:\"Curtis T. McMullen\" OR au:\"Curtis McMullen\")",
+    "area": "Dynamics & Riemann surfaces"
+   },
+   {
+    "name": "Laura DeMarco",
+    "wiki": "Laura_DeMarco",
+    "arxiv": "au:\"Laura DeMarco\"",
+    "area": "Complex & arithmetic dynamics"
+   },
+   {
+    "name": "Håkan Hedenmalm",
+    "wiki": "Håkan_Hedenmalm",
+    "arxiv": "(au:\"Håkan Hedenmalm\" OR au:\"Haakan Hedenmalm\" OR au:\"Hakan Hedenmalm\")",
+    "area": "Function spaces"
+   },
+   {
+    "name": "Alexandre Eremenko",
+    "wiki": "Alexandre_Eremenko",
+    "arxiv": "au:\"Alexandre Eremenko\"",
+    "area": "Value distribution theory"
+   },
+   {
+    "name": "Lasse Rempe",
+    "wiki": "Lasse_Rempe",
+    "arxiv": "au:\"Lasse Rempe\"",
+    "area": "Transcendental dynamics"
+   }
+  ],
+  "open": [
+   {
+    "id": "mlc",
+    "title": "Is the Mandelbrot set locally connected?",
+    "q": "Is the Mandelbrot set locally connected, which would give a complete picture of quadratic dynamics?"
+   },
+   {
+    "id": "lindelof",
+    "title": "The Lindelöf hypothesis",
+    "q": "Does the Riemann zeta function grow more slowly than any positive power of t along the critical line?"
+   },
+   {
+    "id": "bloch-constant",
+    "title": "Bloch’s constant",
+    "q": "What is the largest radius of a disc that the image of every normalised holomorphic map of the unit disc must contain injectively?"
+   },
+   {
+    "id": "mandelbrot-area",
+    "title": "Does the Mandelbrot set’s boundary have positive area?",
+    "q": "Is the boundary of the Mandelbrot set so wiggly that it occupies positive area in the plane?"
+   },
+   {
+    "id": "corona-several",
+    "title": "The corona problem in several variables",
+    "q": "In the unit ball of ℂⁿ, n ≥ 2, is the open ball dense in the maximal ideal space of bounded holomorphic functions?"
+   },
+   {
+    "id": "eremenko",
+    "title": "Eremenko’s conjecture",
+    "q": "For a transcendental entire function, is every connected component of the set of escaping points unbounded?"
+   }
+  ]
+ },
+ "measure": {
+  "name": "Measure & integration",
+  "label": "arXiv math.CA · Measure & geometric measure theory (MSC 28)",
+  "query": "(cat:math.CA OR cat:math.MG OR cat:math.FA OR cat:math.DS) AND (abs:\"Hausdorff dimension\" OR abs:\"geometric measure theory\" OR abs:\"Lebesgue measure\" OR abs:\"rectifiable\")",
+  "listing": "math.CA",
+  "field": "measure theory and geometric measure theory: dimension, rectifiability, fractals, covering problems and optimal transport",
+  "peopleNote": "Six researchers who shaped geometric measure theory, fractal dimension and optimal transport and who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Pertti Mattila",
+    "wiki": "Pertti_Mattila",
+    "arxiv": "au:\"Pertti Mattila\"",
+    "area": "Geometric measure theory"
+   },
+   {
+    "name": "Xavier Tolsa",
+    "wiki": "Xavier_Tolsa",
+    "arxiv": "au:\"Xavier Tolsa\"",
+    "area": "Analytic capacity & rectifiability"
+   },
+   {
+    "name": "Kenneth Falconer",
+    "wiki": "Kenneth_Falconer_(mathematician)",
+    "arxiv": "(au:\"Kenneth Falconer\" OR au:\"Kenneth J. Falconer\")",
+    "area": "Fractal geometry"
+   },
+   {
+    "name": "Camillo De Lellis",
+    "wiki": "Camillo_De_Lellis",
+    "arxiv": "au:\"Camillo De Lellis\"",
+    "area": "Geometric measure theory"
+   },
+   {
+    "name": "Guido De Philippis",
+    "wiki": "Guido_De_Philippis",
+    "arxiv": "au:\"Guido De Philippis\"",
+    "area": "Geometric measure theory"
+   },
+   {
+    "name": "Alessio Figalli",
+    "wiki": "Alessio_Figalli",
+    "arxiv": "au:\"Alessio Figalli\"",
+    "area": "Optimal transport"
+   }
+  ],
+  "open": [
+   {
+    "id": "falconer-distance",
+    "title": "Falconer’s distance problem",
+    "q": "If a planar set has Hausdorff dimension above 1, must its set of pairwise distances have positive length?"
+   },
+   {
+    "id": "inscribed-square",
+    "title": "The inscribed square problem",
+    "q": "Does every simple closed curve in the plane pass through the four corners of some square?"
+   },
+   {
+    "id": "mahler",
+    "title": "Mahler’s conjecture",
+    "q": "Among centrally symmetric convex bodies, is the product of the volume and the volume of its polar body smallest for the cube?"
+   },
+   {
+    "id": "lebesgue-covering",
+    "title": "Lebesgue’s universal covering problem",
+    "q": "What is the smallest area of a convex shape that can cover every planar set of diameter 1?"
+   },
+   {
+    "id": "moser-worm",
+    "title": "Moser’s worm problem",
+    "q": "What is the smallest area of a region that can be moved to cover every curve of length 1?"
+   },
+   {
+    "id": "heilbronn",
+    "title": "Heilbronn’s triangle problem",
+    "q": "How large can the smallest triangle formed by n points in a unit square be made?"
+   }
+  ]
+ },
+ "probability": {
+  "name": "Probability & stochastic processes",
+  "label": "arXiv math.PR · Probability (MSC 60)",
+  "query": "cat:math.PR",
+  "listing": "math.PR",
+  "field": "probability theory: random walks, percolation, random geometry, stochastic PDE, random matrices and statistical physics models",
+  "peopleNote": "Six probabilists behind major advances in percolation, random geometry and stochastic PDE who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Hugo Duminil-Copin",
+    "wiki": "Hugo_Duminil-Copin",
+    "arxiv": "au:\"Hugo Duminil-Copin\"",
+    "area": "Percolation & statistical physics"
+   },
+   {
+    "name": "Martin Hairer",
+    "wiki": "Martin_Hairer",
+    "arxiv": "au:\"Martin Hairer\"",
+    "area": "Stochastic PDE"
+   },
+   {
+    "name": "Gregory Lawler",
+    "wiki": "Gregory_Lawler",
+    "arxiv": "(au:\"Gregory F. Lawler\" OR au:\"Gregory Lawler\")",
+    "area": "Random walks & SLE"
+   },
+   {
+    "name": "Scott Sheffield",
+    "wiki": "Scott_Sheffield",
+    "arxiv": "au:\"Scott Sheffield\" AND cat:math.*",
+    "area": "Random geometry"
+   },
+   {
+    "name": "Nina Holden",
+    "wiki": "Nina_Holden",
+    "arxiv": "au:\"Nina Holden\" AND cat:math.*",
+    "area": "Random planar maps"
+   },
+   {
+    "name": "Ivan Corwin",
+    "wiki": "Ivan_Corwin",
+    "arxiv": "au:\"Ivan Corwin\"",
+    "area": "KPZ universality"
+   }
+  ],
+  "open": [
+   {
+    "id": "percolation-3d",
+    "title": "Critical percolation in three dimensions",
+    "q": "In bond percolation on the three-dimensional cubic lattice at the critical density, is there almost surely no infinite cluster?"
+   },
+   {
+    "id": "saw-sle",
+    "title": "Self-avoiding walk in the plane",
+    "q": "Does the uniform self-avoiding walk on a planar lattice converge, when rescaled, to the random curve SLE(8/3)?"
+   },
+   {
+    "id": "percolation-universality",
+    "title": "Universality of critical percolation",
+    "q": "Is critical percolation conformally invariant on the square lattice, as Smirnov proved for the triangular lattice?"
+   },
+   {
+    "id": "kpz-universality",
+    "title": "KPZ universality",
+    "q": "Do all models of randomly growing interfaces in the KPZ class share the same large-scale fluctuations?"
+   },
+   {
+    "id": "anderson-3d",
+    "title": "Delocalisation in the Anderson model",
+    "q": "In three dimensions with weak disorder, does the Anderson model have extended states, so electrons can still conduct?"
+   },
+   {
+    "id": "cutoff",
+    "title": "The cutoff phenomenon",
+    "q": "Which Markov chains mix abruptly, staying far from equilibrium and then reaching it within a short window?"
+   }
+  ]
+ },
+ "equations": {
+  "name": "Differential & difference equations",
+  "label": "arXiv math.AP · Analysis of PDEs (MSC 34, 35)",
+  "query": "cat:math.AP",
+  "listing": "math.AP",
+  "field": "differential equations: existence, regularity and long-time behaviour of ODE and PDE, including fluids, waves and free boundaries",
+  "peopleNote": "Six analysts whose work on regularity, fluids and waves defines modern PDE and who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Luis Caffarelli",
+    "wiki": "Luis_Caffarelli",
+    "arxiv": "(au:\"Luis Caffarelli\" OR au:\"Luis A. Caffarelli\")",
+    "area": "Free boundaries & regularity"
+   },
+   {
+    "name": "Carlos Kenig",
+    "wiki": "Carlos_Kenig",
+    "arxiv": "(au:\"Carlos E. Kenig\" OR au:\"Carlos Kenig\")",
+    "area": "Dispersive equations"
+   },
+   {
+    "name": "Sergiu Klainerman",
+    "wiki": "Sergiu_Klainerman",
+    "arxiv": "au:\"Sergiu Klainerman\"",
+    "area": "Hyperbolic PDE & relativity"
+   },
+   {
+    "name": "Gigliola Staffilani",
+    "wiki": "Gigliola_Staffilani",
+    "arxiv": "au:\"Gigliola Staffilani\"",
+    "area": "Nonlinear Schrödinger & wave equations"
+   },
+   {
+    "name": "Thomas Y. Hou",
+    "wiki": "Thomas_Yizhao_Hou",
+    "arxiv": "au:\"Thomas Y. Hou\"",
+    "area": "Fluid singularities & computation"
+   },
+   {
+    "name": "Laure Saint-Raymond",
+    "wiki": "Laure_Saint-Raymond",
+    "arxiv": "au:\"Laure Saint-Raymond\"",
+    "area": "Kinetic theory"
+   }
+  ],
+  "open": [
+   {
+    "id": "navier-stokes",
+    "title": "Navier–Stokes existence and smoothness",
+    "q": "Do smooth initial flows of an incompressible fluid in three dimensions always stay smooth for all time?"
+   },
+   {
+    "id": "euler-blowup",
+    "title": "Blow-up for the Euler equations",
+    "q": "Can a smooth, finite-energy solution of the three-dimensional incompressible Euler equations, with no boundary, develop a singularity in finite time?"
+   },
+   {
+    "id": "hilbert-16",
+    "title": "Hilbert’s sixteenth problem",
+    "q": "Is there a bound, depending only on the degree, for the number of limit cycles of a planar polynomial vector field?"
+   },
+   {
+    "id": "calderon",
+    "title": "Calderón’s inverse problem",
+    "q": "Can the electrical conductivity inside a body be determined uniquely from voltage and current measurements on its surface, for any bounded conductivity?"
+   },
+   {
+    "id": "drum",
+    "title": "Hearing the shape of a convex drum",
+    "q": "Do the vibration frequencies of a smooth convex drum determine its shape?"
+   },
+   {
+    "id": "yang-mills",
+    "title": "Yang–Mills existence and mass gap",
+    "q": "Does quantum Yang–Mills theory on four-dimensional space exist rigorously, with a positive lowest energy above the vacuum?"
+   }
+  ]
+ },
+ "dynamics": {
+  "name": "Dynamical systems",
+  "label": "arXiv math.DS · Dynamical systems (MSC 37)",
+  "query": "cat:math.DS",
+  "listing": "math.DS",
+  "field": "dynamical systems and ergodic theory: chaos, stability, homogeneous dynamics, billiards and one-dimensional dynamics",
+  "peopleNote": "Six researchers whose work on ergodic theory, chaos and homogeneous dynamics shapes the field and who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Artur Avila",
+    "wiki": "Artur_Avila",
+    "arxiv": "au:\"Artur Avila\"",
+    "area": "One-dimensional & spectral dynamics"
+   },
+   {
+    "name": "Elon Lindenstrauss",
+    "wiki": "Elon_Lindenstrauss",
+    "arxiv": "au:\"Elon Lindenstrauss\"",
+    "area": "Homogeneous dynamics"
+   },
+   {
+    "name": "Amie Wilkinson",
+    "wiki": "Amie_Wilkinson",
+    "arxiv": "au:\"Amie Wilkinson\"",
+    "area": "Smooth ergodic theory"
+   },
+   {
+    "name": "Yakov Pesin",
+    "wiki": "Yakov_Pesin",
+    "arxiv": "au:\"Yakov Pesin\"",
+    "area": "Non-uniform hyperbolicity"
+   },
+   {
+    "name": "Alex Eskin",
+    "wiki": "Alex_Eskin",
+    "arxiv": "au:\"Alex Eskin\" AND cat:math.*",
+    "area": "Teichmüller dynamics"
+   },
+   {
+    "name": "Dmitry Dolgopyat",
+    "wiki": "Dmitry_Dolgopyat",
+    "arxiv": "au:\"Dmitry Dolgopyat\"",
+    "area": "Hyperbolic dynamics & statistics"
+   }
+  ],
+  "open": [
+   {
+    "id": "furstenberg-x2x3",
+    "title": "Furstenberg’s ×2 ×3 conjecture",
+    "q": "Is Lebesgue measure the only non-atomic probability measure on the circle invariant under both doubling and tripling?"
+   },
+   {
+    "id": "standard-map",
+    "title": "Chaos in the standard map",
+    "q": "For large parameter values, does the Chirikov standard map have positive Lyapunov exponent on a set of positive area?"
+   },
+   {
+    "id": "arnold-diffusion",
+    "title": "Arnold diffusion",
+    "q": "In generic nearly integrable Hamiltonian systems with three or more degrees of freedom, can orbits drift a long way in action?"
+   },
+   {
+    "id": "triangular-billiards",
+    "title": "Periodic billiards in triangles",
+    "q": "Does every triangular billiard table have a periodic trajectory?"
+   },
+   {
+    "id": "multiple-mixing",
+    "title": "Rokhlin’s multiple mixing problem",
+    "q": "Does every mixing measure-preserving transformation mix sets of all orders?"
+   },
+   {
+    "id": "density-hyperbolicity",
+    "title": "Density of hyperbolicity in complex dynamics",
+    "q": "Can every complex quadratic polynomial be approximated by ones whose orbits settle onto attracting cycles?"
+   }
+  ]
+ },
+ "differential": {
+  "name": "Differential geometry",
+  "label": "arXiv math.DG · Differential geometry (MSC 53, 57)",
+  "query": "cat:math.DG",
+  "listing": "math.DG",
+  "field": "differential geometry: Riemannian and Kähler geometry, curvature, geometric flows, minimal surfaces and geometric analysis",
+  "peopleNote": "Six geometers whose work on curvature, geometric analysis, Kähler metrics and minimal surfaces shapes the field and who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Shing-Tung Yau",
+    "wiki": "Shing-Tung_Yau",
+    "arxiv": "au:Yau AND (cat:math.DG OR cat:math.AP OR cat:math.GT)",
+    "area": "Geometric analysis"
+   },
+   {
+    "name": "Simon Donaldson",
+    "wiki": "Simon_Donaldson",
+    "arxiv": "au:Donaldson AND au:Simon AND (cat:math.DG OR cat:math.AP OR cat:math.GT)",
+    "area": "Gauge theory & Kähler geometry"
+   },
+   {
+    "name": "Xiuxiong Chen",
+    "wiki": "Xiuxiong_Chen",
+    "arxiv": "au:Chen AND au:Xiuxiong AND (cat:math.DG OR cat:math.AP OR cat:math.GT)",
+    "area": "Kähler–Einstein metrics"
+   },
+   {
+    "name": "Fernando Codá Marques",
+    "wiki": "Fernando_Codá_Marques",
+    "arxiv": "au:Marques AND au:Fernando AND (cat:math.DG OR cat:math.AP OR cat:math.GT)",
+    "area": "Minimal surfaces"
+   },
+   {
+    "name": "André Neves",
+    "wiki": "André_Neves",
+    "arxiv": "au:Neves AND au:Andre AND (cat:math.DG OR cat:math.AP OR cat:math.GT)",
+    "area": "Min-max theory"
+   },
+   {
+    "name": "Tobias Colding",
+    "wiki": "Tobias_Colding",
+    "arxiv": "au:Colding AND au:Tobias AND (cat:math.DG OR cat:math.AP OR cat:math.GT)",
+    "area": "Mean curvature flow & Ricci curvature"
+   }
+  ],
+  "open": [
+   {
+    "id": "hopf-positive-curvature",
+    "title": "The Hopf conjecture on positive curvature",
+    "q": "Can the product of two 2-spheres carry a metric of strictly positive sectional curvature?"
+   },
+   {
+    "id": "hopf-euler-sign",
+    "title": "The sign of the Euler characteristic",
+    "q": "Does every closed, non-positively curved manifold of dimension 2n have Euler characteristic of sign (−1)ⁿ or zero?"
+   },
+   {
+    "id": "smooth-poincare-4",
+    "title": "The smooth 4-dimensional Poincaré conjecture",
+    "q": "Is every smooth 4-manifold that is homotopy equivalent to the 4-sphere actually diffeomorphic to it?"
+   },
+   {
+    "id": "ytd-general",
+    "title": "The Yau–Tian–Donaldson conjecture in general",
+    "q": "Does a compact Kähler manifold admit a metric of constant scalar curvature in a given class exactly when it is K-stable?"
+   },
+   {
+    "id": "caratheodory-umbilics",
+    "title": "The Carathéodory conjecture",
+    "q": "Must every smooth closed convex surface in space have at least two umbilic points, where it curves equally in all directions?"
+   },
+   {
+    "id": "s6-complex",
+    "title": "A complex structure on the six-sphere",
+    "q": "Can the 6-sphere be given the structure of a complex manifold?"
+   }
+  ]
+ },
+ "algtop": {
+  "name": "Algebraic topology",
+  "label": "arXiv math.AT · Algebraic topology (MSC 55, 57)",
+  "query": "(cat:math.AT OR cat:math.GT)",
+  "listing": "math.AT",
+  "field": "algebraic and geometric topology: homotopy theory, stable homotopy, manifolds, surgery, low-dimensional topology and their algebraic invariants",
+  "peopleNote": "Six topologists spanning stable homotopy theory, higher algebra, manifold topology and three- and four-dimensional manifolds, all still publishing.",
+  "people": [
+   {
+    "name": "Michael J. Hopkins",
+    "wiki": "Michael_J._Hopkins",
+    "arxiv": "au:Hopkins AND au:Michael AND (cat:math.AT OR cat:math.GT OR cat:math.KT OR cat:math.CT)",
+    "area": "Stable homotopy theory"
+   },
+   {
+    "name": "Jacob Lurie",
+    "wiki": "Jacob_Lurie",
+    "arxiv": "au:Lurie AND au:Jacob AND (cat:math.AT OR cat:math.GT OR cat:math.KT OR cat:math.CT)",
+    "area": "Higher category theory"
+   },
+   {
+    "name": "Søren Galatius",
+    "wiki": "Søren_Galatius",
+    "arxiv": "au:Galatius AND au:Soren AND (cat:math.AT OR cat:math.GT OR cat:math.KT OR cat:math.CT)",
+    "area": "Moduli spaces of manifolds"
+   },
+   {
+    "name": "Oscar Randal-Williams",
+    "wiki": "Oscar_Randal-Williams",
+    "arxiv": "au:Randal-Williams AND au:Oscar AND (cat:math.AT OR cat:math.GT OR cat:math.KT OR cat:math.CT)",
+    "area": "Diffeomorphism groups"
+   },
+   {
+    "name": "Ciprian Manolescu",
+    "wiki": "Ciprian_Manolescu",
+    "arxiv": "au:Manolescu AND au:Ciprian AND (cat:math.AT OR cat:math.GT OR cat:math.KT OR cat:math.CT)",
+    "area": "Floer homology & triangulations"
+   },
+   {
+    "name": "Ian Agol",
+    "wiki": "Ian_Agol",
+    "arxiv": "au:Agol AND au:Ian AND (cat:math.AT OR cat:math.GT OR cat:math.KT OR cat:math.CT)",
+    "area": "3-manifolds"
+   }
+  ],
+  "open": [
+   {
+    "id": "spheres-homotopy",
+    "title": "Homotopy groups of spheres",
+    "q": "Is there a way to compute all the homotopy groups of spheres, or at least to understand their overall pattern?"
+   },
+   {
+    "id": "novikov",
+    "title": "The Novikov conjecture",
+    "q": "Are the higher signatures of a closed manifold always invariant under homotopy equivalence?"
+   },
+   {
+    "id": "borel",
+    "title": "The Borel conjecture",
+    "q": "Are two closed aspherical manifolds with isomorphic fundamental groups necessarily homeomorphic?"
+   },
+   {
+    "id": "whitehead-asphericity",
+    "title": "Whitehead’s asphericity conjecture",
+    "q": "Is every connected subcomplex of an aspherical 2-dimensional complex itself aspherical?"
+   },
+   {
+    "id": "andrews-curtis",
+    "title": "The Andrews–Curtis conjecture",
+    "q": "Can every balanced presentation of the trivial group be reduced to the trivial presentation by a standard set of moves?"
+   },
+   {
+    "id": "hilbert-smith",
+    "title": "The Hilbert–Smith conjecture",
+    "q": "Can a group of p-adic integers act faithfully and continuously on a manifold?"
+   }
+  ]
+ },
+ "alggeom": {
+  "name": "Algebraic geometry",
+  "label": "arXiv math.AG · Algebraic geometry (MSC 14, 13)",
+  "query": "cat:math.AG",
+  "listing": "math.AG",
+  "field": "algebraic geometry: varieties and schemes, birational geometry, moduli spaces, Hodge theory, singularities and arithmetic geometry",
+  "peopleNote": "Six algebraic geometers whose work on Hodge theory, birational geometry, moduli and combinatorial methods defines current directions and who still publish.",
+  "people": [
+   {
+    "name": "Claire Voisin",
+    "wiki": "Claire_Voisin",
+    "arxiv": "au:Voisin AND au:Claire AND (cat:math.AG OR cat:math.CO OR cat:math.NT)",
+    "area": "Hodge theory"
+   },
+   {
+    "name": "János Kollár",
+    "wiki": "János_Kollár",
+    "arxiv": "au:Kollar AND au:Janos AND (cat:math.AG OR cat:math.CO OR cat:math.NT)",
+    "area": "Birational geometry & singularities"
+   },
+   {
+    "name": "Caucher Birkar",
+    "wiki": "Caucher_Birkar",
+    "arxiv": "au:Birkar AND au:Caucher AND (cat:math.AG OR cat:math.CO OR cat:math.NT)",
+    "area": "Minimal model program"
+   },
+   {
+    "name": "Chenyang Xu",
+    "wiki": "Chenyang_Xu",
+    "arxiv": "au:\"Chenyang Xu\" AND (cat:math.AG OR cat:math.CO OR cat:math.NT)",
+    "area": "K-stability & moduli"
+   },
+   {
+    "name": "June Huh",
+    "wiki": "June_Huh",
+    "arxiv": "au:Huh AND au:June AND (cat:math.AG OR cat:math.CO OR cat:math.NT)",
+    "area": "Combinatorial algebraic geometry"
+   },
+   {
+    "name": "Ravi Vakil",
+    "wiki": "Ravi_Vakil",
+    "arxiv": "au:Vakil AND au:Ravi AND (cat:math.AG OR cat:math.CO OR cat:math.NT)",
+    "area": "Moduli spaces & enumerative geometry"
+   }
+  ],
+  "open": [
+   {
+    "id": "hodge",
+    "title": "The Hodge conjecture",
+    "q": "On a smooth complex projective variety, is every rational cohomology class of Hodge type (p,p) a combination of classes of algebraic subvarieties?"
+   },
+   {
+    "id": "resolution-char-p",
+    "title": "Resolution of singularities in positive characteristic",
+    "q": "Can every algebraic variety over a field of positive characteristic be replaced by a smooth one through birational changes?"
+   },
+   {
+    "id": "jacobian",
+    "title": "The Jacobian conjecture",
+    "q": "If a polynomial map from n-space to itself has constant non-zero Jacobian determinant, must it have a polynomial inverse?"
+   },
+   {
+    "id": "abundance",
+    "title": "The abundance conjecture",
+    "q": "For a variety whose canonical class is nef, is some multiple of the canonical class free of base points?"
+   },
+   {
+    "id": "standard-conjectures",
+    "title": "Grothendieck’s standard conjectures",
+    "q": "Do algebraic cycles behave well enough to give a universal cohomology theory of motives?"
+   },
+   {
+    "id": "nagata",
+    "title": "The Nagata conjecture",
+    "q": "What is the smallest degree of a plane curve passing with given multiplicity through many general points?"
+   }
+  ]
+ },
+ "harmonic": {
+  "name": "Fourier & harmonic analysis",
+  "label": "arXiv math.CA · Harmonic analysis (MSC 42, 43)",
+  "query": "cat:math.CA AND (abs:Fourier OR abs:harmonic OR abs:multiplier OR abs:\"maximal function\" OR abs:\"singular integral\" OR abs:Kakeya OR abs:decoupling OR abs:wavelet)",
+  "listing": "math.CA",
+  "field": "Fourier and harmonic analysis: Fourier restriction, Kakeya problems, decoupling, singular integrals, maximal functions and abstract harmonic analysis",
+  "peopleNote": "Six analysts behind the decoupling revolution, Kakeya progress and modern singular-integral theory, all active on arXiv.",
+  "people": [
+   {
+    "name": "Terence Tao",
+    "wiki": "Terence_Tao",
+    "arxiv": "au:Tao AND au:Terence AND (cat:math.CA OR cat:math.AP OR cat:math.CO OR cat:math.NT)",
+    "area": "Harmonic analysis & combinatorics"
+   },
+   {
+    "name": "Larry Guth",
+    "wiki": "Larry_Guth",
+    "arxiv": "au:Guth AND au:Larry AND (cat:math.CA OR cat:math.AP OR cat:math.CO OR cat:math.NT)",
+    "area": "Polynomial methods & decoupling"
+   },
+   {
+    "name": "Michael Lacey",
+    "wiki": "Michael_Lacey_(mathematician)",
+    "arxiv": "au:Lacey AND au:Michael AND (cat:math.CA OR cat:math.AP OR cat:math.CO OR cat:math.NT)",
+    "area": "Time–frequency analysis & sparse bounds"
+   },
+   {
+    "name": "Hong Wang",
+    "wiki": "Hong_Wang_(mathematician)",
+    "arxiv": "au:\"Hong Wang\" AND (cat:math.CA OR cat:math.AP OR cat:math.CO OR cat:math.NT)",
+    "area": "Kakeya & restriction"
+   },
+   {
+    "name": "Charles Fefferman",
+    "wiki": "Charles_Fefferman",
+    "arxiv": "au:Fefferman AND au:Charles AND (cat:math.CA OR cat:math.AP OR cat:math.CO OR cat:math.NT)",
+    "area": "Fourier analysis & PDE"
+   },
+   {
+    "name": "Christoph Thiele",
+    "wiki": "Christoph_Thiele",
+    "arxiv": "au:Thiele AND au:Christoph AND (cat:math.CA OR cat:math.AP OR cat:math.CO OR cat:math.NT)",
+    "area": "Time–frequency analysis"
+   }
+  ],
+  "open": [
+   {
+    "id": "kakeya-high",
+    "title": "The Kakeya conjecture in higher dimensions",
+    "q": "Must a set containing a unit line segment in every direction in n-dimensional space have full dimension n?"
+   },
+   {
+    "id": "restriction",
+    "title": "The Fourier restriction conjecture",
+    "q": "For which exponents can the Fourier transform of a function be meaningfully restricted to a curved surface such as a sphere?"
+   },
+   {
+    "id": "bochner-riesz",
+    "title": "The Bochner–Riesz conjecture",
+    "q": "Do Bochner–Riesz means of a function converge in Lᵖ for the full range of exponents predicted by examples?"
+   },
+   {
+    "id": "fuglede",
+    "title": "Fuglede’s conjecture in low dimensions",
+    "q": "In one and two dimensions, is a set spectral (admitting an orthogonal basis of exponentials) exactly when it tiles space by translations?"
+   },
+   {
+    "id": "pompeiu",
+    "title": "The Pompeiu problem",
+    "q": "Is the disc the only bounded planar domain for which the Pompeiu property fails?"
+   },
+   {
+    "id": "selberg-eigenvalue",
+    "title": "Selberg’s eigenvalue conjecture",
+    "q": "Is the smallest non-zero Laplace eigenvalue on every congruence quotient of the hyperbolic plane at least 1/4?"
+   }
+  ]
+ },
+ "functional": {
+  "name": "Functional analysis",
+  "label": "arXiv math.FA · Functional analysis (MSC 46)",
+  "query": "(cat:math.FA OR cat:math.OA)",
+  "listing": "math.FA",
+  "field": "functional analysis: Banach and Hilbert spaces, operator algebras, convex geometry in high dimensions and their applications",
+  "peopleNote": "Six analysts covering Banach-space geometry, high-dimensional convexity, operator algebras and the solution of the Kadison–Singer problem.",
+  "people": [
+   {
+    "name": "Assaf Naor",
+    "wiki": "Assaf_Naor",
+    "arxiv": "au:Naor AND au:Assaf AND (cat:math.FA OR cat:math.OA OR cat:math.MG OR cat:math.PR OR cat:cs.DS)",
+    "area": "Metric geometry of Banach spaces"
+   },
+   {
+    "name": "Gilles Pisier",
+    "wiki": "Gilles_Pisier",
+    "arxiv": "au:Pisier AND au:Gilles AND (cat:math.FA OR cat:math.OA OR cat:math.MG OR cat:math.PR OR cat:cs.DS)",
+    "area": "Banach spaces & operator spaces"
+   },
+   {
+    "name": "Bo'az Klartag",
+    "wiki": "Bo'az_Klartag",
+    "arxiv": "au:Klartag AND (cat:math.FA OR cat:math.OA OR cat:math.MG OR cat:math.PR OR cat:cs.DS)",
+    "area": "High-dimensional convex geometry"
+   },
+   {
+    "name": "Daniel Spielman",
+    "wiki": "Daniel_Spielman",
+    "arxiv": "au:Spielman AND au:Daniel AND (cat:math.FA OR cat:math.OA OR cat:math.MG OR cat:math.PR OR cat:cs.DS)",
+    "area": "Kadison–Singer & spectral graphs"
+   },
+   {
+    "name": "Sorin Popa",
+    "wiki": "Sorin_Popa",
+    "arxiv": "au:Popa AND au:Sorin AND (cat:math.FA OR cat:math.OA OR cat:math.MG OR cat:math.PR OR cat:cs.DS)",
+    "area": "von Neumann algebras"
+   },
+   {
+    "name": "Dan-Virgil Voiculescu",
+    "wiki": "Dan-Virgil_Voiculescu",
+    "arxiv": "au:Voiculescu AND au:Dan AND (cat:math.FA OR cat:math.OA OR cat:math.MG OR cat:math.PR OR cat:cs.DS)",
+    "area": "Free probability"
+   }
+  ],
+  "open": [
+   {
+    "id": "invariant-subspace",
+    "title": "The invariant subspace problem",
+    "q": "Does every bounded operator on a separable infinite-dimensional Hilbert space have a closed invariant subspace other than zero and the whole space?"
+   },
+   {
+    "id": "mahler",
+    "title": "The Mahler conjecture",
+    "q": "Among symmetric convex bodies, is the cube (with its dual, the cross-polytope) the one minimising the product of a body’s volume and its dual’s?"
+   },
+   {
+    "id": "kaplansky",
+    "title": "Kaplansky’s idempotent and zero-divisor conjectures",
+    "q": "If a group has no elements of finite order, can its group ring over a field contain zero divisors or non-trivial idempotents?"
+   },
+   {
+    "id": "free-group-factors",
+    "title": "The free group factor problem",
+    "q": "Are the von Neumann algebras of the free groups on two and on three generators isomorphic?"
+   },
+   {
+    "id": "crouzeix",
+    "title": "Crouzeix’s conjecture",
+    "q": "Is the norm of p(A) always at most twice the maximum of the polynomial p over the numerical range of the matrix A?"
+   },
+   {
+    "id": "grothendieck-constant",
+    "title": "The exact Grothendieck constant",
+    "q": "What is the exact value of the best constant in Grothendieck’s inequality?"
+   }
+  ]
+ },
+ "operators": {
+  "name": "Operators & integral transforms",
+  "label": "arXiv math.SP · Spectral theory (MSC 47, 44, 45)",
+  "query": "cat:math.SP",
+  "listing": "math.SP",
+  "field": "spectral theory of operators: Schrödinger operators, eigenvalue problems, resonances, quantum chaos and integral transforms",
+  "peopleNote": "Six spectral theorists working on Schrödinger operators, eigenvalue inequalities, resonances and quantum chaos.",
+  "people": [
+   {
+    "name": "Barry Simon",
+    "wiki": "Barry_Simon",
+    "arxiv": "au:Simon AND au:Barry AND (cat:math.SP OR cat:math-ph OR cat:math.AP OR cat:math.DS)",
+    "area": "Schrödinger operators"
+   },
+   {
+    "name": "Svetlana Jitomirskaya",
+    "wiki": "Svetlana_Jitomirskaya",
+    "arxiv": "au:Jitomirskaya AND (cat:math.SP OR cat:math-ph OR cat:math.AP OR cat:math.DS)",
+    "area": "Quasi-periodic operators"
+   },
+   {
+    "name": "Artur Avila",
+    "wiki": "Artur_Avila",
+    "arxiv": "au:Avila AND au:Artur AND (cat:math.SP OR cat:math-ph OR cat:math.AP OR cat:math.DS)",
+    "area": "Spectral theory & dynamics"
+   },
+   {
+    "name": "Maciej Zworski",
+    "wiki": "Maciej_Zworski",
+    "arxiv": "au:Zworski AND au:Maciej AND (cat:math.SP OR cat:math-ph OR cat:math.AP OR cat:math.DS)",
+    "area": "Scattering resonances"
+   },
+   {
+    "name": "Michael Aizenman",
+    "wiki": "Michael_Aizenman",
+    "arxiv": "au:Aizenman AND au:Michael AND (cat:math.SP OR cat:math-ph OR cat:math.AP OR cat:math.DS)",
+    "area": "Random operators"
+   },
+   {
+    "name": "Nalini Anantharaman",
+    "wiki": "Nalini_Anantharaman",
+    "arxiv": "au:Anantharaman AND au:Nalini AND (cat:math.SP OR cat:math-ph OR cat:math.AP OR cat:math.DS)",
+    "area": "Quantum chaos"
+   }
+  ],
+  "open": [
+   {
+    "id": "que",
+    "title": "Quantum unique ergodicity",
+    "q": "On a compact manifold of negative curvature, do high-energy eigenfunctions of the Laplacian spread out evenly?"
+   },
+   {
+    "id": "hear-drum",
+    "title": "Hearing the shape of a smooth convex drum",
+    "q": "Is a smooth convex planar domain determined by its Dirichlet eigenvalues?"
+   },
+   {
+    "id": "polya-eigenvalues",
+    "title": "Pólya’s eigenvalue conjecture",
+    "q": "Are the Dirichlet eigenvalues of every planar domain bounded below by the leading term of Weyl’s law?"
+   },
+   {
+    "id": "hilbert-polya",
+    "title": "The Hilbert–Pólya conjecture",
+    "q": "Are the non-trivial zeros of the Riemann zeta function the eigenvalues of some natural self-adjoint operator?"
+   },
+   {
+    "id": "lieb-thirring",
+    "title": "The Lieb–Thirring constant",
+    "q": "What is the sharp constant in the Lieb–Thirring inequality for sums of negative eigenvalues of Schrödinger operators?"
+   },
+   {
+    "id": "anderson-delocalisation",
+    "title": "Extended states in the Anderson model",
+    "q": "In three dimensions, does a weakly disordered random Schrödinger operator have extended states, so that electrons can still conduct?"
+   }
+  ]
+ },
+ "variation": {
+  "name": "Variations & global analysis",
+  "label": "arXiv math.AP · Calculus of variations (MSC 49, 58)",
+  "query": "cat:math.AP AND (abs:variational OR abs:minimizer OR abs:minimizers OR abs:\"calculus of variations\" OR abs:\"minimal surface\" OR abs:\"optimal transport\" OR abs:isoperimetric)",
+  "listing": "math.AP",
+  "field": "calculus of variations and global analysis: minimisers, regularity, minimal surfaces, optimal transport, isoperimetric and free-boundary problems",
+  "peopleNote": "Six analysts behind regularity theory, optimal transport and geometric measure theory who still publish actively.",
+  "people": [
+   {
+    "name": "Alessio Figalli",
+    "wiki": "Alessio_Figalli",
+    "arxiv": "au:Figalli AND au:Alessio AND (cat:math.AP OR cat:math.DG OR cat:math.OC)",
+    "area": "Optimal transport & free boundaries"
+   },
+   {
+    "name": "Camillo De Lellis",
+    "wiki": "Camillo_De_Lellis",
+    "arxiv": "au:Lellis AND au:Camillo AND (cat:math.AP OR cat:math.DG OR cat:math.OC)",
+    "area": "Geometric measure theory"
+   },
+   {
+    "name": "Luis Caffarelli",
+    "wiki": "Luis_Caffarelli",
+    "arxiv": "au:Caffarelli AND au:Luis AND (cat:math.AP OR cat:math.DG OR cat:math.OC)",
+    "area": "Free-boundary problems"
+   },
+   {
+    "name": "Guido De Philippis",
+    "wiki": "Guido_De_Philippis",
+    "arxiv": "au:Philippis AND au:Guido AND (cat:math.AP OR cat:math.DG OR cat:math.OC)",
+    "area": "Regularity of minimisers"
+   },
+   {
+    "name": "Irene Fonseca",
+    "wiki": "Irene_Fonseca",
+    "arxiv": "au:Fonseca AND au:Irene AND (cat:math.AP OR cat:math.DG OR cat:math.OC)",
+    "area": "Variational methods in materials"
+   },
+   {
+    "name": "Felix Otto",
+    "wiki": "Felix_Otto_(mathematician)",
+    "arxiv": "au:Otto AND au:Felix AND (cat:math.AP OR cat:math.DG OR cat:math.OC)",
+    "area": "Optimal transport & PDE"
+   }
+  ],
+  "open": [
+   {
+    "id": "kelvin",
+    "title": "The Kelvin problem",
+    "q": "How should space be divided into cells of equal volume with the least total wall area?"
+   },
+   {
+    "id": "newton-resistance",
+    "title": "Newton’s minimal resistance problem",
+    "q": "Which convex body of given height and base meets the least resistance moving through a thin medium?"
+   },
+   {
+    "id": "polya-szego",
+    "title": "The Pólya–Szegő polygon conjecture",
+    "q": "Among polygons with n sides and fixed area, does the regular polygon have the lowest fundamental frequency?"
+   },
+   {
+    "id": "thomson",
+    "title": "The Thomson problem",
+    "q": "How should n identical charges arrange themselves on a sphere to minimise their electrostatic energy?"
+   },
+   {
+    "id": "moving-sofa",
+    "title": "The moving sofa problem",
+    "q": "What is the largest area of a shape that can be moved around a right-angled corner in a corridor of unit width?"
+   },
+   {
+    "id": "ulam-packing",
+    "title": "Ulam’s packing conjecture",
+    "q": "Among convex solids, is the ball the one whose densest packing in space is the least dense?"
+   }
+  ]
+ },
+ "lie": {
+  "name": "Lie groups & representations",
+  "label": "arXiv math.RT · Representation theory (MSC 22, 17, 20)",
+  "query": "cat:math.RT",
+  "listing": "math.RT",
+  "field": "Lie groups and representation theory: Lie algebras, reductive groups, geometric representation theory and the Langlands programme",
+  "peopleNote": "Six representation theorists at the centre of geometric representation theory and the Langlands programme.",
+  "people": [
+   {
+    "name": "Dennis Gaitsgory",
+    "wiki": "Dennis_Gaitsgory",
+    "arxiv": "au:Gaitsgory AND au:Dennis AND (cat:math.RT OR cat:math.AG OR cat:math.NT)",
+    "area": "Geometric Langlands"
+   },
+   {
+    "name": "Geordie Williamson",
+    "wiki": "Geordie_Williamson",
+    "arxiv": "au:Williamson AND au:Geordie AND (cat:math.RT OR cat:math.AG OR cat:math.NT)",
+    "area": "Modular representation theory"
+   },
+   {
+    "name": "David Vogan",
+    "wiki": "David_Vogan",
+    "arxiv": "au:Vogan AND au:David AND (cat:math.RT OR cat:math.AG OR cat:math.NT)",
+    "area": "Unitary representations"
+   },
+   {
+    "name": "Edward Frenkel",
+    "wiki": "Edward_Frenkel",
+    "arxiv": "au:Frenkel AND au:Edward AND (cat:math.RT OR cat:math.AG OR cat:math.NT)",
+    "area": "Langlands & quantum field theory"
+   },
+   {
+    "name": "Roman Bezrukavnikov",
+    "wiki": "Roman_Bezrukavnikov",
+    "arxiv": "au:Bezrukavnikov AND au:Roman AND (cat:math.RT OR cat:math.AG OR cat:math.NT)",
+    "area": "Geometric representation theory"
+   },
+   {
+    "name": "Ngô Bảo Châu",
+    "wiki": "Ngô_Bảo_Châu",
+    "arxiv": "au:Ngo AND au:Chau AND (cat:math.RT OR cat:math.AG OR cat:math.NT)",
+    "area": "Automorphic forms"
+   }
+  ],
+  "open": [
+   {
+    "id": "local-langlands",
+    "title": "The local Langlands conjectures",
+    "q": "Are the irreducible representations of a reductive group over a local field classified by arithmetic data called Langlands parameters?"
+   },
+   {
+    "id": "arthur",
+    "title": "Arthur’s conjectures",
+    "q": "Do the automorphic representations occurring in spaces of square-integrable automorphic forms fall into packets with the structure Arthur predicted?"
+   },
+   {
+    "id": "dixmier",
+    "title": "The Dixmier conjecture",
+    "q": "Is every endomorphism of the Weyl algebra automatically an automorphism?"
+   },
+   {
+    "id": "burnside-b25",
+    "title": "The Burnside problem for exponent 5",
+    "q": "Is the free Burnside group on two generators with exponent 5 finite?"
+   },
+   {
+    "id": "zimmer",
+    "title": "Zimmer’s conjecture",
+    "q": "Can a lattice in a higher-rank simple Lie group act non-trivially by diffeomorphisms on a manifold of small dimension?"
+   },
+   {
+    "id": "alperin-weight",
+    "title": "Alperin’s weight conjecture",
+    "q": "Can the number of modular irreducible characters in a block of a finite group be counted using only local data from its p-subgroups?"
+   }
+  ]
+ },
+ "arithmetic": {
+  "name": "Further number theory",
+  "label": "arXiv math.NT · Number theory (MSC 11, 12)",
+  "query": "cat:math.NT",
+  "listing": "math.NT",
+  "field": "number theory: L-functions, elliptic curves, automorphic forms, Galois representations, arithmetic geometry and analytic number theory",
+  "peopleNote": "Six number theorists whose work on arithmetic geometry, prime numbers, ranks of elliptic curves and automorphic methods shapes the field.",
+  "people": [
+   {
+    "name": "Peter Scholze",
+    "wiki": "Peter_Scholze",
+    "arxiv": "au:Scholze AND au:Peter AND (cat:math.NT OR cat:math.AG)",
+    "area": "Arithmetic geometry"
+   },
+   {
+    "name": "James Maynard",
+    "wiki": "James_Maynard_(mathematician)",
+    "arxiv": "au:Maynard AND au:James AND (cat:math.NT OR cat:math.AG)",
+    "area": "Prime numbers"
+   },
+   {
+    "name": "Manjul Bhargava",
+    "wiki": "Manjul_Bhargava",
+    "arxiv": "au:Bhargava AND au:Manjul AND (cat:math.NT OR cat:math.AG)",
+    "area": "Arithmetic statistics"
+   },
+   {
+    "name": "Akshay Venkatesh",
+    "wiki": "Akshay_Venkatesh",
+    "arxiv": "au:Venkatesh AND au:Akshay AND (cat:math.NT OR cat:math.AG)",
+    "area": "Automorphic forms"
+   },
+   {
+    "name": "Bhargav Bhatt",
+    "wiki": "Bhargav_Bhatt_(mathematician)",
+    "arxiv": "au:Bhatt AND au:Bhargav AND (cat:math.NT OR cat:math.AG)",
+    "area": "p-adic geometry"
+   },
+   {
+    "name": "Kaisa Matomäki",
+    "wiki": "Kaisa_Matomäki",
+    "arxiv": "au:Matomaki AND au:Kaisa AND (cat:math.NT OR cat:math.AG)",
+    "area": "Analytic number theory"
+   }
+  ],
+  "open": [
+   {
+    "id": "bsd",
+    "title": "The Birch and Swinnerton-Dyer conjecture",
+    "q": "Is the number of independent rational points of infinite order on an elliptic curve equal to the order of vanishing of its L-function at s = 1?"
+   },
+   {
+    "id": "abc",
+    "title": "The abc conjecture",
+    "q": "If a + b = c for coprime integers, can c exceed the product of the distinct primes dividing abc by more than a small power, except finitely often?"
+   },
+   {
+    "id": "inverse-galois",
+    "title": "The inverse Galois problem",
+    "q": "Does every finite group occur as the Galois group of some extension of the rational numbers?"
+   },
+   {
+    "id": "leopoldt",
+    "title": "Leopoldt’s conjecture",
+    "q": "Is the p-adic regulator of a number field always non-zero?"
+   },
+   {
+    "id": "tate",
+    "title": "The Tate conjecture",
+    "q": "Over a finitely generated field, are the Galois-invariant cohomology classes on a variety exactly those coming from algebraic cycles?"
+   },
+   {
+    "id": "ramanujan-petersson",
+    "title": "The generalised Ramanujan conjecture",
+    "q": "Are the local components of cuspidal automorphic representations of GL(n) tempered, so that their Hecke eigenvalues obey Ramanujan’s bound?"
+   }
+  ]
+ },
+ "logic": {
+  "name": "Logic & computability",
+  "label": "arXiv math.LO · Computability & formal systems (MSC 03)",
+  "query": "(cat:math.LO OR cat:cs.LO) AND (abs:computable OR abs:computability OR abs:decidable OR abs:undecidable OR abs:\"proof theory\" OR abs:\"type theory\" OR abs:\"reverse mathematics\" OR abs:\"Turing degrees\")",
+  "listing": "math.LO",
+  "field": "computability theory, proof theory, type theory and reverse mathematics: what can be computed, proved and decided in formal systems",
+  "peopleNote": "Six logicians covering Turing degrees, algorithmic randomness, proof mining, type theory and formalised mathematics.",
+  "people": [
+   {
+    "name": "Theodore Slaman",
+    "wiki": "Theodore_Slaman",
+    "arxiv": "au:Slaman AND au:Theodore AND (cat:math.LO OR cat:cs.LO)",
+    "area": "Turing degrees"
+   },
+   {
+    "name": "Rod Downey",
+    "wiki": "Rod_Downey",
+    "arxiv": "au:Downey AND au:Rod AND (cat:math.LO OR cat:cs.LO)",
+    "area": "Algorithmic randomness & parameterised complexity"
+   },
+   {
+    "name": "Jeremy Avigad",
+    "wiki": "Jeremy_Avigad",
+    "arxiv": "au:Avigad AND au:Jeremy AND (cat:math.LO OR cat:cs.LO)",
+    "area": "Formalised mathematics & proof theory"
+   },
+   {
+    "name": "Richard Shore",
+    "wiki": "Richard_Shore",
+    "arxiv": "au:Shore AND au:Richard AND (cat:math.LO OR cat:cs.LO)",
+    "area": "Computability & definability"
+   },
+   {
+    "name": "Ulrich Kohlenbach",
+    "wiki": "Ulrich_Kohlenbach",
+    "arxiv": "au:Kohlenbach AND au:Ulrich AND (cat:math.LO OR cat:cs.LO)",
+    "area": "Proof mining"
+   },
+   {
+    "name": "Thierry Coquand",
+    "wiki": "Thierry_Coquand",
+    "arxiv": "au:Coquand AND au:Thierry AND (cat:math.LO OR cat:cs.LO)",
+    "area": "Type theory"
+   }
+  ],
+  "open": [
+   {
+    "id": "martin",
+    "title": "Martin’s conjecture",
+    "q": "Are the natural, definable operations on Turing degrees essentially just iterates of the Turing jump?"
+   },
+   {
+    "id": "turing-rigidity",
+    "title": "Rigidity of the Turing degrees",
+    "q": "Does the partial order of Turing degrees have any automorphism other than the identity?"
+   },
+   {
+    "id": "busy-beaver-6",
+    "title": "The sixth busy beaver number",
+    "q": "What is the largest number of steps a halting six-state, two-symbol Turing machine can make?"
+   },
+   {
+    "id": "skolem",
+    "title": "The Skolem problem",
+    "q": "Is there an algorithm that decides whether a linear recurrence sequence of integers ever takes the value zero?"
+   },
+   {
+    "id": "ordinal-z2",
+    "title": "Ordinal analysis of second-order arithmetic",
+    "q": "Can the proof-theoretic strength of full second-order arithmetic be measured by an explicit ordinal notation?"
+   },
+   {
+    "id": "schanuel",
+    "title": "Schanuel’s conjecture",
+    "q": "If n complex numbers are linearly independent over the rationals, do they and their exponentials together contain at least n algebraically independent numbers?"
+   }
+  ]
+ },
+ "category": {
+  "name": "Categories & homological algebra",
+  "label": "arXiv math.CT · Category theory (MSC 18)",
+  "query": "cat:math.CT",
+  "listing": "math.CT",
+  "field": "category theory and homological algebra: higher categories, derived categories, homotopical algebra and categorical foundations",
+  "peopleNote": "Six researchers in higher category theory, homological algebra, mirror symmetry and categorical foundations who still publish.",
+  "people": [
+   {
+    "name": "Emily Riehl",
+    "wiki": "Emily_Riehl",
+    "arxiv": "au:Riehl AND au:Emily AND (cat:math.CT OR cat:math.AT OR cat:math.AG OR cat:math.RT OR cat:math.LO OR cat:math.SG)",
+    "area": "∞-category theory"
+   },
+   {
+    "name": "Bernhard Keller",
+    "wiki": "Bernhard_Keller",
+    "arxiv": "au:Keller AND au:Bernhard AND (cat:math.CT OR cat:math.AT OR cat:math.AG OR cat:math.RT OR cat:math.LO OR cat:math.SG)",
+    "area": "Derived categories & cluster algebras"
+   },
+   {
+    "name": "Maxim Kontsevich",
+    "wiki": "Maxim_Kontsevich",
+    "arxiv": "au:Kontsevich AND au:Maxim AND (cat:math.CT OR cat:math.AT OR cat:math.AG OR cat:math.RT OR cat:math.LO OR cat:math.SG)",
+    "area": "Homological mirror symmetry"
+   },
+   {
+    "name": "Clark Barwick",
+    "wiki": "Clark_Barwick",
+    "arxiv": "au:Barwick AND au:Clark AND (cat:math.CT OR cat:math.AT OR cat:math.AG OR cat:math.RT OR cat:math.LO OR cat:math.SG)",
+    "area": "Higher algebra"
+   },
+   {
+    "name": "Ross Street",
+    "wiki": "Ross_Street",
+    "arxiv": "au:Street AND au:Ross AND (cat:math.CT OR cat:math.AT OR cat:math.AG OR cat:math.RT OR cat:math.LO OR cat:math.SG)",
+    "area": "Higher categories"
+   },
+   {
+    "name": "Steve Awodey",
+    "wiki": "Steve_Awodey",
+    "arxiv": "au:Awodey AND au:Steve AND (cat:math.CT OR cat:math.AT OR cat:math.AG OR cat:math.RT OR cat:math.LO OR cat:math.SG)",
+    "area": "Categorical logic"
+   }
+  ],
+  "open": [
+   {
+    "id": "hms",
+    "title": "Homological mirror symmetry",
+    "q": "For mirror pairs of Calabi–Yau manifolds, is the Fukaya category of one equivalent to the derived category of coherent sheaves on the other?"
+   },
+   {
+    "id": "cobordism-hypothesis",
+    "title": "The cobordism hypothesis",
+    "q": "Is a fully extended topological field theory determined by its value on a single point?"
+   },
+   {
+    "id": "homotopy-hypothesis",
+    "title": "The homotopy hypothesis",
+    "q": "Are higher groupoids, in each proposed model of higher categories, the same thing as topological spaces up to homotopy?"
+   },
+   {
+    "id": "finitistic-dimension",
+    "title": "The finitistic dimension conjecture",
+    "q": "Does every finite-dimensional algebra have finite finitistic global dimension?"
+   },
+   {
+    "id": "generating-hypothesis",
+    "title": "Freyd’s generating hypothesis",
+    "q": "In the stable homotopy category of finite spectra, is a map that induces zero on homotopy groups necessarily zero itself?"
+   },
+   {
+    "id": "section-conjecture",
+    "title": "Grothendieck’s section conjecture",
+    "q": "For a hyperbolic curve over a number field, do the sections of its fundamental-group exact sequence correspond exactly to its rational points?"
+   }
+  ]
+ },
+ "ktheory": {
+  "name": "K-theory & structural bridges",
+  "label": "arXiv math.KT · K-theory and homology (MSC 19)",
+  "query": "cat:math.KT",
+  "listing": "math.KT",
+  "field": "K-theory and homology: algebraic and topological K-theory, operator K-theory, index theory and noncommutative geometry",
+  "peopleNote": "Six researchers in algebraic, topological and operator K-theory and noncommutative geometry who still publish.",
+  "people": [
+   {
+    "name": "Alain Connes",
+    "wiki": "Alain_Connes",
+    "arxiv": "au:Connes AND au:Alain AND (cat:math.KT OR cat:math.OA OR cat:math.AT OR cat:math.GT OR cat:math.AG)",
+    "area": "Noncommutative geometry"
+   },
+   {
+    "name": "Wolfgang Lück",
+    "wiki": "Wolfgang_Lück",
+    "arxiv": "au:Luck AND au:Wolfgang AND (cat:math.KT OR cat:math.OA OR cat:math.AT OR cat:math.GT OR cat:math.AG)",
+    "area": "Isomorphism conjectures"
+   },
+   {
+    "name": "Guoliang Yu",
+    "wiki": "Guoliang_Yu",
+    "arxiv": "au:Yu AND au:Guoliang AND (cat:math.KT OR cat:math.OA OR cat:math.AT OR cat:math.GT OR cat:math.AG)",
+    "area": "Coarse geometry & index theory"
+   },
+   {
+    "name": "Charles Weibel",
+    "wiki": "Charles_Weibel",
+    "arxiv": "au:Weibel AND au:Charles AND (cat:math.KT OR cat:math.OA OR cat:math.AT OR cat:math.GT OR cat:math.AG)",
+    "area": "Algebraic K-theory"
+   },
+   {
+    "name": "Lars Hesselholt",
+    "wiki": "Lars_Hesselholt",
+    "arxiv": "au:Hesselholt AND au:Lars AND (cat:math.KT OR cat:math.OA OR cat:math.AT OR cat:math.GT OR cat:math.AG)",
+    "area": "Trace methods"
+   },
+   {
+    "name": "Nigel Higson",
+    "wiki": "Nigel_Higson",
+    "arxiv": "au:Higson AND au:Nigel AND (cat:math.KT OR cat:math.OA OR cat:math.AT OR cat:math.GT OR cat:math.AG)",
+    "area": "Operator K-theory"
+   }
+  ],
+  "open": [
+   {
+    "id": "baum-connes",
+    "title": "The Baum–Connes conjecture",
+    "q": "For a countable group, is the K-theory of its reduced group C*-algebra computed by the assembly map from equivariant K-homology?"
+   },
+   {
+    "id": "farrell-jones",
+    "title": "The Farrell–Jones conjecture",
+    "q": "Is the algebraic K-theory of a group ring assembled from the K-theory of its virtually cyclic subgroups?"
+   },
+   {
+    "id": "bass",
+    "title": "The Bass conjecture",
+    "q": "Are the K-groups of a regular ring of finite type over the integers always finitely generated?"
+   },
+   {
+    "id": "vandiver-k4n",
+    "title": "Vandiver’s conjecture and the K-theory of the integers",
+    "q": "Does p never divide the class number of the maximal real subfield of the p-th cyclotomic field?"
+   },
+   {
+    "id": "beilinson",
+    "title": "Beilinson’s conjectures",
+    "q": "Do special values of L-functions of varieties equal, up to rational factors, regulators built from algebraic K-theory?"
+   },
+   {
+    "id": "bass-quillen",
+    "title": "The Bass–Quillen conjecture",
+    "q": "For a regular ring R, is every finitely generated projective module over a polynomial ring R[x₁,…,xₙ] extended from R?"
+   }
+  ]
+ },
+ "statistics": {
+  "name": "Statistics & inference",
+  "label": "arXiv math.ST · Statistics theory (MSC 62)",
+  "query": "cat:math.ST",
+  "listing": "math.ST",
+  "field": "statistical theory and methodology: estimation, testing, high-dimensional and Bayesian inference, causal inference and statistical learning",
+  "peopleNote": "Six statisticians behind the bootstrap, the lasso, false discovery control, high-dimensional inference and modern Bayesian practice.",
+  "people": [
+   {
+    "name": "Emmanuel Candès",
+    "wiki": "Emmanuel_Candès",
+    "arxiv": "au:Candes AND au:Emmanuel AND (cat:math.ST OR cat:stat.ME OR cat:stat.ML OR cat:stat.AP)",
+    "area": "High-dimensional inference"
+   },
+   {
+    "name": "Bradley Efron",
+    "wiki": "Bradley_Efron",
+    "arxiv": "au:Efron AND au:Bradley AND (cat:math.ST OR cat:stat.ME OR cat:stat.ML OR cat:stat.AP)",
+    "area": "Bootstrap & empirical Bayes"
+   },
+   {
+    "name": "Robert Tibshirani",
+    "wiki": "Robert_Tibshirani",
+    "arxiv": "au:Tibshirani AND au:Robert AND (cat:math.ST OR cat:stat.ME OR cat:stat.ML OR cat:stat.AP)",
+    "area": "Sparse regression"
+   },
+   {
+    "name": "Peter Bühlmann",
+    "wiki": "Peter_Bühlmann",
+    "arxiv": "au:Buhlmann AND au:Peter AND (cat:math.ST OR cat:stat.ME OR cat:stat.ML OR cat:stat.AP)",
+    "area": "High-dimensional & causal statistics"
+   },
+   {
+    "name": "Andrew Gelman",
+    "wiki": "Andrew_Gelman",
+    "arxiv": "au:Gelman AND au:Andrew AND (cat:math.ST OR cat:stat.ME OR cat:stat.ML OR cat:stat.AP)",
+    "area": "Bayesian data analysis"
+   },
+   {
+    "name": "Larry Wasserman",
+    "wiki": "Larry_Wasserman",
+    "arxiv": "au:Wasserman AND au:Larry AND (cat:math.ST OR cat:stat.ME OR cat:stat.ML OR cat:stat.AP)",
+    "area": "Nonparametric inference"
+   }
+  ],
+  "open": [
+   {
+    "id": "behrens-fisher",
+    "title": "The Behrens–Fisher problem",
+    "q": "How should one test whether two normal populations have equal means when their variances are unknown and may differ?"
+   },
+   {
+    "id": "double-descent",
+    "title": "Why do overparameterised models generalise?",
+    "q": "Why can models with far more parameters than data points fit training data exactly yet still predict well?"
+   },
+   {
+    "id": "objective-priors",
+    "title": "Objective Bayesian priors",
+    "q": "Is there a principled default prior that expresses ignorance about a parameter?"
+   },
+   {
+    "id": "fdr-dependence",
+    "title": "False discovery control under dependence",
+    "q": "How can the false discovery rate be controlled powerfully when test statistics are arbitrarily dependent?"
+   },
+   {
+    "id": "planted-clique",
+    "title": "The planted clique problem",
+    "q": "Can a hidden clique of size much smaller than the square root of n be found in a random graph by an efficient algorithm?"
+   },
+   {
+    "id": "fiducial",
+    "title": "Fiducial inference",
+    "q": "Can Fisher’s fiducial argument be made into a coherent general theory of inference?"
+   }
+  ]
+ },
+ "numerical": {
+  "name": "Numerical analysis",
+  "label": "arXiv math.NA · Numerical analysis (MSC 65)",
+  "query": "cat:math.NA",
+  "listing": "math.NA",
+  "field": "numerical analysis: numerical linear algebra, approximation, numerical PDEs, quadrature, optimisation algorithms and scientific computing",
+  "peopleNote": "Six numerical analysts behind approximation theory, linear algebra software, finite elements, fast algorithms and wavelets.",
+  "people": [
+   {
+    "name": "Lloyd N. Trefethen",
+    "wiki": "Lloyd_N._Trefethen",
+    "arxiv": "au:Trefethen AND au:Lloyd AND (cat:math.NA OR cat:cs.NA OR cat:cs.MS OR cat:cs.DC OR cat:math.CA)",
+    "area": "Approximation & spectral methods"
+   },
+   {
+    "name": "Jack Dongarra",
+    "wiki": "Jack_Dongarra",
+    "arxiv": "au:Dongarra AND au:Jack AND (cat:math.NA OR cat:cs.NA OR cat:cs.MS OR cat:cs.DC OR cat:math.CA)",
+    "area": "High-performance linear algebra"
+   },
+   {
+    "name": "Endre Süli",
+    "wiki": "Endre_Süli",
+    "arxiv": "au:Suli AND au:Endre AND (cat:math.NA OR cat:cs.NA OR cat:cs.MS OR cat:cs.DC OR cat:math.CA)",
+    "area": "Numerical PDEs"
+   },
+   {
+    "name": "Leslie Greengard",
+    "wiki": "Leslie_Greengard",
+    "arxiv": "au:Greengard AND au:Leslie AND (cat:math.NA OR cat:cs.NA OR cat:cs.MS OR cat:cs.DC OR cat:math.CA)",
+    "area": "Fast multipole methods"
+   },
+   {
+    "name": "Douglas N. Arnold",
+    "wiki": "Douglas_N._Arnold",
+    "arxiv": "au:Arnold AND au:Douglas AND (cat:math.NA OR cat:cs.NA OR cat:cs.MS OR cat:cs.DC OR cat:math.CA)",
+    "area": "Finite element exterior calculus"
+   },
+   {
+    "name": "Ingrid Daubechies",
+    "wiki": "Ingrid_Daubechies",
+    "arxiv": "au:Daubechies AND au:Ingrid AND (cat:math.NA OR cat:cs.NA OR cat:cs.MS OR cat:cs.DC OR cat:math.CA)",
+    "area": "Wavelets"
+   }
+  ],
+  "open": [
+   {
+    "id": "omega",
+    "title": "The exponent of matrix multiplication",
+    "q": "Can two n × n matrices be multiplied using about n² arithmetic operations?"
+   },
+   {
+    "id": "gepp-growth",
+    "title": "Why Gaussian elimination is stable in practice",
+    "q": "Why does Gaussian elimination with partial pivoting almost never suffer the exponential error growth possible in the worst case?"
+   },
+   {
+    "id": "strongly-polynomial-lp",
+    "title": "A strongly polynomial algorithm for linear programming",
+    "q": "Is there an algorithm for linear programming whose number of arithmetic steps depends only on the numbers of variables and constraints?"
+   },
+   {
+    "id": "polynomial-hirsch",
+    "title": "The polynomial Hirsch conjecture",
+    "q": "Is the diameter of the graph of every d-dimensional polytope with n facets bounded by a polynomial in n and d?"
+   },
+   {
+    "id": "discrepancy",
+    "title": "The great open problem of discrepancy theory",
+    "q": "How evenly can N points be spread in the d-dimensional unit cube, as measured by star discrepancy?"
+   },
+   {
+    "id": "fft-lower-bound",
+    "title": "Is the FFT optimal?",
+    "q": "Does every algorithm for the discrete Fourier transform of length n need on the order of n log n operations?"
+   }
+  ]
+ },
+ "computing": {
+  "name": "Algorithms & computation",
+  "label": "arXiv cs.DS · Algorithms and complexity (MSC 68)",
+  "query": "(cat:cs.DS OR cat:cs.CC)",
+  "listing": "cs.DS",
+  "field": "algorithms and computational complexity: algorithm design, complexity classes, lower bounds, randomness, approximation and graph algorithms",
+  "peopleNote": "Six computer scientists behind foundational results in complexity, derandomisation, data structures, graph isomorphism, fine-grained algorithms and probabilistic proofs.",
+  "people": [
+   {
+    "name": "Avi Wigderson",
+    "wiki": "Avi_Wigderson",
+    "arxiv": "au:Wigderson AND au:Avi AND (cat:cs.DS OR cat:cs.CC OR cat:cs.DM)",
+    "area": "Complexity & randomness"
+   },
+   {
+    "name": "Robert Tarjan",
+    "wiki": "Robert_Tarjan",
+    "arxiv": "au:Tarjan AND au:Robert AND (cat:cs.DS OR cat:cs.CC OR cat:cs.DM)",
+    "area": "Data structures & graph algorithms"
+   },
+   {
+    "name": "László Babai",
+    "wiki": "László_Babai",
+    "arxiv": "au:Babai AND au:Laszlo AND (cat:cs.DS OR cat:cs.CC OR cat:cs.DM)",
+    "area": "Graph isomorphism & group algorithms"
+   },
+   {
+    "name": "Virginia Vassilevska Williams",
+    "wiki": "Virginia_Vassilevska_Williams",
+    "arxiv": "au:Vassilevska AND au:Virginia AND (cat:cs.DS OR cat:cs.CC OR cat:cs.DM)",
+    "area": "Fine-grained complexity"
+   },
+   {
+    "name": "Ryan Williams",
+    "wiki": "Ryan_Williams_(computer_scientist)",
+    "arxiv": "au:\"Ryan Williams\" AND (cat:cs.DS OR cat:cs.CC OR cat:cs.DM)",
+    "area": "Circuit lower bounds"
+   },
+   {
+    "name": "Irit Dinur",
+    "wiki": "Irit_Dinur",
+    "arxiv": "au:Dinur AND au:Irit AND (cat:cs.DS OR cat:cs.CC OR cat:cs.DM)",
+    "area": "PCPs & expanders"
+   }
+  ],
+  "open": [
+   {
+    "id": "p-vs-np",
+    "title": "P versus NP",
+    "q": "If a solution to a problem can be checked quickly, can it also be found quickly?"
+   },
+   {
+    "id": "graph-isomorphism",
+    "title": "Graph isomorphism",
+    "q": "Can one decide in polynomial time whether two graphs are the same up to relabelling their vertices?"
+   },
+   {
+    "id": "unique-games",
+    "title": "The unique games conjecture",
+    "q": "Is it NP-hard to approximately satisfy instances of a special type of constraint problem called unique games?"
+   },
+   {
+    "id": "factoring",
+    "title": "Factoring integers efficiently",
+    "q": "Is there a classical polynomial-time algorithm for factoring integers?"
+   },
+   {
+    "id": "dynamic-optimality",
+    "title": "The dynamic optimality conjecture",
+    "q": "Do splay trees perform within a constant factor of the best possible binary search tree on every sequence of accesses?"
+   },
+   {
+    "id": "p-vs-bpp",
+    "title": "Can randomness be removed?",
+    "q": "Can every efficient randomised algorithm be replaced by an efficient deterministic one?"
+   }
+  ]
+ },
+ "optimisation": {
+  "name": "Optimisation & operations research",
+  "label": "arXiv math.OC · Optimisation & control (MSC 90, 49)",
+  "query": "cat:math.OC",
+  "listing": "math.OC",
+  "field": "mathematical optimisation and operations research: convex and nonconvex optimisation, linear and integer programming, and the design and complexity of optimisation algorithms",
+  "peopleNote": "Six researchers whose methods and theorems underpin modern optimisation, from interior-point and first-order methods to approximation algorithms, and who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Stephen Boyd",
+    "wiki": "Stephen_P._Boyd",
+    "arxiv": "au:\"Stephen Boyd\"",
+    "area": "Convex optimisation"
+   },
+   {
+    "name": "Yurii Nesterov",
+    "wiki": "Yurii_Nesterov",
+    "arxiv": "au:\"Yurii Nesterov\"",
+    "area": "First-order & interior-point methods"
+   },
+   {
+    "name": "Arkadi Nemirovski",
+    "wiki": "Arkadi_Nemirovski",
+    "arxiv": "au:\"Arkadi Nemirovski\"",
+    "area": "Robust & convex optimisation"
+   },
+   {
+    "name": "Éva Tardos",
+    "wiki": "Éva_Tardos",
+    "arxiv": "au:\"Eva Tardos\"",
+    "area": "Network flows & approximation"
+   },
+   {
+    "name": "Jorge Nocedal",
+    "wiki": "Jorge_Nocedal",
+    "arxiv": "au:\"Jorge Nocedal\"",
+    "area": "Nonlinear & stochastic optimisation"
+   },
+   {
+    "name": "Michel Goemans",
+    "wiki": "Michel_Goemans",
+    "arxiv": "au:\"Michel Goemans\"",
+    "area": "Combinatorial optimisation & approximation"
+   }
+  ],
+  "open": [
+   {
+    "id": "strongly-polynomial-lp",
+    "title": "A strongly polynomial algorithm for linear programming",
+    "q": "Can every linear programme be solved in a number of arithmetic steps bounded by a polynomial in the number of variables and constraints alone?"
+   },
+   {
+    "id": "polynomial-hirsch",
+    "title": "The polynomial Hirsch conjecture",
+    "q": "Is the diameter of every polytope bounded by a polynomial in its dimension and number of facets?"
+   },
+   {
+    "id": "simplex-pivot",
+    "title": "A polynomial pivot rule for the simplex method",
+    "q": "Is there a rule for choosing simplex pivots that always finishes in polynomially many steps?"
+   },
+   {
+    "id": "unique-games",
+    "title": "The unique games conjecture",
+    "q": "Is it NP-hard to approximately satisfy unique-games constraint systems, as Khot conjectured in 2002?"
+   },
+   {
+    "id": "metric-tsp-approx",
+    "title": "How well can the travelling salesman be approximated?",
+    "q": "What is the best approximation ratio achievable in polynomial time for the metric travelling salesman problem?"
+   },
+   {
+    "id": "four-thirds-tsp",
+    "title": "The 4/3 conjecture for the subtour relaxation",
+    "q": "Is the Held–Karp linear-programming bound for metric travelling salesman tours always within a factor 4/3 of the true optimum?"
+   }
+  ]
+ },
+ "games": {
+  "name": "Game theory & decisions",
+  "label": "arXiv cs.GT · Computer science and game theory (MSC 91)",
+  "query": "cat:cs.GT",
+  "listing": "cs.GT",
+  "field": "game theory and decision-making: equilibria, mechanism and auction design, social choice, fair division and the computational complexity of strategic behaviour",
+  "peopleNote": "Six researchers who shaped algorithmic and economic game theory, from the complexity of equilibria to auctions and fair division, and who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Christos Papadimitriou",
+    "wiki": "Christos_Papadimitriou",
+    "arxiv": "au:\"Christos Papadimitriou\"",
+    "area": "Complexity of equilibria"
+   },
+   {
+    "name": "Tim Roughgarden",
+    "wiki": "Tim_Roughgarden",
+    "arxiv": "au:\"Tim Roughgarden\"",
+    "area": "Price of anarchy & mechanism design"
+   },
+   {
+    "name": "Noam Nisan",
+    "wiki": "Noam_Nisan",
+    "arxiv": "au:\"Noam Nisan\"",
+    "area": "Algorithmic mechanism design"
+   },
+   {
+    "name": "Constantinos Daskalakis",
+    "wiki": "Constantinos_Daskalakis",
+    "arxiv": "au:\"Constantinos Daskalakis\"",
+    "area": "Equilibria & learning in games"
+   },
+   {
+    "name": "Sergiu Hart",
+    "wiki": "Sergiu_Hart",
+    "arxiv": "au:\"Sergiu Hart\"",
+    "area": "Game dynamics & correlated equilibrium"
+   },
+   {
+    "name": "Ariel Procaccia",
+    "wiki": "Ariel_Procaccia",
+    "arxiv": "au:\"Ariel Procaccia\"",
+    "area": "Fair division & social choice"
+   }
+  ],
+  "open": [
+   {
+    "id": "ppad-vs-p",
+    "title": "Can Nash equilibria be found efficiently?",
+    "q": "Is there a polynomial-time algorithm for finding a Nash equilibrium of a two-player game?"
+   },
+   {
+    "id": "parity-games",
+    "title": "Solving parity games in polynomial time",
+    "q": "Can the winner of a parity game on a finite graph be determined in polynomial time?"
+   },
+   {
+    "id": "multi-item-auctions",
+    "title": "Optimal auctions for several items",
+    "q": "What auction maximises a seller’s expected revenue when selling two or more items to bidders with private values?"
+   },
+   {
+    "id": "efx-allocations",
+    "title": "Envy-free up to any good (EFX)",
+    "q": "When indivisible goods are shared, is there always an allocation in which no one envies another after removing any single good from the other’s bundle?"
+   },
+   {
+    "id": "cake-cutting-bounds",
+    "title": "How hard is fair cake-cutting?",
+    "q": "How many cuts and queries does an envy-free division of a cake among n people need in the worst case?"
+   },
+   {
+    "id": "stochastic-games-p",
+    "title": "Simple stochastic games",
+    "q": "Can the value of Condon’s simple stochastic games be computed in polynomial time?"
+   }
+  ]
+ },
+ "control": {
+  "name": "Control & systems theory",
+  "label": "arXiv eess.SY · Systems and control (MSC 93)",
+  "query": "cat:eess.SY",
+  "listing": "eess.SY",
+  "field": "control and systems theory: feedback, stability, optimal and robust control, estimation, networked and learning-based control",
+  "peopleNote": "Six researchers who shaped feedback, nonlinear, robust and multi-agent control and who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Richard M. Murray",
+    "wiki": "Richard_M._Murray",
+    "arxiv": "au:\"Richard M. Murray\"",
+    "area": "Feedback & networked control"
+   },
+   {
+    "name": "Eduardo Sontag",
+    "wiki": "Eduardo_D._Sontag",
+    "arxiv": "au:\"Eduardo D. Sontag\"",
+    "area": "Nonlinear control & systems biology"
+   },
+   {
+    "name": "Naomi Leonard",
+    "wiki": "Naomi_Leonard",
+    "arxiv": "au:\"Naomi Leonard\"",
+    "area": "Multi-agent & collective dynamics"
+   },
+   {
+    "name": "Manfred Morari",
+    "wiki": "Manfred_Morari",
+    "arxiv": "au:\"Manfred Morari\"",
+    "area": "Model predictive control"
+   },
+   {
+    "name": "Claire Tomlin",
+    "wiki": "Claire_Tomlin",
+    "arxiv": "au:\"Claire Tomlin\"",
+    "area": "Safety of hybrid systems"
+   },
+   {
+    "name": "Magnus Egerstedt",
+    "wiki": "Magnus_Egerstedt",
+    "arxiv": "au:\"Magnus Egerstedt\"",
+    "area": "Robot swarms & networked systems"
+   }
+  ],
+  "open": [
+   {
+    "id": "witsenhausen",
+    "title": "Witsenhausen’s counterexample",
+    "q": "What is the optimal controller in Witsenhausen’s simple two-stage problem with a decentralised linear system, quadratic cost and Gaussian noise?"
+   },
+   {
+    "id": "jsr-decidability",
+    "title": "Stability of switching systems",
+    "q": "Is there an algorithm that decides whether every product of matrices from a given finite set eventually shrinks to zero (joint spectral radius below 1)?"
+   },
+   {
+    "id": "skolem",
+    "title": "The Skolem problem",
+    "q": "Is there an algorithm to decide whether a linear recurrence with integer coefficients ever reaches zero?"
+   },
+   {
+    "id": "matrix-mortality-2x2",
+    "title": "Mortality of 2×2 matrices",
+    "q": "Given a finite set of 2×2 integer matrices, can some product of them equal the zero matrix, and can this be decided?"
+   },
+   {
+    "id": "static-output-feedback",
+    "title": "Static output feedback stabilisation",
+    "q": "Is there an efficient test for whether a linear system can be stabilised by feeding back a fixed linear combination of its measured outputs?"
+   },
+   {
+    "id": "kuramoto-threshold",
+    "title": "Synchronisation thresholds in networks",
+    "q": "For coupled oscillators on a general network, what coupling strength guarantees they synchronise?"
+   }
+  ]
+ },
+ "information": {
+  "name": "Information & signals",
+  "label": "arXiv cs.IT · Information theory (MSC 94)",
+  "query": "cat:cs.IT",
+  "listing": "cs.IT",
+  "field": "information theory and signal processing: entropy, channel capacity, coding theory, compression, sampling and multi-user communication",
+  "peopleNote": "Six researchers behind capacity results, modern codes, wireless theory and signal processing who still publish on arXiv.",
+  "people": [
+   {
+    "name": "David Tse",
+    "wiki": "David_Tse",
+    "arxiv": "au:\"David Tse\"",
+    "area": "Wireless & network information theory"
+   },
+   {
+    "name": "Erdal Arıkan",
+    "wiki": "Erdal_Arıkan",
+    "arxiv": "au:\"Erdal Arikan\"",
+    "area": "Polar codes"
+   },
+   {
+    "name": "Andrea Goldsmith",
+    "wiki": "Andrea_Goldsmith_(engineer)",
+    "arxiv": "au:\"Andrea Goldsmith\"",
+    "area": "Wireless communications"
+   },
+   {
+    "name": "Robert Calderbank",
+    "wiki": "Robert_Calderbank",
+    "arxiv": "au:\"Robert Calderbank\"",
+    "area": "Coding theory & quantum codes"
+   },
+   {
+    "name": "Martin Vetterli",
+    "wiki": "Martin_Vetterli",
+    "arxiv": "au:\"Martin Vetterli\"",
+    "area": "Signal processing & sampling"
+   },
+   {
+    "name": "Venkatesan Guruswami",
+    "wiki": "Venkatesan_Guruswami",
+    "arxiv": "au:\"Venkatesan Guruswami\"",
+    "area": "Error-correcting codes & complexity"
+   }
+  ],
+  "open": [
+   {
+    "id": "interference-channel",
+    "title": "Capacity of the interference channel",
+    "q": "What is the exact capacity region when two transmitter–receiver pairs share a channel and interfere with each other?"
+   },
+   {
+    "id": "relay-channel",
+    "title": "Capacity of the relay channel",
+    "q": "How fast can information flow from a sender to a receiver when a third node can help by relaying?"
+   },
+   {
+    "id": "broadcast-channel",
+    "title": "Capacity of the broadcast channel",
+    "q": "What rates can one transmitter achieve when sending different messages to several receivers at once?"
+   },
+   {
+    "id": "shannon-capacity-graph",
+    "title": "Shannon capacity of graphs",
+    "q": "What is the zero-error capacity of a channel whose confusable symbols form the seven-cycle C₇?"
+   },
+   {
+    "id": "gilbert-varshamov",
+    "title": "Beating the Gilbert–Varshamov bound",
+    "q": "Are there long binary error-correcting codes with a better trade-off between rate and minimum distance than random codes give?"
+   },
+   {
+    "id": "deletion-channel",
+    "title": "Capacity of the deletion channel",
+    "q": "What is the capacity of a binary channel that randomly deletes bits, so the receiver does not know where the gaps are?"
+   }
+  ]
+ },
+ "biology": {
+  "name": "Mathematical biology",
+  "label": "arXiv q-bio.PE · Populations and evolution (MSC 92)",
+  "query": "cat:q-bio.PE",
+  "listing": "q-bio.PE",
+  "field": "mathematical biology: population dynamics, epidemiology, evolutionary theory, ecology and pattern formation",
+  "peopleNote": "Six researchers whose models of evolution, epidemics, ecology and development are widely used and who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Martin Nowak",
+    "wiki": "Martin_Nowak",
+    "arxiv": "au:\"Martin A. Nowak\"",
+    "area": "Evolutionary dynamics"
+   },
+   {
+    "name": "Simon Levin",
+    "wiki": "Simon_A._Levin",
+    "arxiv": "au:\"Simon A. Levin\"",
+    "area": "Theoretical ecology"
+   },
+   {
+    "name": "Lior Pachter",
+    "wiki": "Lior_Pachter",
+    "arxiv": "au:\"Lior Pachter\"",
+    "area": "Computational genomics"
+   },
+   {
+    "name": "Mark Newman",
+    "wiki": "Mark_Newman",
+    "arxiv": "au:\"Mark Newman\" AND cat:physics.soc-ph",
+    "area": "Networks & epidemics"
+   },
+   {
+    "name": "Philip Maini",
+    "wiki": "Philip_Maini",
+    "arxiv": "au:\"Philip Maini\"",
+    "area": "Pattern formation & cancer modelling"
+   },
+   {
+    "name": "Bryan Grenfell",
+    "wiki": "Bryan_Grenfell",
+    "arxiv": "au:\"Bryan Grenfell\"",
+    "area": "Epidemic dynamics"
+   }
+  ],
+  "open": [
+   {
+    "id": "evolution-of-sex",
+    "title": "Why sex?",
+    "q": "Why is sexual reproduction so common when asexual organisms can, in principle, grow twice as fast?"
+   },
+   {
+    "id": "paradox-of-plankton",
+    "title": "The paradox of the plankton",
+    "q": "How can so many plankton species coexist while competing for just a few resources?"
+   },
+   {
+    "id": "neutral-biodiversity",
+    "title": "Neutral versus niche biodiversity",
+    "q": "Are species abundance patterns explained mainly by chance births and deaths, or by species occupying different niches?"
+   },
+   {
+    "id": "evolution-of-cooperation",
+    "title": "How does cooperation evolve?",
+    "q": "How does natural selection, which favours individuals, produce widespread cooperation among unrelated organisms?"
+   },
+   {
+    "id": "turing-patterns-in-vivo",
+    "title": "Turing patterns in living tissue",
+    "q": "How many biological patterns, such as stripes, spots and digits, are really produced by Turing’s reaction–diffusion mechanism?"
+   },
+   {
+    "id": "abiogenesis",
+    "title": "The origin of life",
+    "q": "How did self-replicating, evolving life first arise from non-living chemistry?"
+   }
+  ]
+ },
+ "mechanics": {
+  "name": "Classical mechanics",
+  "label": "arXiv physics.class-ph · Classical physics (MSC 70)",
+  "query": "cat:physics.class-ph",
+  "listing": "physics.class-ph",
+  "field": "classical mechanics: Newtonian, Lagrangian and Hamiltonian dynamics, the n-body problem, integrability, chaos and stability",
+  "peopleNote": "Six researchers working on the mathematical core of classical mechanics, from the n-body problem to Hamiltonian chaos, who publish on arXiv.",
+  "people": [
+   {
+    "name": "Vadim Kaloshin",
+    "wiki": "Vadim_Kaloshin",
+    "arxiv": "au:\"Vadim Kaloshin\"",
+    "area": "Hamiltonian dynamics & billiards"
+   },
+   {
+    "name": "Darryl Holm",
+    "wiki": "Darryl_Holm",
+    "arxiv": "au:\"Darryl Holm\"",
+    "area": "Geometric mechanics"
+   },
+   {
+    "name": "Lai-Sang Young",
+    "wiki": "Lai-Sang_Young",
+    "arxiv": "au:\"Lai-Sang Young\"",
+    "area": "Chaotic dynamics"
+   },
+   {
+    "name": "Alain Chenciner",
+    "wiki": "Alain_Chenciner",
+    "arxiv": "au:\"Alain Chenciner\"",
+    "area": "Celestial mechanics & choreographies"
+   },
+   {
+    "name": "Steven Strogatz",
+    "wiki": "Steven_Strogatz",
+    "arxiv": "au:\"Steven Strogatz\"",
+    "area": "Nonlinear dynamics & synchronisation"
+   },
+   {
+    "name": "Amie Wilkinson",
+    "wiki": "Amie_Wilkinson",
+    "arxiv": "au:\"Amie Wilkinson\"",
+    "area": "Smooth ergodic theory"
+   }
+  ],
+  "open": [
+   {
+    "id": "arnold-diffusion",
+    "title": "Is Arnold diffusion typical?",
+    "q": "In a nearly integrable Hamiltonian system with three or more degrees of freedom, do generic small perturbations allow orbits to drift a long way?"
+   },
+   {
+    "id": "central-configurations",
+    "title": "Finiteness of central configurations",
+    "q": "For n bodies with given masses, are there only finitely many shapes that rotate rigidly under gravity (central configurations)?"
+   },
+   {
+    "id": "birkhoff-billiards",
+    "title": "Birkhoff’s billiards conjecture",
+    "q": "Are ellipses the only smooth convex tables on which billiards is integrable?"
+   },
+   {
+    "id": "standard-map-chaos",
+    "title": "Chaos in the standard map",
+    "q": "Does Chirikov’s standard map have a chaotic region of positive area for large kicks?"
+   },
+   {
+    "id": "saari-conjecture",
+    "title": "Saari’s conjecture",
+    "q": "If the moment of inertia of an n-body system stays constant, must the bodies move as a rigidly rotating configuration?"
+   },
+   {
+    "id": "weinstein-conjecture",
+    "title": "The Weinstein conjecture",
+    "q": "Does every compact, suitably convex energy level of a Hamiltonian system carry at least one periodic orbit?"
+   }
+  ]
+ },
+ "continuum": {
+  "name": "Elasticity & continuum mechanics",
+  "label": "arXiv cond-mat.soft · Elasticity & continuum mechanics (MSC 74)",
+  "query": "(cat:cond-mat.soft OR cat:physics.class-ph OR cat:math.AP) AND abs:elasticity",
+  "listing": "cond-mat.soft",
+  "field": "elasticity and continuum mechanics: nonlinear elasticity, fracture, plasticity, thin structures, soft matter and the calculus of variations for materials",
+  "peopleNote": "Six researchers who shaped the mathematics and physics of deformable solids, from nonlinear elasticity and microstructure to thin sheets and metamaterials.",
+  "people": [
+   {
+    "name": "John M. Ball",
+    "wiki": "John_M._Ball",
+    "arxiv": "au:\"John M. Ball\"",
+    "area": "Nonlinear elasticity"
+   },
+   {
+    "name": "L. Mahadevan",
+    "wiki": "L._Mahadevan",
+    "arxiv": "au:\"L. Mahadevan\"",
+    "area": "Soft matter & thin sheets"
+   },
+   {
+    "name": "Stefan Müller",
+    "wiki": "Stefan_Müller_(mathematician)",
+    "arxiv": "au:\"Stefan Muller\" AND cat:math.AP",
+    "area": "Calculus of variations & microstructure"
+   },
+   {
+    "name": "Irene Fonseca",
+    "wiki": "Irene_Fonseca",
+    "arxiv": "au:\"Irene Fonseca\"",
+    "area": "Calculus of variations for materials"
+   },
+   {
+    "name": "Katia Bertoldi",
+    "wiki": "Katia_Bertoldi",
+    "arxiv": "au:\"Katia Bertoldi\"",
+    "area": "Mechanical metamaterials"
+   },
+   {
+    "name": "Thomas A. Witten",
+    "wiki": "Thomas_A._Witten",
+    "arxiv": "au:\"Thomas A. Witten\" AND cat:cond-mat.soft",
+    "area": "Crumpling & soft matter"
+   }
+  ],
+  "open": [
+   {
+    "id": "elastic-regularity",
+    "title": "Do elastic minimisers satisfy the equilibrium equations?",
+    "q": "Do energy-minimising deformations in nonlinear elasticity solve the equations of equilibrium, and how smooth are they?"
+   },
+   {
+    "id": "morrey-2x2",
+    "title": "Morrey’s conjecture in two dimensions",
+    "q": "For maps between planes, is every rank-one convex energy also quasiconvex?"
+   },
+   {
+    "id": "crack-paths",
+    "title": "Predicting crack paths",
+    "q": "Can the path, branching and speed of a running crack be predicted from first principles?"
+   },
+   {
+    "id": "plasticity-from-dislocations",
+    "title": "Plasticity from dislocations",
+    "q": "Can the laws of plastic flow in metals be derived from the motion of large numbers of dislocations?"
+   },
+   {
+    "id": "jamming-transition",
+    "title": "The jamming transition",
+    "q": "What is the nature of the transition at which a loose granular or foam-like material becomes rigid?"
+   },
+   {
+    "id": "crumpling",
+    "title": "How does a thin sheet crumple?",
+    "q": "What governs the network of ridges and folds when a thin sheet is crushed, and how much energy does it store?"
+   }
+  ]
+ },
+ "fluids": {
+  "name": "Fluid mechanics",
+  "label": "arXiv physics.flu-dyn · Fluid dynamics (MSC 76)",
+  "query": "cat:physics.flu-dyn",
+  "listing": "physics.flu-dyn",
+  "field": "fluid mechanics: the Navier–Stokes and Euler equations, turbulence, transition, boundary layers, multiphase and geophysical flows",
+  "peopleNote": "Six researchers spanning turbulence, singularities of the fluid equations, interfaces and microfluidics who still publish on arXiv.",
+  "people": [
+   {
+    "name": "Detlef Lohse",
+    "wiki": "Detlef_Lohse",
+    "arxiv": "au:\"Detlef Lohse\"",
+    "area": "Turbulence & multiphase flow"
+   },
+   {
+    "name": "Thomas Y. Hou",
+    "wiki": "Thomas_Yizhao_Hou",
+    "arxiv": "au:\"Thomas Y. Hou\"",
+    "area": "Singularities of the Euler equations"
+   },
+   {
+    "name": "Katepalli Sreenivasan",
+    "wiki": "Katepalli_R._Sreenivasan",
+    "arxiv": "au:\"Sreenivasan\" AND cat:physics.flu-dyn",
+    "area": "Turbulence experiments"
+   },
+   {
+    "name": "Howard A. Stone",
+    "wiki": "Howard_A._Stone",
+    "arxiv": "au:\"Howard A. Stone\"",
+    "area": "Microfluidics & interfaces"
+   },
+   {
+    "name": "Tarek Elgindi",
+    "wiki": "Tarek_Elgindi",
+    "arxiv": "au:\"Tarek Elgindi\"",
+    "area": "Singularities of the Euler equations"
+   },
+   {
+    "name": "Bérengère Dubrulle",
+    "wiki": "Bérengère_Dubrulle",
+    "arxiv": "au:\"Berengere Dubrulle\"",
+    "area": "Turbulence & dissipation"
+   }
+  ],
+  "open": [
+   {
+    "id": "navier-stokes-smoothness",
+    "title": "Navier–Stokes existence and smoothness",
+    "q": "Do smooth solutions of the three-dimensional Navier–Stokes equations always stay smooth, or can they blow up in finite time?"
+   },
+   {
+    "id": "euler-blow-up",
+    "title": "Blow-up for the Euler equations",
+    "q": "Can a smooth flow of an ideal fluid in all of three-dimensional space develop a singularity in finite time?"
+   },
+   {
+    "id": "anomalous-dissipation",
+    "title": "Turbulence from the equations",
+    "q": "Can Kolmogorov’s scaling laws and the persistence of energy dissipation as viscosity vanishes be derived from the Navier–Stokes equations?"
+   },
+   {
+    "id": "pipe-flow-transition",
+    "title": "Transition to turbulence in pipes",
+    "q": "Why and how does flow in a pipe become turbulent, when smooth pipe flow is stable to small disturbances at every speed?"
+   },
+   {
+    "id": "couette-threshold",
+    "title": "How big a push destabilises shear flow?",
+    "q": "How large must a disturbance be, as a function of Reynolds number, to make plane Couette flow turbulent?"
+   },
+   {
+    "id": "sqg-singularity",
+    "title": "Singularities in surface quasi-geostrophic flow",
+    "q": "Can smooth solutions of the surface quasi-geostrophic equation, a model of atmospheric fronts, form singularities in finite time?"
+   }
+  ]
+ },
+ "electromagnetism": {
+  "name": "Electromagnetism & optics",
+  "label": "arXiv physics.optics · Optics (MSC 78)",
+  "query": "cat:physics.optics",
+  "listing": "physics.optics",
+  "field": "electromagnetism and optics: Maxwell’s equations, light–matter interaction, photonics, metamaterials, lasers and ultrafast optics",
+  "peopleNote": "Six researchers who opened new areas of optics, from metamaterials and metasurfaces to attosecond pulses and topological photonics, and who publish on arXiv.",
+  "people": [
+   {
+    "name": "John Pendry",
+    "wiki": "John_Pendry",
+    "arxiv": "au:\"John Pendry\"",
+    "area": "Metamaterials & cloaking"
+   },
+   {
+    "name": "Federico Capasso",
+    "wiki": "Federico_Capasso",
+    "arxiv": "au:\"Federico Capasso\"",
+    "area": "Metasurfaces & quantum cascade lasers"
+   },
+   {
+    "name": "Michal Lipson",
+    "wiki": "Michal_Lipson",
+    "arxiv": "au:\"Michal Lipson\"",
+    "area": "Silicon photonics"
+   },
+   {
+    "name": "Ursula Keller",
+    "wiki": "Ursula_Keller",
+    "arxiv": "au:\"Ursula Keller\"",
+    "area": "Ultrafast lasers"
+   },
+   {
+    "name": "Paul Corkum",
+    "wiki": "Paul_Corkum",
+    "arxiv": "au:\"Paul Corkum\"",
+    "area": "Attosecond science"
+   },
+   {
+    "name": "Mordechai Segev",
+    "wiki": "Mordechai_Segev",
+    "arxiv": "au:\"Mordechai Segev\"",
+    "area": "Nonlinear & topological photonics"
+   }
+  ],
+  "open": [
+   {
+    "id": "magnetic-monopoles",
+    "title": "Do magnetic monopoles exist?",
+    "q": "Are there particles carrying an isolated north or south magnetic pole?"
+   },
+   {
+    "id": "schwinger-effect",
+    "title": "Creating matter from a strong electric field",
+    "q": "Can a static electric field strong enough tear electron–positron pairs out of the vacuum, as Schwinger predicted in 1951?"
+   },
+   {
+    "id": "radiation-reaction",
+    "title": "Self-force on a point charge",
+    "q": "Is there a consistent classical description of how an accelerating point charge is pushed back by its own radiation?"
+   },
+   {
+    "id": "abraham-minkowski",
+    "title": "The momentum of light in matter",
+    "q": "When light enters glass, does its momentum increase (Minkowski, 1908) or decrease (Abraham, 1909)?"
+   },
+   {
+    "id": "calderon-problem",
+    "title": "The Calderón problem",
+    "q": "Can the electrical conductivity inside a body always be recovered from voltage and current measurements on its surface?"
+   },
+   {
+    "id": "photon-mass",
+    "title": "Is the photon exactly massless?",
+    "q": "Is the mass of the photon exactly zero, or just very small?"
+   }
+  ]
+ },
+ "thermodynamics": {
+  "name": "Thermodynamics",
+  "label": "arXiv cond-mat.stat-mech · Thermodynamics (MSC 80)",
+  "query": "cat:cond-mat.stat-mech AND abs:thermodynamics",
+  "listing": "cond-mat.stat-mech",
+  "field": "thermodynamics: entropy and the second law, non-equilibrium and stochastic thermodynamics, the thermodynamics of information and quantum thermodynamics",
+  "peopleNote": "Six researchers who reshaped thermodynamics, from fluctuation theorems and axiomatic foundations to quantum and biological thermodynamics.",
+  "people": [
+   {
+    "name": "Christopher Jarzynski",
+    "wiki": "Christopher_Jarzynski",
+    "arxiv": "au:\"Christopher Jarzynski\"",
+    "area": "Fluctuation theorems"
+   },
+   {
+    "name": "Gavin Crooks",
+    "wiki": "Gavin_Crooks",
+    "arxiv": "au:\"Gavin Crooks\"",
+    "area": "Fluctuation theorems & stochastic thermodynamics"
+   },
+   {
+    "name": "Jeremy England",
+    "wiki": "Jeremy_England",
+    "arxiv": "au:\"Jeremy England\"",
+    "area": "Dissipation & self-organisation"
+   },
+   {
+    "name": "Sandu Popescu",
+    "wiki": "Sandu_Popescu",
+    "arxiv": "au:\"Sandu Popescu\"",
+    "area": "Quantum thermodynamics"
+   },
+   {
+    "name": "Elliott H. Lieb",
+    "wiki": "Elliott_H._Lieb",
+    "arxiv": "au:\"Elliott H. Lieb\"",
+    "area": "Mathematical foundations of entropy"
+   },
+   {
+    "name": "Jakob Yngvason",
+    "wiki": "Jakob_Yngvason",
+    "arxiv": "au:\"Jakob Yngvason\"",
+    "area": "Axiomatic thermodynamics"
+   }
+  ],
+  "open": [
+   {
+    "id": "arrow-of-time",
+    "title": "The arrow of time",
+    "q": "Why does entropy increase towards the future, when the underlying laws of motion work equally well backwards?"
+   },
+   {
+    "id": "nonequilibrium-principle",
+    "title": "A variational principle far from equilibrium",
+    "q": "Is there a general principle, like maximising entropy at equilibrium, that selects the steady states of systems driven far from equilibrium?"
+   },
+   {
+    "id": "glass-transition",
+    "title": "Is the glass transition a true phase transition?",
+    "q": "When a liquid cools into a glass, is there an underlying thermodynamic phase transition, or is it purely a slowing-down of dynamics?"
+   },
+   {
+    "id": "eth-proof",
+    "title": "Why isolated quantum systems thermalise",
+    "q": "Why do closed quantum many-body systems, evolving unitarily, come to look thermal?"
+   },
+   {
+    "id": "finite-time-landauer",
+    "title": "The cost of computing quickly",
+    "q": "What is the minimum heat that must be dissipated to erase or process information in a finite time?"
+   },
+   {
+    "id": "negative-temperature",
+    "title": "Do negative temperatures make sense?",
+    "q": "Are the negative absolute temperatures reported in spin and cold-atom systems genuine thermodynamic temperatures?"
+   }
+  ]
+ },
+ "quantum": {
+  "name": "Quantum theory",
+  "label": "arXiv quant-ph · Quantum physics (MSC 81)",
+  "query": "cat:quant-ph",
+  "listing": "quant-ph",
+  "field": "quantum theory: foundations, quantum information and computation, quantum many-body physics and mathematical quantum mechanics",
+  "peopleNote": "Six researchers who founded and shaped quantum computing and quantum information and who remain active on arXiv.",
+  "people": [
+   {
+    "name": "John Preskill",
+    "wiki": "John_Preskill",
+    "arxiv": "au:\"John Preskill\"",
+    "area": "Quantum error correction & computing"
+   },
+   {
+    "name": "Peter Shor",
+    "wiki": "Peter_Shor",
+    "arxiv": "au:\"Peter Shor\"",
+    "area": "Quantum algorithms"
+   },
+   {
+    "name": "Scott Aaronson",
+    "wiki": "Scott_Aaronson",
+    "arxiv": "au:\"Scott Aaronson\"",
+    "area": "Quantum complexity theory"
+   },
+   {
+    "name": "Dorit Aharonov",
+    "wiki": "Dorit_Aharonov",
+    "arxiv": "au:\"Dorit Aharonov\"",
+    "area": "Quantum complexity & fault tolerance"
+   },
+   {
+    "name": "Umesh Vazirani",
+    "wiki": "Umesh_Vazirani",
+    "arxiv": "au:\"Umesh Vazirani\"",
+    "area": "Quantum computation & cryptography"
+   },
+   {
+    "name": "Ignacio Cirac",
+    "wiki": "Juan_Ignacio_Cirac",
+    "arxiv": "au:\"Ignacio Cirac\"",
+    "area": "Quantum simulation & many-body physics"
+   }
+  ],
+  "open": [
+   {
+    "id": "measurement-problem",
+    "title": "The measurement problem",
+    "q": "Why does measuring a quantum system give one definite result, when the Schrödinger equation alone predicts a superposition of all outcomes?"
+   },
+   {
+    "id": "yang-mills-mass-gap",
+    "title": "Yang–Mills existence and mass gap",
+    "q": "Does quantum Yang–Mills theory exist rigorously in four dimensions, and do its lightest particles have positive mass?"
+   },
+   {
+    "id": "bqp-vs-bpp",
+    "title": "Are quantum computers genuinely more powerful?",
+    "q": "Can quantum computers efficiently solve problems that classical randomised computers cannot (is BQP larger than BPP)?"
+   },
+   {
+    "id": "quantum-np",
+    "title": "Can quantum computers solve NP-complete problems efficiently?",
+    "q": "Is there a quantum algorithm that solves NP-complete problems such as satisfiability in polynomial time?"
+   },
+   {
+    "id": "quantum-pcp",
+    "title": "The quantum PCP conjecture",
+    "q": "Is it hard for quantum computers even to approximate the ground-state energy of local Hamiltonians to within a constant fraction?"
+   },
+   {
+    "id": "sic-povm",
+    "title": "Do SIC-POVMs exist in every dimension?",
+    "q": "In every finite dimension, is there a maximal set of equally spaced quantum states forming a symmetric informationally complete measurement?"
+   }
+  ]
+ },
+ "statmech": {
+  "name": "Statistical mechanics",
+  "label": "arXiv cond-mat.stat-mech · Statistical mechanics (MSC 82)",
+  "query": "cat:cond-mat.stat-mech",
+  "listing": "cond-mat.stat-mech",
+  "field": "statistical mechanics: phase transitions and critical phenomena, lattice models, disordered systems, kinetic theory and non-equilibrium dynamics",
+  "peopleNote": "Six researchers whose work on critical phenomena, disordered systems and exactly solvable models defines modern statistical mechanics.",
+  "people": [
+   {
+    "name": "Hugo Duminil-Copin",
+    "wiki": "Hugo_Duminil-Copin",
+    "arxiv": "au:\"Hugo Duminil-Copin\"",
+    "area": "Percolation & lattice models"
+   },
+   {
+    "name": "Stanislav Smirnov",
+    "wiki": "Stanislav_Smirnov",
+    "arxiv": "au:\"Stanislav Smirnov\"",
+    "area": "Conformal invariance"
+   },
+   {
+    "name": "Giorgio Parisi",
+    "wiki": "Giorgio_Parisi",
+    "arxiv": "au:\"Giorgio Parisi\"",
+    "area": "Spin glasses & disordered systems"
+   },
+   {
+    "name": "John Cardy",
+    "wiki": "John_Cardy",
+    "arxiv": "au:\"John Cardy\"",
+    "area": "Conformal field theory"
+   },
+   {
+    "name": "Mehran Kardar",
+    "wiki": "Mehran_Kardar",
+    "arxiv": "au:\"Mehran Kardar\"",
+    "area": "Non-equilibrium growth (KPZ)"
+   },
+   {
+    "name": "Herbert Spohn",
+    "wiki": "Herbert_Spohn",
+    "arxiv": "au:\"Herbert Spohn\"",
+    "area": "Kinetic theory & hydrodynamics"
+   }
+  ],
+  "open": [
+   {
+    "id": "ising-3d",
+    "title": "The three-dimensional Ising model",
+    "q": "What are the exact critical exponents of the Ising model in three dimensions, and is there an exact solution?"
+   },
+   {
+    "id": "hilbert-sixth",
+    "title": "Fluids from particles (Hilbert’s sixth problem)",
+    "q": "Can the equations of fluid flow be rigorously derived from Newton’s laws for very many colliding particles?"
+   },
+   {
+    "id": "spin-glass-finite-d",
+    "title": "Spin glasses in finite dimensions",
+    "q": "Do realistic short-range spin glasses in three dimensions have Parisi’s many-state structure, or the simpler droplet picture?"
+   },
+   {
+    "id": "percolation-3d",
+    "title": "Continuity of percolation in three dimensions",
+    "q": "At the critical density of three-dimensional percolation, is there no infinite cluster, so the transition is continuous?"
+   },
+   {
+    "id": "saw-2d",
+    "title": "Self-avoiding walks in the plane",
+    "q": "How far does a typical n-step self-avoiding walk in the plane travel, and is the exponent exactly 3/4?"
+   },
+   {
+    "id": "mbl-stability",
+    "title": "Does many-body localisation exist?",
+    "q": "Can strong disorder stop an interacting quantum system from ever thermalising?"
+   }
+  ]
+ },
+ "relativity": {
+  "name": "Relativity & gravitation",
+  "label": "arXiv gr-qc · General relativity and quantum cosmology (MSC 83)",
+  "query": "cat:gr-qc",
+  "listing": "gr-qc",
+  "field": "relativity and gravitation: Einstein’s equations, black holes, gravitational waves, cosmology and quantum gravity",
+  "peopleNote": "Six researchers spanning mathematical relativity, numerical relativity, gravitational waves and quantum gravity who publish on arXiv.",
+  "people": [
+   {
+    "name": "Sergiu Klainerman",
+    "wiki": "Sergiu_Klainerman",
+    "arxiv": "au:\"Sergiu Klainerman\"",
+    "area": "Stability of black holes"
+   },
+   {
+    "name": "Mihalis Dafermos",
+    "wiki": "Mihalis_Dafermos",
+    "arxiv": "au:\"Mihalis Dafermos\"",
+    "area": "Mathematical general relativity"
+   },
+   {
+    "name": "Juan Maldacena",
+    "wiki": "Juan_Maldacena",
+    "arxiv": "au:\"Juan Maldacena\"",
+    "area": "Holography & quantum gravity"
+   },
+   {
+    "name": "Abhay Ashtekar",
+    "wiki": "Abhay_Ashtekar",
+    "arxiv": "au:\"Abhay Ashtekar\"",
+    "area": "Loop quantum gravity"
+   },
+   {
+    "name": "Frans Pretorius",
+    "wiki": "Frans_Pretorius",
+    "arxiv": "au:\"Frans Pretorius\"",
+    "area": "Numerical relativity"
+   },
+   {
+    "name": "Kip Thorne",
+    "wiki": "Kip_Thorne",
+    "arxiv": "au:\"Kip S. Thorne\"",
+    "area": "Gravitational waves"
+   }
+  ],
+  "open": [
+   {
+    "id": "quantum-gravity",
+    "title": "Quantum gravity",
+    "q": "What is the quantum theory of gravity that agrees with general relativity at large scales?"
+   },
+   {
+    "id": "weak-cosmic-censorship",
+    "title": "Weak cosmic censorship",
+    "q": "Are singularities formed by realistic gravitational collapse always hidden inside black-hole horizons?"
+   },
+   {
+    "id": "information-paradox",
+    "title": "The black-hole information paradox",
+    "q": "Is information that falls into a black hole lost when it evaporates, or does it escape in the radiation?"
+   },
+   {
+    "id": "kerr-stability",
+    "title": "Is the Kerr black hole stable?",
+    "q": "Do slightly disturbed rotating black holes settle back down to a Kerr black hole?"
+   },
+   {
+    "id": "penrose-inequality",
+    "title": "The Penrose inequality",
+    "q": "Is the total mass of a spacetime always at least that of a black hole whose horizon has the same area?"
+   },
+   {
+    "id": "cosmological-constant",
+    "title": "The cosmological constant problem",
+    "q": "Why is the observed vacuum energy driving cosmic acceleration so much smaller than quantum field theory estimates?"
+   }
+  ]
+ },
+ "astronomy": {
+  "name": "Celestial mechanics & astrophysics",
+  "label": "arXiv astro-ph.EP · Earth and planetary astrophysics (MSC 85, 70F15)",
+  "query": "cat:astro-ph.EP",
+  "listing": "astro-ph.EP",
+  "field": "celestial mechanics and astrophysics: planetary dynamics, exoplanets, the stability of planetary systems and cosmology",
+  "peopleNote": "Six researchers spanning solar-system dynamics, exoplanets and cosmological expansion who publish on arXiv.",
+  "people": [
+   {
+    "name": "Jacques Laskar",
+    "wiki": "Jacques_Laskar",
+    "arxiv": "au:\"Jacques Laskar\"",
+    "area": "Solar-system stability"
+   },
+   {
+    "name": "Scott Tremaine",
+    "wiki": "Scott_Tremaine",
+    "arxiv": "au:\"Scott Tremaine\"",
+    "area": "Galactic & planetary dynamics"
+   },
+   {
+    "name": "Konstantin Batygin",
+    "wiki": "Konstantin_Batygin",
+    "arxiv": "au:\"Konstantin Batygin\"",
+    "area": "Planetary dynamics"
+   },
+   {
+    "name": "Didier Queloz",
+    "wiki": "Didier_Queloz",
+    "arxiv": "au:\"Didier Queloz\"",
+    "area": "Exoplanet discovery"
+   },
+   {
+    "name": "Sara Seager",
+    "wiki": "Sara_Seager",
+    "arxiv": "au:\"Sara Seager\"",
+    "area": "Exoplanet atmospheres"
+   },
+   {
+    "name": "Adam Riess",
+    "wiki": "Adam_Riess",
+    "arxiv": "au:\"Adam Riess\"",
+    "area": "Cosmic expansion"
+   }
+  ],
+  "open": [
+   {
+    "id": "solar-system-stability",
+    "title": "Will the Solar System stay stable?",
+    "q": "Will the planets keep roughly their present orbits for the Sun’s remaining lifetime?"
+   },
+   {
+    "id": "hubble-tension",
+    "title": "The Hubble tension",
+    "q": "Why do measurements of the universe’s current expansion rate disagree depending on the method used?"
+   },
+   {
+    "id": "dark-matter",
+    "title": "What is dark matter?",
+    "q": "What is the unseen matter whose gravity holds galaxies and clusters together?"
+   },
+   {
+    "id": "dark-energy",
+    "title": "What is dark energy?",
+    "q": "What drives the accelerating expansion of the universe?"
+   },
+   {
+    "id": "planet-nine",
+    "title": "Is there a ninth planet?",
+    "q": "Is an undiscovered planet several times Earth’s mass shaping the orbits of distant trans-Neptunian objects?"
+   },
+   {
+    "id": "final-parsec",
+    "title": "The final parsec problem",
+    "q": "How do pairs of supermassive black holes close the last parsec of separation and merge within the age of the universe?"
+   }
+  ]
+ },
+ "geophysics": {
+  "name": "Geophysics & climate models",
+  "label": "arXiv physics.geo-ph · Geophysics (MSC 86)",
+  "query": "cat:physics.geo-ph OR cat:physics.ao-ph",
+  "listing": "physics.geo-ph",
+  "field": "geophysics and climate science: seismology, the geodynamo, atmosphere and ocean dynamics, climate sensitivity and predictability",
+  "peopleNote": "Six researchers whose work on climate dynamics, predictability, tipping points and planetary atmospheres is widely cited and who publish on arXiv.",
+  "people": [
+   {
+    "name": "Michael Ghil",
+    "wiki": "Michael_Ghil",
+    "arxiv": "au:\"Michael Ghil\"",
+    "area": "Climate dynamics"
+   },
+   {
+    "name": "Tim Palmer",
+    "wiki": "Tim_Palmer_(physicist)",
+    "arxiv": "au:\"Tim Palmer\"",
+    "area": "Predictability & weather prediction"
+   },
+   {
+    "name": "Raymond Pierrehumbert",
+    "wiki": "Raymond_Pierrehumbert",
+    "arxiv": "au:\"Raymond Pierrehumbert\"",
+    "area": "Planetary climate"
+   },
+   {
+    "name": "Tapio Schneider",
+    "wiki": "Tapio_Schneider",
+    "arxiv": "au:\"Tapio Schneider\"",
+    "area": "Climate modelling & clouds"
+   },
+   {
+    "name": "Valerio Lucarini",
+    "wiki": "Valerio_Lucarini",
+    "arxiv": "au:\"Valerio Lucarini\"",
+    "area": "Climate dynamics & tipping points"
+   },
+   {
+    "name": "Laure Zanna",
+    "wiki": "Laure_Zanna",
+    "arxiv": "au:\"Laure Zanna\"",
+    "area": "Ocean dynamics & machine learning"
+   }
+  ],
+  "open": [
+   {
+    "id": "climate-sensitivity",
+    "title": "How sensitive is the climate?",
+    "q": "How much will global temperature eventually rise if atmospheric carbon dioxide doubles?"
+   },
+   {
+    "id": "amoc-tipping",
+    "title": "Will the Atlantic overturning collapse?",
+    "q": "Could warming push the Atlantic meridional overturning circulation past a tipping point this century?"
+   },
+   {
+    "id": "earthquake-prediction",
+    "title": "Can earthquakes be predicted?",
+    "q": "Can the time, place and size of large earthquakes be forecast reliably enough to give warnings?"
+   },
+   {
+    "id": "geodynamo-reversals",
+    "title": "Why does Earth’s magnetic field reverse?",
+    "q": "What controls the irregular reversals of Earth’s magnetic field?"
+   },
+   {
+    "id": "weather-predictability",
+    "title": "The limit of weather prediction",
+    "q": "Is there a hard limit, around two weeks, beyond which day-to-day weather cannot be predicted?"
+   },
+   {
+    "id": "plate-tectonics-onset",
+    "title": "When did plate tectonics begin?",
+    "q": "When did Earth’s surface start moving as rigid plates, and why does Earth have plate tectonics when other rocky planets do not?"
    }
   ]
  }
