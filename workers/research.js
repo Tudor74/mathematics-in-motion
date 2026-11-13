@@ -118,9 +118,13 @@ async function arxiv(params) {
   if (gap > 0) await sleep(gap);
   lastCall = Date.now(); try { await me.puter.kv.set(K('arxiv-last'), lastCall); } catch (e) {}
   const qs = Object.entries(params).map(([k, v]) => k + '=' + encodeURIComponent(v)).join('&');
-  const res = await fetch(API + '?' + qs, { headers: { 'User-Agent': UA } });
-  if (!res.ok) throw new Error('arXiv responded ' + res.status);
-  return res.text();
+  for (let attempt = 0; ; attempt++) {
+    const res = await fetch(API + '?' + qs, { headers: { 'User-Agent': UA } });
+    if (res.ok) return res.text();
+    // arXiv throttles shared egress addresses; back off briefly, then give up and let callers serve cache.
+    if ((res.status === 429 || res.status === 503) && attempt < 2) { await sleep(6000 * (attempt + 1)); lastCall = Date.now(); continue; }
+    throw new Error('arXiv responded ' + res.status);
+  }
 }
 
 const decode = s => s.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"')
@@ -184,10 +188,13 @@ async function build(id, topic) {
 
   // 1 · Newest six submissions.
   let papers = await kv.get(K(id, 'papers'));
+  let stale = false;
   if (!papers || Date.now() - papers.at > PAPERS_TTL) {
-    const xml = await arxiv({ search_query: topic.query, sortBy: 'submittedDate', sortOrder: 'descending', start: 0, max_results: 6 });
-    papers = { at: Date.now(), list: parseEntries(xml) };
-    await kv.set(K(id, 'papers'), papers);
+    try {
+      const xml = await arxiv({ search_query: topic.query, sortBy: 'submittedDate', sortOrder: 'descending', start: 0, max_results: 6 });
+      papers = { at: Date.now(), list: parseEntries(xml) };
+      await kv.set(K(id, 'papers'), papers);
+    } catch (e) { if (!papers) throw e; stale = true; }
   }
 
   // 2 · Impact paragraph, once per distinct set of papers.
@@ -204,10 +211,12 @@ async function build(id, topic) {
   const fresh = (key, open) => counts[key] && (!open || Date.now() - counts[key].at < OPEN_TTL);
   const todo = [...months.slice().reverse(), ...years.slice().reverse()].filter(p => !fresh(p.key, p.open));
   for (const p of todo) {
-    if (left() < WAIT + 2500) break;
-    const xml = await arxiv({ search_query: `${topic.query} AND submittedDate:[${p.from} TO ${p.to}]`, start: 0, max_results: 1 });
-    counts[p.key] = { n: total(xml), at: Date.now() };
-    await kv.set(K(id, 'counts'), counts);
+    if (stale || left() < WAIT + 2500) break;
+    try {
+      const xml = await arxiv({ search_query: `${topic.query} AND submittedDate:[${p.from} TO ${p.to}]`, start: 0, max_results: 1 });
+      counts[p.key] = { n: total(xml), at: Date.now() };
+      await kv.set(K(id, 'counts'), counts);
+    } catch (e) { stale = true; break; }
   }
   const row = p => ({ key: p.key, n: counts[p.key] ? counts[p.key].n : null, partial: p.open });
 
@@ -216,7 +225,7 @@ async function build(id, topic) {
     papers: papers.list, papersAt: new Date(papers.at).toISOString(),
     summary: summary ? { text: summary.text, model: summary.model, at: new Date(summary.at).toISOString() } : null,
     years: years.map(row), months: months.map(row),
-    complete: [...years, ...months].every(p => counts[p.key]),
+    complete: stale || [...years, ...months].every(p => counts[p.key]), stale,
     updated: now.toISOString()
   };
 }
@@ -236,15 +245,18 @@ async function wikipedia(title) {
 async function people(id, topic) {
   const start = Date.now(), kv = me.puter.kv, left = () => BUDGET - (Date.now() - start);
   const cache = (await kv.get(K(id, 'people2'))) || {};
+  let arxivDown = false;
   for (const p of topic.people) {
     const c = cache[p.wiki] || {};
     if (!c.wiki || Date.now() - c.wiki.at > PEOPLE_TTL) {
       try { c.wiki = { at: Date.now(), ...(await wikipedia(p.wiki)) }; } catch (e) { c.wiki = c.wiki || null; }
     }
-    if ((!c.arxiv || Date.now() - c.arxiv.at > PEOPLE_TTL) && left() > WAIT + 2500) {
-      const xml = await arxiv({ search_query: p.arxiv, sortBy: 'submittedDate', sortOrder: 'descending', start: 0, max_results: 1 });
-      const [latest] = parseEntries(xml);
-      c.arxiv = { at: Date.now(), count: total(xml), latest: latest ? { title: latest.title, url: latest.url, published: latest.published } : null };
+    if (!arxivDown && (!c.arxiv || Date.now() - c.arxiv.at > PEOPLE_TTL) && left() > WAIT + 2500) {
+      try {
+        const xml = await arxiv({ search_query: p.arxiv, sortBy: 'submittedDate', sortOrder: 'descending', start: 0, max_results: 1 });
+        const [latest] = parseEntries(xml);
+        c.arxiv = { at: Date.now(), count: total(xml), latest: latest ? { title: latest.title, url: latest.url, published: latest.published } : null };
+      } catch (e) { arxivDown = true; }
     }
     cache[p.wiki] = c;
   }
@@ -258,7 +270,7 @@ async function people(id, topic) {
       linkedin: 'https://www.linkedin.com/search/results/people/?keywords=' + encodeURIComponent(p.name)
     };
   });
-  return { lesson: id, name: topic.name, note: topic.peopleNote, people: list, complete: list.every(p => p.arxiv.count != null && p.bio), updated: new Date().toISOString() };
+  return { lesson: id, name: topic.name, note: topic.peopleNote, people: list, complete: arxivDown || list.every(p => p.arxiv.count != null && p.bio), stale: arxivDown, updated: new Date().toISOString() };
 }
 
 async function extractQuestions(topic, papers) {
@@ -288,7 +300,9 @@ async function openQuestions(id, topic) {
   let cache = await kv.get(K(id, 'open2'));
   const flags = (await kv.get(K(id, 'flags'))) || {};
   if (!cache || Date.now() - cache.at > PAPERS_TTL) {
-    const xml = await arxiv({ search_query: openQuery(topic), sortBy: 'submittedDate', sortOrder: 'descending', start: 0, max_results: 6 });
+    let xml;
+    try { xml = await arxiv({ search_query: openQuery(topic), sortBy: 'submittedDate', sortOrder: 'descending', start: 0, max_results: 6 }); }
+    catch (e) { if (!cache) throw e; return { lesson: id, query: openQuery(topic), model: cache.model, at: new Date(cache.at).toISOString(), items: cache.items, flags, stale: true }; }
     const papers = parseEntries(xml), sig = papers.map(p => p.id).join(',');
     if (!cache || cache.sig !== sig) {
       cache = { sig, at: Date.now(), model: MODEL, items: await extractQuestions(topic, papers) };
