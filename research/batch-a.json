@@ -1030,10 +1030,10 @@
     "area": "Real & complex analysis"
    },
    {
-    "name": "Lawrence C. Evans",
-    "wiki": "Lawrence_C._Evans",
-    "arxiv": "(au:\"Lawrence C. Evans\" OR au:\"L. C. Evans\")",
-    "area": "Analysis & PDE"
+    "name": "Fedor Nazarov",
+    "wiki": "Fedor_Nazarov",
+    "arxiv": "(au:\"Fedor Nazarov\" OR au:\"F. Nazarov\") AND cat:math.*",
+    "area": "Harmonic analysis & probability"
    },
    {
     "name": "Wilhelm Schlag",
