@@ -348,22 +348,18 @@ svg .svg-word{cursor:pointer!important;text-decoration-line:underline!important;
  .header-row #words{color:#192c37;border:1px solid #aebcc4;background:transparent}
 }
 /* v0.13: research panel — latest arXiv submissions, publication timeline, AI impact paragraph. */
-.header-row #research{flex:0 0 auto;margin:0;min-height:44px;padding:6px 11px;color:#f1f4f6;border:1px solid #ffffff33;background:#ffffff08;border-radius:7px;font-size:13px;line-height:1.25;white-space:nowrap}
-.header-row #research:hover{background:#ffffff17;border-color:#ffffff66}
-.header-row #research:focus-visible{outline:2px solid #acd4ef;outline-offset:3px}
-.header-row #research[hidden]{display:none}
-#research-dialog{width:min(760px,calc(100vw - 28px));max-height:calc(100dvh - 28px);padding:20px 22px;border:1px solid #b5cbd8;border-radius:14px;color:var(--ink);background:#fff;box-shadow:0 16px 60px #142b4b40;overflow:auto;font-size:16px;line-height:1.5}
-#research-dialog:not([open]){display:none}
-#research-dialog::backdrop{background:#182d3d45}
-#research-dialog [hidden]{display:none!important}
-#research-title{font-size:26px;line-height:1.15;margin:0 0 4px;letter-spacing:-.02em}
-#research-title:focus{outline:none}
+.research-panel{margin-top:16px;padding:22px 30px 18px}
+.research-panel[hidden]{display:none}
+.research-panel [hidden]{display:none!important}
+.research-panel .eyebrow{margin:0 0 4px}
+#research-heading{font-size:24px;line-height:1.15;margin:0 0 4px;letter-spacing:-.02em}
 .research-source{font-size:14px;color:var(--muted);margin:0 0 14px}
 .research-source a{color:#155e93}
-#research-dialog h3{font-size:12px;text-transform:uppercase;letter-spacing:.08em;font-weight:750;color:var(--muted);margin:20px 0 8px}
+.research-panel h3{font-size:12px;text-transform:uppercase;letter-spacing:.08em;font-weight:750;color:var(--muted);margin:20px 0 8px}
 .research-status{font-size:15px;color:var(--muted);margin:10px 0;padding:10px 12px;border-radius:8px;background:#f3f7fa}
 .research-status.error{color:#8e3a25;background:#fbece6}
-.research-charts{display:grid;grid-template-columns:1.7fr 1fr;gap:14px}
+.research-columns{display:grid;grid-template-columns:1.25fr 1fr;gap:24px}
+.research-charts{display:grid;grid-template-columns:1fr;gap:10px}
 .research-chart{border:1px solid #dbe6ec;border-radius:10px;padding:10px 10px 6px;background:#fbfdfe}
 .research-chart p{margin:0 0 4px;font-size:13px;color:var(--muted)}
 .research-chart p b{color:var(--ink);font-size:15px}
@@ -371,7 +367,7 @@ svg .svg-word{cursor:pointer!important;text-decoration-line:underline!important;
 .research-chart text{font:11px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#546873}
 .research-summary{margin:0;font-size:16.5px;line-height:1.6}
 .research-note{font-size:13px;color:var(--muted);margin:6px 0 0}
-.research-papers{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.research-papers{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .research-papers li{border:1px solid #dbe6ec;border-radius:10px;padding:10px 12px;background:#fff;display:flex;flex-direction:column;gap:4px}
 .research-papers a{color:#155e93;font-weight:650;line-height:1.3;text-decoration:none}
 .research-papers a:hover,.research-papers a:focus-visible{text-decoration:underline}
@@ -381,10 +377,9 @@ svg .svg-word{cursor:pointer!important;text-decoration-line:underline!important;
 .research-papers details{font-size:13.5px;color:#33454f}
 .research-papers summary{cursor:pointer;color:var(--muted);font-size:13px}
 .research-footer{margin-top:16px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
-@media(max-width:760px){.header-row #research{font-size:12px;padding:6px 8px}.research-charts,.research-papers{grid-template-columns:1fr}#research-dialog{padding:16px}}
-@media(max-width:380px){.header-row #research{padding:6px}}
-@media(forced-colors:active){.header-row #research{color:ButtonText;background:ButtonFace;border:1px solid ButtonText}}
-@media print{.header-row #research{display:none}}
+@media(max-width:1000px){.research-columns{grid-template-columns:1fr}.research-papers{grid-template-columns:1fr 1fr}}
+@media(max-width:760px){.research-panel{margin-top:10px;padding:16px 14px}.research-charts,.research-papers{grid-template-columns:1fr}}
+@media print{.research-panel{display:none}}
 </style>
 </head>
 <body>
@@ -400,7 +395,6 @@ svg .svg-word{cursor:pointer!important;text-decoration-line:underline!important;
  </div>
 
  <span class="header-counter" id="counter" aria-label="Topic 1 of 11">1 / 11</span>
- <button type="button" id="research" aria-haspopup="dialog" aria-controls="research-dialog" hidden>Research</button>
  <button type="button" id="words" aria-haspopup="dialog" aria-controls="word-dialog" disabled>Word meanings</button>
 </div>
 </header>
@@ -460,6 +454,32 @@ svg .svg-word{cursor:pointer!important;text-decoration-line:underline!important;
 <p class="sr-only" id="announcement" aria-live="polite"></p>
 </main>
 
+<section class="frame research-panel" id="research-panel" aria-labelledby="research-heading" hidden>
+ <p class="eyebrow">Recent research · arXiv</p>
+ <h2 id="research-heading"><span id="research-title">Research</span></h2>
+ <p class="research-source" id="research-source"></p>
+ <p class="research-status" id="research-status" role="status" aria-live="polite"></p>
+ <div id="research-body" hidden>
+  <div class="research-columns">
+   <div>
+    <h3>Publication timeline</h3>
+    <div class="research-charts">
+     <div class="research-chart"><p id="research-volume-label">Submissions per year</p><div id="research-years"></div></div>
+     <div class="research-chart"><p id="research-frequency-label">Last 12 months</p><div id="research-months"></div></div>
+    </div>
+   </div>
+   <div>
+    <h3>What the latest submissions suggest</h3>
+    <p class="research-summary" id="research-summary"></p>
+    <p class="research-note" id="research-summary-note"></p>
+   </div>
+  </div>
+  <h3>Latest six submissions</h3>
+  <ol class="research-papers" id="research-papers"></ol>
+ </div>
+ <div class="research-footer"><span id="research-updated"></span><span>Thank you to arXiv for use of its open access interoperability.</span></div>
+</section>
+
 <dialog id="word-dialog" aria-labelledby="word-title">
  <div class="dialog-top"><p class="eyebrow">Mathematical word meanings</p><button type="button" class="dialog-close" id="word-close" aria-label="Close definition and stay paused">Close</button></div>
  <button type="button" id="word-back" hidden>← All words</button>
@@ -474,26 +494,6 @@ svg .svg-word{cursor:pointer!important;text-decoration-line:underline!important;
   <p id="word-list-count" aria-live="polite"></p><div id="word-list"></div>
  </div>
  <div class="word-footer"><p>Paused for reading. Closing keeps your place.</p><button type="button" class="primary" id="word-resume">Resume 1×</button></div>
-</dialog>
-
-<dialog id="research-dialog" aria-labelledby="research-title">
- <div class="dialog-top"><p class="eyebrow">Recent research · arXiv</p><button type="button" class="dialog-close" id="research-close">Close</button></div>
- <h2 id="research-title" tabindex="-1">Research</h2>
- <p class="research-source" id="research-source"></p>
- <p class="research-status" id="research-status" role="status" aria-live="polite"></p>
- <div id="research-body" hidden>
-  <h3>Publication timeline</h3>
-  <div class="research-charts">
-   <div class="research-chart"><p id="research-volume-label">Submissions per year</p><div id="research-years"></div></div>
-   <div class="research-chart"><p id="research-frequency-label">Last 12 months</p><div id="research-months"></div></div>
-  </div>
-  <h3>What the latest submissions suggest</h3>
-  <p class="research-summary" id="research-summary"></p>
-  <p class="research-note" id="research-summary-note"></p>
-  <h3>Latest six submissions</h3>
-  <ol class="research-papers" id="research-papers"></ol>
- </div>
- <div class="research-footer"><span id="research-updated"></span><span>Thank you to arXiv for use of its open access interoperability.</span></div>
 </dialog>
 
 <script>
@@ -2668,8 +2668,7 @@ function closeWords(resume=false){
 // v0.13 · Research panel. Lessons opt in here; the worker whitelists the same ids.
 const RESEARCH_API='https://mim-research.puter.work/lesson/';
 const RESEARCH_LESSONS=new Set(['foundations']);
-const researchDialog=$('research-dialog');
-let researchLesson=null,researchTimer=null,researchRun=0;
+let researchLesson=null,researchTimer=null,researchRun=0,researchVisible=false,researchShown=false;
 const MONTH_NAMES=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const TEX={'\\mathbb{N}':'ℕ','\\mathbb{Z}':'ℤ','\\mathbb{Q}':'ℚ','\\mathbb{R}':'ℝ','\\mathbb{C}':'ℂ','\\alpha':'α','\\beta':'β','\\gamma':'γ','\\delta':'δ','\\kappa':'κ','\\lambda':'λ','\\omega':'ω','\\sigma':'σ','\\aleph':'ℵ','\\in':'∈','\\leq':'≤','\\geq':'≥','\\le':'≤','\\ge':'≥','\\to':'→','\\times':'×','\\infty':'∞','\\ldots':'…','\\cdots':'⋯','\\pm':'±','\\neq':'≠'};
 function plainTeX(s){return String(s).replace(/\$([^$]*)\$/g,(_,m)=>m.replace(/\\[a-zA-Z]+(\{[A-Z]\})?/g,c=>TEX[c]??c.replace(/^\\(mathrm|mathcal|mathbf|text)\{(.*)\}$/,'$2')).replace(/[{}]/g,'')).replace(/\s+/g,' ').trim()}
@@ -2688,8 +2687,8 @@ function renderResearch(d){
  $('research-title').textContent=d.name;
  $('research-source').innerHTML=`Source: <a href="https://arxiv.org/list/${esc(d.query.replace('cat:',''))}/recent" target="_blank" rel="noopener">${esc(d.label)}</a> · counts include cross-listed papers.`;
  const years=d.years,months=d.months,full=years.filter(r=>!r.partial&&r.n!=null),last=full.at(-1),first=full[0];
- $('research-years').innerHTML=researchBars(years,{label:(r,long)=>long?r.key+(r.partial?' (to date)':''):"'"+r.key.slice(2)});
- $('research-months').innerHTML=researchBars(months,{w:260,label:(r,long)=>{const [y,m]=r.key.split('-');return long?MONTH_NAMES[m-1]+' '+y+(r.partial?' (to date)':''):MONTH_NAMES[m-1][0]}});
+ $('research-years').innerHTML=researchBars(years,{h:140,label:(r,long)=>long?r.key+(r.partial?' (to date)':''):"'"+r.key.slice(2)});
+ $('research-months').innerHTML=researchBars(months,{w:420,h:120,label:(r,long)=>{const [y,m]=r.key.split('-');return long?MONTH_NAMES[m-1]+' '+y+(r.partial?' (to date)':''):MONTH_NAMES[m-1][0]}});
  const growth=first&&last&&first!==last?Math.round(100*(last.n/first.n-1)):null;
  $('research-volume-label').innerHTML=last?`Submissions per year · <b>${last.n.toLocaleString('en-GB')}</b> in ${last.key}${growth!=null?` (${growth>=0?'+':''}${growth}% since ${first.key})`:''}`:'Submissions per year';
  const done=months.filter(r=>!r.partial&&r.n!=null),perWeek=done.length?done.reduce((a,r)=>a+r.n,0)/done.length*12/52:null;
@@ -2713,25 +2712,26 @@ async function loadResearch(key,run,attempt=0){
   if(!d.complete&&attempt<12){status.className='research-status';status.hidden=false;status.textContent=`Counting older publications on arXiv… ${missing} periods to go.`;researchTimer=setTimeout(()=>loadResearch(key,run,attempt+1),1500)}
   else status.hidden=true;
  }catch(err){if(run!==researchRun)return;status.hidden=false;status.className='research-status error';
-  status.textContent=(navigator.onLine===false?'You are offline. ':'')+'The research feed could not be reached'+(err&&err.message?` (${err.message})`:'')+'. The lesson itself works offline; try again when connected.';}
+  researchShown=false;status.textContent=(navigator.onLine===false?'You are offline. ':'')+'The research feed could not be reached'+(err&&err.message?` (${err.message})`:'')+'. The lesson itself works offline; try again when connected.';}
 }
-function openResearch(){
- const key=branchKey;if(!RESEARCH_LESSONS.has(key))return;
- pauseForWord();clearTimeout(researchTimer);const run=++researchRun;
- if(researchLesson!==key){$('research-body').hidden=true;$('research-title').textContent=branches[key].name;$('research-source').textContent='';}
- researchLesson=key;const status=$('research-status');status.hidden=false;status.className='research-status';
- status.textContent='Fetching the latest arXiv submissions… the first visit of the day can take up to half a minute.';
- if(!researchDialog.open)researchDialog.showModal();$('research-title').focus({preventScroll:true});
- loadResearch(key,run);
+function researchFor(key){
+ const panel=$('research-panel'),on=RESEARCH_LESSONS.has(key);panel.hidden=!on;
+ clearTimeout(researchTimer);researchRun++;if(!on){researchLesson=null;return}
+ if(researchLesson===key)return;
+ researchLesson=key;researchShown=false;$('research-body').hidden=true;$('research-title').textContent=branches[key].name;$('research-source').textContent='';$('research-updated').textContent='';
+ const status=$('research-status');status.hidden=false;status.className='research-status';status.textContent='Scroll here to load the latest arXiv submissions.';
+ if(researchVisible)startResearch();
 }
-function closeResearch(){if(!researchDialog.open)return;clearTimeout(researchTimer);researchRun++;researchDialog.close();$('research').focus({preventScroll:true})}
-function updateResearchButton(){const b=$('research'),on=RESEARCH_LESSONS.has(branchKey);b.hidden=!on;if(on){const l='Recent research on '+branches[branchKey].name;b.title=l;b.setAttribute('aria-label',l)}}
+function startResearch(){
+ if(!researchLesson||researchShown)return;researchShown=true;const run=++researchRun,status=$('research-status');
+ status.hidden=false;status.className='research-status';status.textContent='Fetching the latest arXiv submissions… the first visit of the day can take up to half a minute.';
+ loadResearch(researchLesson,run);
+}
+function updateResearchButton(){researchFor(branchKey)}
 function installResearch(){
- $('research').addEventListener('click',openResearch);
- $('research-close').addEventListener('click',closeResearch);
- researchDialog.addEventListener('cancel',e=>{e.preventDefault();closeResearch()});
- researchDialog.addEventListener('click',e=>{if(e.target!==researchDialog)return;const b=researchDialog.getBoundingClientRect();if(e.clientX<b.left||e.clientX>b.right||e.clientY<b.top||e.clientY>b.bottom)closeResearch()});
- updateResearchButton();
+ if('IntersectionObserver' in window)new IntersectionObserver(es=>{researchVisible=es.some(e=>e.isIntersecting);if(researchVisible)startResearch()},{rootMargin:'200px'}).observe($('research-panel'));
+ else researchVisible=true;
+ researchLesson=null;researchFor(branchKey);
 }
 function installWordHelp(){
  $('words').addEventListener('click',e=>showAllWords(e.currentTarget));
