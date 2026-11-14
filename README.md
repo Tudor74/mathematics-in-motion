@@ -42,3 +42,21 @@ pictograph it descends from, frequency), reduced to three principal components
 that set terminals and corners. Glyphs are drawn from the source pictographs,
 and a frequency-weighted search over variants keeps frequent letters light and
 hard to confuse. Run `node tools/realm-script.mjs` to regenerate.
+
+### v0.2: the garden, encounters and reputation
+
+- **The garden**: a canvas of flowers grown from the social graph. One flower per
+  group held together by friendly ties; petals from group size, layers from
+  clustering, petal length from tie strength, seed spirals from overall bloom.
+  Flowers droop, shed petals and grow thorns as the fabric sours.
+- **Conversation**: a back-and-forth chat with each townsperson, written by the
+  narrator in character and remembered.
+- **Trade**: buy rations from townsfolk and sell them your things; friends give
+  better prices.
+- **Quests**: slay an anomaly, deliver food to a friend, or read a monument.
+- **Fighting townsfolk and creatures**: once each, never to the death. The
+  beaten are carried to one of four sanctuaries to recover, and from then on
+  flee two squares for each one you take toward them.
+- **Allies**: friends and following creatures strike anomalies beside you.
+- **Reputation** (the mean of everyone's tie to you) decides who gives work, how
+  well it pays, quest rewards of magic items, and which magic items shops offer.
