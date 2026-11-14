@@ -1,5 +1,5 @@
 <title>Zigzag Realms</title>
-<meta name="application-version" content="0.2.1">
+<meta name="application-version" content="0.2.2">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -257,7 +257,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
 <div class="wrap">
  <header class="top">
   <div>
-   <p class="eyebrow">A map that writes itself · v0.2.1</p>
+   <p class="eyebrow">A map that writes itself · v0.2.2</p>
    <h1>Zigzag Realms</h1>
    <p class="sub">A river with three towns, a woodland and its magical grove, a mountain with lakes, a waterfall and caves, and a desert are laid out when your journey begins, with townsfolk and creatures living among them. Claude writes everything else one step ahead of you. Every place is kept as a cell in a ZigZag structure, so you can find your way back.</p>
   </div>
@@ -2583,7 +2583,7 @@ function render(){renderPills();renderScriptButton();renderMap();renderCompass()
    events (birdsong, owls, crickets, drips, clinking cups, fire crackle, thunder) are
    scheduled at random, at rates set the same way.
    ============================================================ */
-const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_BASE:.6,PITCH_RIVER:1.6,pitch:.6,riverNear:0,vol:.8,revF:1,lastHere:null,lastScape:null,scapeName:"",
+const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_EXP:{water:.35},PITCH_BASE:.6,PITCH_RIVER:1.6,pitch:.6,riverNear:0,vol:.8,revF:1,lastHere:null,lastScape:null,scapeName:"",
  /* Each kind of place has its own room sound: [reverb seconds, wet level]. */
  SCAPES:{cave:[4.6,.55,"cave"],falls:[2.3,.38,"waterfall"],water:[1.7,.28,"water"],forest:[1.3,.22,"woodland"],grove:[3.2,.42,"grove"],town:[.9,.18,"town"],open:[.8,.12,"open country"],heights:[2.9,.3,"heights"],desert:[.45,.05,"desert"]},
  init(){try{if(localStorage.getItem("zr-sound")==="off")this.on=false}catch(e){}},
@@ -2599,7 +2599,7 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_BASE:.6,PIT
   const c=this.ctx,s=c.createBufferSource();s.buffer=buf;s.loop=true;let node=s;for(const f of chain){node.connect(f);node=f}
   const g=c.createGain();g.gain.value=0;node.connect(g);g.connect(this.master);s.start(0,Math.random()*3);
   if(lfo){const o=c.createOscillator(),og=c.createGain();o.frequency.value=lfo.rate;og.gain.value=lfo.depth;o.connect(og);og.connect(lfo.param(chain,g));o.start()}
-  this.beds[name]=g;this.pitched.push({src:s,filters:chain.map(f=>({f,base:f.frequency.value}))})},
+  this.beds[name]=g;this.pitched.push({src:s,filters:chain.map(f=>({f,base:f.frequency.value})),exp:this.PITCH_EXP[name]??1})},
  /* Noise pitch: everything sits low (PITCH_BASE), and the river raises it. The nearer the
     river, the higher the noise: factor = PITCH_BASE·(1 + PITCH_RIVER·e^(−d/2)), d in squares. */
  riverPitch(){
@@ -2611,7 +2611,7 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_BASE:.6,PIT
  },
  setPitch(){
   if(!this.started)return;const f=this.riverPitch(),now=this.ctx.currentTime;this.pitch=f;
-  for(const b of this.pitched){b.src.playbackRate.setTargetAtTime(f,now,.9);for(const q of b.filters)q.f.frequency.setTargetAtTime(Math.min(16000,q.base*f),now,.9)}
+  for(const b of this.pitched){const g=Math.pow(f,b.exp);b.src.playbackRate.setTargetAtTime(g,now,.9);for(const q of b.filters)q.f.frequency.setTargetAtTime(Math.min(16000,q.base*g),now,.9)}
  },
  start(){
   if(this.started||!this.on)return;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
@@ -2625,7 +2625,9 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_BASE:.6,PIT
   const W=this.noise("white"),P=this.noise("pink"),B=this.noise("brown");
   this.white=W;this.brownBuf=B;
   this.bed("wind",P,[this.filt("bandpass",500,.8)],{rate:.07,depth:300,param:ch=>ch[0].frequency});
-  this.bed("water",W,[this.filt("bandpass",1700,.5),this.filt("lowpass",5000)],{rate:.9,depth:250,param:ch=>ch[0].frequency});
+  // The river: soft pink noise, low-passed and gently resonant, with bubbles scattered on top (see bubble)
+  this.bed("water",P,[this.filt("lowpass",950,.6),this.filt("peaking",420,1.1),this.filt("highpass",120)],{rate:.19,depth:90,param:ch=>ch[1].frequency});
+  this.burbleOut=this.filt("lowpass",1800,.5);this.burbleOut.connect(this.master);
   this.bed("falls",B,[this.filt("lowpass",900)]);
   this.bed("rain",W,[this.filt("highpass",2500)]);
   this.bed("leaves",P,[this.filt("highpass",2800)],{rate:.35,depth:.03,param:(ch,g)=>g.gain});
@@ -2744,6 +2746,7 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_BASE:.6,PIT
  },
  tick(){
   if(!this.started||!this.on||!this.e)return;if(this.ctx.state==="suspended")return;const e=this.e,r=Math.random;
+  if(e.water>.01){const n=Math.round(e.water*30+e.water*e.water*40);for(let i=0;i<n;i++)this.bubble(r(),e.water)}
   if(r()<.22*e.birds)this.birds();
   if(r()<.03*e.owls)this.owl();
   if(r()<.3*e.crickets)this.cricket();
@@ -2757,6 +2760,13 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_BASE:.6,PIT
   o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(Math.max(20,f1),t+dur);
   g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(peak,t+Math.min(.02,dur/4));g.gain.exponentialRampToValueAtTime(.0001,t+dur);
   o.connect(g);g.connect(dest||this.master);o.start(t);o.stop(t+dur+.05)},
+ bubble(at,level){
+  const c=this.ctx,t=c.currentTime+at,o=c.createOscillator(),g=c.createGain(),lift=Math.pow(this.pitch,.3);
+  const f0=(260+Math.random()*420)*lift,dur=.035+Math.random()*.06;o.type="sine";
+  o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f0*(1.5+Math.random()*.7),t+dur);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(Math.min(.05,.012+level*.12),t+.006);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(this.burbleOut);o.start(t);o.stop(t+dur+.02);
+ },
  birds(){const n=2+Math.floor(Math.random()*4),base=2400+Math.random()*2400;for(let i=0;i<n;i++)this.tone(base*(1+Math.random()*.2),base*(.7+Math.random()*.6),.07+Math.random()*.06,.05,i*.13)},
  owl(){this.tone(390,360,.45,.07,0);this.tone(370,330,.7,.06,.6)},
  cricket(){const f=4300+Math.random()*400;for(let i=0;i<5;i++)this.tone(f,f,.025,.012,i*.05)},
