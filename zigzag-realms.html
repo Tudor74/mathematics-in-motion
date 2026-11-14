@@ -1,5 +1,5 @@
 <title>Zigzag Realms</title>
-<meta name="application-version" content="0.2.8">
+<meta name="application-version" content="0.2.9">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -312,7 +312,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
 <div class="wrap">
  <header class="top">
   <div>
-   <p class="eyebrow">A map that writes itself · v0.2.8</p>
+   <p class="eyebrow">A map that writes itself · v0.2.9</p>
    <h1>Zigzag Realms</h1>
    <p class="sub">A river with three towns, a woodland and its magical grove, a mountain with lakes, a waterfall and caves, and a desert are laid out when your journey begins, with townsfolk and creatures living among them. Claude writes everything else one step ahead of you. Every place is kept as a cell in a ZigZag structure, so you can find your way back.</p>
   </div>
@@ -604,6 +604,13 @@ const towns=()=>Object.values(zz.cells).filter(c=>c.k==="loc"&&c.town);
 const npcs=()=>Object.values(zz.cells).filter(c=>c.k==="npc");
 const npcsAt=(x,y)=>npcs().filter(n=>n.x===x&&n.y===y);
 const hasLight=()=>!!charId()&&packIds().some(id=>cell(id).light);
+/* A lantern carries you only so far into the night: two game hours of travel (four steps), then you
+   must rest. The allowance belongs to one night and refills when you rest or the sun comes up. */
+const LANTERN_NIGHT_MIN=120;
+const nightKey=t=>isNight(t)?(hourOf(t)>=20?dayOf(t):dayOf(t)-1):null;
+function nightUsed(t=gameNow()){const ch=charId()&&cell(charId());if(!ch||!ch.nightWalk||!isNight(t))return 0;return ch.nightWalk.key===nightKey(t)?ch.nightWalk.min:0}
+function spendNight(min,t){if(!isNight(t))return;const ch=cell(charId());ch.nightWalk={key:nightKey(t),min:nightUsed(t)+min};touch(ch.id)}
+const nightLeft=(t=gameNow())=>Math.max(0,LANTERN_NIGHT_MIN-nightUsed(t));
 const isDark=c=>c&&(["cave","dungeon"].includes(c.terrain)||zOf(c)<0);
 const exitOpen=(c,d)=>!c||!c.exits||c.exits[d]!==false;
 function wallText(c,d){if(c&&c.walls&&c.walls[d])return c.walls[d];return d==="up"?"no way up":d==="down"?"no way down":"no way through"}
@@ -623,6 +630,8 @@ function blockedBy(here,dir){
   const targetDark=T?isDark(T):zOf(H)+v.dz<0;
   if(targetDark&&!(T&&T.visited&&isDark(H)))return"It is pitch dark that way. You need a lantern to go underground.";
   if(isNight(gameNow())&&!(T&&T.town)&&!isDark(H))return"It is too dark to travel at night without a lantern. Make camp until dawn, or take a room at an inn in a town.";
+ }else if(isNight(gameNow())&&nightLeft()<=0&&!(T&&T.town)){
+  return"Your lantern has carried you two hours into the night and you are spent. Make camp, or take a room at an inn, before going on.";
  }
  return null;
 }
@@ -1613,6 +1622,7 @@ async function move(dir){
   const b2=blockedBy(here,dir);if(b2){flash=b2;store.flush();render();return}
  }
  const next=coord.get(key),N=cell(next),firstTime=!N.visited;
+ spendNight(STEP_MIN,gameNow());
  if(wrapC(H.x+v.dx)!==H.x+v.dx||wrapC(H.y+v.dy)!==H.y+v.dy)log("You walk into the veil of golden mist. For a long moment there is nothing but warm, bright haze, and then it thins, and you are on the far side of the world.","time");
  log(`You ${verb} ${firstTime?"into somewhere new: ":"to "}${N.t}.`);
  if(N.river&&N.river.crossing==="ford")fordCheck();
@@ -1644,6 +1654,8 @@ function travelTo(target){
  const rb=riverBlock(target);if(rb){flash=rb;render();return}
  const p=pathTo(target);if(!p){flash=`You know no open route to ${T.t} right now.`;render();return}
  if(!hasLight()&&isNight(gameNow())&&!(T.town&&p.length===1)){flash="It is too dark to travel at night without a lantern. Make camp until dawn, or take a room at an inn in a town.";render();return}
+ if(hasLight()&&isNight(gameNow())&&p.length*STEP_MIN>nightLeft()&&!(T.town&&p.length===1)){flash=`That is ${p.length} steps; your lantern has ${nightLeft()/STEP_MIN} left in it tonight before you must rest.`;render();return}
+ spendNight(p.length*STEP_MIN,gameNow());
  flash=null;
  log(`You make your way to ${T.t} (${p.length} ${p.length===1?"step":"steps"}).`);
  enter(target,!T.visited);shunPlayer();if(!isDowned())passTime(STEP_MIN*p.length);store.flush();render();
@@ -1709,7 +1721,7 @@ function rest(){
    msg+=` As you leave, the eldest keeper presses a hand to your brow: you feel ${{STR:"stronger",DEX:"quicker",CON:"hardier",INT:"sharper",WIS:"wiser",CHA:"more at ease with people"}[stat]} (+${amount} ${stat} for ${days} days).`}}
  else if(L.grove){after=max;msg=`You make camp beneath the silver trees of ${L.t}. You wake fully healed (+${max-before} HP), with the wisps' humming still in your ears.`}
  else{after=Math.min(max,before+Math.ceil(max/2));msg=`You make camp at ${L.t}${isNight(t)?" and sleep until dawn":" for eight hours"} (+${after-before} HP).`}
- setStat("HP",after);ch.windUsed=false;touch(ch.id);log(msg,"good");
+ setStat("HP",after);ch.windUsed=false;ch.nightWalk=null;touch(ch.id);log(msg,"good");
  passTime(span);store.flush();render();
 }
 
@@ -2546,6 +2558,7 @@ function renderPlace(){
  html+=`<p class="desc${busy?" busy":""}">${linkify(L.river&&L.river.crossing==="magic"&&magic&&L.descPresent?L.descPresent:L.desc)}</p>`;
  if(fireAt(L.x,L.y,zOf(L)))html+=`<p class="flash sharp">This place is burning. Get out before the fire takes you.</p>`;
  else if(fireNear(L.x,L.y)&&zOf(L)===0)html+=`<p class="flash">Smoke drifts across your path: there is a fire close by.</p>`;
+ if(isNight(t)&&hasLight()&&!L.town)html+=nightLeft()>0?`<p class="note">Lantern lit: ${nightLeft()/60} hour${nightLeft()===60?"":"s"} (${nightLeft()/STEP_MIN} step${nightLeft()===STEP_MIN?"":"s"}) of night travel left before you must rest.</p>`:`<p class="flash">You have walked as far into the night as your lantern and legs allow. Make camp, or take a room at an inn.</p>`;
  if(isNight(t)&&!hasLight()&&!L.town&&zOf(L)>=0)html+=`<p class="note">It is dark and you have no lantern. Make camp here until dawn, or reach a town and take a room at the inn.</p>`;
  if(L.town)html+=`<p class="note">A room at the inn costs 2 gp and heals you fully. ${cell(here).c["residents+"]?`${rank(here,"residents").length} people call ${esc(L.t)} home.`:""} Goods for sale are listed below.</p>`;
  const P=paladin();if(P){const d=Math.abs(wrapC(P.x-L.x))+Math.abs(wrapC(P.y-L.y));html+=`<p class="flash sharp">${esc(P.t)}, a paladin from ${esc(P.from)}, is hunting you, about ${d} square${d===1?"":"s"} away, moving two squares for each of yours. When they reach you, they will take your magic items.</p>`}

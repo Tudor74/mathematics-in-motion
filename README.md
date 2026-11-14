@@ -79,3 +79,5 @@ hard to confuse. Run `node tools/realm-script.mjs` to regenerate.
   3 hours 50 minutes. At nightfall a friendly overlay suggests a break: stretch,
   pet the cat (or dog, or imaginary friend), and get some water. It can be
   switched off.
+- **Lantern limit** (v0.2.9): a lantern gives two game hours (four steps) of
+  night travel; then you must make camp or take a room. Resting or dawn refills it.
