@@ -1,0 +1,707 @@
+<title>Zigzag Realms</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a surveyor's field journal in three columns: map and compass | the place you stand | your character sheet. One column on phones. */
+:root{
+ --paper:#edf0e8; --sheet:#f8faf4; --ink:#1e2925; --faint:#5a6862; --rule:#c6d0c4; --wash:#e2e8dd;
+ --accent:#8b4c1f; --accent-ink:#fff8f0; --water:#2e6487; --danger:#a2322a; --good:#2d6a3e;
+ --t-forest:#a9c59d; --t-plains:#d9dca8; --t-water:#a3c4d6; --t-mountain:#c3bcb0; --t-cave:#b1aab8;
+ --t-dungeon:#a9a3a0; --t-village:#e0c39c; --t-ruin:#cdbfa8; --t-swamp:#a8b994; --t-road:#d8cdb4; --t-other:#c9d0c4;
+ --display:"Alegreya SC",Georgia,"Times New Roman",serif;
+ --body:"Alegreya Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+ --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+ --paper:#111916; --sheet:#17211d; --ink:#e2e9e1; --faint:#98a8a0; --rule:#2d3c36; --wash:#1d2924;
+ --accent:#d79a5f; --accent-ink:#1b120a; --water:#76add0; --danger:#e57a68; --good:#82c594;
+ --t-forest:#355a3a; --t-plains:#5c5d34; --t-water:#2c5269; --t-mountain:#55504a; --t-cave:#4a4456;
+ --t-dungeon:#47413f; --t-village:#6c5434; --t-ruin:#5d5444; --t-swamp:#3f4d33; --t-road:#5f5643; --t-other:#3b4741;
+ color-scheme:dark}}
+:root[data-theme="dark"]{
+ --paper:#111916; --sheet:#17211d; --ink:#e2e9e1; --faint:#98a8a0; --rule:#2d3c36; --wash:#1d2924;
+ --accent:#d79a5f; --accent-ink:#1b120a; --water:#76add0; --danger:#e57a68; --good:#82c594;
+ --t-forest:#355a3a; --t-plains:#5c5d34; --t-water:#2c5269; --t-mountain:#55504a; --t-cave:#4a4456;
+ --t-dungeon:#47413f; --t-village:#6c5434; --t-ruin:#5d5444; --t-swamp:#3f4d33; --t-road:#5f5643; --t-other:#3b4741;
+ color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;margin:0}
+.wrap{max-width:1240px;margin:0 auto;padding-block:18px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:16px}
+button,input,select,textarea{font:inherit;color:inherit}
+button{background:var(--sheet);border:1px solid var(--rule);border-radius:6px;padding:6px 12px;min-height:36px;cursor:pointer;font-weight:500}
+button:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+button:disabled{opacity:.45;cursor:default}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+button.primary:hover:not(:disabled){color:var(--accent-ink);filter:brightness(1.07)}
+button.small{min-height:30px;padding:3px 9px;font-size:14px}
+:focus-visible{outline:2px solid var(--water);outline-offset:2px}
+input,select,textarea{background:var(--sheet);border:1px solid var(--rule);border-radius:6px;padding:7px 9px;width:100%}
+label{display:grid;gap:4px;font-size:14px;color:var(--faint)}
+h1,h2,h3{font-family:var(--display);font-weight:700;margin:0;text-wrap:balance;letter-spacing:.01em}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:0}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px 20px;border-bottom:2px solid var(--ink);padding-bottom:10px}
+header.top h1{font-size:clamp(28px,4vw,40px);line-height:1}
+header.top .sub{color:var(--faint);font-size:15px;margin:4px 0 0;max-width:60ch}
+.pills{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pill{font-family:var(--mono);font-size:12px;border:1px solid var(--rule);border-radius:99px;padding:3px 10px;color:var(--faint);background:var(--sheet);white-space:nowrap}
+.pill b{color:var(--ink);font-weight:500}
+.pill.warn b{color:var(--danger)}
+
+.grid{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr) minmax(0,330px);gap:16px;align-items:start}
+.panel{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:16px;min-width:0;display:grid;gap:14px;align-content:start}
+.col{display:grid;gap:16px;min-width:0;align-content:start}
+
+/* Map */
+.map svg{display:block;width:100%;height:auto;max-width:100%;aspect-ratio:1/1;background:var(--wash);border-radius:6px}
+.map .gridline{stroke:var(--rule);stroke-width:1}
+.map .link{stroke:var(--ink);stroke-width:3;stroke-linecap:round;opacity:.55}
+.map .tile{stroke:var(--ink);stroke-opacity:.35;stroke-width:1;cursor:pointer}
+.map .tile:hover{stroke-opacity:1;stroke-width:2}
+.map .glyph{fill:none;stroke:var(--ink);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;opacity:.7;pointer-events:none}
+.map .here{fill:none;stroke:var(--accent);stroke-width:3.5}
+.map .pawn{fill:var(--accent);stroke:var(--sheet);stroke-width:2;pointer-events:none}
+.map .frontier{fill:transparent;stroke:var(--faint);stroke-dasharray:4 4;stroke-width:1.4;cursor:pointer}
+.map .frontier:hover{stroke:var(--accent)}
+.map .q{fill:var(--faint);font-family:var(--mono);font-size:15px;pointer-events:none}
+.map .axis{fill:var(--faint);font-family:var(--mono);font-size:10px}
+.t-forest{fill:var(--t-forest)}.t-plains{fill:var(--t-plains)}.t-water{fill:var(--t-water)}.t-mountain{fill:var(--t-mountain)}.t-cave{fill:var(--t-cave)}.t-dungeon{fill:var(--t-dungeon)}.t-village{fill:var(--t-village)}.t-ruin{fill:var(--t-ruin)}.t-swamp{fill:var(--t-swamp)}.t-road{fill:var(--t-road)}.t-other{fill:var(--t-other)}
+.mapnote{font-size:13px;color:var(--faint);margin:0}
+
+.compass{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-areas:". n ." "w c e" ". s .";gap:6px}
+.compass button{display:grid;gap:0;padding:6px 6px;min-height:58px;text-align:center;line-height:1.2}
+.compass button .dir{font-family:var(--display);font-size:17px;font-weight:700}
+.compass button .to{font-size:12px;color:var(--faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.compass .n{grid-area:n}.compass .s{grid-area:s}.compass .e{grid-area:e}.compass .w{grid-area:w}
+.compass .c{grid-area:c;display:grid;place-items:center;text-align:center;font-family:var(--mono);font-size:12px;color:var(--faint);border:1px dashed var(--rule);border-radius:6px}
+.keys{font-size:12px;color:var(--faint);margin:0}
+
+/* Location */
+.place h2{font-size:clamp(26px,3.4vw,36px);line-height:1.08}
+.placehead{display:grid;gap:6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--mono);font-size:12px;padding:2px 8px;border-radius:4px;background:var(--wash);color:var(--faint)}
+.chip.terrain{color:var(--ink)}
+.desc{font-size:18px;line-height:1.6;max-width:62ch;margin:0;white-space:pre-line}
+.desc.busy{opacity:.45}
+.mapping{font-family:var(--mono);font-size:13px;color:var(--accent);margin:0}
+.mapping::after{content:"";display:inline-block;width:1.4em;text-align:left;animation:dots 1.2s steps(4) infinite}
+@keyframes dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
+.hazard{border-left:3px solid var(--danger);padding:6px 12px;background:var(--wash);border-radius:0 6px 6px 0;font-size:15px}
+.hazard.passed{border-left-color:var(--good)}
+.hazard b{font-family:var(--display)}
+.hazard .roll{font-family:var(--mono);font-size:12.5px;color:var(--faint);display:block;margin-top:2px}
+
+.items{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.items li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:9px 0;border-top:1px solid var(--rule)}
+.items li:first-child{border-top:0}
+.items .nm{font-weight:700}
+.items .meta{font-family:var(--mono);font-size:11.5px;color:var(--faint);display:block}
+.items .about{font-size:14px;color:var(--faint);display:block}
+.items .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.empty{color:var(--faint);font-size:14px;font-style:italic;margin:0}
+.sectionhead{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.sectionhead h3{font-size:19px}
+
+/* ZigZag inspector */
+details.zz{border-top:1px solid var(--rule);padding-top:10px}
+details.zz summary{cursor:pointer;font-family:var(--mono);font-size:13px;color:var(--faint)}
+.zztable{overflow-x:auto;margin-top:8px}
+.zztable table{border-collapse:collapse;font-family:var(--mono);font-size:12px;width:100%;min-width:420px}
+.zztable th,.zztable td{border-bottom:1px solid var(--rule);padding:5px 6px;text-align:left;vertical-align:top}
+.zztable th{color:var(--faint);font-weight:500}
+.zztable td.mid{color:var(--accent)}
+.zzhelp{font-size:13px;color:var(--faint);margin:8px 0 0;max-width:70ch}
+
+/* Character */
+.who{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.who h2{font-size:26px}
+.hpbar{height:12px;border-radius:99px;background:var(--wash);border:1px solid var(--rule);overflow:hidden}
+.hpbar span{display:block;height:100%;background:var(--good);transition:width .3s}
+.hpbar.low span{background:var(--danger)}
+.hprow{display:flex;justify-content:space-between;font-family:var(--mono);font-size:13px}
+.abil{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.abil div{border:1px solid var(--rule);border-radius:6px;text-align:center;padding:5px 2px;display:grid;line-height:1.15}
+.abil .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--faint)}
+.abil .v{font-family:var(--display);font-size:22px;font-weight:700}
+.abil .m{font-family:var(--mono);font-size:12px;color:var(--faint)}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 12px;margin:0}
+.facts div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dotted var(--rule);padding:3px 0;font-size:14px}
+.facts dt{color:var(--faint)}.facts dd{margin:0;font-family:var(--mono);font-size:13px}
+
+/* Log */
+.log ol{list-style:none;margin:0;padding:0;display:grid;gap:4px;max-height:240px;overflow:auto;font-size:14px}
+.log li{padding-left:12px;border-left:2px solid var(--rule)}
+.log li.bad{border-left-color:var(--danger)}.log li.good{border-left-color:var(--good)}
+.log .roll{font-family:var(--mono);font-size:12px;color:var(--faint)}
+
+/* Creation */
+.create{display:grid;gap:14px}
+.create .row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.rolled{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.rolled div{border:1px solid var(--rule);border-radius:6px;text-align:center;padding:6px 2px;display:grid}
+.rolled .k{font-family:var(--mono);font-size:11px;color:var(--faint)}
+.rolled .v{font-family:var(--display);font-size:24px;font-weight:700}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.note{font-size:14px;color:var(--faint);margin:0;max-width:65ch}
+.confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:14px}
+
+@media (max-width:1040px){.grid{grid-template-columns:minmax(0,300px) minmax(0,1fr)}.col.right{grid-column:1 / -1;grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:720px){.grid{grid-template-columns:minmax(0,1fr)}.col.right{grid-template-columns:minmax(0,1fr)}.place{order:-1}.create .row{grid-template-columns:1fr}.rolled{grid-template-columns:repeat(3,minmax(0,1fr))}.desc{font-size:17px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+ <header class="top">
+  <div>
+   <p class="eyebrow">A map that writes itself</p>
+   <h1>Zigzag Realms</h1>
+   <p class="sub">Walk north, south, east or west. Each unexplored step is written by Claude from the place you just left, then kept as a cell in a ZigZag structure so you can walk back to it.</p>
+  </div>
+  <div class="pills">
+   <span class="pill" id="pill-ai">Narrator: <b>connecting…</b></span>
+   <span class="pill" id="pill-save">World: <b>loading…</b></span>
+   <span class="pill" id="pill-cells">Cells: <b>0</b></span>
+  </div>
+ </header>
+
+ <div class="grid">
+  <div class="col left">
+   <section class="panel map" aria-labelledby="map-h">
+    <div class="sectionhead"><h3 id="map-h">Survey map</h3><span class="mono" id="coords" style="font-size:12px;color:var(--faint)"></span></div>
+    <svg id="map" viewBox="0 0 420 420" role="img" aria-label="Map of explored places around you"></svg>
+    <p class="mapnote" id="mapnote">Click a dashed square to explore it, or any mapped square to walk back there.</p>
+   </section>
+   <section class="panel" aria-label="Movement">
+    <div class="compass" id="compass">
+     <button class="n" id="go-north" data-dir="north"><span class="dir">North</span><span class="to"></span></button>
+     <button class="w" id="go-west" data-dir="west"><span class="dir">West</span><span class="to"></span></button>
+     <div class="c" id="compass-c">—</div>
+     <button class="e" id="go-east" data-dir="east"><span class="dir">East</span><span class="to"></span></button>
+     <button class="s" id="go-south" data-dir="south"><span class="dir">South</span><span class="to"></span></button>
+    </div>
+    <p class="keys">Keys: arrow keys or W A S D to move, R to rest.</p>
+   </section>
+  </div>
+
+  <section class="panel place" id="place" aria-live="polite"></section>
+
+  <div class="col right">
+   <section class="panel" id="sheet" aria-label="Character sheet"></section>
+   <section class="panel" id="pack" aria-label="Your pack"></section>
+   <section class="panel log" aria-labelledby="log-h">
+    <div class="sectionhead"><h3 id="log-h">Journal</h3><span id="reset-area"></span></div>
+    <ol id="log"></ol>
+   </section>
+  </div>
+ </div>
+</div>
+
+<script>
+"use strict";
+/* ============================================================
+   ZigZag core. Every thing in the game is a cell. Cells link to
+   one another along named dimensions; each cell has at most one
+   neighbour in each direction (+ posward, - negward) of a dimension.
+     d.x       east (+) / west (-)
+     d.y       north (+) / south (-)
+     d.contain a store: container, then its items, as one rank
+     d.stat    a character, then its stat cells, as one rank
+     d.at      character (+) -> the location it stands in
+     d.cursor  the root cell (+) -> the character
+   ============================================================ */
+const zz={cells:{},dirty:new Set(),removed:new Set()};
+const coord=new Map();                    // "x,y" -> location cell id (index, rebuilt on load)
+const ck=(x,y)=>x+","+y;
+const cell=id=>zz.cells[id];
+const touch=id=>{zz.dirty.add(id)};
+const flip=s=>s==="+"?"-":"+";
+function step(id,dim,sign){const c=cell(id);return c&&c.c[dim+sign]||null}
+function disconnect(a,dim,sign){
+ const b=step(a,dim,sign);if(!b)return;
+ delete cell(a).c[dim+sign];if(cell(b))delete cell(b).c[dim+flip(sign)];touch(a);touch(b);
+}
+function connect(a,dim,b){                // a --dim+--> b
+ disconnect(a,dim,"+");disconnect(b,dim,"-");
+ cell(a).c[dim+"+"]=b;cell(b).c[dim+"-"]=a;touch(a);touch(b);
+}
+function rank(id,dim){const out=[],seen=new Set([id]);let cur=step(id,dim,"+");while(cur&&!seen.has(cur)){seen.add(cur);out.push(cur);cur=step(cur,dim,"+")}return out}
+function excise(id,dim){const p=step(id,dim,"-"),n=step(id,dim,"+");if(p)disconnect(p,dim,"+");if(n)disconnect(id,dim,"+");if(p&&n)connect(p,dim,n)}
+function appendTo(head,dim,id){const r=rank(head,dim);connect(r.length?r[r.length-1]:head,dim,id)}
+function newCell(k,props){const root=cell("root");root.seq++;touch("root");const id="c"+root.seq;zz.cells[id]=Object.assign({id,k,c:{}},props);touch(id);return id}
+function destroy(id){const c=cell(id);if(!c)return;for(const key of Object.keys(c.c)){disconnect(id,key.slice(0,-1),key.slice(-1))}delete zz.cells[id];zz.dirty.delete(id);zz.removed.add(id)}
+
+/* ============================================================
+   Game vocabulary
+   ============================================================ */
+const DIRS={
+ north:{dim:"y",sign:"+",dx:0,dy:1,opp:"south",keys:["ArrowUp","w","W"]},
+ south:{dim:"y",sign:"-",dx:0,dy:-1,opp:"north",keys:["ArrowDown","s","S"]},
+ east:{dim:"x",sign:"+",dx:1,dy:0,opp:"west",keys:["ArrowRight","d","D"]},
+ west:{dim:"x",sign:"-",dx:-1,dy:0,opp:"east",keys:["ArrowLeft","a","A"]}
+};
+const STATS=["STR","DEX","CON","INT","WIS","CHA"];
+const TERRAINS=["forest","plains","water","mountain","cave","dungeon","village","ruin","swamp","road"];
+const KINDS=["weapon","armor","potion","treasure","tool","food","junk"];
+const CLASSES={Fighter:{hd:10,kit:[["Longsword","A plain, well-kept blade.","weapon",3,15],["Chain shirt","Rings of steel over a padded jerkin.","armor",20,50,null,3]]},
+ Rogue:{hd:8,kit:[["Shortsword","Light and quick.","weapon",2,10],["Thieves' tools","Picks, a file and a tiny mirror.","tool",1,25],["Leather armour","Supple boiled leather.","armor",10,10,null,1]]},
+ Wizard:{hd:6,kit:[["Spellbook","Your notes, cramped and precious.","tool",3,50],["Dagger","Mostly for cutting herbs.","weapon",1,2]]},
+ Cleric:{hd:8,kit:[["Mace","Iron-headed, simple.","weapon",4,5],["Holy symbol","A silver sun on a cord.","tool",1,5],["Scale mail","Heavy overlapping plates.","armor",45,50,null,4]]}};
+const GLYPH={forest:"M17 32 L23 17 L29 32 Z M25 33 L31 15 L37 33 Z",mountain:"M11 33 L21 16 L27 25 L32 18 L41 33",
+ water:"M12 21 q3.5 -4 7 0 t7 0 t7 0 t7 0 M12 29 q3.5 -4 7 0 t7 0 t7 0 t7 0",village:"M18 33 V23 L26 15 L34 23 V33 Z M23 33 V27 H29 V33",
+ ruin:"M15 33 H37 M19 33 V17 H24 M30 33 V22 L34 20 V33",cave:"M13 33 Q13 14 26 14 Q39 14 39 33 M20 33 Q20 23 26 23 Q32 23 32 33",
+ dungeon:"M16 33 V16 H36 V33 M21 33 V23 H31 V33 M16 20 H36",swamp:"M13 31 H39 M18 31 V21 M22 31 V17 M30 31 V22 M34 31 V18",
+ plains:"M14 26 q3 -3 6 0 M25 21 q3 -3 6 0 M30 30 q3 -3 6 0 M17 33 q3 -3 6 0",road:"M14 35 L23 14 M38 35 L29 14 M26 31 V28 M26 24 V21",other:"M20 25 H32 M26 19 V31"};
+
+/* Dice */
+const rnd=n=>1+Math.floor(Math.random()*n);
+const mod=v=>Math.floor((v-10)/2);
+const sgn=m=>(m>=0?"+":"−")+Math.abs(m);
+const DICE=/^(\d{1,2})d(\d{1,3})([+-]\d{1,2})?$/;
+function roll(expr){
+ const m=DICE.exec(String(expr).replace(/\s/g,""));if(!m)return{total:0,text:"no roll"};
+ const n=Math.min(+m[1],12),s=Math.max(2,+m[2]),b=+(m[3]||0),rolls=[];for(let i=0;i<n;i++)rolls.push(rnd(s));
+ const total=Math.max(0,rolls.reduce((a,c)=>a+c,0)+b);
+ return{total,text:`${n}d${s}${b?(b>0?"+"+b:b):""} → [${rolls.join(", ")}]${b?(b>0?" + "+b:" − "+(-b)):""} = ${total}`};
+}
+function rollStats(){return STATS.map(()=>{const r=[rnd(6),rnd(6),rnd(6),rnd(6)].sort((a,b)=>a-b);return r[1]+r[2]+r[3]})}
+
+/* ============================================================
+   Character helpers (all reads go through the ZigZag cells)
+   ============================================================ */
+const charId=()=>step("root","cursor","+");
+const hereId=()=>charId()&&step(charId(),"at","+");
+const statCell=name=>rank(charId(),"stat").map(cell).find(c=>c.t===name);
+const sv=name=>statCell(name)?.v??0;
+function setStat(name,v){const c=statCell(name);if(c&&c.v!==v){c.v=v;touch(c.id)}}
+const packIds=()=>rank(charId(),"contain");
+const storeIds=loc=>rank(loc,"contain");
+const carried=()=>packIds().reduce((a,id)=>a+(+cell(id).weight||0),0);
+const capacity=()=>sv("STR")*15;
+function armourBonus(){return packIds().map(cell).filter(i=>i.worn).reduce((a,i)=>Math.max(a,+i.ac||0),0)}
+function armourClass(){return 10+mod(sv("DEX"))+armourBonus()}
+const hitDie=()=>CLASSES[cell(charId()).cls]?.hd||8;
+
+/* ============================================================
+   Storage: the viewer's private subtree in the artifact db when
+   available, this browser's localStorage otherwise.
+   ============================================================ */
+const LS_KEY="zigzag-realms-v1";
+const store={mode:"none",db:null,uid:null,chain:Promise.resolve(),error:null,
+ col(){return this.db.doc(`data/users/${this.uid}/world`).collection("cells")},
+ async connect(){
+  try{
+   if(window.claude&&claude.use){
+    const [db,user]=await Promise.all([claude.use("db"),claude.use("user")]);
+    if(db&&user){const uid=await user.id();if(uid){this.db=db;this.uid=uid;this.mode="cloud";return}}
+   }
+  }catch(e){}
+  this.mode="local";
+ },
+ async load(){
+  if(this.mode==="cloud"){
+   try{
+    const snap=await Promise.race([this.col().get(),new Promise((_,rej)=>setTimeout(()=>rej({code:"timeout"}),10000))]);
+    const cells={};for(const d of snap.docs){if(d.exists)cells[d.id]=JSON.parse(JSON.stringify(d.data()))}
+    if(cells.root){this.from="cloud";return cells}
+    return this.loadLocal(); // nothing in the cloud yet: adopt any browser copy
+   }catch(e){this.mode="local";this.error="Could not reach your saved world, so this session saves in this browser."}
+  }
+  return this.loadLocal();
+ },
+ loadLocal(){try{const raw=localStorage.getItem(LS_KEY);if(raw){const o=JSON.parse(raw);if(o&&o.root)return o}}catch(e){}return null},
+ saveLocal(){try{localStorage.setItem(LS_KEY,JSON.stringify(zz.cells))}catch(e){}},
+ flush(){
+  this.saveLocal();
+  if(this.mode!=="cloud"){zz.dirty.clear();zz.removed.clear();renderSaving();return}
+  const writes=[...zz.dirty].map(id=>[id,cell(id)?JSON.parse(JSON.stringify(cell(id))):null]);
+  for(const id of zz.removed)if(!cell(id))writes.push([id,null]);
+  zz.dirty.clear();zz.removed.clear();
+  if(!writes.length)return;
+  pending++;renderSaving();
+  this.chain=this.chain.then(async()=>{
+   for(const [id,body] of writes){
+    const ref=this.col().doc(id);
+    try{body?await ref.set(body):await ref.delete()}
+    catch(e){
+     if(e&&e.code==="unavailable"){await new Promise(r=>setTimeout(r,600+Math.random()*900));try{body?await ref.set(body):await ref.delete()}catch(e2){this.error="Some changes could not be saved to your account; they are kept in this browser."}}
+     else this.error=e&&e.code==="quota_exceeded"?"Your saved world is full. Start a new world to keep saving.":"Some changes could not be saved to your account; they are kept in this browser.";
+    }
+   }
+  }).finally(()=>{pending--;renderSaving()});
+ }
+};
+let pending=0;
+
+/* ============================================================
+   The narrator: Claude through the sample capability, or the
+   built-in tables when Claude is not available in this view.
+   ============================================================ */
+let sample=null,narratorNote="";
+const TABLES={
+ forest:{names:["Thornwood Edge","Elder Grove","Mossbank Hollow","Owl's Reach","Fernmere Wood"],lines:["Old oaks lean together overhead, their roots knuckled through the leaf litter.","Grey light falls between the pines and the air smells of resin and wet bark.","A deer path winds between birches; somewhere a woodpecker knocks and stops."]},
+ plains:{names:["Windmeet Downs","Barrow Field","The Long Grass","Kestrel Heath"],lines:["Grass runs to the horizon in long silver waves under a wide sky.","A lone standing stone leans in the middle of the heath, furred with lichen.","Larks rise from the turf; the wind has nothing to stop it here."]},
+ water:{names:["Saltreed Ford","Heron Pool","The Narrow Water","Millrace Bend"],lines:["Brown water slides past, quick and cold, over a bed of round stones.","Reeds crowd a still pool where a heron stands as if carved.","Stepping stones cross the stream, green with weed and slick."]},
+ mountain:{names:["Raven Scar","The Grey Shoulder","Cairn Pass","Hollowpeak"],lines:["The path climbs between boulders; below, the land falls away into haze.","Wind whistles through a notch in the ridge marked by a crooked cairn.","Scree rattles underfoot and the air is thin and bitter."]},
+ cave:{names:["The Dripping Mouth","Glowworm Hollow","Bat Gallery"],lines:["A cave mouth breathes cold air; water ticks somewhere in the dark.","Pale fungus lights the tunnel walls a faint, sickly green.","The ceiling is alive with sleeping bats, and the floor is soft with their leavings."]},
+ dungeon:{names:["The Sunken Vault","Warden's Cells","Hall of Broken Shields"],lines:["Worked stone, a corridor of iron sconces long since cold.","A collapsed portcullis half-blocks a hall lined with empty niches.","Chains hang from the walls of a low, damp cell block."]},
+ village:{names:["Hobb's Crossing","Little Marrow","Fennick Green"],lines:["A cluster of thatched cottages, a well, and a dog that will not stop barking.","Smoke rises from a smithy; a few villagers watch you over a fence.","A market cross stands at the heart of a muddy green."]},
+ ruin:{names:["The Old Watchtower","Fallen Chapel","Broken Wall"],lines:["A tower stands roofless, one wall fallen outward in a fan of stone.","Ivy holds together what is left of a chapel; its windows are empty arches.","Toppled pillars lie in the grass like the bones of something huge."]},
+ swamp:{names:["Bitter Fen","Mirewatch","Black Sedge"],lines:["The ground gives under every step; pools of black water steam faintly.","Dead trees stand in the fen, white as bone, draped in moss.","Frogs fall silent as you pass, and something large slips into the water."]},
+ road:{names:["King's Road","Drovers' Way","Milestone Bend"],lines:["A rutted road runs on, marked by a weathered milestone.","Cart tracks and hoofprints, both fresh, press into the mud.","The road dips between hedges thick with bramble."]}
+};
+const LOOT={forest:[["Bundle of herbs","Feverfew and woundwort, tied with twine.","potion",0.5,5,"1d4+1"]],plains:[["Flint arrowheads","Three neat points in a twist of cloth.","junk",0.2,1]],
+ water:[["River pearl","Lumpy, but it gleams.","treasure",0,20]],mountain:[["Climbing rope","Fifty feet of hempen rope.","tool",10,1]],cave:[["Glowcap mushroom","Faintly luminous; supposedly restorative.","food",0.2,2,"1d4"]],
+ dungeon:[["Rusted shield","Dented but sound.","armor",6,5,null,2],["Tarnished coins","A handful of old silver.","treasure",0.5,12]],village:[["Loaf of bread","Still a little warm.","food",0.5,1,"1d4"]],
+ ruin:[["Potion of Healing","A red liquid that shimmers when shaken.","potion",0.5,50,"2d4+2"]],swamp:[["Bog-iron dagger","Pitted and black.","weapon",1,2]],road:[["Lost purse","A few coins inside.","treasure",0.2,8]]};
+const HAZARDS={mountain:["Loose scree","DEX","1d6"],water:["Slick stepping stones","DEX","1d4"],swamp:["Sucking mire","STR","1d6"],dungeon:["Dart trap","DEX","1d8"],cave:["Low, jagged ceiling","DEX","1d4"],ruin:["Crumbling masonry","DEX","1d6"],forest:["Nettle thicket","CON","1d4"]};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function tableLocation(from,dir,dist){
+ const terrain=from&&Math.random()<.55?from.terrain:pick(TERRAINS);const T=TABLES[terrain]||TABLES.plains;
+ const lead=from?`You go ${dir} from ${from.t}. `:"";
+ const lines=T.lines.slice().sort(()=>Math.random()-.5),text=lines[0]+(Math.random()<.6?" "+lines[1]:"");
+ const items=[];if(LOOT[terrain]&&Math.random()<.6)items.push(pick(LOOT[terrain]));
+ const hz=HAZARDS[terrain]&&from&&Math.random()<.3?HAZARDS[terrain]:null;
+ return normLocation({name:pick(T.names),terrain,description:lead+text,
+  items:items.map(([name,description,kind,weight,value,heal,ac])=>({name,description,kind,weight,value,heal,ac})),
+  hazard:hz?{name:hz[0],text:"The way here is treacherous.",stat:hz[1],dc:10+Math.min(5,Math.floor(dist/3)),damage:hz[2]}:null},terrain);
+}
+function normItem(i){
+ const kind=KINDS.includes(i&&i.kind)?i.kind:"junk";
+ const heal=i&&DICE.test(String(i.heal||"").replace(/\s/g,""))&&(kind==="potion"||kind==="food")?String(i.heal).replace(/\s/g,""):null;
+ const ac=kind==="armor"?Math.max(1,Math.min(5,Math.round(+i.ac||1))):0;
+ return{name:String(i&&i.name||"Odd trinket").slice(0,60),desc:String(i&&i.description||"").slice(0,200),kind,
+  weight:Math.max(0,Math.min(60,+i.weight||0)),value:Math.max(0,Math.min(1000,Math.round(+i.value||0))),heal,ac};
+}
+function normLocation(o,fallbackTerrain){
+ o=o&&typeof o==="object"?o:{};
+ const terrain=TERRAINS.includes(o.terrain)?o.terrain:(fallbackTerrain||"plains");
+ let hazard=null;const h=o.hazard;
+ if(h&&typeof h==="object"&&h.name&&STATS.includes(h.stat)&&DICE.test(String(h.damage||"").replace(/\s/g,""))){
+  hazard={name:String(h.name).slice(0,60),text:String(h.text||"").slice(0,240),stat:h.stat,dc:Math.max(8,Math.min(18,Math.round(+h.dc||12))),damage:String(h.damage).replace(/\s/g,"")};
+ }
+ return{name:String(o.name||"Nameless place").slice(0,60),desc:String(o.description||"").slice(0,1200),terrain,
+  items:(Array.isArray(o.items)?o.items:[]).slice(0,4).map(normItem),hazard};
+}
+function describeForPrompt(id){const c=cell(id);return`"${c.t}" (${c.terrain}): ${c.desc}`}
+function buildPrompt(fromId,dir,x,y,dist){
+ const root=cell("root"),from=fromId&&cell(fromId);
+ const nearby=[];
+ for(const [d,v] of Object.entries(DIRS)){const nb=coord.get(ck(x+v.dx,y+v.dy));if(nb&&nb!==fromId)nearby.push(`- To the ${d}: ${describeForPrompt(nb)}`)}
+ const ch=cell(charId());
+ return [
+ "You are the narrator of a fantasy tabletop adventure in the style of classic D&D. The map is built one square at a time on a grid, and you are writing the next square.",
+ `World theme: ${root.theme}`,
+ `The traveller is ${ch.t}, a level ${sv("LVL")} ${ch.cls}.`,
+ from?`They have just walked ${dir} out of ${describeForPrompt(fromId)}`:"This is the very first location, where the adventure begins. Make it a natural starting point such as a crossroads, a camp or the edge of a village.",
+ nearby.length?"Places already mapped next to the new square (stay consistent with them, and mention what can be seen in their direction):\n"+nearby.join("\n"):"",
+ `The new square is ${dist} steps from the start. Danger and rewards grow slowly with distance.`,
+ "",
+ "Write the new location. It must follow on naturally from the place they left: terrain changes gradually (a forest thins into heath before it becomes mountains), and something seen from the previous place can be found here.",
+ "Description: 2 to 4 sentences, second person, present tense, concrete and sensory. Hint at what lies in one or two other directions.",
+ "Items: 0 to 3 things lying here that can be picked up, fitting the place. Weights in pounds, values in gold pieces. Potions and food may heal with a dice expression such as \"2d4+2\"; armour and shields give an AC bonus of 1 to 5. Most places hold ordinary things; treasure is rare near the start.",
+ "Hazard: in about one location in four, add a hazard the traveller must make a saving throw against when they first arrive (a trap, a fall, cold water, spores). Otherwise null.",
+ "",
+ "Reply with only a JSON object in exactly this shape:",
+ '{"name":"Saltreed Ford","terrain":"water","description":"...","items":[{"name":"Potion of Healing","description":"A small vial of red liquid.","kind":"potion","weight":0.5,"value":50,"heal":"2d4+2","ac":0}],"hazard":{"name":"Slick stepping stones","text":"The stones are green with weed and the current is strong.","stat":"DEX","dc":12,"damage":"1d6"}}',
+ `terrain is one of: ${TERRAINS.join(", ")}. kind is one of: ${KINDS.join(", ")}. stat is one of: ${STATS.join(", ")}. dc is 10 to 17. hazard may be null.`
+ ].filter(Boolean).join("\n");
+}
+async function narrate(fromId,dir,x,y,dist){
+ const from=fromId?cell(fromId):null;
+ if(sample){
+  try{
+   const out=await sample.json(buildPrompt(fromId,dir,x,y,dist),{modelTier:"quick",cache:false});
+   narratorNote="";
+   return Object.assign(normLocation(out,from&&from.terrain),{by:"claude"});
+  }catch(e){
+   const code=e&&e.code;
+   if(["not_granted","sampling_disabled","not_declared","capability_disabled","capability_removed"].includes(code)){sample=null;narratorNote="Claude is not available here, so the built-in tables write new places."}
+   else if(code==="rate_limited")narratorNote="Claude is busy right now, so the built-in tables wrote this place. Claude will write the next one if it can.";
+   else narratorNote="Claude's answer did not arrive, so the built-in tables wrote this place.";
+   renderPills();
+  }
+ }
+ return Object.assign(tableLocation(from,dir,dist),{by:"tables"});
+}
+
+/* ============================================================
+   Game actions
+   ============================================================ */
+let busy=null,lastHazard=null,deleteArmed=false;
+function log(text,kind,rolltext){const r=cell("root");r.log=(r.log||[]).concat([{text,kind:kind||"",roll:rolltext||"",t:Date.now()}]).slice(-40);touch("root")}
+
+function createLocation(data,x,y,dist){
+ const id=newCell("loc",{t:data.name,desc:data.desc,terrain:data.terrain,x,y,dist,hazard:data.hazard,hazardDone:false,outcome:null,visited:false,by:data.by||"tables"});
+ coord.set(ck(x,y),id);
+ for(const it of data.items){const iid=newCell("item",{t:it.name,desc:it.desc,kind:it.kind,weight:it.weight,value:it.value,heal:it.heal,ac:it.ac,worn:false});appendTo(id,"contain",iid)}
+ for(const v of Object.values(DIRS)){const nb=coord.get(ck(x+v.dx,y+v.dy));if(!nb)continue;if(v.sign==="+")connect(id,v.dim,nb);else connect(nb,v.dim,id)}
+ return id;
+}
+function gainXP(n){
+ setStat("XP",sv("XP")+n);
+ while(sv("XP")>=sv("LVL")*100){
+  const r=roll(`1d${hitDie()}`),gain=Math.max(1,r.total+mod(sv("CON")));
+  setStat("LVL",sv("LVL")+1);setStat("MAXHP",sv("MAXHP")+gain);setStat("HP",sv("HP")+gain);
+  log(`You reach level ${sv("LVL")}. Maximum HP rises by ${gain}.`,"good",r.text+` ${sgn(mod(sv("CON")))} CON`);
+ }
+}
+function enter(locId,first){
+ const ch=charId();connect(ch,"at",locId);const L=cell(locId);lastHazard=null;
+ if(!L.visited){L.visited=true;touch(locId);gainXP(10)}
+ if(first&&L.hazard&&!L.hazardDone){
+  const h=L.hazard,m=mod(sv(h.stat)),d=rnd(20),tot=d+m,ok=tot>=h.dc;
+  let txt=`${h.stat} save: d20 → ${d} ${sgn(m)} = ${tot} against DC ${h.dc}`;
+  L.hazardDone=true;
+  if(ok){L.outcome={ok:true,roll:txt};log(`${h.name}: you get through unharmed.`,"good",txt);gainXP(25)}
+  else{const dmg=roll(h.damage);txt+=`; damage ${dmg.text}`;L.outcome={ok:false,roll:txt,dmg:dmg.total};setStat("HP",sv("HP")-dmg.total);log(`${h.name}: you take ${dmg.total} damage.`,"bad",txt)}
+  touch(locId);lastHazard=locId;
+  if(sv("HP")<=0)fall(locId);
+ }
+}
+function fall(locId){
+ const L=cell(locId);let n=0;
+ for(const id of packIds()){excise(id,"contain");cell(id).worn=false;appendTo(locId,"contain",id);n++}
+ setStat("HP",1);
+ log(`You collapse at ${L.t}${n?" and your pack spills there":""}. You wake back at ${cell(cell("root").home).t} with 1 HP.`,"bad");
+ connect(charId(),"at",cell("root").home);
+}
+async function move(dir){
+ if(busy||!charId())return;
+ const here=hereId(),v=DIRS[dir],H=cell(here);
+ let next=step(here,v.dim,v.sign);
+ if(next){enter(next,false);log(`You walk ${dir} to ${cell(next).t}.`);store.flush();render();return}
+ const x=H.x+v.dx,y=H.y+v.dy,dist=Math.abs(x)+Math.abs(y);
+ busy={dir};render();
+ const data=await narrate(here,dir,x,y,dist);
+ next=coord.get(ck(x,y))||createLocation(data,x,y,dist);
+ busy=null;
+ enter(next,true);log(`You walk ${dir} into somewhere new: ${cell(next).t}.`);
+ store.flush();render();
+}
+function pathTo(target){
+ const start=hereId(),prev={[start]:null},q=[start];
+ while(q.length){const id=q.shift();if(id===target)break;for(const v of Object.values(DIRS)){const n=step(id,v.dim,v.sign);if(n&&!(n in prev)){prev[n]=id;q.push(n)}}}
+ if(!(target in prev))return null;const p=[];for(let c=target;c!==start;c=prev[c])p.unshift(c);return p;
+}
+function travelTo(target){
+ if(busy||target===hereId())return;
+ const p=pathTo(target);if(!p)return;
+ enter(target,false);log(`You retrace your steps to ${cell(target).t} (${p.length} ${p.length===1?"step":"steps"}).`);store.flush();render();
+}
+function take(id){
+ const it=cell(id);if(carried()+(+it.weight||0)>capacity()){log(`${it.t} is too heavy: you carry ${fmtW(carried())} of ${capacity()} lb.`,"bad");store.flush();render();return}
+ excise(id,"contain");appendTo(charId(),"contain",id);log(`You pick up ${it.t}.`);store.flush();render();
+}
+function drop(id){const it=cell(id);it.worn=false;touch(id);excise(id,"contain");appendTo(hereId(),"contain",id);log(`You put down ${it.t} at ${cell(hereId()).t}.`);store.flush();render()}
+function useItem(id){
+ const it=cell(id);
+ if(it.kind==="treasure"){setStat("GP",sv("GP")+(+it.value||0));log(`You add ${it.t} to your purse: ${it.value} gp.`,"good");excise(id,"contain");destroy(id);store.flush();render();return}
+ if(!it.heal)return;
+ const r=roll(it.heal),before=sv("HP"),after=Math.min(sv("MAXHP"),before+r.total);
+ setStat("HP",after);log(`You use ${it.t} and recover ${after-before} HP.`,"good",r.text);
+ excise(id,"contain");destroy(id);store.flush();render();
+}
+function wear(id){
+ const it=cell(id),on=!it.worn;
+ for(const o of packIds().map(cell))if(o.kind==="armor"&&o.worn){o.worn=false;touch(o.id)}
+ it.worn=on;touch(id);log(on?`You put on ${it.t}. AC is now ${armourClass()}.`:`You take off ${it.t}. AC is now ${armourClass()}.`);store.flush();render();
+}
+function rest(){
+ if(busy||!charId())return;const ch=cell(charId()),here=hereId();
+ if(ch.restedAt===here){log("You have already rested here. Explore further before resting again.");store.flush();render();return}
+ const before=sv("HP"),gain=Math.ceil(sv("MAXHP")/2),after=Math.min(sv("MAXHP"),before+gain);
+ setStat("HP",after);ch.restedAt=here;touch(ch.id);log(`You rest at ${cell(here).t} and recover ${after-before} HP.`,"good");store.flush();render();
+}
+
+/* New world */
+let draft={name:"Wren Ashdown",cls:"Fighter",theme:"A misty borderland of old forests, ruined watchtowers, river villages and the hills where the old kingdom fell.",stats:rollStats()};
+async function begin(){
+ if(busy)return;
+ const old=Object.keys(zz.cells);for(const id of old)zz.removed.add(id);
+ zz.cells={};coord.clear();zz.dirty.clear();
+ zz.cells.root={id:"root",k:"root",c:{},seq:0,theme:draft.theme.trim()||"A classic fantasy wilderness.",log:[],home:null,created:Date.now()};zz.removed.delete("root");touch("root");
+ const ch=newCell("char",{t:draft.name.trim()||"Nameless wanderer",cls:draft.cls,restedAt:null});connect("root","cursor",ch);
+ const C=CLASSES[draft.cls],con=mod(draft.stats[2]),hp=Math.max(1,C.hd+con);
+ const vals=Object.fromEntries(STATS.map((s,i)=>[s,draft.stats[i]]));Object.assign(vals,{HP:hp,MAXHP:hp,LVL:1,XP:0,GP:10});
+ for(const [k,v] of Object.entries(vals)){const s=newCell("stat",{t:k,v});appendTo(ch,"stat",s)}
+ const kit=C.kit.concat([["Potion of Healing","A red liquid that shimmers when shaken.","potion",0.5,50,"2d4+2"],["Potion of Healing","A red liquid that shimmers when shaken.","potion",0.5,50,"2d4+2"],["Rations (3 days)","Hard bread, cheese and dried apples.","food",6,2,"1d4"]]);
+ for(const [name,description,kind,weight,value,heal,ac] of kit){const it=normItem({name,description,kind,weight,value,heal,ac});const id=newCell("item",{t:it.name,desc:it.desc,kind:it.kind,weight:it.weight,value:it.value,heal:it.heal,ac:it.ac,worn:kind==="armor"});appendTo(ch,"contain",id)}
+ busy={dir:"start"};render();
+ const data=await narrate(null,"",0,0,0);
+ const home=createLocation(Object.assign(data,{hazard:null}),0,0,0);cell("root").home=home;
+ busy=null;connect(ch,"at",home);cell(home).visited=true;
+ log(`${cell(ch).t} the ${draft.cls} sets out from ${cell(home).t}.`,"good");
+ store.flush();render();
+}
+
+/* ============================================================
+   Rendering
+   ============================================================ */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmtW=w=>(Math.round(w*10)/10).toString();
+const zname=id=>id?`${id}${cell(id)?" · "+cell(id).k+(cell(id).t!==undefined?" “"+cell(id).t+"”":""):""}`:"—";
+
+function renderPills(){
+ $("pill-ai").innerHTML=sample?"Narrator: <b>Claude</b>":"Narrator: <b>built-in tables</b>";
+ $("pill-ai").title=sample?"New places are written by Claude from the place you just left.":"Claude is not available in this view, so new places come from built-in tables.";
+ $("pill-cells").innerHTML=`Cells: <b>${Object.keys(zz.cells).length}</b>`;
+ renderSaving();
+}
+function renderSaving(){
+ const p=$("pill-save");
+ if(store.mode==="none"){p.innerHTML="World: <b>loading…</b>";return}
+ p.classList.toggle("warn",!!store.error);
+ const where=store.mode==="cloud"?"your Claude account":"this browser";
+ p.innerHTML=store.error?"World: <b>save problem</b>":pending?`World: <b>saving…</b>`:`World: <b>saved in ${where}</b>`;
+ p.title=store.error||`Each place, item and stat is stored as a ZigZag cell in ${where}.`;
+}
+
+function renderMap(){
+ const svg=$("map"),here=hereId();
+ if(!here){svg.innerHTML=`<text x="210" y="215" text-anchor="middle" class="axis">The map starts when your character sets out.</text>`;$("coords").textContent="";return}
+ const H=cell(here),R=3,S=60,pad=0;
+ const pos=(x,y)=>[(x-H.x+R)*S+pad,(R-(y-H.y))*S+pad];
+ let out="";
+ for(let i=0;i<=7;i++){out+=`<line class="gridline" x1="${i*S}" y1="0" x2="${i*S}" y2="420"/><line class="gridline" x1="0" y1="${i*S}" x2="420" y2="${i*S}"/>`}
+ const vis=[];for(let dx=-R;dx<=R;dx++)for(let dy=-R;dy<=R;dy++){const id=coord.get(ck(H.x+dx,H.y+dy));if(id)vis.push(id)}
+ for(const id of vis){const c=cell(id),[px,py]=pos(c.x,c.y);
+  const e=step(id,"x","+"),n=step(id,"y","+");
+  if(e&&vis.includes(e))out+=`<line class="link" x1="${px+30}" y1="${py+30}" x2="${px+90}" y2="${py+30}"/>`;
+  if(n&&vis.includes(n))out+=`<line class="link" x1="${px+30}" y1="${py+30}" x2="${px+30}" y2="${py-30}"/>`;}
+ for(const id of vis){const c=cell(id),[px,py]=pos(c.x,c.y),t=TERRAINS.includes(c.terrain)?c.terrain:"other";
+  out+=`<g data-loc="${id}"><rect class="tile t-${t}" x="${px+5}" y="${py+5}" width="50" height="50" rx="5" tabindex="0" role="button" aria-label="${esc(c.t)}${id===here?" (you are here)":", walk back here"}"><title>${esc(c.t)} · ${t}</title></rect><path class="glyph" transform="translate(${px+4} ${py+4})" d="${GLYPH[t]||GLYPH.other}"/></g>`;}
+ for(const [d,v] of Object.entries(DIRS)){const x=H.x+v.dx,y=H.y+v.dy;if(coord.get(ck(x,y)))continue;const [px,py]=pos(x,y);
+  out+=`<g data-dir="${d}"><rect class="frontier" x="${px+7}" y="${py+7}" width="46" height="46" rx="5" tabindex="0" role="button" aria-label="Explore ${d}"><title>Explore ${d}</title></rect><text class="q" x="${px+30}" y="${py+36}" text-anchor="middle">?</text></g>`;}
+ const [hx,hy]=pos(H.x,H.y);
+ out+=`<rect class="here" x="${hx+3}" y="${hy+3}" width="54" height="54" rx="7" pointer-events="none"/><circle class="pawn" cx="${hx+44}" cy="${hy+44}" r="6"/>`;
+ out+=`<text class="axis" x="414" y="14" text-anchor="end">N ↑</text>`;
+ svg.innerHTML=out;
+ const ew=H.x===0?"0":Math.abs(H.x)+(H.x>0?" E":" W"),ns=H.y===0?"0":Math.abs(H.y)+(H.y>0?" N":" S");
+ $("coords").textContent=`${ew}, ${ns} · ${coord.size} mapped`;
+}
+
+function renderCompass(){
+ const here=hereId();
+ for(const [d,v] of Object.entries(DIRS)){
+  const b=$("go-"+d),to=b.querySelector(".to");
+  if(!here){b.disabled=true;to.textContent="";continue}
+  const n=step(here,v.dim,v.sign);b.disabled=!!busy;
+  to.textContent=n?cell(n).t:"Unexplored";b.title=n?`Walk ${d} to ${cell(n).t}`:`Explore ${d}: Claude writes what you find`;
+ }
+ $("compass-c").textContent=here?`${coord.size} places`:"—";
+}
+
+function itemRow(id,where){
+ const it=cell(id),bits=[it.kind,`${fmtW(+it.weight||0)} lb`];if(it.value)bits.push(`${it.value} gp`);if(it.heal)bits.push(`heals ${it.heal}`);if(it.ac)bits.push(`AC +${it.ac}`);if(it.worn)bits.push("worn");
+ let acts="";
+ if(where==="here")acts=`<button class="small" data-act="take" data-id="${id}" ${busy?"disabled":""}>Take</button>`;
+ else{
+  if(it.heal)acts+=`<button class="small" data-act="use" data-id="${id}">${it.kind==="food"?"Eat":"Drink"}</button>`;
+  if(it.kind==="treasure")acts+=`<button class="small" data-act="use" data-id="${id}">Pocket</button>`;
+  if(it.kind==="armor")acts+=`<button class="small" data-act="wear" data-id="${id}">${it.worn?"Take off":"Wear"}</button>`;
+  acts+=`<button class="small" data-act="drop" data-id="${id}" ${busy?"disabled":""}>Drop</button>`;
+ }
+ return`<li><span><span class="nm">${esc(it.t)}</span><span class="meta">${esc(bits.join(" · "))}</span>${it.desc?`<span class="about">${esc(it.desc)}</span>`:""}</span><span class="acts">${acts}</span></li>`;
+}
+
+function renderPlace(){
+ const el=$("place");
+ if(!charId()||!hereId()){renderCreate(el);return}
+ const here=hereId(),L=cell(here);
+ const t=TERRAINS.includes(L.terrain)?L.terrain:"other";
+ let html=`<div class="placehead"><p class="eyebrow">You are at</p><h2>${esc(L.t)}</h2><div class="chips"><span class="chip terrain">${t}</span><span class="chip">${L.x===0&&L.y===0?"starting point":L.dist+" steps from the start"}</span><span class="chip">written by ${L.by==="claude"?"Claude":"built-in tables"}</span></div></div>`;
+ if(busy)html+=`<p class="mapping">${busy.dir==="start"?"The narrator is writing where your journey begins":"The narrator is mapping the way "+busy.dir}</p>`;
+ if(narratorNote&&!busy)html+=`<p class="note">${esc(narratorNote)}</p>`;
+ html+=`<p class="desc${busy?" busy":""}">${esc(L.desc)}</p>`;
+ if(L.hazard&&L.outcome){const o=L.outcome;html+=`<div class="hazard${o.ok?" passed":""}"><b>${esc(L.hazard.name)}.</b> ${esc(L.hazard.text)} ${o.ok?"You get through unharmed.":`You take ${o.dmg} damage.`}${here===lastHazard?`<span class="roll">${esc(o.roll)}</span>`:""}</div>`}
+ const items=storeIds(here);
+ html+=`<div class="sectionhead"><h3>Lying here</h3><span class="mono" style="font-size:12px;color:var(--faint)">${items.length} ${items.length===1?"item":"items"}</span></div>`;
+ html+=items.length?`<ul class="items">${items.map(id=>itemRow(id,"here")).join("")}</ul>`:`<p class="empty">Nothing here to pick up. Anything you put down stays here for when you return.</p>`;
+ // ZigZag inspector
+ const dims=[["d.x","x","west","east"],["d.y","y","south","north"],["d.at","at","who stands here",""],["d.contain","contain","",""]];
+ const rows=dims.map(([label,dim])=>`<tr><th>${label}</th><td>${esc(zname(step(here,dim,"-")))}</td><td class="mid">${esc(here)}</td><td>${esc(zname(step(here,dim,"+")))}</td></tr>`).join("");
+ html+=`<details class="zz" id="zz-details"${zzOpen?" open":""}><summary>ZigZag view of this place (cell ${esc(here)})</summary><div class="zztable"><table><thead><tr><th>Dimension</th><th>− negward</th><th>this cell</th><th>+ posward</th></tr></thead><tbody>${rows}</tbody></table></div>
+ <p class="zzhelp">Each place is one cell. Walking east follows <span class="mono">d.x+</span>; walking north follows <span class="mono">d.y+</span>. The store is a rank along <span class="mono">d.contain</span>: this cell, then each item in turn. Picking something up cuts its cell out of this rank and splices it onto your character's rank. Rank here: <span class="mono">${esc([here].concat(items).join(" → "))}</span>.</p></details>`;
+ el.innerHTML=html;
+}
+let zzOpen=false;
+
+function renderCreate(el){
+ const s=draft.stats,C=CLASSES[draft.cls],hp=Math.max(1,C.hd+mod(s[2]));
+ el.innerHTML=`<div class="create"><div class="placehead"><p class="eyebrow">New adventurer</p><h2>Roll a character</h2></div>
+ <p class="note">Abilities are rolled the classic way: four six-sided dice, keep the best three. Your class sets your hit die and starting kit. When you set out, Claude writes the place where your journey begins.</p>
+ <div class="row"><label for="f-name">Name<input id="f-name" value="${esc(draft.name)}" maxlength="40"></label>
+ <label for="f-cls">Class<select id="f-cls">${Object.keys(CLASSES).map(k=>`<option${k===draft.cls?" selected":""}>${k}</option>`).join("")}</select></label></div>
+ <label for="f-theme">World theme (Claude keeps every place in this spirit)<textarea id="f-theme" rows="3" maxlength="400">${esc(draft.theme)}</textarea></label>
+ <div class="rolled">${STATS.map((k,i)=>`<div><span class="k">${k}</span><span class="v">${s[i]}</span><span class="k">${sgn(mod(s[i]))}</span></div>`).join("")}</div>
+ <p class="note mono" style="font-size:13px">Hit die d${C.hd} · starting HP ${hp} · AC ${10+mod(s[1])+(C.kit.find(k=>k[2]==="armor")?.[6]||0)} · carry ${s[0]*15} lb</p>
+ <div class="btnrow"><button id="f-reroll">Reroll abilities</button><button class="primary" id="f-begin" ${busy?"disabled":""}>Set out</button>${busy?'<span class="mapping">The narrator is writing where your journey begins</span>':""}</div></div>`;
+ $("f-name").oninput=e=>draft.name=e.target.value;
+ $("f-theme").oninput=e=>draft.theme=e.target.value;
+ $("f-cls").onchange=e=>{draft.cls=e.target.value;renderPlace()};
+ $("f-reroll").onclick=()=>{draft.stats=rollStats();renderPlace()};
+ $("f-begin").onclick=begin;
+}
+
+function renderSheet(){
+ const el=$("sheet"),pk=$("pack");
+ if(!charId()){el.innerHTML=`<div class="who"><h2>No character yet</h2></div><p class="empty">Roll a character to see their sheet here: abilities, hit points, armour class and level.</p>`;pk.innerHTML=`<h3>Pack</h3><p class="empty">Your class kit and two healing potions go here when you set out.</p>`;return}
+ const ch=cell(charId()),hp=sv("HP"),max=sv("MAXHP"),pct=Math.max(0,Math.min(100,hp/max*100));
+ el.innerHTML=`<div class="who"><h2>${esc(ch.t)}</h2><span class="mono" style="font-size:13px;color:var(--faint)">Level ${sv("LVL")} ${esc(ch.cls)}</span></div>
+ <div><div class="hprow"><span>Hit points</span><span>${hp} / ${max}</span></div><div class="hpbar${pct<=34?" low":""}"><span style="width:${pct}%"></span></div></div>
+ <div class="abil">${STATS.map(k=>`<div><span class="k">${k}</span><span class="v">${sv(k)}</span><span class="m">${sgn(mod(sv(k)))}</span></div>`).join("")}</div>
+ <dl class="facts"><div><dt>Armour class</dt><dd>${armourClass()}</dd></div><div><dt>Hit die</dt><dd>d${hitDie()}</dd></div><div><dt>XP</dt><dd>${sv("XP")} / ${sv("LVL")*100}</dd></div><div><dt>Gold</dt><dd>${sv("GP")} gp</dd></div></dl>
+ <div class="btnrow"><button id="rest" ${busy||ch.restedAt===hereId()?"disabled":""} title="Recover half your maximum HP. Once per place.">Rest here</button>${ch.restedAt===hereId()?'<span class="note">Rested here already.</span>':""}</div>`;
+ $("rest").onclick=rest;
+ const ids=packIds();
+ pk.innerHTML=`<div class="sectionhead"><h3>Pack</h3><span class="mono" style="font-size:12px;color:${carried()>capacity()*.9?"var(--danger)":"var(--faint)"}">${fmtW(carried())} / ${capacity()} lb</span></div>`+
+  (ids.length?`<ul class="items">${ids.map(id=>itemRow(id,"pack")).join("")}</ul>`:`<p class="empty">Your pack is empty.</p>`);
+}
+
+function renderLog(){
+ const r=cell("root"),entries=(r&&r.log||[]).slice().reverse();
+ $("log").innerHTML=entries.length?entries.map(e=>`<li class="${e.kind}">${esc(e.text)}${e.roll?`<br><span class="roll">${esc(e.roll)}</span>`:""}</li>`).join(""):`<li>Your journal fills in as you travel: every step, find and dice roll.</li>`;
+ const ra=$("reset-area");
+ if(!charId()){ra.innerHTML="";return}
+ ra.innerHTML=deleteArmed?`<span class="confirm">Erase this world? <button class="small" id="reset-yes">Erase</button><button class="small" id="reset-no">Keep</button></span>`:`<button class="small" id="reset">New world</button>`;
+ if(deleteArmed){$("reset-yes").onclick=()=>{deleteArmed=false;const ids=Object.keys(zz.cells);for(const id of ids)zz.removed.add(id);zz.cells={};coord.clear();zz.dirty.clear();draft.stats=rollStats();store.flush();render()};$("reset-no").onclick=()=>{deleteArmed=false;renderLog()}}
+ else $("reset").onclick=()=>{deleteArmed=true;renderLog()};
+}
+
+function render(){renderPills();renderMap();renderCompass();renderPlace();renderSheet();renderLog()}
+
+/* ============================================================
+   Events and start-up
+   ============================================================ */
+document.addEventListener("click",e=>{
+ const b=e.target.closest("button[data-act]");
+ if(b){const id=b.dataset.id;({take,drop,use:useItem,wear})[b.dataset.act](id);return}
+ const d=e.target.closest("#compass button[data-dir]");if(d){move(d.dataset.dir);return}
+ const g=e.target.closest("#map g");if(g){if(g.dataset.dir)move(g.dataset.dir);else if(g.dataset.loc)travelTo(g.dataset.loc)}
+});
+document.addEventListener("toggle",e=>{if(e.target.id==="zz-details")zzOpen=e.target.open},true);
+document.addEventListener("keydown",e=>{
+ if(e.target.closest("input,textarea,select"))return;
+ if(e.target.closest("#map g")&&(e.key==="Enter"||e.key===" ")){e.preventDefault();e.target.closest("#map g").dispatchEvent(new MouseEvent("click",{bubbles:true}));return}
+ if(e.metaKey||e.ctrlKey||e.altKey)return;
+ for(const [d,v] of Object.entries(DIRS))if(v.keys.includes(e.key)){e.preventDefault();move(d);return}
+ if(e.key==="r"||e.key==="R")rest();
+});
+
+(async function start(){
+ render();
+ const samplePromise=window.claude&&claude.use?claude.use("sample").catch(()=>null):Promise.resolve(null);
+ await store.connect();
+ const saved=await store.load();
+ if(saved){zz.cells=saved;for(const c of Object.values(zz.cells))if(c.k==="loc")coord.set(ck(c.x,c.y),c.id);
+  if(store.mode==="cloud"&&store.from!=="cloud"){for(const id of Object.keys(zz.cells))touch(id);store.flush()}}
+ render();
+ sample=await samplePromise;
+ render();
+})();
+</script>
