@@ -1,0 +1,478 @@
+{
+ "meta": {
+  "title": "The Future In Motion",
+  "asOf": "2026-11-14",
+  "disclaimer": "Everything under 'today' and 'numbers' is sourced. Everything under 'prediction2040' and 'wildcard' is playful speculation, not forecasting."
+ },
+ "stages": [
+  {"id": "intelligence", "name": "Intelligence"},
+  {"id": "energy", "name": "Energy"},
+  {"id": "moving", "name": "Moving"},
+  {"id": "space", "name": "Space"},
+  {"id": "body", "name": "Body & life"},
+  {"id": "planet", "name": "Food & planet"},
+  {"id": "making", "name": "Making & connecting"}
+ ],
+ "techs": [
+  {
+   "id": "ai-agents",
+   "stage": "intelligence",
+   "name": "AI models and agents",
+   "today": "Chatbots have become everyday tools: OpenAI reported 900 million weekly ChatGPT users in February 2026. The frontier has moved from answering questions to agents that work for hours. METR's benchmark puts the best 2026 models at a 50% success rate on software tasks that take a skilled person over half a working day.",
+   "numbers": [
+    {"label": "ChatGPT weekly active users", "value": 900000000, "unit": "people", "year": 2026, "source": "https://techcrunch.com/2026/02/27/chatgpt-reaches-900m-weekly-active-users"},
+    {"label": "GPT-2 50% task time horizon (METR)", "value": 0.03, "unit": "minutes (about 2 seconds)", "year": 2019, "source": "https://arxiv.org/html/2503.14499v1"},
+    {"label": "Claude 3.7 Sonnet 50% task time horizon (METR)", "value": 59, "unit": "minutes", "year": 2025, "source": "https://arxiv.org/html/2503.14499v1"},
+    {"label": "Claude Opus 4.6 50% task time horizon (METR, as reported)", "value": 870, "unit": "minutes (14.5 hours)", "year": 2026, "source": "https://officechai.com/ai/exponential-progress-claude-opus-4-6-has-50-time-horizon-of-14-5-hours-on-metr-time-horizons-benchmark"}
+   ],
+   "trend": "Exponential so far: METR found the length of task AI can finish roughly doubled every seven months from 2019 to 2025, and faster since 2023. Nobody knows when this curve bends into an S.",
+   "curve": {"kind": "exponential", "points": [[2019, 0.03], [2025, 59], [2026, 870]], "unit": "minutes of human work (50% success)", "note": "METR 50% time horizon for the leading model at each date. Log scale recommended. 2026 value is a secondary report of METR's Time Horizon 1.1 and the methodology changed between versions."},
+   "prediction2040": "Everyone has a squad of AI agents. Yours books the dentist, files your taxes and argues politely with your energy supplier. Scientists run thousands of AI-led experiments overnight. The hottest school subject is 'delegation': knowing what to ask, what to check, and what never to hand over.",
+   "confidence": "plausible",
+   "wildcard": "Progress hits a wall of energy, data or regulation in the early 2030s, and 2040's AI feels more like a very good spreadsheet than a colleague.",
+   "interaction": "Drag a 'doubling time' slider from 4 to 24 months and watch how long a task an AI could handle in 2040: an hour, a week, or a decade-long project.",
+   "sources": ["https://techcrunch.com/2026/02/27/chatgpt-reaches-900m-weekly-active-users", "https://arxiv.org/html/2503.14499v1", "https://metr.org/blog/2026-1-29-time-horizon-1-1", "https://officechai.com/ai/exponential-progress-claude-opus-4-6-has-50-time-horizon-of-14-5-hours-on-metr-time-horizons-benchmark"]
+  },
+  {
+   "id": "robots",
+   "stage": "intelligence",
+   "name": "Robots and humanoids",
+   "today": "Factories ran about 4.66 million industrial robots at the end of 2024, with 542,000 installed that year, over half in China. Walking humanoids are the new frontier: roughly 13,000 shipped worldwide in 2025, mostly from Chinese firms such as Unitree, which says it delivered over 5,500.",
+   "numbers": [
+    {"label": "Industrial robots in operation worldwide", "value": 4281585, "unit": "robots", "year": 2023, "source": "https://ifr.org/ifr-press-releases/news/record-of-4-million-robots-working-in-factories-worldwide"},
+    {"label": "Industrial robots in operation worldwide", "value": 4663698, "unit": "robots", "year": 2024, "source": "https://ifr.org/img/worldrobotics/Executive_Summary_WR_2025_Industrial_Robots.pdf"},
+    {"label": "New industrial robots installed", "value": 542000, "unit": "robots", "year": 2024, "source": "https://ifr.org/ifr-press-releases/news/global-robot-demand-in-factories-doubles-over-10-years"},
+    {"label": "Humanoid robots shipped worldwide (Omdia estimate)", "value": 13000, "unit": "robots", "year": 2025, "source": "https://www.bloomberg.com/news/articles/2026-01-08/chinese-firms-dominated-global-humanoid-robot-shipments-in-2025"},
+    {"label": "Unitree humanoid deliveries (company figure)", "value": 5500, "unit": "robots", "year": 2025, "source": "https://scmp.com/tech/tech-trends/article/3340446/chinas-unitree-ships-more-5500-humanoid-robots-2025-surpassing-us-peers"}
+   ],
+   "trend": "Factory robots grow steadily, about 9–11% a year. Humanoids sit at the very bottom of an S-curve: thousands per year, rising fast, with cost and reliability deciding how steep the climb is.",
+   "curve": {"kind": "s-curve", "points": [[2023, 4.28], [2024, 4.66]], "unit": "million industrial robots in operation", "note": "IFR operational stock at year end. Humanoid shipments (about 13,000 in 2025) are too early to draw as a curve."},
+   "prediction2040": "Robots have left the cage. Warehouses, hospitals and farms employ humanoids for the dull, dirty and dangerous jobs, and a home helper that folds laundry costs about as much as a small car. Robot 'apprenticeships', where a person teaches a robot a new task by showing it, are a normal part of work.",
+   "confidence": "plausible",
+   "wildcard": "Humanoids stay niche because cheaper, wheeled, single-purpose robots win nearly every job, and legs turn out to be the jetpack of robotics.",
+   "interaction": "Set a yearly growth rate for humanoid shipments starting from 13,000 in 2025 and see whether 2040 has a million, a hundred million, or barely any.",
+   "sources": ["https://ifr.org/ifr-press-releases/news/global-robot-demand-in-factories-doubles-over-10-years", "https://ifr.org/ifr-press-releases/news/record-of-4-million-robots-working-in-factories-worldwide", "https://www.bloomberg.com/news/articles/2026-01-08/chinese-firms-dominated-global-humanoid-robot-shipments-in-2025", "https://scmp.com/tech/tech-trends/article/3340446/chinas-unitree-ships-more-5500-humanoid-robots-2025-surpassing-us-peers"]
+  },
+  {
+   "id": "quantum",
+   "stage": "intelligence",
+   "name": "Quantum computing",
+   "today": "Quantum computers are still experimental, but error correction is finally working. Google's 105-qubit Willow chip showed errors shrinking as codes grew (2024). In 2026 Quantinuum ran 48 error-corrected logical qubits on its 98-qubit Helios machine. IBM aims for a 200-logical-qubit 'Starling' system by 2029.",
+   "numbers": [
+    {"label": "Physical qubits on Google Willow", "value": 105, "unit": "qubits", "year": 2024, "source": "https://www.scimex.org/newsfeed/googles-new-quantum-chip-hits-error-correction-target"},
+    {"label": "Error-corrected logical qubits demonstrated on Quantinuum Helios", "value": 48, "unit": "logical qubits", "year": 2026, "source": "https://postquantum.com/quantum-research/quantinuum-94-logical-qubits/"},
+    {"label": "IBM Starling target (roadmap, not achieved)", "value": 200, "unit": "logical qubits", "year": 2029, "source": "https://thequantuminsider.com/2025/06/10/ibm-offers-roadmap-toward-large-scale-fault-tolerant-quantum-computer-at-new-ibm-quantum-data-center/"}
+   ],
+   "trend": "Milestone-driven rather than smooth: each step is a hard physics win. Roadmaps target hundreds of logical qubits by about 2029 and thousands in the early 2030s, but dates have slipped before.",
+   "curve": {"kind": "milestones", "points": [[2024, 1], [2026, 48]], "unit": "logical qubits demonstrated", "note": "2024: one below-threshold logical memory qubit on Google Willow. 2026: 48 error-corrected logical qubits on Quantinuum Helios. Different machines and definitions; treat as milestones, not a trend line. IBM's 2029 target of 200 is a plan, not data."},
+   "prediction2040": "A handful of fault-tolerant quantum computers work like national telescopes, booked by chemists designing fertiliser catalysts and battery materials. Your bank switched to quantum-safe encryption years ago, quietly. You still have no quantum computer at home, and never will.",
+   "confidence": "plausible",
+   "wildcard": "A clever classical algorithm or AI-driven simulation matches most promised quantum advantages, leaving quantum machines a scientific triumph without a killer app.",
+   "interaction": "Choose how many physical qubits each logical qubit needs (2 to 1,000) and see how big a machine must be to reach 1,000 logical qubits.",
+   "sources": ["https://www.scimex.org/newsfeed/googles-new-quantum-chip-hits-error-correction-target", "https://postquantum.com/quantum-research/quantinuum-94-logical-qubits/", "https://www.quantinuum.com/blog/real-time-error-correction-at-increased-scale", "https://thequantuminsider.com/2025/06/10/ibm-offers-roadmap-toward-large-scale-fault-tolerant-quantum-computer-at-new-ibm-quantum-data-center/"]
+  },
+  {
+   "id": "chips",
+   "stage": "intelligence",
+   "name": "Semiconductors and chips",
+   "today": "AI has supercharged the chip industry. Global semiconductor sales reached about $796 billion in 2025, up 26%, and first-half 2026 sales were around $702 billion. TSMC began volume production of 2-nanometre chips, its first with gate-all-around transistors, in late 2025.",
+   "numbers": [
+    {"label": "Global semiconductor sales", "value": 630.5, "unit": "US$ billion", "year": 2024, "source": "https://www.semiconductors.org/global-annual-semiconductor-sales-increase-25-6-to-791-7-billion-in-2025/"},
+    {"label": "Global semiconductor sales", "value": 795.6, "unit": "US$ billion", "year": 2025, "source": "https://www.wsts.org/76/103/Global-Semiconductor-Market-grows-26-in-2025-to-796B"},
+    {"label": "Global semiconductor sales, first half of 2026", "value": 702, "unit": "US$ billion", "year": 2026, "source": "https://bits-chips.com/article/global-semiconductor-market-doubles-in-h1-2026/"},
+    {"label": "TSMC leading-edge node in volume production", "value": 2, "unit": "nm (marketing name)", "year": 2025, "source": "https://www.techspot.com/news/110755-tsmc-2nm-n2-process-officially-enters-volume-production.html"}
+   ],
+   "trend": "Transistors keep shrinking, though more slowly and expensively, so gains now come from 3D stacking, packaging and specialised AI chips. Sales ride AI booms and memory-price swings, so expect a jagged upward line.",
+   "curve": {"kind": "exponential", "points": [[2024, 630.5], [2025, 795.6]], "unit": "US$ billion annual sales", "note": "Full-year WSTS/SIA totals. 2026 is not included because only half-year actuals exist; WSTS's spring 2026 forecast was about $1.5 trillion."},
+   "prediction2040": "Chips are stacked like skyscrapers and partly built with light. A phone-sized device has more AI power than a 2026 data centre rack. Countries treat chip factories like ports and power stations: strategic infrastructure, with fabs on every continent except Antarctica.",
+   "confidence": "likely",
+   "wildcard": "A shortage of power, water or a key mineral, not physics, becomes the real limit, and chip efficiency (not speed) becomes the headline number.",
+   "interaction": "Toggle between 'transistors double every 2 years' and 'every 4 years' and compare how many fit on a fingernail-sized chip by 2040.",
+   "sources": ["https://www.wsts.org/76/103/Global-Semiconductor-Market-grows-26-in-2025-to-796B", "https://www.semiconductors.org/global-annual-semiconductor-sales-increase-25-6-to-791-7-billion-in-2025/", "https://bits-chips.com/article/global-semiconductor-market-doubles-in-h1-2026/", "https://www.techspot.com/news/110755-tsmc-2nm-n2-process-officially-enters-volume-production.html"]
+  },
+  {
+   "id": "solar-wind",
+   "stage": "energy",
+   "name": "Solar and wind power",
+   "today": "The world added a record 511 GW of solar and 159 GW of wind in 2025. Solar and wind made about 17% of global electricity, and solar overtook wind for the first time. New solar and onshore wind are now among the cheapest electricity ever built, at about 4 and 3 US cents per kWh.",
+   "numbers": [
+    {"label": "Solar capacity added worldwide", "value": 511, "unit": "GW", "year": 2025, "source": "https://pv-magazine-usa.com/2026/04/02/global-solar-additions-reached-record-511-gw-in-2025-says-irena/"},
+    {"label": "Wind capacity added worldwide", "value": 158.7, "unit": "GW", "year": 2025, "source": "https://solarquarter.com/2026/04/01/irena-reports-global-renewable-capacity-hits-5149-gw-in-2025-s-world-adds-record-692-gw/"},
+    {"label": "Solar + wind share of global electricity", "value": 17, "unit": "%", "year": 2025, "source": "https://ember-energy.org/latest-insights/global-electricity-review-2026/"},
+    {"label": "Global cost of new solar PV electricity (LCOE)", "value": 0.043, "unit": "US$/kWh", "year": 2024, "source": "https://www.irena.org/Publications/2025/Jun/Renewable-Power-Generation-Costs-in-2024"},
+    {"label": "Global cost of new onshore wind electricity (LCOE)", "value": 0.034, "unit": "US$/kWh", "year": 2024, "source": "https://www.irena.org/Publications/2025/Jun/Renewable-Power-Generation-Costs-in-2024"},
+    {"label": "Cumulative solar PV capacity", "value": 39, "unit": "GW", "year": 2010, "source": "https://www.pv-tech.org/news/record-year-for-solar-driven-by-reduced-technology-costs-irena"},
+    {"label": "Cumulative solar PV capacity", "value": 219, "unit": "GW", "year": 2015, "source": "https://www.pv-tech.org/news/record-year-for-solar-driven-by-reduced-technology-costs-irena"},
+    {"label": "Cumulative solar PV capacity", "value": 710, "unit": "GW", "year": 2020, "source": "https://solarquarter.com/2026/02/21/global-solar-pv-capacity-reaches-1865-gw-in-2024-as-india-emerges-as-key-growth-engine-irena-report/"},
+    {"label": "Cumulative solar PV capacity", "value": 1865, "unit": "GW", "year": 2024, "source": "https://solarquarter.com/2026/02/21/global-solar-pv-capacity-reaches-1865-gw-in-2024-as-india-emerges-as-key-growth-engine-irena-report/"},
+    {"label": "Cumulative solar capacity", "value": 2396.7, "unit": "GW", "year": 2025, "source": "https://www.pv-tech.org/irena-14-growth-renewable-power-capacity-additions-16-4-needed-2030"}
+   ],
+   "trend": "A textbook learning curve: every doubling of solar makes it cheaper, which drives more building. Installations have grown roughly 60-fold since 2010 and are still climbing the steep middle of the S-curve.",
+   "curve": {"kind": "s-curve", "points": [[2010, 39], [2015, 219], [2020, 710], [2024, 1865], [2025, 2396.7]], "unit": "GW cumulative solar capacity", "note": "IRENA cumulative installed solar capacity (via trade press). Other trackers such as REN21 report somewhat higher totals."},
+   "prediction2040": "Solar is the world's biggest source of electricity. Panels are on car parks, canals, balconies and farm fields that also grow crops beneath them. Midday power is so plentiful that it is nearly free, and the big energy question is no longer 'how do we make it?' but 'how do we store and move it?'",
+   "confidence": "likely",
+   "wildcard": "Ultra-thin perovskite films turn windows, cars and clothing into generators, and 'buying a solar panel' sounds as odd as buying a separate camera for your phone.",
+   "interaction": "Drag the yearly growth rate of solar installations (0–30%) and watch the 2040 share of world electricity rise from the 2025 starting point.",
+   "sources": ["https://pv-magazine-usa.com/2026/04/02/global-solar-additions-reached-record-511-gw-in-2025-says-irena/", "https://ember-energy.org/latest-insights/global-electricity-review-2026/", "https://www.irena.org/Publications/2025/Jun/Renewable-Power-Generation-Costs-in-2024", "https://solarquarter.com/2026/04/01/irena-reports-global-renewable-capacity-hits-5149-gw-in-2025-s-world-adds-record-692-gw/", "https://www.pv-tech.org/irena-14-growth-renewable-power-capacity-additions-16-4-needed-2030"]
+  },
+  {
+   "id": "batteries",
+   "stage": "energy",
+   "name": "Batteries and grid storage",
+   "today": "Lithium-ion battery packs averaged a record low $108 per kWh in 2025, down about 93% since 2010 in real terms; stationary storage packs reached $70. The world added a record 108 GW of battery storage in 2025, 40% more than in 2024, with China about 60% of it.",
+   "numbers": [
+    {"label": "Average Li-ion pack price (real 2025 dollars)", "value": 1474, "unit": "US$/kWh", "year": 2010, "source": "https://www.energy-storage.news/li-ion-battery-pack-prices-fell-8-since-last-year-despite-metals-prices-rising-bloombergnef-says/"},
+   {"label": "Average Li-ion pack price", "value": 115, "unit": "US$/kWh", "year": 2024, "source": "https://about.bnef.com/insights/clean-energy/new-record-lows-for-battery-prices/"},
+    {"label": "Average Li-ion pack price", "value": 108, "unit": "US$/kWh", "year": 2025, "source": "https://about.bnef.com/insights/clean-transport/lithium-ion-battery-pack-prices-fall-to-108-per-kilowatt-hour-despite-rising-metal-prices/"},
+    {"label": "Stationary storage pack price", "value": 70, "unit": "US$/kWh", "year": 2025, "source": "https://about.bnef.com/insights/clean-transport/lithium-ion-battery-pack-prices-fall-to-108-per-kilowatt-hour-despite-rising-metal-prices/"},
+    {"label": "Battery storage capacity added worldwide", "value": 108, "unit": "GW", "year": 2025, "source": "https://www.iea.org/commentaries/battery-storage-is-scaling-up-and-taking-on-a-larger-system-role"}
+   ],
+   "trend": "A steep cost-decline curve: prices have fallen almost every year since 2010, and BNEF expects a further small fall in 2026. Cheap packs are turning batteries from a car part into grid infrastructure.",
+   "curve": {"kind": "cost-decline", "points": [[2010, 1474], [2024, 115], [2025, 108]], "unit": "US$/kWh average pack price", "note": "BloombergNEF annual survey. The 2010 value is in real 2025 dollars; 2024 and 2025 are survey-year dollars, so the curve is approximate."},
+   "prediction2040": "Power stations are often just big boxes of batteries humming beside solar farms, keeping the lights on after sunset. Parked electric cars sell electricity back to the grid at teatime. Sodium batteries made from salt-like materials do much of the heavy lifting, and nobody remembers why 'range anxiety' was a phrase.",
+   "confidence": "likely",
+   "wildcard": "A breakthrough in long-duration storage, such as iron-air or thermal 'sand batteries', makes week-long storage cheap and steals the grid crown from lithium.",
+   "interaction": "Pick a yearly price fall (0–15%) and see the 2040 cost of a 60 kWh car battery pack, starting from $108/kWh in 2025.",
+   "sources": ["https://about.bnef.com/insights/clean-transport/lithium-ion-battery-pack-prices-fall-to-108-per-kilowatt-hour-despite-rising-metal-prices/", "https://www.energy-storage.news/li-ion-battery-pack-prices-fell-8-since-last-year-despite-metals-prices-rising-bloombergnef-says/", "https://www.iea.org/commentaries/battery-storage-is-scaling-up-and-taking-on-a-larger-system-role", "https://www.iea.org/reports/global-energy-review-2026/technology-battery-storage"]
+  },
+  {
+   "id": "fission",
+   "stage": "energy",
+   "name": "Nuclear fission and small modular reactors",
+   "today": "Small modular reactors are moving from paper to concrete. Ontario's Darlington site is building the G7's first grid-scale SMR, a roughly 300 MW GE Vernova BWRX-300, targeting service around the end of 2030. China's 125 MWe Linglong One on Hainan was aiming for commercial operation in 2026.",
+   "numbers": [
+    {"label": "Linglong One (ACP100) electrical output", "value": 125, "unit": "MWe", "year": 2026, "source": "https://introl.com/blog/china-linglong-one-smr-first-commercial-nuclear-2026"},
+    {"label": "Darlington SMR-1 target in-service year", "value": 2030, "unit": "year", "year": 2026, "source": "https://ans.org/news/2026-06-05/article-8047/north-american-construction-is-back-smaller-and-faster-at-opgs-darlington/"},
+    {"label": "Nuclear share of global electricity", "value": 8.9, "unit": "%", "year": 2025, "source": "https://ember-energy.org/latest-insights/global-electricity-review-2026/"}
+   ],
+   "trend": "Still at the milestone stage: a few first-of-a-kind units in Russia, China and Canada. SMRs only get cheap if dozens of identical units are built, so the 2030s decide whether this becomes a cost-decline story.",
+   "curve": {"kind": "milestones", "points": [[2020, 1], [2023, 2], [2026, 3]], "unit": "SMR-class power plants in or near commercial operation", "note": "1: Russia's floating Akademik Lomonosov (2020). 2: China's HTR-PM (2023). 3: China's Linglong One (commercial operation targeted for 2026; status not confirmed at time of writing)."},
+   "prediction2040": "Factory-built reactors arrive on lorries and barges. Dozens run beside old coal-plant sites and data centres, humming out steady, low-carbon power. Most people never notice them, which is exactly how the engineers like it.",
+   "confidence": "plausible",
+   "wildcard": "Cost overruns on first units sink investor confidence, and by 2040 SMRs mostly power ships, remote mines and AI campuses rather than cities.",
+   "interaction": "Adjust a 'learning rate' slider for each doubling of SMRs built and see whether the 2040 cost per megawatt beats solar-plus-batteries.",
+   "sources": ["https://ans.org/news/2026-06-05/article-8047/north-american-construction-is-back-smaller-and-faster-at-opgs-darlington/", "https://world-nuclear.org/nuclear-reactor-database/details/Darlington-SMR-1", "https://introl.com/blog/china-linglong-one-smr-first-commercial-nuclear-2026", "https://ember-energy.org/latest-insights/global-electricity-review-2026/"]
+  },
+  {
+   "id": "fusion",
+   "stage": "energy",
+   "name": "Nuclear fusion",
+   "today": "Fusion keeps breaking records but not yet powering homes. In April 2025 the US National Ignition Facility produced 8.6 MJ from 2.08 MJ of laser energy, a target gain of 4.13. France's WEST tokamak held a plasma for 1,337 seconds, over 22 minutes, in early 2025.",
+   "numbers": [
+    {"label": "NIF fusion yield (first ignition)", "value": 3.15, "unit": "MJ", "year": 2022, "source": "https://annual.llnl.gov/sites/annual/files/2026-02/llnlannual25-3-national-ignition-facility.pdf"},
+    {"label": "NIF fusion yield", "value": 5.2, "unit": "MJ", "year": 2024, "source": "https://annual.llnl.gov/sites/annual/files/2026-02/llnlannual25-3-national-ignition-facility.pdf"},
+    {"label": "NIF record fusion yield", "value": 8.6, "unit": "MJ", "year": 2025, "source": "https://annual.llnl.gov/sites/annual/files/2026-02/llnlannual25-3-national-ignition-facility.pdf"},
+    {"label": "NIF record target gain", "value": 4.13, "unit": "× laser energy in", "year": 2025, "source": "https://annual.llnl.gov/sites/annual/files/2026-02/llnlannual25-3-national-ignition-facility.pdf"},
+    {"label": "WEST tokamak plasma duration record", "value": 1337, "unit": "seconds", "year": 2025, "source": "https://www.rdworldonline.com/french-fusion-reactors-22-minute-plasma-record-boosts-energy-hopes/"}
+   ],
+   "trend": "Record-by-record milestones, with yields almost tripling between 2022 and 2025. But 'target gain' ignores the far larger energy needed to run the lasers, so whole-plant net power is still ahead.",
+   "curve": {"kind": "milestones", "points": [[2022, 3.15], [2024, 5.2], [2025, 8.6]], "unit": "MJ fusion yield per NIF shot", "note": "Record yields at the National Ignition Facility (LLNL). 2022 was the first shot to exceed the 2.05 MJ laser energy delivered."},
+   "prediction2040": "The first fusion power plants are feeding electricity to the grid, a few hundred megawatts each, watched by the whole world. They are expensive and temperamental, like early jet engines. Schoolchildren take trips to see the 'star in a box', and the race is on to make the second generation cheaper.",
+   "confidence": "wildcard",
+   "wildcard": "A compact private design leapfrogs the giant government machines and becomes the 'Model T' of fusion, or materials damage keeps every plant offline for years.",
+   "interaction": "Slide the laser efficiency from 1% to 20% and see whether a NIF-style shot with gain 4 produces net electricity for the whole plant.",
+   "sources": ["https://annual.llnl.gov/sites/annual/files/2026-02/llnlannual25-3-national-ignition-facility.pdf", "https://www.rdworldonline.com/french-fusion-reactors-22-minute-plasma-record-boosts-energy-hopes/", "https://www.notebookcheck.net/Laser-powered-fusion-NIF-hits-record-8-6-MJ-output.1019076.0.html"]
+  },
+  {
+   "id": "evs",
+   "stage": "moving",
+   "name": "Electric vehicles",
+   "today": "More than 20 million electric cars were sold in 2025, about a quarter of all new cars. In China the share is close to 55%; in the EU just under 27%; in the US just under 10%. Sales dipped 8% in early 2026 after policy changes, but the IEA still expects about 23 million in 2026.",
+   "numbers": [
+    {"label": "Electric share of new car sales worldwide", "value": 4, "unit": "%", "year": 2020, "source": "https://www.iea.org/reports/global-ev-outlook-2023/executive-summary"},
+    {"label": "Electric share of new car sales worldwide", "value": 9, "unit": "%", "year": 2021, "source": "https://www.iea.org/reports/global-ev-outlook-2023/executive-summary"},
+    {"label": "Electric share of new car sales worldwide", "value": 14, "unit": "%", "year": 2022, "source": "https://www.iea.org/reports/global-ev-outlook-2023/executive-summary"},
+    {"label": "Electric share of new car sales worldwide", "value": 18, "unit": "%", "year": 2023, "source": "https://www.iea.org/reports/global-ev-outlook-2024/executive-summary"},
+    {"label": "Electric share of new car sales worldwide (more than)", "value": 20, "unit": "%", "year": 2024, "source": "https://www.iea.org/reports/global-ev-outlook-2025/executive-summary"},
+    {"label": "Electric share of new car sales worldwide", "value": 25, "unit": "%", "year": 2025, "source": "https://www.iea.org/reports/global-ev-outlook-2026/executive-summary"},
+    {"label": "Electric cars sold worldwide", "value": 20000000, "unit": "cars", "year": 2025, "source": "https://www.iea.org/reports/global-ev-outlook-2026/trends-in-electric-cars"},
+    {"label": "Electric share of new car sales in China", "value": 55, "unit": "%", "year": 2025, "source": "https://www.iea.org/reports/global-ev-outlook-2026/trends-in-electric-cars"}
+   ],
+   "trend": "A classic S-curve in the steep middle: global share rose from about 4% to 25% in five years. China is near the top of its curve; the US and many emerging markets are still near the bottom.",
+   "curve": {"kind": "s-curve", "points": [[2020, 4], [2021, 9], [2022, 14], [2023, 18], [2024, 20], [2025, 25]], "unit": "% of new cars sold that are electric", "note": "IEA Global EV Outlook editions 2023–2026. 2024 is 'more than 20%'."},
+   "prediction2040": "Most new cars sold worldwide are electric, and petrol stations have turned into cafés with fast chargers. Cities are noticeably quieter and the air smells different. The big debate is no longer petrol versus electric but whether you need to own a car at all.",
+   "confidence": "likely",
+   "wildcard": "Cheap electric two- and three-wheelers in Asia and Africa outpace cars entirely, and the 'EV revolution' is remembered as a scooter revolution.",
+   "interaction": "Fit your own S-curve: drag the midpoint year and steepness and watch when your curve says 90% of new cars are electric.",
+   "sources": ["https://www.iea.org/reports/global-ev-outlook-2026/executive-summary", "https://www.iea.org/reports/global-ev-outlook-2026/trends-in-electric-cars", "https://www.iea.org/reports/global-ev-outlook-2025/executive-summary", "https://www.iea.org/reports/global-ev-outlook-2024/executive-summary", "https://www.iea.org/reports/global-ev-outlook-2023/executive-summary"]
+  },
+  {
+   "id": "robotaxis",
+   "stage": "moving",
+   "name": "Self-driving cars and robotaxis",
+   "today": "Cars with nobody in the driving seat are a daily sight in some cities. Waymo was giving about 500,000 paid rides a week across ten US cities by spring 2026. Baidu's Apollo Go had passed 22 million rides and runs fully driverless services in China, Dubai and Abu Dhabi.",
+   "numbers": [
+    {"label": "Waymo paid rides per week", "value": 250000, "unit": "rides/week", "year": 2025.3, "source": "https://www.nbcsandiego.com/news/business/money-report/waymo-reports-250000-paid-robotaxi-rides-per-week-in-u-s/3811293/?amp=1&os=f"},
+    {"label": "Waymo paid rides per week", "value": 400000, "unit": "rides/week", "year": 2026.1, "source": "https://amp.claimsjournal.com/news/national/2026/02/12/335668.htm"},
+    {"label": "Waymo paid rides per week", "value": 500000, "unit": "rides/week", "year": 2026.2, "source": "https://insideevs.com/news/791245/waymo-rides-per-week-2026-doubled/"},
+    {"label": "Baidu Apollo Go cumulative rides", "value": 22000000, "unit": "rides", "year": 2026, "source": "https://news.metal.com/newscontent/103338877/baidus-apollo-go-surpasses-11-million-rides-expands-global-fleet-to-over-1000-driverless-vehicles"}
+   ],
+   "trend": "Exponential but local: Waymo's weekly rides doubled in under a year. Growth is gated city by city by regulators, mapping and fleet size, so it looks like many small S-curves stacked together.",
+   "curve": {"kind": "exponential", "points": [[2025.3, 250000], [2026.1, 400000], [2026.2, 500000]], "unit": "Waymo paid rides per week", "note": "Company-reported weekly paid rides (April 2025, February 2026, March 2026). Decimal years mark the month."},
+   "prediction2040": "In big cities, summoning a driverless car is as normal as calling a lift. Teenagers rarely bother with driving lessons, and multi-storey car parks are being turned into flats and parks. Road deaths in robotaxi-heavy cities have fallen sharply, and lorries drive themselves between motorway hubs at night.",
+   "confidence": "plausible",
+   "wildcard": "Robotaxis make car trips so cheap and comfortable that traffic gets worse, not better, and cities start charging driverless cars by the mile.",
+   "interaction": "Choose a doubling time for weekly robotaxi rides and see when they would match all the taxi rides in a city of 9 million people.",
+   "sources": ["https://insideevs.com/news/791245/waymo-rides-per-week-2026-doubled/", "https://amp.claimsjournal.com/news/national/2026/02/12/335668.htm", "https://www.nbcsandiego.com/news/business/money-report/waymo-reports-250000-paid-robotaxi-rides-per-week-in-u-s/3811293/?amp=1&os=f", "https://news.metal.com/newscontent/103338877/baidus-apollo-go-surpasses-11-million-rides-expands-global-fleet-to-over-1000-driverless-vehicles", "https://www.nasdaq.com/press-release/baidus-apollo-go-commences-fully-driverless-commercial-ride-hailing-dubai-partners"]
+  },
+  {
+   "id": "evtol",
+   "stage": "moving",
+   "name": "Electric air taxis (eVTOL)",
+   "today": "Battery-powered 'flying taxis' are on the brink. China's EHang won the world's first eVTOL type certificate in 2023 for its pilotless two-seat EH216-S and now has operator certificates for passenger flights. Joby and Archer aim to start services in Dubai and Abu Dhabi, but no US or European eVTOL was fully certified by mid-2026.",
+   "numbers": [
+    {"label": "Year of first eVTOL type certificate (EHang EH216-S, China)", "value": 2023, "unit": "year", "year": 2023, "source": "https://www.flyingmag.com/china-approves-passenger-operations-with-self-flying-electric-aircraft/"},
+    {"label": "Joby Dubai operating rights", "value": 6, "unit": "years (exclusive)", "year": 2026, "source": "https://spectrum.ieee.org/joby-air-taxi"}
+   ],
+   "trend": "Milestones, not yet a curve: certification, first routes, first paying passengers. Timelines have repeatedly slipped by a year or two, which is normal for brand-new aircraft types.",
+   "curve": {"kind": "milestones", "points": [[2023, 1], [2025, 2]], "unit": "milestone number", "note": "1: EHang EH216-S receives China's eVTOL type certificate (2023). 2: EHang receives China's first air operator certificates for passenger eVTOL flights (2025). Joby/Archer Gulf launches were still targets at time of writing."},
+   "prediction2040": "In a few dozen cities you can hop from airport rooftop to city centre in an electric air taxi, many flying without a pilot. It costs about the same as a posh black cab. Air ambulances and medical-drone deliveries are the part people value most, and the quiet whirr overhead is just part of city life.",
+   "confidence": "wildcard",
+   "wildcard": "Air taxis stay a luxury for the rich and the real winner is cargo: pilotless electric aircraft quietly flying parcels and blood samples between towns.",
+   "interaction": "Plan a trip: pick a distance and compare door-to-door time by car, train and air taxi, including the walk to a vertiport.",
+   "sources": ["https://www.flyingmag.com/china-approves-passenger-operations-with-self-flying-electric-aircraft/", "https://spectrum.ieee.org/joby-air-taxi", "https://droneintelligence.ai/evtol-certification-tracker", "https://www.ttnews.com/articles/joby-targets-2026-us-launch"]
+  },
+  {
+   "id": "launch",
+   "stage": "space",
+   "name": "Rockets and reusable launch",
+   "today": "Reusable rockets have made spaceflight routine. In 2025 the world made more than 320 orbital launch attempts, and SpaceX alone flew 165 Falcon 9 missions, more than the rest of the world combined. Its giant Starship V3 flew for the first time in May 2026; refuelling in orbit is still to be demonstrated.",
+   "numbers": [
+    {"label": "Orbital launch attempts worldwide", "value": 146, "unit": "launches", "year": 2021, "source": "https://orbitalradar.com/launch-database/year/2021"},
+    {"label": "Orbital launch attempts worldwide", "value": 223, "unit": "launches", "year": 2023, "source": "https://aviationweek.com/space/launch-vehicles-propulsion/space-ops-record-263-orbital-launches-attempted-2024"},
+    {"label": "Orbital launch attempts worldwide", "value": 263, "unit": "launches", "year": 2024, "source": "https://aviationweek.com/space/launch-vehicles-propulsion/space-ops-record-263-orbital-launches-attempted-2024"},
+    {"label": "Orbital launch attempts worldwide (estimate)", "value": 324, "unit": "launches", "year": 2025, "source": "https://aviationweek.com/space/launch-vehicles-propulsion/spaceops-global-orbital-launch-rate-jumped-25-2025"},
+    {"label": "SpaceX Falcon 9 launches", "value": 165, "unit": "launches", "year": 2025, "source": "https://www.space.com/space-exploration/private-spaceflight/spacex-shatters-its-rocket-launch-record-yet-again-167-orbital-flights-in-2025"}
+   ],
+   "trend": "Launch rates more than doubled between 2021 and 2025, and fully reusable heavy rockets aim to cut cost per kilogram by another large factor. Growth now depends on demand for satellites and deep-space missions.",
+   "curve": {"kind": "exponential", "points": [[2021, 146], [2023, 223], [2024, 263], [2025, 324]], "unit": "orbital launch attempts per year", "note": "Counts vary slightly by tracker (2025 estimates range from about 320 to 329)."},
+   "prediction2040": "Launches happen several times a day, and watching one is about as rare as watching a plane take off. Fully reusable rockets refuel in orbit before heading to the Moon. Space factories make ultra-pure crystals and medicines, and a seat on a suborbital hop costs about as much as a new car.",
+   "confidence": "plausible",
+   "wildcard": "Space debris or a serious collision forces strict 'orbital traffic' limits, and launch numbers plateau as the bottleneck shifts from rockets to rules.",
+   "interaction": "Set a yearly growth rate for launches and see how many happen per day in 2040, starting from about 324 in 2025.",
+   "sources": ["https://www.space.com/space-exploration/private-spaceflight/spacex-shatters-its-rocket-launch-record-yet-again-167-orbital-flights-in-2025", "https://aviationweek.com/space/launch-vehicles-propulsion/spaceops-global-orbital-launch-rate-jumped-25-2025", "https://aviationweek.com/space/launch-vehicles-propulsion/space-ops-record-263-orbital-launches-attempted-2024", "https://space.com/space-exploration/launches-spacecraft/whats-next-for-spacexs-starship-v3-megarocket-after-its-historic-debut-flight"]
+  },
+  {
+   "id": "moon-mars",
+   "stage": "space",
+   "name": "The Moon and Mars",
+   "today": "Humans went back to the Moon's neighbourhood in April 2026: NASA's Artemis II flew four astronauts around the far side, the first crewed lunar trip since 1972. The next NASA landing is targeted for about 2028. China is testing its Mengzhou spacecraft and Lanyue lander for a crewed landing by 2030. No human has yet gone to Mars.",
+   "numbers": [
+    {"label": "People who have travelled to the Moon (Apollo + Artemis II)", "value": 28, "unit": "people", "year": 2026, "source": "https://www.boeing.com/features/2026/04/artemis-ii-crew-back-on-earth-after-historic-lunar-flyby"},
+    {"label": "Artemis II crew", "value": 4, "unit": "astronauts", "year": 2026, "source": "https://www.boeing.com/features/2026/04/artemis-ii-crew-back-on-earth-after-historic-lunar-flyby"},
+    {"label": "China's target year for a crewed Moon landing", "value": 2030, "unit": "year", "year": 2026, "source": "https://news.cgtn.com/news/2026-02-28/China-gears-up-for-crewed-moon-landing-by-2030-1L7SwMwUaVa/p.html"}
+   ],
+   "trend": "A second space race of milestones: flybys, landings, then bases. Progress comes in big, risky leaps, and schedules usually slip, so dates are best read as 'not before'.",
+   "curve": {"kind": "milestones", "points": [[1972, 24], [2026, 28]], "unit": "people who have travelled to the Moon", "note": "24 Apollo astronauts flew to the Moon between 1968 and 1972; Artemis II's four-person crew in April 2026 brings the total to 28."},
+   "prediction2040": "There is a small, permanently crewed research station near the Moon's south pole, with rival American-led and Chinese-led bases a few hundred kilometres apart. Astronauts mine ice for water and rocket fuel. Mars has had robotic cargo landings, and the first crewed mission is being assembled in orbit.",
+   "confidence": "plausible",
+   "wildcard": "Humans walk on Mars before 2040 thanks to a privately funded mission, beating every government plan.",
+   "interaction": "Drag Earth and Mars around their orbits and find the next launch windows; see why trips can only leave roughly every 26 months.",
+   "sources": ["https://www.boeing.com/features/2026/04/artemis-ii-crew-back-on-earth-after-historic-lunar-flyby", "https://www.snexplores.org/article/artemis-orion-loop-farside-moon", "https://news.cgtn.com/news/2026-02-28/China-gears-up-for-crewed-moon-landing-by-2030-1L7SwMwUaVa/p.html", "https://abcnews4.com/news/nation-world/artemis-ii-success-builds-momentum-for-future-missions-to-the-moon-and-mars-nasa-rice-university-space-science-exploration-artemis-iii-artemis-iv-lunar-landing"]
+  },
+  {
+   "id": "sat-internet",
+   "stage": "space",
+   "name": "Satellite internet",
+   "today": "Broadband from space has gone mainstream. Starlink reported 10.3 million subscribers in March 2026 and about 13.6 million by the end of September, using roughly 11,000 satellites. Rivals such as Amazon's Kuiper and Chinese constellations are launching to catch up.",
+   "numbers": [
+    {"label": "Starlink subscribers", "value": 1000000, "unit": "subscribers", "year": 2022.9, "source": "https://www.yahoo.com/news/starlink-doubled-subscribers-2024-making-165600649.html"},
+    {"label": "Starlink subscribers", "value": 2300000, "unit": "subscribers", "year": 2023.9, "source": "https://www.yahoo.com/news/starlink-doubled-subscribers-2024-making-165600649.html"},
+    {"label": "Starlink subscribers", "value": 4600000, "unit": "subscribers", "year": 2024.9, "source": "https://broadbandbreakfast.com/starlink-hits-7-million-users-worldwide/"},
+    {"label": "Starlink subscribers (SpaceX filing)", "value": 10300000, "unit": "subscribers", "year": 2026.2, "source": "https://broadbandbreakfast.com/starlink-reaches-13-6-million-subscribers-globally-as-spacex-revenue-jumps-161.md"},
+    {"label": "Starlink subscribers", "value": 13600000, "unit": "subscribers", "year": 2026.7, "source": "https://broadbandbreakfast.com/starlink-reaches-13-6-million-subscribers-globally-as-spacex-revenue-jumps-161.md"},
+    {"label": "Starlink satellites in orbit (approx.)", "value": 11100, "unit": "satellites", "year": 2026, "source": "https://broadbandbreakfast.com/starlink-reaches-13-6-million-subscribers-globally-as-spacex-revenue-jumps-161.md"}
+   ],
+   "trend": "Exponential so far, roughly doubling each year since 2022. Direct-to-phone satellite links are next, which could push it into a much bigger market before the S-curve flattens.",
+   "curve": {"kind": "exponential", "points": [[2022.9, 1.0], [2023.9, 2.3], [2024.9, 4.6], [2026.2, 10.3], [2026.7, 13.6]], "unit": "million Starlink subscribers", "note": "Company-reported milestones via press coverage. Decimal years mark the month."},
+   "prediction2040": "There are almost no 'not-spots' left on Earth. Your phone quietly switches to satellites in the mountains, at sea or after a storm knocks out masts. Remote schools and clinics get the same internet as city offices, and astronomers have learned, grumpily, to subtract satellite trails from every image.",
+   "confidence": "likely",
+   "wildcard": "A cascade of orbital collisions makes low Earth orbit hazardous, forcing a costly clean-up and slowing new constellations for years.",
+   "interaction": "Pick a satellite altitude and watch how many satellites you need to cover the whole globe, and how much signal delay a video call has.",
+   "sources": ["https://broadbandbreakfast.com/starlink-reaches-13-6-million-subscribers-globally-as-spacex-revenue-jumps-161.md", "https://broadbandbreakfast.com/starlink-hits-7-million-users-worldwide/", "https://www.yahoo.com/news/starlink-doubled-subscribers-2024-making-165600649.html", "https://www.advanced-television.com/2026/03/30/spacex-3180-satellites-in-orbit/"]
+  },
+  {
+   "id": "bci",
+   "stage": "body",
+   "name": "Brain–computer interfaces",
+   "today": "Implants that read brain signals are helping paralysed people control computers. Neuralink reported 21 trial participants across the US, UK, Canada and UAE by January 2026. Paradromics began a speech-focused trial, and Precision Neuroscience has FDA clearance for a thin electrode film for up to 30 days. None is yet approved for general use.",
+   "numbers": [
+    {"label": "Neuralink trial participants", "value": 1, "unit": "people", "year": 2024, "source": "https://www.foxnews.com/health/elon-musk-shares-plan-mass-produce-brain-implants-paralysis-neurological-disease"},
+    {"label": "Neuralink trial participants", "value": 21, "unit": "people", "year": 2026, "source": "https://liveinthefuture.org/stories/bci-patient-outcomes"},
+    {"label": "Precision Layer 7 cleared implantation period", "value": 30, "unit": "days", "year": 2025, "source": "https://marketscale.com/industries/software-and-technology/fda-approves-neurotech-company-for-testing-brain-chip-in-humans"}
+   ],
+   "trend": "Early clinical milestones: dozens of people, not thousands. If trials succeed, the first medical approvals for paralysis and speech loss could arrive in the late 2020s, followed by a slow medical S-curve.",
+   "curve": {"kind": "milestones", "points": [[2024, 1], [2026, 21]], "unit": "Neuralink trial participants", "note": "First Neuralink participant implanted January 2024; 21 reported in the company's January 2026 update (secondary report). Later counts are unconfirmed."},
+   "prediction2040": "Brain implants are an approved, insurance-covered treatment for paralysis, ALS and some kinds of blindness, letting tens of thousands of people type, speak through a digital voice and control robotic arms by thought. Healthy people mostly use non-invasive headbands for focus and gaming, not surgery.",
+   "confidence": "plausible",
+   "wildcard": "Non-invasive sensors plus AI decoding get good enough to read intended words from outside the skull, raising urgent new 'neural privacy' laws.",
+   "interaction": "Try 'typing by thought': a simulated decoder with adjustable accuracy shows how error rate changes your words per minute.",
+   "sources": ["https://liveinthefuture.org/stories/bci-patient-outcomes", "https://www.uclh.nhs.uk/news/seven-gb-prime-patients-now-participating-neuralink-trial", "https://mobihealthnews.com/news/paradromics-gets-fda-nod-expand-brain-implant-study-recruitment", "https://marketscale.com/industries/software-and-technology/fda-approves-neurotech-company-for-testing-brain-chip-in-humans"]
+  },
+  {
+   "id": "gene-editing",
+   "stage": "body",
+   "name": "Gene editing and gene therapy",
+   "today": "CRISPR has become medicine. Casgevy, approved in 2023, can cure sickle cell disease and beta thalassaemia. In 2025 a baby, KJ Muldoon, became the first patient treated with a CRISPR base editor designed just for his own mutation, made in about six months. In 2026 the FDA issued guidance for such bespoke treatments.",
+   "numbers": [
+    {"label": "Time to design and make KJ's personalised base editor", "value": 6, "unit": "months", "year": 2025, "source": "https://www.pennmedicine.org/News/worlds-first-patient-treated-with-personalized-crispr-therapy"},
+    {"label": "Casgevy quarterly revenue (Q2)", "value": 76, "unit": "US$ million", "year": 2026, "source": "https://www.marketbeat.com/instant-alerts/vertex-pharmaceuticals-q2-earnings-call-highlights-2026-08-03/"},
+    {"label": "Casgevy-eligible patients in reimbursed countries (Vertex estimate)", "value": 60000, "unit": "people (more than)", "year": 2026, "source": "https://www.biospace.com/press-releases/vertex-reports-first-quarter-2026-financial-results"}
+   ],
+   "trend": "Moving from one-off miracles to platforms: edits delivered by injection rather than bone-marrow transplant, and 'plug-and-play' therapies tweaked per patient. Price and manufacturing, not science, are now the main brakes.",
+   "curve": {"kind": "milestones", "points": [[2012, 1], [2023, 2], [2025, 3], [2026, 4]], "unit": "milestone number", "note": "1: CRISPR-Cas9 shown to be programmable for gene editing (2012). 2: Casgevy, first CRISPR medicine, approved (2023). 3: first personalised in-body base-editing treatment (baby KJ, 2025). 4: FDA guidance for bespoke rare-disease therapies (2026)."},
+   "prediction2040": "Newborn genome screening flags rare diseases at birth, and a personalised gene edit can be designed in weeks. Sickle cell disease is curable with an injection in many countries. Some people get a one-off 'cholesterol edit' instead of daily pills. Editing embryos remains off-limits almost everywhere.",
+   "confidence": "plausible",
+   "wildcard": "Prices fall so far that gene cures reach Africa and South Asia first, where sickle cell is most common, flipping the usual order of medical progress.",
+   "interaction": "Find the typo: spot and 'edit' a single misspelt letter in a long DNA-like string, then see how a base editor makes the same single-letter fix.",
+   "sources": ["https://www.pennmedicine.org/News/worlds-first-patient-treated-with-personalized-crispr-therapy", "https://www.biospace.com/press-releases/vertex-reports-first-quarter-2026-financial-results", "https://www.marketbeat.com/instant-alerts/vertex-pharmaceuticals-q2-earnings-call-highlights-2026-08-03/", "https://www.geneticsandsociety.org/article/first-personalized-crispr-gene-editing-therapy-patient-baby-kj-discharged"]
+  },
+  {
+   "id": "mrna",
+   "stage": "body",
+   "name": "mRNA vaccines and medicines",
+   "today": "After COVID-19 vaccines, mRNA is turning to cancer. In August 2026 Merck and Moderna reported that a personalised mRNA vaccine plus Keytruda met its main goal in a 1,137-patient Phase 3 melanoma trial, the first positive Phase 3 for an mRNA cancer treatment. Earlier Phase 2b data showed a 49% lower risk of recurrence or death.",
+   "numbers": [
+    {"label": "Patients in INTerpath-001 Phase 3 melanoma trial", "value": 1137, "unit": "patients", "year": 2026, "source": "https://www.curetoday.com/view/the-first-ever-personalized-cancer-vaccine-to-pass-a-phase-3-trial-just-beat-keytruda-alone"},
+    {"label": "Reduction in risk of recurrence or death (Phase 2b, five-year follow-up)", "value": 49, "unit": "%", "year": 2025, "source": "https://www.curemelanoma.org/blog/a-new-milestone-in-melanoma-personalized-mrna-based-cancer-therapy-shows-positive-phase-3-results"}
+   ],
+   "trend": "A platform technology: once you can print instructions for any protein, new vaccines and therapies can be designed in weeks. Expect milestones, then a steeper curve as personalised manufacturing gets cheaper.",
+   "curve": {"kind": "milestones", "points": [[2020, 1], [2026, 2]], "unit": "milestone number", "note": "1: first mRNA vaccines authorised, for COVID-19 (December 2020). 2: first positive Phase 3 result for a personalised mRNA cancer therapy (INTerpath-001, August 2026). Full efficacy data were not yet published at time of writing."},
+   "prediction2040": "If you are diagnosed with certain cancers, doctors sequence the tumour and a personalised mRNA vaccine is ready in weeks, given alongside surgery as routinely as stitches. Flu jabs are updated almost in real time, and a combined winter jab covers flu, COVID and RSV in one go.",
+   "confidence": "plausible",
+   "wildcard": "mRNA's biggest hit is not vaccines but 'in-body manufacturing', briefly teaching the body to make its own medicines, from antibodies to gene editors.",
+   "interaction": "Build a vaccine: drag a short 'mRNA message' to a cell, see the ribosome read it, and watch the immune system learn the shape.",
+   "sources": ["https://www.curetoday.com/view/the-first-ever-personalized-cancer-vaccine-to-pass-a-phase-3-trial-just-beat-keytruda-alone", "https://www.curemelanoma.org/blog/a-new-milestone-in-melanoma-personalized-mrna-based-cancer-therapy-shows-positive-phase-3-results", "https://biopharma-asia.com/sections/merck-and-modernas-phase-3-interpath-001-trial-of-intismeran-autogene-plus-keytruda-meets-endpoints-for-recurrence-free-survival-and-distant-metastasis-free-survival-in-patients-with-completely-rese/"]
+  },
+  {
+   "id": "longevity",
+   "stage": "body",
+   "name": "Longevity and ageing research",
+   "today": "Global life expectancy at birth reached 73.3 years in 2024, back above pre-pandemic levels and about 8 years higher than in 1995. Scientists are testing whether ageing itself can be slowed, but no drug has yet been shown to extend human lifespan. The furthest regulatory step is a longevity drug for dogs, LOY-002.",
+   "numbers": [
+    {"label": "Global life expectancy at birth", "value": 64.9, "unit": "years", "year": 1995, "source": "https://population.un.org/WPP/Publications/Files/WPP2024_Key-Messages.pdf"},
+    {"label": "Global life expectancy at birth", "value": 72.6, "unit": "years", "year": 2019, "source": "https://desapublications.un.org/un-desa-voice/things-you-need-to-know/september-2024/4-things-know-about-latest-global-population"},
+    {"label": "Global life expectancy at birth", "value": 70.9, "unit": "years", "year": 2021, "source": "https://desapublications.un.org/un-desa-voice/things-you-need-to-know/september-2024/4-things-know-about-latest-global-population"},
+    {"label": "Global life expectancy at birth", "value": 73.3, "unit": "years", "year": 2024, "source": "https://www.un.org/sustainabledevelopment/blog/2024/07/press-release-wpp2024/"},
+    {"label": "UN projected global life expectancy", "value": 77.4, "unit": "years", "year": 2054, "source": "https://www.un.org/sustainabledevelopment/blog/2024/07/press-release-wpp2024/"}
+   ],
+   "trend": "Slow and steady: roughly a quarter of a year of extra life expectancy per calendar year, with a pandemic dip. Any 'ageing drug' would need decade-long trials, so evidence arrives slowly.",
+   "curve": {"kind": "s-curve", "points": [[1995, 64.9], [2019, 72.6], [2021, 70.9], [2024, 73.3]], "unit": "years of life expectancy at birth (world)", "note": "UN World Population Prospects 2024. 1995 value derived from the UN's stated 8.4-year rise to 2024 (via secondary reports). UN projects 77.4 by 2054 (projection, not plotted)."},
+   "prediction2040": "Doctors measure your 'biological age' with a blood test at routine check-ups. A few drugs approved for age-related diseases are taken off-label by millions hoping to stay healthier for longer, and the first trial results asking 'can we slow ageing itself?' are front-page news. Dogs got there first.",
+   "confidence": "plausible",
+   "wildcard": "A therapy that partially 'resets' cells' epigenetic age works in humans, and the debate shifts from 'can we?' to 'who gets it?' overnight.",
+   "interaction": "Drag a slider for years gained per decade and see what global life expectancy might be in 2040 and 2100, compared with the UN projection.",
+   "sources": ["https://www.un.org/sustainabledevelopment/blog/2024/07/press-release-wpp2024/", "https://population.un.org/WPP/Publications/Files/WPP2024_Key-Messages.pdf", "https://desapublications.un.org/un-desa-voice/things-you-need-to-know/september-2024/4-things-know-about-latest-global-population", "https://www.goodrx.com/pet-health/dog/anti-aging-drugs-for-dogs"]
+  },
+  {
+   "id": "cultivated-meat",
+   "stage": "planet",
+   "name": "Cultivated meat and future food",
+   "today": "Meat grown from animal cells, without the animal, is legal to sell in a few places, including Singapore, the US and Australia, and as pet food in the UK. Five products have cleared US review, from chicken to salmon to pork fat. But it remains rare and expensive, investment has fallen, and some firms closed in 2025.",
+   "numbers": [
+    {"label": "Cultivated meat products cleared in the US", "value": 5, "unit": "products", "year": 2026, "source": "https://www.foodnavigator-usa.com/Article/2026/02/18/cultivated-meat-regulation-where-countries-stand-in-2026"},
+    {"label": "Companies with cultivated meat clearances (US, Singapore, Australia)", "value": 7, "unit": "companies", "year": 2026, "source": "https://gfi.org/cultivated/addressing-cultivated-meat-challenges"},
+    {"label": "Venture investment in cultivated meat (peak year)", "value": 1.3, "unit": "US$ billion", "year": 2021, "source": "https://gfi.org/cultivated/addressing-cultivated-meat-challenges"}
+   ],
+   "trend": "Stuck near the bottom of the S-curve: approvals are spreading, but cost per kilogram must fall many times over. Hybrid products mixing a little cultivated fat with plants are the likely bridge.",
+   "curve": {"kind": "milestones", "points": [[2020, 1], [2023, 2], [2025, 3]], "unit": "milestone number", "note": "1: Singapore approves the first cultivated meat for sale (2020). 2: US clears cultivated chicken (2023). 3: Australia clears cultivated quail and the UK allows cultivated pet food on sale (2025). Exact UK dates vary between sources."},
+   "prediction2040": "Supermarket chillers have a small 'grown' section next to the organic shelf: cultivated chicken nuggets, salmon sushi and pork-fat-enriched sausages. Most meat still comes from farms, but precision-fermented milk proteins are in a large share of cheese and ice cream, and nobody bats an eyelid.",
+   "confidence": "wildcard",
+   "wildcard": "Pets go first: cultivated meat becomes the norm in premium cat and dog food long before humans adopt it widely.",
+   "interaction": "Run a bioreactor: pick tank size, cell growth rate and feed cost, and see what one kilogram of cultivated chicken costs compared with farmed chicken.",
+   "sources": ["https://www.foodnavigator-usa.com/Article/2026/02/18/cultivated-meat-regulation-where-countries-stand-in-2026", "https://gfi.org/cultivated/addressing-cultivated-meat-challenges", "https://www.just-food.com/features/protein-pioneers-the-countries-which-have-approved-cultivated-meat", "https://humanprogress.org/mission-barns-approved-by-usda-to-cultivate-pork-fat/"]
+  },
+  {
+   "id": "smart-farming",
+   "stage": "planet",
+   "name": "Precision farming and vertical farms",
+   "today": "Farm tech is splitting in two. Drones and sensors are booming: DJI says its agricultural drones have treated over 500 million hectares worldwide. Indoor vertical farms are struggling: Plenty filed for bankruptcy in 2025 after raising nearly $1 billion, and there were about 14 indoor-farming bankruptcies that year.",
+   "numbers": [
+    {"label": "Farmland treated by agricultural drones (DJI claim, cumulative)", "value": 500000000, "unit": "hectares", "year": 2024, "source": "https://www.imarcgroup.com/agriculture-drones-market"},
+    {"label": "Indoor farming / CEA bankruptcies", "value": 14, "unit": "companies", "year": 2025, "source": "https://irei.com/publications/article/vertical-farms-promised-a-food-revolution-but-a-decade-later-many-investors-have-starved/"},
+    {"label": "Funding raised by Plenty before bankruptcy", "value": 1, "unit": "US$ billion (nearly)", "year": 2025, "source": "https://www.fertilizerdaily.com/20250326-vertical-farming-startup-plenty-filed-for-bankruptcy-despite-raising-1-billion-from-softbank-walmart-and-jeff-bezos/"}
+   ],
+   "trend": "Precision tools that save fertiliser, water and pesticide spread fast because they pay for themselves. Vertical farming is going through a hype-crash, likely re-emerging for high-value crops near cheap renewable power.",
+   "curve": {"kind": "milestones", "points": [[2024, 500]], "unit": "million hectares treated by DJI agricultural drones (cumulative)", "note": "Single manufacturer-reported point; no reliable independent time series found."},
+   "prediction2040": "Fields are tended by swarms of small robots that zap weeds with lasers and feed each plant just what it needs. Farmers check soil health on their phones like a bank balance. Vertical farms survive as strawberry and herb 'factories' beside solar parks, rather than replacing fields.",
+   "confidence": "plausible",
+   "wildcard": "Gene-edited crops that fix their own nitrogen cut fertiliser use dramatically, making a bigger difference than any robot.",
+   "interaction": "Spray a virtual field: compare blanket spraying with a drone that targets only the weeds, and see how much chemical and money each uses.",
+   "sources": ["https://www.imarcgroup.com/agriculture-drones-market", "https://irei.com/publications/article/vertical-farms-promised-a-food-revolution-but-a-decade-later-many-investors-have-starved/", "https://www.fertilizerdaily.com/20250326-vertical-farming-startup-plenty-filed-for-bankruptcy-despite-raising-1-billion-from-softbank-walmart-and-jeff-bezos/", "https://www.newaginternational.com/?p=3898"]
+  },
+  {
+   "id": "carbon-removal",
+   "stage": "planet",
+   "name": "Carbon removal and climate tech",
+   "today": "The world removes about 2 billion tonnes of CO₂ a year, almost all by planting and restoring forests. 'Novel' methods like direct air capture, biochar and rock weathering removed only about 1.3 million tonnes. Climeworks' Mammoth plant in Iceland is designed for 36,000 tonnes a year but has captured far less so far.",
+   "numbers": [
+    {"label": "Total carbon dioxide removal", "value": 2000, "unit": "million tonnes CO₂/year", "year": 2024, "source": "https://carbonbrief.org/nine-key-takeaways-about-the-state-of-co2-removal-in-2024"},
+    {"label": "Novel carbon dioxide removal (DAC, biochar, etc.)", "value": 1.3, "unit": "million tonnes CO₂/year", "year": 2024, "source": "https://carbonbrief.org/nine-key-takeaways-about-the-state-of-co2-removal-in-2024"},
+    {"label": "Removal needed by mid-century for 1.5°C (estimate)", "value": 7000, "unit": "million tonnes CO₂/year (7–9 billion)", "year": 2024, "source": "https://ox.ac.uk/news/2024-06-05-new-report-states-7-9-billion-tonnes-co2-must-be-sustainably-removed-year-hit"},
+    {"label": "Climeworks Mammoth design capacity", "value": 36000, "unit": "tonnes CO₂/year", "year": 2024, "source": "https://www.pressreader.com/france/euronews-english-edition/20240514/282535843467766"}
+   ],
+   "trend": "Very early on an S-curve: novel removal must grow by roughly a thousand-fold to matter. Cutting emissions remains far cheaper, so removal is best seen as the mop, not the tap.",
+   "curve": {"kind": "milestones", "points": [[2024, 1.3]], "unit": "million tonnes CO₂/year removed by novel methods", "note": "Single point from the State of CDR report (2nd edition, 2024). The 7–9 billion tonne mid-century need is an estimate, not data."},
+   "prediction2040": "Carbon removal is a real, regulated industry. Farmers spread crushed rock and biochar on fields and get paid per tonne locked away. Direct-air-capture plants sit beside geothermal and solar parks in Iceland, Kenya and Texas. Together they remove tens of millions of tonnes a year: useful, but still a fraction of what is needed.",
+   "confidence": "plausible",
+   "wildcard": "The ocean becomes the main carbon sink, with controversial schemes adding alkalinity to seawater at huge scale, sparking the first big 'climate geoengineering' treaty.",
+   "interaction": "Fill the bathtub: set yearly emissions and removals and watch whether CO₂ in the 'tub' rises or falls by 2040.",
+   "sources": ["https://carbonbrief.org/nine-key-takeaways-about-the-state-of-co2-removal-in-2024", "https://ox.ac.uk/news/2024-06-05-new-report-states-7-9-billion-tonnes-co2-must-be-sustainably-removed-year-hit", "https://www.stateofcdr.org/asset/SoCDR-2nd-Edition-Press-Release.pdf", "https://enkiai.com/climeworks-dac-initiatives-for-2025-key-projects-strategies-and-partnerships/"]
+  },
+  {
+   "id": "3d-printing",
+   "stage": "making",
+   "name": "3D printing and advanced manufacturing",
+   "today": "3D printing has grown up from prototypes to real parts: rocket engines, hip implants, trainers and dental aligners. The global additive manufacturing industry earned about $24.2 billion in 2025, up 10.9%, with growth now coming more from printing services than from selling machines.",
+   "numbers": [
+    {"label": "Global additive manufacturing revenue", "value": 21.9, "unit": "US$ billion", "year": 2024, "source": "https://www.digitalengineering247.com/article/wohlers-report-2025-shows-9.1-am-industry-growth/news"},
+    {"label": "Global additive manufacturing revenue", "value": 24.2, "unit": "US$ billion", "year": 2025, "source": "https://www.tctmagazine.com/wohlers-report-2026-additive-manufacturing-revenues-reach-24-2-billion/"},
+    {"label": "Industry growth rate", "value": 10.9, "unit": "%", "year": 2025, "source": "https://www.astm.org/news/press-releases/wohlers-report-2026"}
+   ],
+   "trend": "Steady growth of about 9–11% a year, slower than the 20%-plus of the 2010s. The story has shifted from 'printers in every home' to printing as one tool among many in digital factories.",
+   "curve": {"kind": "exponential", "points": [[2024, 21.9], [2025, 24.2]], "unit": "US$ billion industry revenue", "note": "Wohlers Report 2025 and 2026 (ASTM International)."},
+   "prediction2040": "Spare parts are often downloaded rather than shipped: a broken dishwasher hinge is printed at a local shop the same day. Hospitals print custom implants and splints on site. Some houses in hot countries are printed from local earth, and factories switch from making one product to another by changing files, not tools.",
+   "confidence": "likely",
+   "wildcard": "Printing living tissue becomes practical, and the first printed kidney is transplanted, turning bioprinting into the field's biggest headline.",
+   "interaction": "Slice a 3D shape into layers with a slider and watch it 'print' line by line; change layer height to trade speed for smoothness.",
+   "sources": ["https://www.tctmagazine.com/wohlers-report-2026-additive-manufacturing-revenues-reach-24-2-billion/", "https://www.astm.org/news/press-releases/wohlers-report-2026", "https://www.digitalengineering247.com/article/wohlers-report-2025-shows-9.1-am-industry-growth/news", "https://all3dp.com/4/the-3d-printing-market-just-hit-24-2b-but-the-growth-is-no-longer-where-you-think/"]
+  },
+  {
+   "id": "smart-glasses",
+   "stage": "making",
+   "name": "AR and smart glasses",
+   "today": "Glasses are becoming the next screen. EssilorLuxottica sold over 7 million Meta smart glasses in 2025, roughly triple the year before. Most have cameras, speakers and an AI assistant but no display; the $799 Meta Ray-Ban Display added a small heads-up screen. Apple, Google and others are preparing rivals.",
+   "numbers": [
+    {"label": "Meta smart glasses sold by EssilorLuxottica (cumulative, Gen 1)", "value": 2000000, "unit": "glasses", "year": 2025.1, "source": "https://roadtovr.com/meta-ray-ban-smart-glasses-sales-tripled-2025/"},
+    {"label": "Meta smart glasses sold by EssilorLuxottica", "value": 7000000, "unit": "glasses", "year": 2025, "source": "https://uploadvr.com/meta-essilorluxottica-sold-7-million-smart-glasses-in-2025/"},
+    {"label": "Meta Ray-Ban Display launch price", "value": 799, "unit": "US$", "year": 2025, "source": "https://www.androidcentral.com/wearables/meta-early-bet-on-smart-glasses-is-starting-to-look-smart"}
+   ],
+   "trend": "Early in the steep part of an S-curve for camera-and-AI glasses; true all-day AR displays are still at the bottom. Battery life, weight and social acceptance decide the pace.",
+   "curve": {"kind": "s-curve", "points": [[2025, 7]], "unit": "million smart glasses sold per year (EssilorLuxottica/Meta)", "note": "Single annual figure; 2025 sales were described as roughly triple the prior year. Earlier cumulative figure: about 2 million from late 2023 to early 2025."},
+   "prediction2040": "Many people wear glasses that can quietly label the world: translating a menu, showing a walking route on the pavement, reminding you of someone's name. Phones still exist but often stay in pockets. Schools debate 'glasses-free exams', and a café sign reading 'no recording glasses' is common.",
+   "confidence": "plausible",
+   "wildcard": "Smart contact lenses or tiny earbuds with AI cameras leapfrog glasses, and 'face computers' never become fashionable.",
+   "interaction": "Look through virtual AR glasses at a street scene and toggle labels for shops, translation and directions; notice how cluttered too much information gets.",
+   "sources": ["https://uploadvr.com/meta-essilorluxottica-sold-7-million-smart-glasses-in-2025/", "https://roadtovr.com/meta-ray-ban-smart-glasses-sales-tripled-2025/", "https://www.androidcentral.com/wearables/meta-early-bet-on-smart-glasses-is-starting-to-look-smart"]
+  },
+  {
+   "id": "digital-money",
+   "stage": "making",
+   "name": "Digital money and CBDCs",
+   "today": "Cash is fading and central banks are experimenting with digital versions of their currencies. The Atlantic Council counts 146 countries and currency unions exploring a central bank digital currency, but only three have fully launched one. The European Central Bank moved its digital euro to its next phase in late 2025.",
+   "numbers": [
+    {"label": "Countries exploring a CBDC (Atlantic Council)", "value": 35, "unit": "countries", "year": 2020, "source": "https://www.atlanticcouncil.org/cbdctracker/"},
+    {"label": "Countries and currency unions exploring a CBDC (Atlantic Council)", "value": 146, "unit": "countries", "year": 2026, "source": "https://www.atlanticcouncil.org/programs/geoeconomics-center/digital-currencies/"},
+    {"label": "Countries with a fully launched retail CBDC", "value": 3, "unit": "countries", "year": 2026, "source": "https://www.atlanticcouncil.org/programs/geoeconomics-center/digital-currencies/"}
+   ],
+   "trend": "Exploration grew four-fold in six years, but adoption is slow: an S-curve of pilots, not of users. Private stablecoins and instant bank payments are growing faster in practice.",
+   "curve": {"kind": "s-curve", "points": [[2020, 35], [2026, 146]], "unit": "countries exploring a CBDC", "note": "Atlantic Council CBDC Tracker (May 2020 and May 2026). Counts include currency unions."},
+   "prediction2040": "Most everyday payments are tap, glance or voice. Several big economies, probably including the eurozone and China, run digital currencies that work offline and across borders in seconds. Cash still exists, protected by law, but many children have never held a coin. Arguments rage about privacy and who can see your spending.",
+   "confidence": "plausible",
+   "wildcard": "Private stablecoins and AI agents paying each other dominate instead, and central bank digital currencies end up mostly as plumbing between banks.",
+   "interaction": "Send a cross-border payment and compare the fees and time for a bank transfer, a card, a stablecoin and a CBDC, with adjustable assumptions.",
+   "sources": ["https://www.atlanticcouncil.org/programs/geoeconomics-center/digital-currencies/", "https://www.atlanticcouncil.org/cbdctracker/", "https://eco.com/support/en/articles/15210561-cbdc-updates-2026-what-changed-this-year"]
+  }
+ ],
+ "notes": "Facts gathered by web search on 14 November 2026; direct fetches of iea.org, wsts.org and metr.org were blocked in this session, so some figures come from search-result summaries and trade press quoting the primary source. Items to treat with care: (1) AI: the 14.5-hour METR time horizon for Claude Opus 4.6 is a secondary report and METR changed its methodology (Time Horizon 1.1), so the AI curve mixes versions; the 2019 GPT-2 value is approximate ('about two seconds'). (2) Robotaxis: Waymo's 500,000 weekly rides is from March 2026; no later confirmed figure was found, and the 1 million year-end goal is unverified. Apollo Go's 22 million cumulative rides is from April 2026. (3) Starlink: 13.6 million (Q3 2026) is from a single news report; 10.3 million (March 2026) is attributed to a SpaceX filing. (4) Fission: Linglong One's commercial operation in 2026 was a target; I could not confirm it had started. The 300 MW Darlington figure is the nominal BWRX-300 rating. (5) Neuralink: 21 participants (January 2026) is from a secondary summary of the company's update; a later '26th patient' claim is unconfirmed. (6) Life expectancy 1995 = 64.9 is derived from the UN's stated 8.4-year increase to 73.3 in 2024, reported by secondary outlets. (7) Battery price curve mixes real-2025-dollar (2010) and survey-year-dollar (2024–25) values. (8) Cultivated meat milestone dates for the UK pet-food approval differ between sources (2024 clearance vs 2025 sale). (9) Agricultural-drone hectares are DJI's own claim. (10) Launch counts differ slightly between trackers; 2021 (146) is from a non-McDowell database. (11) 2026 semiconductor forecasts (about $1.5 trillion) are forecasts, not actuals, and are excluded from the curve. (12) Quantum logical-qubit counts depend on definitions (error-detected vs error-corrected) and come from different machines. (13) The EV 2024 share is 'more than 20%'. Omitted for lack of reliable sourcing: stablecoin market cap (~$310bn, single aggregator), e-CNY transaction totals, Casgevy patient counts, and the AI Index data-centre power figure. 6G and edtech were left out to keep 24 technologies across seven stages; telecoms is partly represented by satellite internet. All 2040 predictions and wildcards are deliberately speculative and should be labelled as such on the page."
+}
