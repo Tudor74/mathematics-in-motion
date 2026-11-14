@@ -3850,6 +3850,12 @@ router.post('/admin/validate', async ({ request, user }) => {
   return json(out);
 });
 
+router.get('/admin/usage', async ({ user }) => {
+  if (!(await isOwner(user))) return json({ error: 'Owner only' }, 403);
+  try { return json(await user.puter.auth.getMonthlyUsage()); }
+  catch (e) { return json({ error: String(e.message || e) }, 502); }
+});
+
 router.post('/admin/arxiv-count', async ({ request, user }) => {
   if (!(await isOwner(user))) return json({ error: 'Owner only' }, 403);
   const { queries = [] } = await request.json();
