@@ -7,9 +7,16 @@ Interactive maths page (v0.11). Open `index.html` in a browser.
 `zigzag-realms.html` is a D&D-style exploration game whose map builds itself.
 Each step into unexplored ground asks Claude to write the new place from the
 one you just left. Every place, item and character stat is a cell in a ZigZag
-structure (`d.x` east/west, `d.y` north/south, `d.contain` for stores, `d.stat`
-for the character sheet, `d.at` for where you stand), so places persist and you
-can walk back to them.
+structure (`d.x` east/west, `d.y` north/south, `d.z` up/down, `d.contain` for
+stores, `d.stat` for the character sheet, `d.occupant` for the anomaly lurking
+at a place, `d.at` for where you stand), so places persist and you can walk
+back to them.
+
+Some places hold anomalies: original creatures written as containment files in
+the spirit of the SCP Foundation, with object classes Safe, Euclid and Keter.
+Combat uses d20 attack rolls against armour class, with initiative, critical
+hits, class tricks (Second Wind, Sneak Attack, Fire Bolt, Sacred Flame) and a
+DEX check to flee.
 
 Published as a Claude artifact it uses Claude for narration and saves the world
 to your account. Opened as a plain file it falls back to built-in tables and

@@ -7,24 +7,27 @@
 /* Layout: a surveyor's field journal in three columns: map and compass | the place you stand | your character sheet. One column on phones. */
 :root{
  --paper:#edf0e8; --sheet:#f8faf4; --ink:#1e2925; --faint:#5a6862; --rule:#c6d0c4; --wash:#e2e8dd;
- --accent:#8b4c1f; --accent-ink:#fff8f0; --water:#2e6487; --danger:#a2322a; --good:#2d6a3e;
+ --accent:#8b4c1f; --accent-ink:#fff8f0; --water:#2e6487; --danger:#a2322a; --good:#2d6a3e; --amber:#9a6a00;
+ --file:#f3f1e6; --file-rule:#bdb8a0;
  --t-forest:#a9c59d; --t-plains:#d9dca8; --t-water:#a3c4d6; --t-mountain:#c3bcb0; --t-cave:#b1aab8;
- --t-dungeon:#a9a3a0; --t-village:#e0c39c; --t-ruin:#cdbfa8; --t-swamp:#a8b994; --t-road:#d8cdb4; --t-other:#c9d0c4;
+ --t-dungeon:#a9a3a0; --t-village:#e0c39c; --t-ruin:#cdbfa8; --t-swamp:#a8b994; --t-road:#d8cdb4; --t-sky:#cfe0ea; --t-other:#c9d0c4;
  --display:"Alegreya SC",Georgia,"Times New Roman",serif;
  --body:"Alegreya Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
  --paper:#111916; --sheet:#17211d; --ink:#e2e9e1; --faint:#98a8a0; --rule:#2d3c36; --wash:#1d2924;
- --accent:#d79a5f; --accent-ink:#1b120a; --water:#76add0; --danger:#e57a68; --good:#82c594;
+ --accent:#d79a5f; --accent-ink:#1b120a; --water:#76add0; --danger:#e57a68; --good:#82c594; --amber:#e0b552;
+ --file:#1f241d; --file-rule:#454a38;
  --t-forest:#355a3a; --t-plains:#5c5d34; --t-water:#2c5269; --t-mountain:#55504a; --t-cave:#4a4456;
- --t-dungeon:#47413f; --t-village:#6c5434; --t-ruin:#5d5444; --t-swamp:#3f4d33; --t-road:#5f5643; --t-other:#3b4741;
+ --t-dungeon:#47413f; --t-village:#6c5434; --t-ruin:#5d5444; --t-swamp:#3f4d33; --t-road:#5f5643; --t-sky:#2d4150; --t-other:#3b4741;
  color-scheme:dark}}
 :root[data-theme="dark"]{
  --paper:#111916; --sheet:#17211d; --ink:#e2e9e1; --faint:#98a8a0; --rule:#2d3c36; --wash:#1d2924;
- --accent:#d79a5f; --accent-ink:#1b120a; --water:#76add0; --danger:#e57a68; --good:#82c594;
+ --accent:#d79a5f; --accent-ink:#1b120a; --water:#76add0; --danger:#e57a68; --good:#82c594; --amber:#e0b552;
+ --file:#1f241d; --file-rule:#454a38;
  --t-forest:#355a3a; --t-plains:#5c5d34; --t-water:#2c5269; --t-mountain:#55504a; --t-cave:#4a4456;
- --t-dungeon:#47413f; --t-village:#6c5434; --t-ruin:#5d5444; --t-swamp:#3f4d33; --t-road:#5f5643; --t-other:#3b4741;
+ --t-dungeon:#47413f; --t-village:#6c5434; --t-ruin:#5d5444; --t-swamp:#3f4d33; --t-road:#5f5643; --t-sky:#2d4150; --t-other:#3b4741;
  color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;margin:0}
@@ -68,15 +71,20 @@ header.top .sub{color:var(--faint);font-size:15px;margin:4px 0 0;max-width:60ch}
 .map .frontier:hover{stroke:var(--accent)}
 .map .q{fill:var(--faint);font-family:var(--mono);font-size:15px;pointer-events:none}
 .map .axis{fill:var(--faint);font-family:var(--mono);font-size:10px}
-.t-forest{fill:var(--t-forest)}.t-plains{fill:var(--t-plains)}.t-water{fill:var(--t-water)}.t-mountain{fill:var(--t-mountain)}.t-cave{fill:var(--t-cave)}.t-dungeon{fill:var(--t-dungeon)}.t-village{fill:var(--t-village)}.t-ruin{fill:var(--t-ruin)}.t-swamp{fill:var(--t-swamp)}.t-road{fill:var(--t-road)}.t-other{fill:var(--t-other)}
+.map .stair{fill:var(--ink);opacity:.75;pointer-events:none}
+.map .threat{fill:var(--danger);stroke:var(--sheet);stroke-width:1.5;pointer-events:none}
+.t-forest{fill:var(--t-forest)}.t-plains{fill:var(--t-plains)}.t-water{fill:var(--t-water)}.t-mountain{fill:var(--t-mountain)}.t-cave{fill:var(--t-cave)}.t-dungeon{fill:var(--t-dungeon)}.t-village{fill:var(--t-village)}.t-ruin{fill:var(--t-ruin)}.t-swamp{fill:var(--t-swamp)}.t-road{fill:var(--t-road)}.t-sky{fill:var(--t-sky)}.t-other{fill:var(--t-other)}
 .mapnote{font-size:13px;color:var(--faint);margin:0}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--faint);margin:0}
+.legend span b{color:var(--danger)}
 
-.compass{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-areas:". n ." "w c e" ". s .";gap:6px}
+.compass{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-areas:". n u" "w c e" ". s d";gap:6px}
 .compass button{display:grid;gap:0;padding:6px 6px;min-height:58px;text-align:center;line-height:1.2}
 .compass button .dir{font-family:var(--display);font-size:17px;font-weight:700}
 .compass button .to{font-size:12px;color:var(--faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
-.compass .n{grid-area:n}.compass .s{grid-area:s}.compass .e{grid-area:e}.compass .w{grid-area:w}
-.compass .c{grid-area:c;display:grid;place-items:center;text-align:center;font-family:var(--mono);font-size:12px;color:var(--faint);border:1px dashed var(--rule);border-radius:6px}
+.compass button.vert{border-style:dashed}
+.compass .n{grid-area:n}.compass .s{grid-area:s}.compass .e{grid-area:e}.compass .w{grid-area:w}.compass .u{grid-area:u}.compass .d{grid-area:d}
+.compass .c{grid-area:c;display:grid;place-items:center;text-align:center;font-family:var(--mono);font-size:12px;color:var(--faint);border:1px dashed var(--rule);border-radius:6px;padding:4px}
 .keys{font-size:12px;color:var(--faint);margin:0}
 
 /* Location */
@@ -94,6 +102,24 @@ header.top .sub{color:var(--faint);font-size:15px;margin:4px 0 0;max-width:60ch}
 .hazard.passed{border-left-color:var(--good)}
 .hazard b{font-family:var(--display)}
 .hazard .roll{font-family:var(--mono);font-size:12.5px;color:var(--faint);display:block;margin-top:2px}
+
+/* Anomaly file: a containment record clipped into the journal */
+.foe{background:var(--file);border:1px solid var(--file-rule);border-radius:4px;padding:14px 16px 14px;display:grid;gap:10px;position:relative}
+.foe::before{content:"";position:absolute;inset:0 auto 0 0;width:5px;background:var(--oc,var(--amber))}
+.foe[data-class="safe"]{--oc:var(--good)}.foe[data-class="euclid"]{--oc:var(--amber)}.foe[data-class="keter"]{--oc:var(--danger)}
+.filehead{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 12px;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);border-bottom:1px solid var(--file-rule);padding-bottom:6px}
+.filehead .oc{color:var(--oc,var(--amber));font-weight:500}
+.foe h3{font-size:24px;line-height:1.1}
+.foe .notes{margin:0;font-size:15.5px;line-height:1.55;max-width:62ch}
+.foe .notes::first-line{font-weight:500}
+.foe .stats{font-family:var(--mono);font-size:12.5px;color:var(--faint);margin:0}
+.foe .hpbar span{background:var(--oc,var(--amber))}
+.rounds{list-style:none;margin:0;padding:8px 0 0;border-top:1px dashed var(--file-rule);display:grid;gap:4px;font-size:14px}
+.rounds li.bad{color:var(--danger)}.rounds li.good{color:var(--good)}
+.rounds .roll{font-family:var(--mono);font-size:12px;color:var(--faint);display:block}
+.fight{display:flex;flex-wrap:wrap;gap:8px}
+.fight button.primary{min-width:150px}
+.neutral{font-size:14px;color:var(--faint);border-left:3px solid var(--rule);padding:2px 10px;margin:0}
 
 .items{list-style:none;margin:0;padding:0;display:grid;gap:0}
 .items li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:9px 0;border-top:1px solid var(--rule)}
@@ -133,7 +159,7 @@ details.zz summary{cursor:pointer;font-family:var(--mono);font-size:13px;color:v
 .facts dt{color:var(--faint)}.facts dd{margin:0;font-family:var(--mono);font-size:13px}
 
 /* Log */
-.log ol{list-style:none;margin:0;padding:0;display:grid;gap:4px;max-height:240px;overflow:auto;font-size:14px}
+.log ol{list-style:none;margin:0;padding:0;display:grid;gap:4px;max-height:260px;overflow:auto;font-size:14px}
 .log li{padding-left:12px;border-left:2px solid var(--rule)}
 .log li.bad{border-left-color:var(--danger)}.log li.good{border-left-color:var(--good)}
 .log .roll{font-family:var(--mono);font-size:12px;color:var(--faint)}
@@ -159,7 +185,7 @@ details.zz summary{cursor:pointer;font-family:var(--mono);font-size:13px;color:v
   <div>
    <p class="eyebrow">A map that writes itself</p>
    <h1>Zigzag Realms</h1>
-   <p class="sub">Walk north, south, east or west. Each unexplored step is written by Claude from the place you just left, then kept as a cell in a ZigZag structure so you can walk back to it.</p>
+   <p class="sub">Walk north, south, east or west, climb up or go down. Claude writes each unexplored step from the place you just left, including any anomaly lurking there. Each place is kept as a cell in a ZigZag structure, so you can walk back to it.</p>
   </div>
   <div class="pills">
    <span class="pill" id="pill-ai">Narrator: <b>connecting…</b></span>
@@ -172,18 +198,21 @@ details.zz summary{cursor:pointer;font-family:var(--mono);font-size:13px;color:v
   <div class="col left">
    <section class="panel map" aria-labelledby="map-h">
     <div class="sectionhead"><h3 id="map-h">Survey map</h3><span class="mono" id="coords" style="font-size:12px;color:var(--faint)"></span></div>
-    <svg id="map" viewBox="0 0 420 420" role="img" aria-label="Map of explored places around you"></svg>
-    <p class="mapnote" id="mapnote">Click a dashed square to explore it, or any mapped square to walk back there.</p>
+    <svg id="map" viewBox="0 0 420 420" role="img" aria-label="Map of explored places on your current level"></svg>
+    <p class="legend"><span>▲ way up</span><span>▼ way down</span><span><b>◆</b> anomaly at large</span></p>
+    <p class="mapnote">The map shows the level you are on. Click a dashed square to explore it, or any mapped square to walk back there.</p>
    </section>
    <section class="panel" aria-label="Movement">
     <div class="compass" id="compass">
      <button class="n" id="go-north" data-dir="north"><span class="dir">North</span><span class="to"></span></button>
+     <button class="u vert" id="go-up" data-dir="up"><span class="dir">Up</span><span class="to"></span></button>
      <button class="w" id="go-west" data-dir="west"><span class="dir">West</span><span class="to"></span></button>
      <div class="c" id="compass-c">—</div>
      <button class="e" id="go-east" data-dir="east"><span class="dir">East</span><span class="to"></span></button>
      <button class="s" id="go-south" data-dir="south"><span class="dir">South</span><span class="to"></span></button>
+     <button class="d vert" id="go-down" data-dir="down"><span class="dir">Down</span><span class="to"></span></button>
     </div>
-    <p class="keys">Keys: arrow keys or W A S D to move, R to rest.</p>
+    <p class="keys">Keys: arrows or W A S D to walk, E or Page Up to climb, Q or Page Down to descend, F to attack, R to rest.</p>
    </section>
   </div>
 
@@ -206,16 +235,18 @@ details.zz summary{cursor:pointer;font-family:var(--mono);font-size:13px;color:v
    ZigZag core. Every thing in the game is a cell. Cells link to
    one another along named dimensions; each cell has at most one
    neighbour in each direction (+ posward, - negward) of a dimension.
-     d.x       east (+) / west (-)
-     d.y       north (+) / south (-)
-     d.contain a store: container, then its items, as one rank
-     d.stat    a character, then its stat cells, as one rank
-     d.at      character (+) -> the location it stands in
-     d.cursor  the root cell (+) -> the character
+     d.x        east (+) / west (-)
+     d.y        north (+) / south (-)
+     d.z        up (+) / down (-)
+     d.contain  a store: container, then its items, as one rank
+     d.stat     a character, then its stat cells, as one rank
+     d.occupant a location (+) -> the anomaly that lurks there
+     d.at       character (+) -> the location it stands in
+     d.cursor   the root cell (+) -> the character
    ============================================================ */
 const zz={cells:{},dirty:new Set(),removed:new Set()};
-const coord=new Map();                    // "x,y" -> location cell id (index, rebuilt on load)
-const ck=(x,y)=>x+","+y;
+const coord=new Map();                    // "x,y,z" -> location cell id (index, rebuilt on load)
+const ck=(x,y,z)=>x+","+y+","+(z||0);
 const cell=id=>zz.cells[id];
 const touch=id=>{zz.dirty.add(id)};
 const flip=s=>s==="+"?"-":"+";
@@ -238,32 +269,42 @@ function destroy(id){const c=cell(id);if(!c)return;for(const key of Object.keys(
    Game vocabulary
    ============================================================ */
 const DIRS={
- north:{dim:"y",sign:"+",dx:0,dy:1,opp:"south",keys:["ArrowUp","w","W"]},
- south:{dim:"y",sign:"-",dx:0,dy:-1,opp:"north",keys:["ArrowDown","s","S"]},
- east:{dim:"x",sign:"+",dx:1,dy:0,opp:"west",keys:["ArrowRight","d","D"]},
- west:{dim:"x",sign:"-",dx:-1,dy:0,opp:"east",keys:["ArrowLeft","a","A"]}
+ north:{dim:"y",sign:"+",dx:0,dy:1,dz:0,keys:["ArrowUp","w","W"]},
+ south:{dim:"y",sign:"-",dx:0,dy:-1,dz:0,keys:["ArrowDown","s","S"]},
+ east:{dim:"x",sign:"+",dx:1,dy:0,dz:0,keys:["ArrowRight","d","D"]},
+ west:{dim:"x",sign:"-",dx:-1,dy:0,dz:0,keys:["ArrowLeft","a","A"]},
+ up:{dim:"z",sign:"+",dx:0,dy:0,dz:1,keys:["PageUp","e","E","<"]},
+ down:{dim:"z",sign:"-",dx:0,dy:0,dz:-1,keys:["PageDown","q","Q",">"]}
 };
+const FLAT=["north","south","east","west"];
 const STATS=["STR","DEX","CON","INT","WIS","CHA"];
-const TERRAINS=["forest","plains","water","mountain","cave","dungeon","village","ruin","swamp","road"];
+const TERRAINS=["forest","plains","water","mountain","cave","dungeon","village","ruin","swamp","road","sky"];
 const KINDS=["weapon","armor","potion","treasure","tool","food","junk"];
-const CLASSES={Fighter:{hd:10,kit:[["Longsword","A plain, well-kept blade.","weapon",3,15],["Chain shirt","Rings of steel over a padded jerkin.","armor",20,50,null,3]]},
- Rogue:{hd:8,kit:[["Shortsword","Light and quick.","weapon",2,10],["Thieves' tools","Picks, a file and a tiny mirror.","tool",1,25],["Leather armour","Supple boiled leather.","armor",10,10,null,1]]},
- Wizard:{hd:6,kit:[["Spellbook","Your notes, cramped and precious.","tool",3,50],["Dagger","Mostly for cutting herbs.","weapon",1,2]]},
- Cleric:{hd:8,kit:[["Mace","Iron-headed, simple.","weapon",4,5],["Holy symbol","A silver sun on a cord.","tool",1,5],["Scale mail","Heavy overlapping plates.","armor",45,50,null,4]]}};
+const SPECIALS={none:"",regenerate:"knits itself back together each round",phasing:"one blow in four passes straight through it",frenzy:"strikes twice each round"};
+const OBJECT_CLASSES=["Safe","Euclid","Keter"];
+// Kit rows: name, description, kind, weight (lb), value (gp), heal, ac, damage, finesse
+const CLASSES={
+ Fighter:{hd:10,kit:[["Longsword","A plain, well-kept blade.","weapon",3,15,null,0,"1d8",false],["Chain shirt","Rings of steel over a padded jerkin.","armor",20,50,null,3]]},
+ Rogue:{hd:8,kit:[["Shortsword","Light and quick.","weapon",2,10,null,0,"1d6",true],["Thieves' tools","Picks, a file and a tiny mirror.","tool",1,25],["Leather armour","Supple boiled leather.","armor",10,10,null,1]]},
+ Wizard:{hd:6,kit:[["Spellbook","Your notes, cramped and precious.","tool",3,50],["Dagger","Mostly for cutting herbs.","weapon",1,2,null,0,"1d4",true]]},
+ Cleric:{hd:8,kit:[["Mace","Iron-headed, simple.","weapon",4,5,null,0,"1d6",false],["Holy symbol","A silver sun on a cord.","tool",1,5],["Scale mail","Heavy overlapping plates.","armor",45,50,null,4]]}};
+const CLASS_NOTES={Fighter:"Second Wind: once per rest, heal 1d10 + level.",Rogue:"Sneak Attack: hits with a finesse weapon deal extra d6s.",Wizard:"Fire Bolt: an INT spell attack for 1d10, at will.",Cleric:"Sacred Flame: a WIS spell attack for 1d8, at will."};
 const GLYPH={forest:"M17 32 L23 17 L29 32 Z M25 33 L31 15 L37 33 Z",mountain:"M11 33 L21 16 L27 25 L32 18 L41 33",
  water:"M12 21 q3.5 -4 7 0 t7 0 t7 0 t7 0 M12 29 q3.5 -4 7 0 t7 0 t7 0 t7 0",village:"M18 33 V23 L26 15 L34 23 V33 Z M23 33 V27 H29 V33",
  ruin:"M15 33 H37 M19 33 V17 H24 M30 33 V22 L34 20 V33",cave:"M13 33 Q13 14 26 14 Q39 14 39 33 M20 33 Q20 23 26 23 Q32 23 32 33",
  dungeon:"M16 33 V16 H36 V33 M21 33 V23 H31 V33 M16 20 H36",swamp:"M13 31 H39 M18 31 V21 M22 31 V17 M30 31 V22 M34 31 V18",
- plains:"M14 26 q3 -3 6 0 M25 21 q3 -3 6 0 M30 30 q3 -3 6 0 M17 33 q3 -3 6 0",road:"M14 35 L23 14 M38 35 L29 14 M26 31 V28 M26 24 V21",other:"M20 25 H32 M26 19 V31"};
+ plains:"M14 26 q3 -3 6 0 M25 21 q3 -3 6 0 M30 30 q3 -3 6 0 M17 33 q3 -3 6 0",road:"M14 35 L23 14 M38 35 L29 14 M26 31 V28 M26 24 V21",
+ sky:"M14 30 q-1 -7 6 -7 q2 -7 9 -5 q6 0 7 6 q5 1 3 6 Z",other:"M20 25 H32 M26 19 V31"};
 
 /* Dice */
 const rnd=n=>1+Math.floor(Math.random()*n);
 const mod=v=>Math.floor((v-10)/2);
 const sgn=m=>(m>=0?"+":"−")+Math.abs(m);
 const DICE=/^(\d{1,2})d(\d{1,3})([+-]\d{1,2})?$/;
-function roll(expr){
- const m=DICE.exec(String(expr).replace(/\s/g,""));if(!m)return{total:0,text:"no roll"};
- const n=Math.min(+m[1],12),s=Math.max(2,+m[2]),b=+(m[3]||0),rolls=[];for(let i=0;i<n;i++)rolls.push(rnd(s));
+const cleanDice=s=>String(s||"").replace(/\s/g,"").replace(/^d/,"1d");
+function roll(expr,timesDice=1){
+ const m=DICE.exec(cleanDice(expr));if(!m)return{total:0,text:"no roll"};
+ const n=Math.min(+m[1],12)*timesDice,s=Math.max(2,+m[2]),b=+(m[3]||0),rolls=[];for(let i=0;i<n;i++)rolls.push(rnd(s));
  const total=Math.max(0,rolls.reduce((a,c)=>a+c,0)+b);
  return{total,text:`${n}d${s}${b?(b>0?"+"+b:b):""} → [${rolls.join(", ")}]${b?(b>0?" + "+b:" − "+(-b)):""} = ${total}`};
 }
@@ -274,6 +315,7 @@ function rollStats(){return STATS.map(()=>{const r=[rnd(6),rnd(6),rnd(6),rnd(6)]
    ============================================================ */
 const charId=()=>step("root","cursor","+");
 const hereId=()=>charId()&&step(charId(),"at","+");
+const foeId=(loc=hereId())=>loc?step(loc,"occupant","+"):null;
 const statCell=name=>rank(charId(),"stat").map(cell).find(c=>c.t===name);
 const sv=name=>statCell(name)?.v??0;
 function setStat(name,v){const c=statCell(name);if(c&&c.v!==v){c.v=v;touch(c.id)}}
@@ -284,13 +326,29 @@ const capacity=()=>sv("STR")*15;
 function armourBonus(){return packIds().map(cell).filter(i=>i.worn).reduce((a,i)=>Math.max(a,+i.ac||0),0)}
 function armourClass(){return 10+mod(sv("DEX"))+armourBonus()}
 const hitDie=()=>CLASSES[cell(charId()).cls]?.hd||8;
+const prof=()=>2+Math.floor((sv("LVL")-1)/4);
+function weapon(){const ws=packIds().map(cell).filter(i=>i.kind==="weapon");return ws.find(i=>i.wielded)||ws[0]||null}
+const zOf=c=>c.z||0;
+
+/* Attack options for this character, worked out from class, stats and the weapon in hand */
+function attackOptions(){
+ const ch=cell(charId()),lvl=sv("LVL"),opts=[],w=weapon();
+ if(w){const finesse=!!w.finesse,stat=finesse&&sv("DEX")>sv("STR")?"DEX":"STR";
+  opts.push({key:"weapon",label:`Attack with ${w.t}`,stat,dice:cleanDice(w.dmg)||"1d6",addMod:true,sneak:ch.cls==="Rogue"&&finesse?Math.ceil(lvl/2):0});}
+ else opts.push({key:"unarmed",label:"Punch",stat:"STR",dice:"1d2",addMod:true,sneak:0});
+ if(ch.cls==="Wizard")opts.push({key:"spell",label:"Cast Fire Bolt",stat:"INT",dice:lvl>=5?"2d10":"1d10",addMod:false,sneak:0});
+ if(ch.cls==="Cleric")opts.push({key:"spell",label:"Call Sacred Flame",stat:"WIS",dice:lvl>=5?"2d8":"1d8",addMod:false,sneak:0});
+ // Spellcasters lead with their spell when it is the stronger choice
+ if(opts.length>1&&mod(sv(opts[1].stat))>=mod(sv(opts[0].stat)))opts.reverse();
+ return opts;
+}
 
 /* ============================================================
    Storage: the viewer's private subtree in the artifact db when
    available, this browser's localStorage otherwise.
    ============================================================ */
 const LS_KEY="zigzag-realms-v1";
-const store={mode:"none",db:null,uid:null,chain:Promise.resolve(),error:null,
+const store={mode:"none",db:null,uid:null,from:null,chain:Promise.resolve(),error:null,
  col(){return this.db.doc(`data/users/${this.uid}/world`).collection("cells")},
  async connect(){
   try{
@@ -346,77 +404,121 @@ const TABLES={
  plains:{names:["Windmeet Downs","Barrow Field","The Long Grass","Kestrel Heath"],lines:["Grass runs to the horizon in long silver waves under a wide sky.","A lone standing stone leans in the middle of the heath, furred with lichen.","Larks rise from the turf; the wind has nothing to stop it here."]},
  water:{names:["Saltreed Ford","Heron Pool","The Narrow Water","Millrace Bend"],lines:["Brown water slides past, quick and cold, over a bed of round stones.","Reeds crowd a still pool where a heron stands as if carved.","Stepping stones cross the stream, green with weed and slick."]},
  mountain:{names:["Raven Scar","The Grey Shoulder","Cairn Pass","Hollowpeak"],lines:["The path climbs between boulders; below, the land falls away into haze.","Wind whistles through a notch in the ridge marked by a crooked cairn.","Scree rattles underfoot and the air is thin and bitter."]},
- cave:{names:["The Dripping Mouth","Glowworm Hollow","Bat Gallery"],lines:["A cave mouth breathes cold air; water ticks somewhere in the dark.","Pale fungus lights the tunnel walls a faint, sickly green.","The ceiling is alive with sleeping bats, and the floor is soft with their leavings."]},
- dungeon:{names:["The Sunken Vault","Warden's Cells","Hall of Broken Shields"],lines:["Worked stone, a corridor of iron sconces long since cold.","A collapsed portcullis half-blocks a hall lined with empty niches.","Chains hang from the walls of a low, damp cell block."]},
+ cave:{names:["The Dripping Mouth","Glowworm Hollow","Bat Gallery","Rootfall Cellar"],lines:["Water ticks somewhere in the dark and the air is cold as a well.","Pale fungus lights the tunnel walls a faint, sickly green.","Roots hang through the ceiling like the fingers of something listening."]},
+ dungeon:{names:["The Sunken Vault","Warden's Cells","Hall of Broken Shields","Ossuary Stair"],lines:["Worked stone, a corridor of iron sconces long since cold.","A collapsed portcullis half-blocks a hall lined with empty niches.","Chains hang from the walls of a low, damp cell block."]},
  village:{names:["Hobb's Crossing","Little Marrow","Fennick Green"],lines:["A cluster of thatched cottages, a well, and a dog that will not stop barking.","Smoke rises from a smithy; a few villagers watch you over a fence.","A market cross stands at the heart of a muddy green."]},
- ruin:{names:["The Old Watchtower","Fallen Chapel","Broken Wall"],lines:["A tower stands roofless, one wall fallen outward in a fan of stone.","Ivy holds together what is left of a chapel; its windows are empty arches.","Toppled pillars lie in the grass like the bones of something huge."]},
+ ruin:{names:["The Old Watchtower","Fallen Chapel","Broken Wall","Bell Loft"],lines:["A tower stands roofless, one wall fallen outward in a fan of stone.","Ivy holds together what is left of a chapel; its windows are empty arches.","Toppled pillars lie in the grass like the bones of something huge."]},
  swamp:{names:["Bitter Fen","Mirewatch","Black Sedge"],lines:["The ground gives under every step; pools of black water steam faintly.","Dead trees stand in the fen, white as bone, draped in moss.","Frogs fall silent as you pass, and something large slips into the water."]},
- road:{names:["King's Road","Drovers' Way","Milestone Bend"],lines:["A rutted road runs on, marked by a weathered milestone.","Cart tracks and hoofprints, both fresh, press into the mud.","The road dips between hedges thick with bramble."]}
+ road:{names:["King's Road","Drovers' Way","Milestone Bend"],lines:["A rutted road runs on, marked by a weathered milestone.","Cart tracks and hoofprints, both fresh, press into the mud.","The road dips between hedges thick with bramble."]},
+ sky:{names:["Cloudshelf","The Kite Ledge","Gull's Height"],lines:["Wind tears at your clothes; the land below is a patchwork of green and grey.","A shelf of rock juts into open air, ringed by circling gulls.","Clouds drift past close enough to touch, cold and damp on your face."]}
 };
 const LOOT={forest:[["Bundle of herbs","Feverfew and woundwort, tied with twine.","potion",0.5,5,"1d4+1"]],plains:[["Flint arrowheads","Three neat points in a twist of cloth.","junk",0.2,1]],
  water:[["River pearl","Lumpy, but it gleams.","treasure",0,20]],mountain:[["Climbing rope","Fifty feet of hempen rope.","tool",10,1]],cave:[["Glowcap mushroom","Faintly luminous; supposedly restorative.","food",0.2,2,"1d4"]],
  dungeon:[["Rusted shield","Dented but sound.","armor",6,5,null,2],["Tarnished coins","A handful of old silver.","treasure",0.5,12]],village:[["Loaf of bread","Still a little warm.","food",0.5,1,"1d4"]],
- ruin:[["Potion of Healing","A red liquid that shimmers when shaken.","potion",0.5,50,"2d4+2"]],swamp:[["Bog-iron dagger","Pitted and black.","weapon",1,2]],road:[["Lost purse","A few coins inside.","treasure",0.2,8]]};
-const HAZARDS={mountain:["Loose scree","DEX","1d6"],water:["Slick stepping stones","DEX","1d4"],swamp:["Sucking mire","STR","1d6"],dungeon:["Dart trap","DEX","1d8"],cave:["Low, jagged ceiling","DEX","1d4"],ruin:["Crumbling masonry","DEX","1d6"],forest:["Nettle thicket","CON","1d4"]};
+ ruin:[["Potion of Healing","A red liquid that shimmers when shaken.","potion",0.5,50,"2d4+2"],["Warhammer","Heavy, with a spiked back.","weapon",2,15,null,0,"1d8",false]],swamp:[["Bog-iron dagger","Pitted and black.","weapon",1,2,null,0,"1d4",true]],road:[["Lost purse","A few coins inside.","treasure",0.2,8]],
+ sky:[["Eagle feather","Long as your forearm, barred gold and brown.","junk",0,5]]};
+const HAZARDS={mountain:["Loose scree","DEX","1d6"],water:["Slick stepping stones","DEX","1d4"],swamp:["Sucking mire","STR","1d6"],dungeon:["Dart trap","DEX","1d8"],cave:["Low, jagged ceiling","DEX","1d4"],ruin:["Crumbling masonry","DEX","1d6"],forest:["Nettle thicket","CON","1d4"],sky:["Sudden gust","STR","1d6"]};
+// Original anomalies, written as containment files. tier 1 near the start, tier 3 far out or deep down.
+const ANOMALIES=[
+ {designation:"AE-0390",name:"Lantern-Without-Keeper",objectClass:"Safe",tier:1,hp:8,ac:12,attack:2,damage:"1d6",special:"none",description:"A brass storm lantern on four jointed stilts. Shadows cast by its light do not stay attached to the people who cast them. It is currently circling you, slowly, keeping the light on your back."},
+ {designation:"AE-0233",name:"Mother of Keys",objectClass:"Safe",tier:1,hp:9,ac:14,attack:3,damage:"1d6",special:"none",description:"A rusted iron ring holding thirty-one keys. Anything it touches comes unlocked, including joints. It hangs in the air at chest height, jingling, and turns toward you."},
+ {designation:"AE-0058",name:"The Grandmother Clock",objectClass:"Euclid",tier:1,hp:14,ac:13,attack:3,damage:"1d6+1",special:"none",description:"A longcase clock with eleven hands. It moves only when nobody is looking at its face, walking on its hands like a spider. Its pendulum has stopped. It is facing away from you."},
+ {designation:"AE-0112",name:"The Hollow Choir",objectClass:"Euclid",tier:2,hp:12,ac:11,attack:3,damage:"1d8",special:"frenzy",description:"Seven moth-eaten hymnals that sing in the voices of people reported missing nearby. Staff are advised not to listen for names. They are rising from the ground, pages fluttering, and one of them has started a verse you recognise."},
+ {designation:"AE-0866",name:"Paper Hounds",objectClass:"Euclid",tier:2,hp:12,ac:12,attack:4,damage:"2d4",special:"frenzy",description:"Two dogs folded from redacted case files, their edges keen as razors. Ink bleeds where they bite. They have your scent and are circling in opposite directions."},
+ {designation:"AE-1004",name:"Wet Static",objectClass:"Euclid",tier:2,hp:16,ac:10,attack:4,damage:"1d6+2",special:"regenerate",description:"A puddle that does not evaporate and hisses with broadcast voices reading out numbers. It reaches for warm things. It has begun to read out a number that sounds like your age."},
+ {designation:"AE-0721",name:"The Measured Man",objectClass:"Keter",tier:3,hp:28,ac:14,attack:5,damage:"1d10+2",special:"phasing",description:"A tall, featureless figure in a grey coat that always stands exactly three metres from the nearest witness, until it does not. It is three metres away. Now it is two."},
+ {designation:"AE-1290",name:"The Understair",objectClass:"Keter",tier:3,hp:26,ac:13,attack:5,damage:"2d6",special:"regenerate",description:"Something that lives beneath every staircase at once. Only its hands have been recorded. There are more of them than there should be, and they are coming up the steps."}
+];
 const pick=a=>a[Math.floor(Math.random()*a.length)];
-function tableLocation(from,dir,dist){
- const terrain=from&&Math.random()<.55?from.terrain:pick(TERRAINS);const T=TABLES[terrain]||TABLES.plains;
- const lead=from?`You go ${dir} from ${from.t}. `:"";
+function tableLocation(from,dir,pos){
+ const dz=DIRS[dir]?.dz||0;
+ let terrain;
+ if(pos.z<0)terrain=pick(["cave","dungeon","cave","water"]);
+ else if(pos.z>=2)terrain=pick(["sky","mountain","sky"]);
+ else if(pos.z===1)terrain=pick(["ruin","mountain","forest","sky"]);
+ else terrain=from&&Math.random()<.55&&!["cave","dungeon","sky"].includes(from.terrain)?from.terrain:pick(TERRAINS.filter(t=>!["cave","dungeon","sky"].includes(t)));
+ const T=TABLES[terrain]||TABLES.plains;
+ const lead=!from?"":dz>0?`You climb up from ${from.t}. `:dz<0?`You go down from ${from.t}. `:`You go ${dir} from ${from.t}. `;
  const lines=T.lines.slice().sort(()=>Math.random()-.5),text=lines[0]+(Math.random()<.6?" "+lines[1]:"");
  const items=[];if(LOOT[terrain]&&Math.random()<.6)items.push(pick(LOOT[terrain]));
- const hz=HAZARDS[terrain]&&from&&Math.random()<.3?HAZARDS[terrain]:null;
+ const hz=HAZARDS[terrain]&&from&&Math.random()<.25?HAZARDS[terrain]:null;
+ let monster=null;
+ if(from&&Math.random()<(pos.z<0?.45:.3)){
+  const tier=1+Math.floor((pos.dist+Math.max(0,-pos.z)*2)/4);
+  const a=pick(ANOMALIES.filter(m=>m.tier<=Math.min(3,tier)));
+  monster=Object.assign({},a,{loot:Math.random()<.5?asItem(pick(LOOT.ruin.concat(LOOT.dungeon))):null});
+ }
  return normLocation({name:pick(T.names),terrain,description:lead+text,
-  items:items.map(([name,description,kind,weight,value,heal,ac])=>({name,description,kind,weight,value,heal,ac})),
-  hazard:hz?{name:hz[0],text:"The way here is treacherous.",stat:hz[1],dc:10+Math.min(5,Math.floor(dist/3)),damage:hz[2]}:null},terrain);
+  items:items.map(asItem),
+  hazard:hz?{name:hz[0],text:"The way here is treacherous.",stat:hz[1],dc:10+Math.min(5,Math.floor(pos.dist/3)),damage:hz[2]}:null,monster},terrain,pos);
 }
+const asItem=([name,description,kind,weight,value,heal,ac,damage,finesse])=>({name,description,kind,weight,value,heal,ac,damage,finesse});
 function normItem(i){
- const kind=KINDS.includes(i&&i.kind)?i.kind:"junk";
- const heal=i&&DICE.test(String(i.heal||"").replace(/\s/g,""))&&(kind==="potion"||kind==="food")?String(i.heal).replace(/\s/g,""):null;
+ i=i&&typeof i==="object"?i:{};
+ const kind=KINDS.includes(i.kind)?i.kind:"junk";
+ const heal=DICE.test(cleanDice(i.heal))&&(kind==="potion"||kind==="food")?cleanDice(i.heal):null;
  const ac=kind==="armor"?Math.max(1,Math.min(5,Math.round(+i.ac||1))):0;
- return{name:String(i&&i.name||"Odd trinket").slice(0,60),desc:String(i&&i.description||"").slice(0,200),kind,
-  weight:Math.max(0,Math.min(60,+i.weight||0)),value:Math.max(0,Math.min(1000,Math.round(+i.value||0))),heal,ac};
+ let dmg=null,finesse=false;
+ if(kind==="weapon"){const m=DICE.exec(cleanDice(i.damage));dmg=m?`${Math.min(2,+m[1])}d${Math.min(12,Math.max(2,+m[2]))}${m[3]&&+m[3]>0?"+"+Math.min(3,+m[3]):""}`:"1d6";finesse=!!i.finesse}
+ return{name:String(i.name||"Odd trinket").slice(0,60),desc:String(i.description||"").slice(0,200),kind,
+  weight:Math.max(0,Math.min(60,+i.weight||0)),value:Math.max(0,Math.min(1000,Math.round(+i.value||0))),heal,ac,dmg,finesse};
 }
-function normLocation(o,fallbackTerrain){
+function normMonster(m,pos){
+ if(!m||typeof m!=="object"||!m.name)return null;
+ const L=sv("LVL")||1,D=pos.dist+Math.max(0,-pos.z);
+ const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,Math.round(+v||lo)));
+ const hp=clamp(m.hp,4,12+8*L+D);
+ const dm=DICE.exec(cleanDice(m.damage));
+ const damage=dm?`${Math.min(+dm[1],1+Math.ceil(L/2))}d${Math.min(12,Math.max(2,+dm[2]))}${dm[3]?(+dm[3]>0?"+"+Math.min(+dm[3],1+L):dm[3]):""}`:"1d6";
+ let des=String(m.designation||"").toUpperCase().replace(/^SCP/,"AE");
+ if(!/^[A-Z]{1,4}-\d{2,5}$/.test(des))des="AE-"+String(rnd(9000)+999).padStart(4,"0");
+ const oc=OBJECT_CLASSES.find(c=>c.toLowerCase()===String(m.objectClass||"").toLowerCase())||"Euclid";
+ return{name:String(m.name).slice(0,60),designation:des,objectClass:oc,description:String(m.description||"").slice(0,700),
+  hp,maxhp:hp,ac:clamp(m.ac,9,17),attack:clamp(m.attack,1,Math.min(10,3+L+Math.floor(D/5))),damage,
+  special:Object.keys(SPECIALS).includes(m.special)?m.special:"none",loot:m.loot?normItem(m.loot):null};
+}
+function normLocation(o,fallbackTerrain,pos){
  o=o&&typeof o==="object"?o:{};
  const terrain=TERRAINS.includes(o.terrain)?o.terrain:(fallbackTerrain||"plains");
  let hazard=null;const h=o.hazard;
- if(h&&typeof h==="object"&&h.name&&STATS.includes(h.stat)&&DICE.test(String(h.damage||"").replace(/\s/g,""))){
-  hazard={name:String(h.name).slice(0,60),text:String(h.text||"").slice(0,240),stat:h.stat,dc:Math.max(8,Math.min(18,Math.round(+h.dc||12))),damage:String(h.damage).replace(/\s/g,"")};
+ if(h&&typeof h==="object"&&h.name&&STATS.includes(h.stat)&&DICE.test(cleanDice(h.damage))){
+  hazard={name:String(h.name).slice(0,60),text:String(h.text||"").slice(0,240),stat:h.stat,dc:Math.max(8,Math.min(18,Math.round(+h.dc||12))),damage:cleanDice(h.damage)};
  }
  return{name:String(o.name||"Nameless place").slice(0,60),desc:String(o.description||"").slice(0,1200),terrain,
-  items:(Array.isArray(o.items)?o.items:[]).slice(0,4).map(normItem),hazard};
+  items:(Array.isArray(o.items)?o.items:[]).slice(0,4).map(normItem),hazard,monster:pos.dist?normMonster(o.monster,pos):null};
 }
-function describeForPrompt(id){const c=cell(id);return`"${c.t}" (${c.terrain}): ${c.desc}`}
-function buildPrompt(fromId,dir,x,y,dist){
- const root=cell("root"),from=fromId&&cell(fromId);
+function describeForPrompt(id){const c=cell(id),f=foeId(id);return`"${c.t}" (${c.terrain}, depth ${zOf(c)}): ${c.desc}${f?` An anomaly, ${cell(f).designation} "${cell(f).t}", is still at large there.`:""}`}
+function buildPrompt(fromId,dir,pos){
+ const root=cell("root"),ch=cell(charId());
  const nearby=[];
- for(const [d,v] of Object.entries(DIRS)){const nb=coord.get(ck(x+v.dx,y+v.dy));if(nb&&nb!==fromId)nearby.push(`- To the ${d}: ${describeForPrompt(nb)}`)}
- const ch=cell(charId());
+ for(const [d,v] of Object.entries(DIRS)){const nb=coord.get(ck(pos.x+v.dx,pos.y+v.dy,pos.z+v.dz));if(nb&&nb!==fromId)nearby.push(`- ${d==="up"?"Above":d==="down"?"Below":"To the "+d}: ${describeForPrompt(nb)}`)}
+ const how=dir==="up"?"climbed up (by stair, ladder, rope, roots or rock) out of":dir==="down"?"gone down (by stair, shaft, sinkhole, well or tunnel) out of":`walked ${dir} out of`;
  return [
- "You are the narrator of a fantasy tabletop adventure in the style of classic D&D. The map is built one square at a time on a grid, and you are writing the next square.",
+ "You are the narrator of a fantasy tabletop adventure in the style of classic D&D, with a strange undertone: the world contains anomalies, uncanny entities documented in the dry clinical voice of containment files, inspired by the SCP Foundation.",
  `World theme: ${root.theme}`,
- `The traveller is ${ch.t}, a level ${sv("LVL")} ${ch.cls}.`,
- from?`They have just walked ${dir} out of ${describeForPrompt(fromId)}`:"This is the very first location, where the adventure begins. Make it a natural starting point such as a crossroads, a camp or the edge of a village.",
- nearby.length?"Places already mapped next to the new square (stay consistent with them, and mention what can be seen in their direction):\n"+nearby.join("\n"):"",
- `The new square is ${dist} steps from the start. Danger and rewards grow slowly with distance.`,
+ `The traveller is ${ch.t}, a level ${sv("LVL")} ${ch.cls} with ${sv("HP")} of ${sv("MAXHP")} hit points and armour class ${armourClass()}.`,
+ fromId?`They have just ${how} ${describeForPrompt(fromId)}`:"This is the very first location, where the adventure begins. Make it a natural starting point such as a crossroads, a camp or the edge of a village.",
+ nearby.length?"Places already mapped next to the new square (stay consistent with them, and mention what can be seen or heard in their direction):\n"+nearby.join("\n"):"",
+ `The new square is at depth ${pos.z}: 0 is ground level; below zero is underground (cellars, caves, tunnels, vaults, growing stranger the deeper it goes); above zero is high up (tower floors, cliff ledges, treetops, rooftops, and from depth 2 upward, open sky and floating places). It is ${pos.dist} steps from the start. Danger and rewards grow slowly with distance and depth.`,
  "",
- "Write the new location. It must follow on naturally from the place they left: terrain changes gradually (a forest thins into heath before it becomes mountains), and something seen from the previous place can be found here.",
- "Description: 2 to 4 sentences, second person, present tense, concrete and sensory. Hint at what lies in one or two other directions.",
- "Items: 0 to 3 things lying here that can be picked up, fitting the place. Weights in pounds, values in gold pieces. Potions and food may heal with a dice expression such as \"2d4+2\"; armour and shields give an AC bonus of 1 to 5. Most places hold ordinary things; treasure is rare near the start.",
- "Hazard: in about one location in four, add a hazard the traveller must make a saving throw against when they first arrive (a trap, a fall, cold water, spores). Otherwise null.",
+ "Write the new location. It must follow on naturally from the place they left: terrain changes gradually, and something seen from the previous place can be found here. If they went up or down, say how they got here.",
+ "description: 2 to 4 sentences, second person, present tense, concrete and sensory. Hint at what lies in one or two other directions, including above or below where it makes sense.",
+ "items: 0 to 3 things lying here that can be picked up. Weights in pounds, values in gold pieces. Potions and food may heal with a dice expression such as \"2d4+2\". Armour and shields give an ac bonus of 1 to 5. Weapons have damage such as \"1d8\" and finesse true for light blades. Treasure is rare near the start.",
+ "hazard: in about one location in four, a hazard the traveller makes a saving throw against when they first arrive. Otherwise null.",
+ `monster: in about one location in three (more often underground, never at the start), an anomaly is here and will fight. Invent an original one; never use real SCP numbers, names or characters. Give it a designation of the form AE-#### and an object class: Safe (weak), Euclid (moderate) or Keter (dangerous; only far from the start or deep underground). Its description is 2 to 3 sentences in the clinical voice of a containment file, ending with what it is doing right now, as the traveller sees it. For this level ${sv("LVL")} traveller: hp about ${6+4*sv("LVL")+pos.dist}, ac 10 to 16, attack +2 to +${3+sv("LVL")}, damage of one or two dice. special is one of: none, regenerate, phasing, frenzy. loot is an item it leaves behind when destroyed, or null. Otherwise monster is null.`,
  "",
  "Reply with only a JSON object in exactly this shape:",
- '{"name":"Saltreed Ford","terrain":"water","description":"...","items":[{"name":"Potion of Healing","description":"A small vial of red liquid.","kind":"potion","weight":0.5,"value":50,"heal":"2d4+2","ac":0}],"hazard":{"name":"Slick stepping stones","text":"The stones are green with weed and the current is strong.","stat":"DEX","dc":12,"damage":"1d6"}}',
- `terrain is one of: ${TERRAINS.join(", ")}. kind is one of: ${KINDS.join(", ")}. stat is one of: ${STATS.join(", ")}. dc is 10 to 17. hazard may be null.`
+ '{"name":"Saltreed Ford","terrain":"water","description":"...","items":[{"name":"Potion of Healing","description":"A small vial of red liquid.","kind":"potion","weight":0.5,"value":50,"heal":"2d4+2","ac":0,"damage":null,"finesse":false}],"hazard":{"name":"Slick stepping stones","text":"The stones are green with weed and the current is strong.","stat":"DEX","dc":12,"damage":"1d6"},"monster":{"designation":"AE-0417","name":"The Patient Ferryman","objectClass":"Euclid","description":"...","hp":14,"ac":12,"attack":4,"damage":"1d8","special":"none","loot":null}}',
+ `terrain is one of: ${TERRAINS.join(", ")}. kind is one of: ${KINDS.join(", ")}. stat is one of: ${STATS.join(", ")}. hazard and monster may each be null; rarely have both.`
  ].filter(Boolean).join("\n");
 }
-async function narrate(fromId,dir,x,y,dist){
+async function narrate(fromId,dir,pos){
  const from=fromId?cell(fromId):null;
  if(sample){
   try{
-   const out=await sample.json(buildPrompt(fromId,dir,x,y,dist),{modelTier:"quick",cache:false});
+   const out=await sample.json(buildPrompt(fromId,dir,pos),{modelTier:"quick",cache:false});
    narratorNote="";
-   return Object.assign(normLocation(out,from&&from.terrain),{by:"claude"});
+   return Object.assign(normLocation(out,from&&from.terrain,pos),{by:"claude"});
   }catch(e){
    const code=e&&e.code;
    if(["not_granted","sampling_disabled","not_declared","capability_disabled","capability_removed"].includes(code)){sample=null;narratorNote="Claude is not available here, so the built-in tables write new places."}
@@ -425,20 +527,29 @@ async function narrate(fromId,dir,x,y,dist){
    renderPills();
   }
  }
- return Object.assign(tableLocation(from,dir,dist),{by:"tables"});
+ return Object.assign(tableLocation(from,dir,pos),{by:"tables"});
 }
 
 /* ============================================================
    Game actions
    ============================================================ */
-let busy=null,lastHazard=null,deleteArmed=false;
-function log(text,kind,rolltext){const r=cell("root");r.log=(r.log||[]).concat([{text,kind:kind||"",roll:rolltext||"",t:Date.now()}]).slice(-40);touch("root")}
+let busy=null,lastHazard=null,deleteArmed=false,rounds=[];
+function log(text,kind,rolltext){const r=cell("root");r.log=(r.log||[]).concat([{text,kind:kind||"",roll:rolltext||"",t:Date.now()}]).slice(-50);touch("root")}
+function say(text,kind,rolltext){rounds.push({text,kind:kind||"",roll:rolltext||""});rounds=rounds.slice(-6);log(text,kind,rolltext)}
+function itemCell(it){return newCell("item",{t:it.name,desc:it.desc,kind:it.kind,weight:it.weight,value:it.value,heal:it.heal,ac:it.ac,dmg:it.dmg,finesse:it.finesse,worn:false,wielded:false})}
 
-function createLocation(data,x,y,dist){
- const id=newCell("loc",{t:data.name,desc:data.desc,terrain:data.terrain,x,y,dist,hazard:data.hazard,hazardDone:false,outcome:null,visited:false,by:data.by||"tables"});
- coord.set(ck(x,y),id);
- for(const it of data.items){const iid=newCell("item",{t:it.name,desc:it.desc,kind:it.kind,weight:it.weight,value:it.value,heal:it.heal,ac:it.ac,worn:false});appendTo(id,"contain",iid)}
- for(const v of Object.values(DIRS)){const nb=coord.get(ck(x+v.dx,y+v.dy));if(!nb)continue;if(v.sign==="+")connect(id,v.dim,nb);else connect(nb,v.dim,id)}
+function createLocation(data,pos){
+ const {x,y,z,dist}=pos;
+ const id=newCell("loc",{t:data.name,desc:data.desc,terrain:data.terrain,x,y,z,dist,hazard:data.hazard,hazardDone:false,outcome:null,visited:false,by:data.by||"tables",defeated:null});
+ coord.set(ck(x,y,z),id);
+ for(const it of data.items)appendTo(id,"contain",itemCell(it));
+ if(data.monster){
+  const m=data.monster;
+  const mid=newCell("monster",{t:m.name,designation:m.designation,objectClass:m.objectClass,desc:m.description,hp:m.hp,maxhp:m.maxhp,ac:m.ac,atk:m.attack,dmg:m.damage,special:m.special});
+  connect(id,"occupant",mid);
+  if(m.loot)appendTo(mid,"contain",itemCell(m.loot));
+ }
+ for(const v of Object.values(DIRS)){const nb=coord.get(ck(x+v.dx,y+v.dy,z+v.dz));if(!nb)continue;if(v.sign==="+")connect(id,v.dim,nb);else connect(nb,v.dim,id)}
  return id;
 }
 function gainXP(n){
@@ -450,7 +561,7 @@ function gainXP(n){
  }
 }
 function enter(locId,first){
- const ch=charId();connect(ch,"at",locId);const L=cell(locId);lastHazard=null;
+ const ch=charId();connect(ch,"at",locId);const L=cell(locId);lastHazard=null;rounds=[];
  if(!L.visited){L.visited=true;touch(locId);gainXP(10)}
  if(first&&L.hazard&&!L.hazardDone){
   const h=L.hazard,m=mod(sv(h.stat)),d=rnd(20),tot=d+m,ok=tot>=h.dc;
@@ -459,80 +570,152 @@ function enter(locId,first){
   if(ok){L.outcome={ok:true,roll:txt};log(`${h.name}: you get through unharmed.`,"good",txt);gainXP(25)}
   else{const dmg=roll(h.damage);txt+=`; damage ${dmg.text}`;L.outcome={ok:false,roll:txt,dmg:dmg.total};setStat("HP",sv("HP")-dmg.total);log(`${h.name}: you take ${dmg.total} damage.`,"bad",txt)}
   touch(locId);lastHazard=locId;
-  if(sv("HP")<=0)fall(locId);
+  if(sv("HP")<=0){fall(locId);return}
+ }
+ const f=foeId(locId);
+ if(f){
+  const F=cell(f),pi=rnd(20),mi=rnd(20),pt=pi+mod(sv("DEX")),mt=mi+Math.floor(F.atk/2);
+  const txt=`Initiative: you d20 → ${pi} ${sgn(mod(sv("DEX")))} = ${pt}; ${F.designation} d20 → ${mi} +${Math.floor(F.atk/2)} = ${mt}`;
+  if(mt>pt){say(`${F.designation} ${F.t} moves first.`,"bad",txt);monsterTurn()}
+  else say(`You see ${F.designation} ${F.t} before it moves.`,"good",txt);
  }
 }
 function fall(locId){
  const L=cell(locId);let n=0;
- for(const id of packIds()){excise(id,"contain");cell(id).worn=false;appendTo(locId,"contain",id);n++}
- setStat("HP",1);
+ for(const id of packIds()){excise(id,"contain");Object.assign(cell(id),{worn:false,wielded:false});appendTo(locId,"contain",id);n++}
+ const f=foeId(locId);if(f){cell(f).hp=cell(f).maxhp;touch(f)}
+ setStat("HP",1);rounds=[];
  log(`You collapse at ${L.t}${n?" and your pack spills there":""}. You wake back at ${cell(cell("root").home).t} with 1 HP.`,"bad");
  connect(charId(),"at",cell("root").home);
 }
+
+/* Combat */
+function monsterTurn(){
+ const f=foeId();if(!f)return;const F=cell(f);
+ const swings=F.special==="frenzy"?2:1;
+ for(let i=0;i<swings&&sv("HP")>0;i++){
+  const d=rnd(20),tot=d+F.atk,ac=armourClass();let txt=`d20 → ${d} +${F.atk} = ${tot} against your AC ${ac}`;
+  if(d===1||(d!==20&&tot<ac))say(`${F.t} lunges and misses.`,"good",txt);
+  else{const r=roll(F.dmg,d===20?2:1);txt+=`; damage ${r.text}`;setStat("HP",sv("HP")-r.total);say(d===20?`A critical blow from ${F.t}: ${r.total} damage.`:`${F.t} hits you for ${r.total} damage.`,"bad",txt)}
+ }
+ if(F.special==="regenerate"&&F.hp<F.maxhp){const r=roll("1d4");F.hp=Math.min(F.maxhp,F.hp+r.total);touch(f);say(`${F.t} knits itself back together (+${r.total}).`,"",r.text)}
+ if(sv("HP")<=0)fall(hereId());
+}
+function attack(index){
+ const f=foeId();if(busy||!f)return;const F=cell(f),opt=attackOptions()[index||0];if(!opt)return;
+ const m=mod(sv(opt.stat)),p=prof(),d=rnd(20),tot=d+m+p;
+ let txt=`d20 → ${d} ${sgn(m)} ${opt.stat} +${p} proficiency = ${tot} against AC ${F.ac}`;
+ if(d===1||(d!==20&&tot<F.ac))say(`${opt.label}: you miss.`,"",txt);
+ else if(F.special==="phasing"&&Math.random()<.25)say(`${opt.label}: it passes straight through ${F.t}.`,"",txt+"; phased");
+ else{
+  const crit=d===20,r=roll(opt.dice,crit?2:1);let dmg=r.total+(opt.addMod?m:0);txt+=`; damage ${r.text}${opt.addMod?` ${sgn(m)}`:""}`;
+  if(opt.sneak){const s=roll(`${opt.sneak}d6`,crit?2:1);dmg+=s.total;txt+=`; sneak attack ${s.text}`}
+  dmg=Math.max(1,dmg);F.hp-=dmg;touch(f);
+  say(`${opt.label}: ${crit?"a critical hit for":"you hit for"} ${dmg} damage.`,"good",txt);
+ }
+ if(F.hp<=0){neutralise(f);store.flush();render();return}
+ monsterTurn();store.flush();render();
+}
+function neutralise(f){
+ const F=cell(f),here=hereId(),L=cell(here);
+ for(const id of rank(f,"contain")){excise(id,"contain");appendTo(here,"contain",id)}
+ const xp=Math.round(F.maxhp*2+F.ac*2+F.atk*5);
+ L.defeated={designation:F.designation,name:F.t};touch(here);
+ destroy(f);
+ say(`${F.designation} ${F.t} is neutralised.`,"good");gainXP(xp);log(`You gain ${xp} XP.`,"good");
+}
+function secondWind(){
+ const ch=cell(charId());if(busy||ch.cls!=="Fighter"||ch.windUsed)return;
+ const r=roll(`1d10+${sv("LVL")}`),before=sv("HP"),after=Math.min(sv("MAXHP"),before+r.total);
+ setStat("HP",after);ch.windUsed=true;touch(ch.id);say(`Second Wind: you recover ${after-before} HP.`,"good",r.text);store.flush();render();
+}
+
+/* Movement */
 async function move(dir){
- if(busy||!charId())return;
+ if(busy||!charId()||!hereId())return;
  const here=hereId(),v=DIRS[dir],H=cell(here);
+ const f=foeId();
+ if(f){
+  const F=cell(f),dc=10+Math.floor(F.atk/2),d=rnd(20),m=mod(sv("DEX")),tot=d+m,txt=`DEX check: d20 → ${d} ${sgn(m)} = ${tot} against DC ${dc}`;
+  if(tot<dc){say(`You try to get away ${dir}, but ${F.t} cuts you off.`,"bad",txt);monsterTurn();store.flush();render();return}
+  log(`You escape ${F.designation} ${F.t}, heading ${dir}.`,"good",txt);
+ }
  let next=step(here,v.dim,v.sign);
- if(next){enter(next,false);log(`You walk ${dir} to ${cell(next).t}.`);store.flush();render();return}
- const x=H.x+v.dx,y=H.y+v.dy,dist=Math.abs(x)+Math.abs(y);
+ if(next){enter(next,false);log(`You ${dir==="up"?"climb up":dir==="down"?"go down":"walk "+dir} to ${cell(next).t}.`);store.flush();render();return}
+ const pos={x:H.x+v.dx,y:H.y+v.dy,z:zOf(H)+v.dz};pos.dist=Math.abs(pos.x)+Math.abs(pos.y)+Math.abs(pos.z);
  busy={dir};render();
- const data=await narrate(here,dir,x,y,dist);
- next=coord.get(ck(x,y))||createLocation(data,x,y,dist);
+ const data=await narrate(here,dir,pos);
+ next=coord.get(ck(pos.x,pos.y,pos.z))||createLocation(data,pos);
  busy=null;
- enter(next,true);log(`You walk ${dir} into somewhere new: ${cell(next).t}.`);
+ log(`You ${dir==="up"?"climb up":dir==="down"?"go down":"walk "+dir} into somewhere new: ${cell(next).t}.`);
+ enter(next,true);
  store.flush();render();
 }
 function pathTo(target){
  const start=hereId(),prev={[start]:null},q=[start];
- while(q.length){const id=q.shift();if(id===target)break;for(const v of Object.values(DIRS)){const n=step(id,v.dim,v.sign);if(n&&!(n in prev)){prev[n]=id;q.push(n)}}}
+ while(q.length){const id=q.shift();if(id===target)break;
+  for(const v of Object.values(DIRS)){const n=step(id,v.dim,v.sign);if(n&&!(n in prev)&&(n===target||!foeId(n))){prev[n]=id;q.push(n)}}}
  if(!(target in prev))return null;const p=[];for(let c=target;c!==start;c=prev[c])p.unshift(c);return p;
 }
 function travelTo(target){
  if(busy||target===hereId())return;
- const p=pathTo(target);if(!p)return;
+ if(foeId()){say(`${cell(foeId()).t} stands between you and the way back. Fight, or use a direction to try to flee.`,"bad");store.flush();render();return}
+ const p=pathTo(target);if(!p){log(`No safe known route to ${cell(target).t}: an anomaly blocks the way.`,"bad");store.flush();render();return}
  enter(target,false);log(`You retrace your steps to ${cell(target).t} (${p.length} ${p.length===1?"step":"steps"}).`);store.flush();render();
 }
+
+/* Items */
 function take(id){
+ if(foeId())return;
  const it=cell(id);if(carried()+(+it.weight||0)>capacity()){log(`${it.t} is too heavy: you carry ${fmtW(carried())} of ${capacity()} lb.`,"bad");store.flush();render();return}
  excise(id,"contain");appendTo(charId(),"contain",id);log(`You pick up ${it.t}.`);store.flush();render();
 }
-function drop(id){const it=cell(id);it.worn=false;touch(id);excise(id,"contain");appendTo(hereId(),"contain",id);log(`You put down ${it.t} at ${cell(hereId()).t}.`);store.flush();render()}
+function drop(id){const it=cell(id);it.worn=false;it.wielded=false;touch(id);excise(id,"contain");appendTo(hereId(),"contain",id);log(`You put down ${it.t} at ${cell(hereId()).t}.`);store.flush();render()}
 function useItem(id){
  const it=cell(id);
  if(it.kind==="treasure"){setStat("GP",sv("GP")+(+it.value||0));log(`You add ${it.t} to your purse: ${it.value} gp.`,"good");excise(id,"contain");destroy(id);store.flush();render();return}
  if(!it.heal)return;
  const r=roll(it.heal),before=sv("HP"),after=Math.min(sv("MAXHP"),before+r.total);
- setStat("HP",after);log(`You use ${it.t} and recover ${after-before} HP.`,"good",r.text);
- excise(id,"contain");destroy(id);store.flush();render();
+ setStat("HP",after);(foeId()?say:log)(`You use ${it.t} and recover ${after-before} HP.`,"good",r.text);
+ excise(id,"contain");destroy(id);
+ if(foeId())monsterTurn();
+ store.flush();render();
 }
 function wear(id){
  const it=cell(id),on=!it.worn;
  for(const o of packIds().map(cell))if(o.kind==="armor"&&o.worn){o.worn=false;touch(o.id)}
  it.worn=on;touch(id);log(on?`You put on ${it.t}. AC is now ${armourClass()}.`:`You take off ${it.t}. AC is now ${armourClass()}.`);store.flush();render();
 }
+function wield(id){
+ for(const o of packIds().map(cell))if(o.wielded){o.wielded=false;touch(o.id)}
+ cell(id).wielded=true;touch(id);log(`You take ${cell(id).t} in hand.`);store.flush();render();
+}
 function rest(){
- if(busy||!charId())return;const ch=cell(charId()),here=hereId();
+ if(busy||!charId()||!hereId())return;const ch=cell(charId()),here=hereId();
+ if(foeId()){say("You cannot rest with an anomaly at large here.","bad");store.flush();render();return}
  if(ch.restedAt===here){log("You have already rested here. Explore further before resting again.");store.flush();render();return}
  const before=sv("HP"),gain=Math.ceil(sv("MAXHP")/2),after=Math.min(sv("MAXHP"),before+gain);
- setStat("HP",after);ch.restedAt=here;touch(ch.id);log(`You rest at ${cell(here).t} and recover ${after-before} HP.`,"good");store.flush();render();
+ setStat("HP",after);ch.restedAt=here;ch.windUsed=false;touch(ch.id);log(`You rest at ${cell(here).t} and recover ${after-before} HP.`,"good");store.flush();render();
 }
 
 /* New world */
-let draft={name:"Wren Ashdown",cls:"Fighter",theme:"A misty borderland of old forests, ruined watchtowers, river villages and the hills where the old kingdom fell.",stats:rollStats()};
+let draft={name:"Wren Ashdown",cls:"Fighter",theme:"A misty borderland of old forests, ruined watchtowers, river villages and the hills where the old kingdom fell. Lately, things have been seen that do not belong in any bestiary.",stats:rollStats()};
 async function begin(){
  if(busy)return;
  const old=Object.keys(zz.cells);for(const id of old)zz.removed.add(id);
- zz.cells={};coord.clear();zz.dirty.clear();
- zz.cells.root={id:"root",k:"root",c:{},seq:0,theme:draft.theme.trim()||"A classic fantasy wilderness.",log:[],home:null,created:Date.now()};zz.removed.delete("root");touch("root");
- const ch=newCell("char",{t:draft.name.trim()||"Nameless wanderer",cls:draft.cls,restedAt:null});connect("root","cursor",ch);
+ zz.cells={};coord.clear();zz.dirty.clear();rounds=[];
+ zz.cells.root={id:"root",k:"root",c:{},seq:0,theme:draft.theme.trim()||"A classic fantasy wilderness.",log:[],home:null,created:Date.now()};touch("root");
+ const ch=newCell("char",{t:draft.name.trim()||"Nameless wanderer",cls:draft.cls,restedAt:null,windUsed:false});connect("root","cursor",ch);
  const C=CLASSES[draft.cls],con=mod(draft.stats[2]),hp=Math.max(1,C.hd+con);
  const vals=Object.fromEntries(STATS.map((s,i)=>[s,draft.stats[i]]));Object.assign(vals,{HP:hp,MAXHP:hp,LVL:1,XP:0,GP:10});
  for(const [k,v] of Object.entries(vals)){const s=newCell("stat",{t:k,v});appendTo(ch,"stat",s)}
  const kit=C.kit.concat([["Potion of Healing","A red liquid that shimmers when shaken.","potion",0.5,50,"2d4+2"],["Potion of Healing","A red liquid that shimmers when shaken.","potion",0.5,50,"2d4+2"],["Rations (3 days)","Hard bread, cheese and dried apples.","food",6,2,"1d4"]]);
- for(const [name,description,kind,weight,value,heal,ac] of kit){const it=normItem({name,description,kind,weight,value,heal,ac});const id=newCell("item",{t:it.name,desc:it.desc,kind:it.kind,weight:it.weight,value:it.value,heal:it.heal,ac:it.ac,worn:kind==="armor"});appendTo(ch,"contain",id)}
+ let wielded=false;
+ for(const row of kit){const it=normItem(asItem(row)),id=itemCell(it);if(it.kind==="armor")cell(id).worn=true;if(it.kind==="weapon"&&!wielded){cell(id).wielded=true;wielded=true}appendTo(ch,"contain",id)}
  busy={dir:"start"};render();
- const data=await narrate(null,"",0,0,0);
- const home=createLocation(Object.assign(data,{hazard:null}),0,0,0);cell("root").home=home;
+ const pos={x:0,y:0,z:0,dist:0};
+ const data=await narrate(null,"",pos);
+ const home=createLocation(Object.assign(data,{hazard:null,monster:null}),pos);cell("root").home=home;
  busy=null;connect(ch,"at",home);cell(home).visited=true;
  log(`${cell(ch).t} the ${draft.cls} sets out from ${cell(home).t}.`,"good");
  store.flush();render();
@@ -545,6 +728,7 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmtW=w=>(Math.round(w*10)/10).toString();
 const zname=id=>id?`${id}${cell(id)?" · "+cell(id).k+(cell(id).t!==undefined?" “"+cell(id).t+"”":""):""}`:"—";
+const depthName=z=>z===0?"ground level":z<0?`${-z} below ground`:`${z} above ground`;
 
 function renderPills(){
  $("pill-ai").innerHTML=sample?"Narrator: <b>Claude</b>":"Narrator: <b>built-in tables</b>";
@@ -558,75 +742,102 @@ function renderSaving(){
  p.classList.toggle("warn",!!store.error);
  const where=store.mode==="cloud"?"your Claude account":"this browser";
  p.innerHTML=store.error?"World: <b>save problem</b>":pending?`World: <b>saving…</b>`:`World: <b>saved in ${where}</b>`;
- p.title=store.error||`Each place, item and stat is stored as a ZigZag cell in ${where}.`;
+ p.title=store.error||`Each place, item, anomaly and stat is stored as a ZigZag cell in ${where}.`;
 }
 
 function renderMap(){
  const svg=$("map"),here=hereId();
  if(!here){svg.innerHTML=`<text x="210" y="215" text-anchor="middle" class="axis">The map starts when your character sets out.</text>`;$("coords").textContent="";return}
- const H=cell(here),R=3,S=60,pad=0;
- const pos=(x,y)=>[(x-H.x+R)*S+pad,(R-(y-H.y))*S+pad];
+ const H=cell(here),Z=zOf(H),R=3,S=60;
+ const pos=(x,y)=>[(x-H.x+R)*S,(R-(y-H.y))*S];
  let out="";
  for(let i=0;i<=7;i++){out+=`<line class="gridline" x1="${i*S}" y1="0" x2="${i*S}" y2="420"/><line class="gridline" x1="0" y1="${i*S}" x2="420" y2="${i*S}"/>`}
- const vis=[];for(let dx=-R;dx<=R;dx++)for(let dy=-R;dy<=R;dy++){const id=coord.get(ck(H.x+dx,H.y+dy));if(id)vis.push(id)}
+ const vis=[];for(let dx=-R;dx<=R;dx++)for(let dy=-R;dy<=R;dy++){const id=coord.get(ck(H.x+dx,H.y+dy,Z));if(id)vis.push(id)}
  for(const id of vis){const c=cell(id),[px,py]=pos(c.x,c.y);
   const e=step(id,"x","+"),n=step(id,"y","+");
   if(e&&vis.includes(e))out+=`<line class="link" x1="${px+30}" y1="${py+30}" x2="${px+90}" y2="${py+30}"/>`;
   if(n&&vis.includes(n))out+=`<line class="link" x1="${px+30}" y1="${py+30}" x2="${px+30}" y2="${py-30}"/>`;}
- for(const id of vis){const c=cell(id),[px,py]=pos(c.x,c.y),t=TERRAINS.includes(c.terrain)?c.terrain:"other";
-  out+=`<g data-loc="${id}"><rect class="tile t-${t}" x="${px+5}" y="${py+5}" width="50" height="50" rx="5" tabindex="0" role="button" aria-label="${esc(c.t)}${id===here?" (you are here)":", walk back here"}"><title>${esc(c.t)} · ${t}</title></rect><path class="glyph" transform="translate(${px+4} ${py+4})" d="${GLYPH[t]||GLYPH.other}"/></g>`;}
- for(const [d,v] of Object.entries(DIRS)){const x=H.x+v.dx,y=H.y+v.dy;if(coord.get(ck(x,y)))continue;const [px,py]=pos(x,y);
+ for(const id of vis){const c=cell(id),[px,py]=pos(c.x,c.y),t=TERRAINS.includes(c.terrain)?c.terrain:"other",f=foeId(id);
+  out+=`<g data-loc="${id}"><rect class="tile t-${t}" x="${px+5}" y="${py+5}" width="50" height="50" rx="5" tabindex="0" role="button" aria-label="${esc(c.t)}${id===here?" (you are here)":", walk back here"}${f?", anomaly at large":""}"><title>${esc(c.t)} · ${t}${f?" · "+esc(cell(f).designation)+" at large":""}</title></rect><path class="glyph" transform="translate(${px+4} ${py+4})" d="${GLYPH[t]||GLYPH.other}"/>`;
+  if(step(id,"z","+"))out+=`<path class="stair" d="M${px+44} ${py+16} l5 -7 l5 7 Z" transform="translate(-4 0)"/>`;
+  if(step(id,"z","-"))out+=`<path class="stair" d="M${px+40} ${py+44} l5 7 l5 -7 Z"/>`;
+  if(f)out+=`<path class="threat" d="M${px+14} ${py+9} l5 5 l-5 5 l-5 -5 Z"/>`;
+  out+=`</g>`;}
+ for(const d of FLAT){const v=DIRS[d],x=H.x+v.dx,y=H.y+v.dy;if(coord.get(ck(x,y,Z)))continue;const [px,py]=pos(x,y);
   out+=`<g data-dir="${d}"><rect class="frontier" x="${px+7}" y="${py+7}" width="46" height="46" rx="5" tabindex="0" role="button" aria-label="Explore ${d}"><title>Explore ${d}</title></rect><text class="q" x="${px+30}" y="${py+36}" text-anchor="middle">?</text></g>`;}
  const [hx,hy]=pos(H.x,H.y);
  out+=`<rect class="here" x="${hx+3}" y="${hy+3}" width="54" height="54" rx="7" pointer-events="none"/><circle class="pawn" cx="${hx+44}" cy="${hy+44}" r="6"/>`;
  out+=`<text class="axis" x="414" y="14" text-anchor="end">N ↑</text>`;
  svg.innerHTML=out;
  const ew=H.x===0?"0":Math.abs(H.x)+(H.x>0?" E":" W"),ns=H.y===0?"0":Math.abs(H.y)+(H.y>0?" N":" S");
- $("coords").textContent=`${ew}, ${ns} · ${coord.size} mapped`;
+ $("coords").textContent=`${ew}, ${ns} · level ${Z>0?"+"+Z:Z===0?"0":"−"+(-Z)}`;
 }
 
 function renderCompass(){
- const here=hereId();
+ const here=hereId(),fighting=!!foeId();
  for(const [d,v] of Object.entries(DIRS)){
   const b=$("go-"+d),to=b.querySelector(".to");
   if(!here){b.disabled=true;to.textContent="";continue}
   const n=step(here,v.dim,v.sign);b.disabled=!!busy;
-  to.textContent=n?cell(n).t:"Unexplored";b.title=n?`Walk ${d} to ${cell(n).t}`:`Explore ${d}: Claude writes what you find`;
+  to.textContent=fighting?"Try to flee":n?cell(n).t:"Unexplored";
+  const verb=d==="up"?"Climb up":d==="down"?"Go down":"Walk "+d;
+  b.title=fighting?`Try to flee ${d}: a DEX check, and it strikes if you fail`:n?`${verb} to ${cell(n).t}`:`${verb}: Claude writes what you find`;
  }
- $("compass-c").textContent=here?`${coord.size} places`:"—";
+ $("compass-c").innerHTML=here?`${coord.size} places<br>${esc(depthName(zOf(cell(here))))}`:"—";
 }
 
 function itemRow(id,where){
- const it=cell(id),bits=[it.kind,`${fmtW(+it.weight||0)} lb`];if(it.value)bits.push(`${it.value} gp`);if(it.heal)bits.push(`heals ${it.heal}`);if(it.ac)bits.push(`AC +${it.ac}`);if(it.worn)bits.push("worn");
+ const it=cell(id),inHand=where==="pack"&&it.kind==="weapon"&&weapon()===it;
+ const bits=[it.kind,`${fmtW(+it.weight||0)} lb`];if(it.value)bits.push(`${it.value} gp`);if(it.heal)bits.push(`heals ${it.heal}`);if(it.ac)bits.push(`AC +${it.ac}`);if(it.dmg)bits.push(`${it.dmg}${it.finesse?" finesse":""}`);if(it.worn)bits.push("worn");if(inHand)bits.push("in hand");
  let acts="";
- if(where==="here")acts=`<button class="small" data-act="take" data-id="${id}" ${busy?"disabled":""}>Take</button>`;
+ if(where==="here")acts=`<button class="small" data-act="take" data-id="${id}" ${busy||foeId()?"disabled":""}>Take</button>`;
  else{
   if(it.heal)acts+=`<button class="small" data-act="use" data-id="${id}">${it.kind==="food"?"Eat":"Drink"}</button>`;
   if(it.kind==="treasure")acts+=`<button class="small" data-act="use" data-id="${id}">Pocket</button>`;
   if(it.kind==="armor")acts+=`<button class="small" data-act="wear" data-id="${id}">${it.worn?"Take off":"Wear"}</button>`;
+  if(it.kind==="weapon"&&!inHand)acts+=`<button class="small" data-act="wield" data-id="${id}">Wield</button>`;
   acts+=`<button class="small" data-act="drop" data-id="${id}" ${busy?"disabled":""}>Drop</button>`;
  }
  return`<li><span><span class="nm">${esc(it.t)}</span><span class="meta">${esc(bits.join(" · "))}</span>${it.desc?`<span class="about">${esc(it.desc)}</span>`:""}</span><span class="acts">${acts}</span></li>`;
 }
 
+function renderFoe(f){
+ const F=cell(f),ch=cell(charId()),oc=(F.objectClass||"Euclid").toLowerCase(),pct=Math.max(0,F.hp/F.maxhp*100);
+ const opts=attackOptions();
+ const wind=ch.cls==="Fighter"?`<button data-act="wind" ${ch.windUsed||busy?"disabled":""} title="Once per rest. Does not give it a turn.">Second Wind</button>`:"";
+ return`<article class="foe" data-class="${oc}" aria-label="Anomaly ${esc(F.designation)}">
+  <div class="filehead"><span>Item ${esc(F.designation)}</span><span class="oc">Object class: ${esc(F.objectClass)}</span></div>
+  <h3>${esc(F.t)}</h3>
+  <p class="notes">${esc(F.desc)}</p>
+  <div><div class="hprow"><span>Integrity</span><span>${Math.max(0,F.hp)} / ${F.maxhp}</span></div><div class="hpbar"><span style="width:${pct}%"></span></div></div>
+  <p class="stats">AC ${F.ac} · attack +${F.atk} · damage ${esc(F.dmg)}${F.special!=="none"?" · "+esc(SPECIALS[F.special]):""}</p>
+  <div class="fight">${opts.map((o,i)=>`<button class="${i===0?"primary":""}" data-act="attack" data-id="${i}" ${busy?"disabled":""} title="d20 ${sgn(mod(sv(o.stat)))} ${o.stat} +${prof()} against AC ${F.ac}; damage ${o.dice}${o.addMod?" "+sgn(mod(sv(o.stat))):""}${o.sneak?" + "+o.sneak+"d6 sneak":""}">${esc(o.label)}</button>`).join("")}${wind}</div>
+  <p class="note">Each direction is now an attempt to flee: a DEX check against DC ${10+Math.floor(F.atk/2)}. Fail and it strikes. Drinking a potion also gives it a turn.</p>
+  ${rounds.length?`<ol class="rounds">${rounds.map(r=>`<li class="${r.kind}">${esc(r.text)}${r.roll?`<span class="roll">${esc(r.roll)}</span>`:""}</li>`).join("")}</ol>`:""}
+ </article>`;
+}
+
 function renderPlace(){
  const el=$("place");
  if(!charId()||!hereId()){renderCreate(el);return}
- const here=hereId(),L=cell(here);
+ const here=hereId(),L=cell(here),f=foeId(here);
  const t=TERRAINS.includes(L.terrain)?L.terrain:"other";
- let html=`<div class="placehead"><p class="eyebrow">You are at</p><h2>${esc(L.t)}</h2><div class="chips"><span class="chip terrain">${t}</span><span class="chip">${L.x===0&&L.y===0?"starting point":L.dist+" steps from the start"}</span><span class="chip">written by ${L.by==="claude"?"Claude":"built-in tables"}</span></div></div>`;
- if(busy)html+=`<p class="mapping">${busy.dir==="start"?"The narrator is writing where your journey begins":"The narrator is mapping the way "+busy.dir}</p>`;
+ let html=`<div class="placehead"><p class="eyebrow">You are at</p><h2>${esc(L.t)}</h2><div class="chips"><span class="chip terrain">${t}</span><span class="chip">${esc(depthName(zOf(L)))}</span><span class="chip">${L.dist?L.dist+" steps from the start":"starting point"}</span><span class="chip">written by ${L.by==="claude"?"Claude":"built-in tables"}</span></div></div>`;
+ if(busy)html+=`<p class="mapping">${busy.dir==="start"?"The narrator is writing where your journey begins":busy.dir==="up"?"The narrator is mapping what lies above":busy.dir==="down"?"The narrator is mapping what lies below":"The narrator is mapping the way "+busy.dir}</p>`;
  if(narratorNote&&!busy)html+=`<p class="note">${esc(narratorNote)}</p>`;
  html+=`<p class="desc${busy?" busy":""}">${esc(L.desc)}</p>`;
  if(L.hazard&&L.outcome){const o=L.outcome;html+=`<div class="hazard${o.ok?" passed":""}"><b>${esc(L.hazard.name)}.</b> ${esc(L.hazard.text)} ${o.ok?"You get through unharmed.":`You take ${o.dmg} damage.`}${here===lastHazard?`<span class="roll">${esc(o.roll)}</span>`:""}</div>`}
+ if(f)html+=renderFoe(f);
+ else if(L.defeated)html+=`<p class="neutral">${esc(L.defeated.designation)} ${esc(L.defeated.name)} was neutralised here.${rounds.length?" "+esc(rounds[rounds.length-1].roll):""}</p>`;
  const items=storeIds(here);
  html+=`<div class="sectionhead"><h3>Lying here</h3><span class="mono" style="font-size:12px;color:var(--faint)">${items.length} ${items.length===1?"item":"items"}</span></div>`;
+ if(f&&items.length)html+=`<p class="note">You cannot pick anything up while ${esc(cell(f).t)} is here.</p>`;
  html+=items.length?`<ul class="items">${items.map(id=>itemRow(id,"here")).join("")}</ul>`:`<p class="empty">Nothing here to pick up. Anything you put down stays here for when you return.</p>`;
  // ZigZag inspector
- const dims=[["d.x","x","west","east"],["d.y","y","south","north"],["d.at","at","who stands here",""],["d.contain","contain","",""]];
+ const dims=[["d.x","x"],["d.y","y"],["d.z","z"],["d.occupant","occupant"],["d.at","at"],["d.contain","contain"]];
  const rows=dims.map(([label,dim])=>`<tr><th>${label}</th><td>${esc(zname(step(here,dim,"-")))}</td><td class="mid">${esc(here)}</td><td>${esc(zname(step(here,dim,"+")))}</td></tr>`).join("");
  html+=`<details class="zz" id="zz-details"${zzOpen?" open":""}><summary>ZigZag view of this place (cell ${esc(here)})</summary><div class="zztable"><table><thead><tr><th>Dimension</th><th>− negward</th><th>this cell</th><th>+ posward</th></tr></thead><tbody>${rows}</tbody></table></div>
- <p class="zzhelp">Each place is one cell. Walking east follows <span class="mono">d.x+</span>; walking north follows <span class="mono">d.y+</span>. The store is a rank along <span class="mono">d.contain</span>: this cell, then each item in turn. Picking something up cuts its cell out of this rank and splices it onto your character's rank. Rank here: <span class="mono">${esc([here].concat(items).join(" → "))}</span>.</p></details>`;
+ <p class="zzhelp">Each place is one cell. Walking east follows <span class="mono">d.x+</span>, north <span class="mono">d.y+</span>, and climbing up <span class="mono">d.z+</span>. An anomaly hangs off its place along <span class="mono">d.occupant</span>, and anything it carries sits on its own <span class="mono">d.contain</span> rank until it is neutralised. The store here is a rank along <span class="mono">d.contain</span>: <span class="mono">${esc([here].concat(items).join(" → "))}</span>.</p></details>`;
  el.innerHTML=html;
 }
 let zzOpen=false;
@@ -634,12 +845,13 @@ let zzOpen=false;
 function renderCreate(el){
  const s=draft.stats,C=CLASSES[draft.cls],hp=Math.max(1,C.hd+mod(s[2]));
  el.innerHTML=`<div class="create"><div class="placehead"><p class="eyebrow">New adventurer</p><h2>Roll a character</h2></div>
- <p class="note">Abilities are rolled the classic way: four six-sided dice, keep the best three. Your class sets your hit die and starting kit. When you set out, Claude writes the place where your journey begins.</p>
+ <p class="note">Abilities are rolled the classic way: four six-sided dice, keep the best three. Your class sets your hit die, starting kit and combat trick. When you set out, Claude writes the place where your journey begins.</p>
  <div class="row"><label for="f-name">Name<input id="f-name" value="${esc(draft.name)}" maxlength="40"></label>
  <label for="f-cls">Class<select id="f-cls">${Object.keys(CLASSES).map(k=>`<option${k===draft.cls?" selected":""}>${k}</option>`).join("")}</select></label></div>
  <label for="f-theme">World theme (Claude keeps every place in this spirit)<textarea id="f-theme" rows="3" maxlength="400">${esc(draft.theme)}</textarea></label>
  <div class="rolled">${STATS.map((k,i)=>`<div><span class="k">${k}</span><span class="v">${s[i]}</span><span class="k">${sgn(mod(s[i]))}</span></div>`).join("")}</div>
  <p class="note mono" style="font-size:13px">Hit die d${C.hd} · starting HP ${hp} · AC ${10+mod(s[1])+(C.kit.find(k=>k[2]==="armor")?.[6]||0)} · carry ${s[0]*15} lb</p>
+ <p class="note">${esc(CLASS_NOTES[draft.cls])}</p>
  <div class="btnrow"><button id="f-reroll">Reroll abilities</button><button class="primary" id="f-begin" ${busy?"disabled":""}>Set out</button>${busy?'<span class="mapping">The narrator is writing where your journey begins</span>':""}</div></div>`;
  $("f-name").oninput=e=>draft.name=e.target.value;
  $("f-theme").oninput=e=>draft.theme=e.target.value;
@@ -651,12 +863,13 @@ function renderCreate(el){
 function renderSheet(){
  const el=$("sheet"),pk=$("pack");
  if(!charId()){el.innerHTML=`<div class="who"><h2>No character yet</h2></div><p class="empty">Roll a character to see their sheet here: abilities, hit points, armour class and level.</p>`;pk.innerHTML=`<h3>Pack</h3><p class="empty">Your class kit and two healing potions go here when you set out.</p>`;return}
- const ch=cell(charId()),hp=sv("HP"),max=sv("MAXHP"),pct=Math.max(0,Math.min(100,hp/max*100));
+ const ch=cell(charId()),hp=sv("HP"),max=sv("MAXHP"),pct=Math.max(0,Math.min(100,hp/max*100)),w=weapon();
  el.innerHTML=`<div class="who"><h2>${esc(ch.t)}</h2><span class="mono" style="font-size:13px;color:var(--faint)">Level ${sv("LVL")} ${esc(ch.cls)}</span></div>
  <div><div class="hprow"><span>Hit points</span><span>${hp} / ${max}</span></div><div class="hpbar${pct<=34?" low":""}"><span style="width:${pct}%"></span></div></div>
  <div class="abil">${STATS.map(k=>`<div><span class="k">${k}</span><span class="v">${sv(k)}</span><span class="m">${sgn(mod(sv(k)))}</span></div>`).join("")}</div>
- <dl class="facts"><div><dt>Armour class</dt><dd>${armourClass()}</dd></div><div><dt>Hit die</dt><dd>d${hitDie()}</dd></div><div><dt>XP</dt><dd>${sv("XP")} / ${sv("LVL")*100}</dd></div><div><dt>Gold</dt><dd>${sv("GP")} gp</dd></div></dl>
- <div class="btnrow"><button id="rest" ${busy||ch.restedAt===hereId()?"disabled":""} title="Recover half your maximum HP. Once per place.">Rest here</button>${ch.restedAt===hereId()?'<span class="note">Rested here already.</span>':""}</div>`;
+ <dl class="facts"><div><dt>Armour class</dt><dd>${armourClass()}</dd></div><div><dt>Proficiency</dt><dd>+${prof()}</dd></div><div><dt>Weapon</dt><dd>${w?esc(w.dmg||"1d6"):"1d2"}</dd></div><div><dt>Hit die</dt><dd>d${hitDie()}</dd></div><div><dt>XP</dt><dd>${sv("XP")} / ${sv("LVL")*100}</dd></div><div><dt>Gold</dt><dd>${sv("GP")} gp</dd></div></dl>
+ <p class="note">${esc(CLASS_NOTES[ch.cls]||"")}</p>
+ <div class="btnrow"><button id="rest" ${busy||foeId()||ch.restedAt===hereId()?"disabled":""} title="Recover half your maximum HP. Once per place, never with an anomaly present.">Rest here</button>${ch.restedAt===hereId()?'<span class="note">Rested here already.</span>':foeId()?'<span class="note">Not while it is here.</span>':""}</div>`;
  $("rest").onclick=rest;
  const ids=packIds();
  pk.innerHTML=`<div class="sectionhead"><h3>Pack</h3><span class="mono" style="font-size:12px;color:${carried()>capacity()*.9?"var(--danger)":"var(--faint)"}">${fmtW(carried())} / ${capacity()} lb</span></div>`+
@@ -665,11 +878,11 @@ function renderSheet(){
 
 function renderLog(){
  const r=cell("root"),entries=(r&&r.log||[]).slice().reverse();
- $("log").innerHTML=entries.length?entries.map(e=>`<li class="${e.kind}">${esc(e.text)}${e.roll?`<br><span class="roll">${esc(e.roll)}</span>`:""}</li>`).join(""):`<li>Your journal fills in as you travel: every step, find and dice roll.</li>`;
+ $("log").innerHTML=entries.length?entries.map(e=>`<li class="${e.kind}">${esc(e.text)}${e.roll?`<br><span class="roll">${esc(e.roll)}</span>`:""}</li>`).join(""):`<li>Your journal fills in as you travel: every step, find, fight and dice roll.</li>`;
  const ra=$("reset-area");
  if(!charId()){ra.innerHTML="";return}
  ra.innerHTML=deleteArmed?`<span class="confirm">Erase this world? <button class="small" id="reset-yes">Erase</button><button class="small" id="reset-no">Keep</button></span>`:`<button class="small" id="reset">New world</button>`;
- if(deleteArmed){$("reset-yes").onclick=()=>{deleteArmed=false;const ids=Object.keys(zz.cells);for(const id of ids)zz.removed.add(id);zz.cells={};coord.clear();zz.dirty.clear();draft.stats=rollStats();store.flush();render()};$("reset-no").onclick=()=>{deleteArmed=false;renderLog()}}
+ if(deleteArmed){$("reset-yes").onclick=()=>{deleteArmed=false;const ids=Object.keys(zz.cells);for(const id of ids)zz.removed.add(id);zz.cells={};coord.clear();zz.dirty.clear();rounds=[];draft.stats=rollStats();store.flush();render()};$("reset-no").onclick=()=>{deleteArmed=false;renderLog()}}
  else $("reset").onclick=()=>{deleteArmed=true;renderLog()};
 }
 
@@ -680,7 +893,7 @@ function render(){renderPills();renderMap();renderCompass();renderPlace();render
    ============================================================ */
 document.addEventListener("click",e=>{
  const b=e.target.closest("button[data-act]");
- if(b){const id=b.dataset.id;({take,drop,use:useItem,wear})[b.dataset.act](id);return}
+ if(b){const id=b.dataset.id;({take,drop,use:useItem,wear,wield,attack:i=>attack(+i),wind:secondWind})[b.dataset.act](id);return}
  const d=e.target.closest("#compass button[data-dir]");if(d){move(d.dataset.dir);return}
  const g=e.target.closest("#map g");if(g){if(g.dataset.dir)move(g.dataset.dir);else if(g.dataset.loc)travelTo(g.dataset.loc)}
 });
@@ -691,6 +904,7 @@ document.addEventListener("keydown",e=>{
  if(e.metaKey||e.ctrlKey||e.altKey)return;
  for(const [d,v] of Object.entries(DIRS))if(v.keys.includes(e.key)){e.preventDefault();move(d);return}
  if(e.key==="r"||e.key==="R")rest();
+ if(e.key==="f"||e.key==="F")attack(0);
 });
 
 (async function start(){
@@ -698,7 +912,7 @@ document.addEventListener("keydown",e=>{
  const samplePromise=window.claude&&claude.use?claude.use("sample").catch(()=>null):Promise.resolve(null);
  await store.connect();
  const saved=await store.load();
- if(saved){zz.cells=saved;for(const c of Object.values(zz.cells))if(c.k==="loc")coord.set(ck(c.x,c.y),c.id);
+ if(saved){zz.cells=saved;for(const c of Object.values(zz.cells))if(c.k==="loc")coord.set(ck(c.x,c.y,zOf(c)),c.id);
   if(store.mode==="cloud"&&store.from!=="cloud"){for(const id of Object.keys(zz.cells))touch(id);store.flush()}}
  render();
  sample=await samplePromise;
