@@ -952,6 +952,31 @@ function normExits(raw,fromDir){
  if(fromDir)e[OPP[fromDir]]=true;
  return e;
 }
+/* Approaches. Each newly written place rolls how many of its four sides can be walked through:
+   all four (half of places), three (a quarter), two (15 in 100) or only one (10 in 100). The side you
+   arrived from always stays open, so you can always go back the way you came. The closed sides get a
+   wall that suits the ground, and the place's description says where the ways in are. */
+const APPROACH_ODDS=[[4,.5],[3,.25],[2,.15],[1,.1]];
+const WALLS={forest:["a thicket of blackthorn","trees grown close as a fence","a tangle of fallen trunks"],plains:["a steep-sided ravine","a deep, wet ditch"],
+ water:["deep, fast water","a sheer bank"],mountain:["a sheer rock face","a drop into a gully","loose scree too steep to cross"],cave:["solid rock","a narrowing too tight to squeeze through"],
+ dungeon:["a bricked-up arch","a collapsed passage"],village:["a high fence","a locked yard"],ruin:["a heap of fallen masonry","a collapsed wall"],
+ swamp:["sucking bog","black water of unknown depth"],road:["a deep ditch and hedge","a steep embankment"],sky:["empty air"],desert:["dunes too steep to climb","a crust of sinking sand"],
+ grove:["silver trees grown close as a wall"]};
+function limitApproaches(data,fromDir){
+ const e=data.exits,back=fromDir&&OPP[fromDir];
+ let r=Math.random(),want=4;for(const [n,p] of APPROACH_ODDS){if(r<p){want=n;break}r-=p}
+ const open=FLAT.filter(d=>e[d]);
+ const closable=shuffle(open.filter(d=>d!==back));
+ while(FLAT.filter(d=>e[d]).length>want&&closable.length)e[closable.pop()]=false;
+ data.walls=data.walls||{};
+ for(const d of FLAT)if(!e[d]&&!data.walls[d])data.walls[d]=pick(WALLS[data.terrain]||["no way through"]);
+ const ways=FLAT.filter(d=>e[d]);
+ if(ways.length<4&&data.desc&&!/only (way|from)/i.test(data.desc)){
+  const list=ways.length===1?`the ${ways[0]}`:`the ${ways.slice(0,-1).join(", ")} and ${ways[ways.length-1]}`;
+  data.desc=data.desc.trim()+(ways.length===1?` The only way in or out is to ${list}.`:` You can only come and go to ${list}.`);
+ }
+ return data;
+}
 function normWalls(raw){const w={};if(raw&&typeof raw==="object")for(const d of Object.keys(DIRS))if(typeof raw[d]==="string"&&raw[d].trim())w[d]=raw[d].trim().slice(0,80);return w}
 function missingDirs(locId){
  const L=cell(locId),out=[];
@@ -1024,7 +1049,7 @@ async function ensureNeighbours(locId){
    if(n.planned){const P=cell(n.planned);if(raw&&typeof raw.description==="string"&&raw.description.trim()){P.desc=raw.description.trim().slice(0,1200);P.by="claude";pub[sqk(n.pos)]=squareOut(P.id,true)}if(raw&&typeof raw.glimpse==="string"&&raw.glimpse.trim())P.glimpse=raw.glimpse.trim().slice(0,100);P.written=true;touch(P.id);continue}
    if(coord.get(ck(n.pos.x,n.pos.y,n.pos.z)))continue;
    const data=raw&&raw.name?Object.assign(normLocation(raw,L.terrain,n.pos),{by:"claude"}):Object.assign(tableLocation(L,n.dir,n.pos),{by:"tables"});
-   data.exits=normExits(raw&&raw.exits,n.dir);data.walls=normWalls(raw&&raw.walls);
+   data.exits=normExits(raw&&raw.exits,n.dir);data.walls=normWalls(raw&&raw.walls);if(!n.pos.z)limitApproaches(data,n.dir);
    data.glimpse=raw&&typeof raw.glimpse==="string"&&raw.glimpse.trim()?raw.glimpse.trim().slice(0,100):`${data.name}: ${GLIMPSE[data.terrain]||GLIMPSE.other}`;
    const id=createLocation(data,n.pos);cell(id).seen=true;pub[sqk(n.pos)]=squareOut(id);
   }
@@ -1653,7 +1678,7 @@ async function move(dir){
   await ensureNeighbours(here);
   if(!coord.get(key)){
    const pos={x:wrapC(H.x+v.dx),y:wrapC(H.y+v.dy),z:zOf(H)+v.dz};pos.dist=Math.abs(pos.x)+Math.abs(pos.y)+Math.abs(pos.z);
-   const data=await narrate(here,dir,pos);data.exits=normExits(null,dir);
+   const data=await narrate(here,dir,pos);data.exits=normExits(null,dir);if(!pos.z)limitApproaches(data,dir);
    if(!coord.get(key))createLocation(data,pos);
   }
   busy=null;
@@ -1708,7 +1733,7 @@ async function moveDiag(d){
   await ensureNeighbours(r.side);
   if(!coord.get(r.key)){
    const pos={x:wrapC(H.x+D.dx),y:wrapC(H.y+D.dy),z:zOf(H)};pos.dist=Math.abs(pos.x)+Math.abs(pos.y)+Math.abs(pos.z);
-   const data=await narrate(r.side,r.b,pos);data.exits=normExits(null,r.b);
+   const data=await narrate(r.side,r.b,pos);data.exits=normExits(null,r.b);if(!pos.z)limitApproaches(data,r.b);
    if(!coord.get(r.key))createLocation(data,pos);
   }
   busy=null;
