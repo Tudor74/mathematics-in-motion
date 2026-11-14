@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Therapy Atlas</title>
+<meta name="description" content="A page for every therapy in the Therapies In Motion map: where it sits, what it is, where it came from, the evidence, what it is like and who it may suit.">
+<style>
+:root{--ink:#192c37;--muted:#546873;--blue:#1772b7;--pale:#e8f2f8;--line:#c7d8e3;--paper:#fff;--bg:#f3f6f7;--coral:#c45238;--purple:#7156a6;--green:#2c776c}
+*{box-sizing:border-box}
+html{background:var(--bg);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}
+body{margin:0;padding:22px;background:var(--bg)}
+a{color:var(--blue)}
+button,select,input{font:inherit}
+button{min-height:44px;background:#fff;border:1px solid #aec3cf;border-radius:10px;padding:8px 15px;cursor:pointer;color:var(--ink);font-weight:600}
+button:hover{background:#edf5fa}
+button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+:focus-visible{outline:3px solid #a44289;outline-offset:3px}
+.frame{max-width:1160px;margin:0 auto;background:var(--paper);border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 8px 35px #192c3709}
+header{padding:22px 30px 16px;display:flex;gap:16px;align-items:center;justify-content:space-between;border-bottom:1px solid #e3ebef;background:linear-gradient(120deg,#fff 55%,#f1eef8)}
+.eyebrow{font-size:12px;letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--muted);margin:0 0 6px}
+h1{font-size:clamp(22px,3.2vw,30px);font-weight:650;letter-spacing:-.035em;margin:0}
+header nav a{font-size:14px;font-weight:600;text-decoration:none;border:1px solid var(--line);border-radius:30px;padding:8px 13px;white-space:nowrap;display:inline-block}
+.honest{margin:0;padding:10px 30px;font-size:13px;line-height:1.5;color:var(--muted);background:#fbfaf6;border-bottom:1px solid #ece7da}
+.honest strong{color:var(--ink)}
+/* index */
+.tools{padding:18px 30px 8px;display:grid;gap:10px}
+.tools input[type=search]{width:100%;max-width:460px;border:1px solid #aec3cf;border-radius:12px;padding:11px 14px;min-height:46px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{min-height:34px;padding:4px 11px;font-size:13px;border-radius:30px;font-weight:600}
+.count{font-size:13px;color:var(--muted);margin:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;padding:10px 30px 28px}
+.card{display:block;text-decoration:none;color:inherit;border:1px solid #dfe8ee;border-radius:14px;padding:12px 14px 12px 16px;background:#fff;position:relative;min-height:92px}
+.card:hover{border-color:#9fb8c8;background:#fafcfd}
+.card::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:4px;border-radius:4px;background:var(--fam,#ccc)}
+.card h3{margin:0 0 4px;font-size:16px;letter-spacing:-.01em}
+.card p{margin:0;font-size:12.5px;color:var(--muted);line-height:1.45}
+.badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.badge{font-size:11.5px;font-weight:700;border-radius:20px;padding:2px 8px;background:#eef3f6;color:var(--ink);white-space:nowrap}
+.ev-strong{background:#d7ece6;color:#1d5c52}.ev-moderate{background:#e2eef7;color:#15578a}.ev-emerging{background:#ece6f6;color:#4d3a7a}
+.ev-limited{background:#f3eee2;color:#6b5a2a}.ev-none{background:#eceff1;color:#4a5960}.ev-harmful{background:#f9e2d9;color:#8f3418}
+.st-retired{background:#eceff1;color:#4a5960;font-style:italic}.st-complementary{background:#f3eee2;color:#6b5a2a}.st-emerging{background:#ece6f6;color:#4d3a7a}
+/* detail */
+.detail{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:28px;padding:24px 30px 26px;align-items:start}
+.left{position:sticky;top:12px;min-width:0}
+.picture{background:#f3f7fa;border:1px solid #e0e9ee;border-radius:16px;overflow:hidden}
+.picture svg{display:block;width:100%;height:auto}
+.cap{padding:10px 14px;font-size:13px;line-height:1.5;color:var(--muted);border-top:1px solid #dfe9ef;background:#fff}
+.cap b{color:var(--ink)}
+.dtools{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.right{min-width:0}
+h2{margin:0 0 6px;font-size:clamp(28px,3.8vw,40px);line-height:1.08;letter-spacing:-.04em;font-weight:620}
+.aka{margin:0 0 12px;color:var(--muted);font-size:15px}
+.right section{border-top:1px solid #e6edf1;padding:14px 0 4px}
+.right h4{margin:0 0 6px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.right p{margin:0 0 10px;font-size:16px;line-height:1.6}
+.lead{font-size:18px!important}
+.facts{margin:0;padding-left:18px;font-size:14.5px;line-height:1.55}
+.facts li{margin-bottom:4px}
+.links{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.links a{font-size:13.5px;font-weight:600;text-decoration:none;border:1px solid var(--line);border-radius:30px;padding:5px 11px}
+.note{font-size:13px;color:var(--muted);background:#f6f4ee;border-radius:10px;padding:9px 11px;line-height:1.5}
+.pager{display:flex;justify-content:space-between;gap:8px;padding:16px 30px 22px;border-top:1px solid #e3ebef;flex-wrap:wrap}
+.pager a{font-weight:600;text-decoration:none}
+footer{padding:14px 30px 20px;font-size:12.5px;line-height:1.55;color:var(--muted);border-top:1px solid #e3ebef}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:880px){
+ body{padding:0}.frame{border-radius:0;border-left:0;border-right:0}
+ header,.tools,.grid,.detail,.pager,footer,.honest{padding-left:16px;padding-right:16px}
+ .detail{grid-template-columns:1fr;gap:18px}.left{position:static}
+}
+</style>
+</head>
+<body>
+<main class="frame" id="app">
+<header>
+ <div><p class="eyebrow">Therapies In Motion · Atlas</p><h1 id="title">Therapy Atlas</h1></div>
+ <nav><a href="./">← The animated map</a></nav>
+</header>
+<p class="honest"><strong>How to read this:</strong> positions on the map come from 0–1 judgements in the source essay and report, not measurements. Entries describe approaches; they are not clinical advice. Choosing a therapy is a conversation with a GP or therapist; in England you can refer yourself to NHS Talking Therapies. If you need help now: NHS 111 (option 2), or Samaritans on 116 123.</p>
+<div id="view"></div>
+<footer>Sources: the USF therapy landscape report (14 Aug 2025) and Tudor Watson, <a href="https://tudorwatson900623.substack.com/p/the-therapeutic-landscape-in-2025" rel="noopener">“The Therapeutic Landscape in 2025”</a>, for families, scores, distances and pathways. Entry text (what it is, origins, evidence, practice, suitability, UK access) was researched and written for this atlas from published sources; it summarises and may contain errors — check with a professional or the current NICE guideline. <span id="built"></span></footer>
+</main>
+<script>
+/*__DATA__*/
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const C={ink:'#192c37',muted:'#546873',blue:'#1772b7',coral:'#c45238',purple:'#7156a6',green:'#2c776c',grid:'#d5e1e8',line:'#abc3d3'};
+const DIMS=['Time structure','Directiveness','Somatic focus','Symbolic depth','Evidence base','Experiential level'];
+const SHORT=['Structure','Directive','Body','Symbolic','Evidence','Action'];
+const PROC=[0,1,2,3,5];
+const EVL={strong:'Strong evidence',moderate:'Moderate evidence',emerging:'Emerging evidence',limited:'Limited evidence',none:'No good evidence',harmful:'Documented harm'};
+const STL={current:'',complementary:'Complementary',emerging:'Emerging',retired:'Retired'};
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),lerp=(a,b,t)=>a+(b-a)*t,smooth=v=>{v=clamp(v,0,1);return v*v*(3-2*v)},seg=(p,a,b)=>smooth((p-a)/(b-a));
+const f2=n=>Number(n).toFixed(2);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const hex=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+const mixc=(a,b,t)=>{const A=hex(a),B=hex(b);return '#'+A.map((v,i)=>Math.round(lerp(v,B[i],clamp(t,0,1))).toString(16).padStart(2,'0')).join('')};
+const symCol=v=>v<.5?mixc(C.blue,C.purple,v*2):mixc(C.purple,C.coral,(v-.5)*2);
+const T=(x,y,s,o={})=>`<text x="${f2(x)}" y="${f2(y)}" font-size="${o.size||12}" fill="${o.fill||C.ink}" text-anchor="${o.anchor||'start'}" font-weight="${o.weight||400}"${o.op!=null?` opacity="${f2(o.op)}"`:''}${o.style?` font-style="${o.style}"`:''}>${esc(s)}</text>`;
+const {cats,items}=DATA;
+const bySlug=Object.fromEntries(items.map(i=>[i.slug,i])),byName=Object.fromEntries(items.map(i=>[i.name,i]));
+const famCol=id=>id==='hi'?'#8a969c':symCol(cats[id].s[3]);
+const dist=(a,b)=>Math.sqrt(PROC.reduce((m,i)=>m+(a[i]-b[i])**2,0));
+$('built').textContent='Built '+DATA.built+'.';
+
+/* map geometry (same as the animated map) */
+const PX0=70,PX1=590,PY0=330,PY1=24,MX0=.1,MX1=.95,MY0=.1,MY1=1.0;
+const mx=v=>clamp(PX0+(v-MX0)/(MX1-MX0)*(PX1-PX0),PX0+8,PX1-8),my=v=>clamp(PY0-(v-MY0)/(MY1-MY0)*(PY0-PY1),PY1+8,PY0-8);
+const pos=s=>[mx((s[0]+s[1])/2),my((s[2]+s[5])/2)];
+/* spread therapies that share a position on a small ring so they stay visible */
+const spread={};(()=>{const groups={};items.forEach(i=>{const k=pos(i.s).map(Math.round).join(',');(groups[k]=groups[k]||[]).push(i)});
+ for(const k in groups){const g=groups[k];g.forEach((it,j)=>{const [x,y]=pos(it.s);if(g.length===1){spread[it.slug]=[x,y];return}const a=j/g.length*Math.PI*2,r=6+g.length*1.1;spread[it.slug]=[x+Math.cos(a)*r,y+Math.sin(a)*r]})}})();
+const P=it=>spread[it.slug];
+
+function mapSVG(it,p){
+ const fam=cats[it.family],fc=pos(fam.s),me=P(it),col=famCol(it.family);
+ let g=`<svg viewBox="0 0 600 380" role="img" aria-labelledby="mt"><title id="mt">${esc(it.display)} on the map of therapies</title>`;
+ g+=`<rect x="${PX0}" y="${PY1}" width="${PX1-PX0}" height="${PY0-PY1}" rx="8" fill="#fff" stroke="${C.grid}"/>`;
+ g+=`<line x1="${(PX0+PX1)/2}" y1="${PY1}" x2="${(PX0+PX1)/2}" y2="${PY0}" stroke="${C.grid}" stroke-dasharray="3 4"/><line x1="${PX0}" y1="${(PY0+PY1)/2}" x2="${PX1}" y2="${(PY0+PY1)/2}" stroke="${C.grid}" stroke-dasharray="3 4"/>`;
+ g+=T(PX0,PY0+18,'← emergent, client-led',{fill:C.muted})+T(PX1,PY0+18,'structured, therapist-led →',{fill:C.muted,anchor:'end'});
+ g+=`<g transform="translate(${PX0-12},${PY0}) rotate(-90)">${T(0,0,'talk & thought',{fill:C.muted})}</g><g transform="translate(${PX0-12},${PY1+96}) rotate(-90)">${T(0,0,'body & action →',{fill:C.muted})}</g>`;
+ /* family region */
+ const r=24+Math.sqrt(fam.n)*7;
+ g+=`<circle cx="${f2(fc[0])}" cy="${f2(fc[1])}" r="${f2(r*seg(p,0,.3))}" fill="${col}" fill-opacity=".12" stroke="${col}" stroke-opacity=".5" stroke-dasharray="4 4"/>`;
+ /* all therapies */
+ items.forEach(o=>{if(o===it)return;const q=P(o),same=o.family===it.family;g+=`<circle cx="${f2(q[0])}" cy="${f2(q[1])}" r="${same?4.2:3}" fill="${same?col:'#9fb0ba'}" opacity="${same?.8:.35}"><title>${esc(o.display)}</title></circle>`});
+ /* nearest neighbours */
+ const near=items.filter(o=>o!==it&&(it.family==='hi'||o.family!=='hi')).map(o=>[o,dist(o.s,it.s)]).sort((a,b)=>a[1]-b[1]).slice(0,3);
+ const cur=[lerp(fc[0],me[0],seg(p,.3,.65)),lerp(fc[1],me[1],seg(p,.3,.65))];
+ near.forEach(([o],k)=>{const q=P(o),l=seg(p,.65+k*.08,.85+k*.08);g+=`<line x1="${f2(cur[0])}" y1="${f2(cur[1])}" x2="${f2(lerp(cur[0],q[0],l))}" y2="${f2(lerp(cur[1],q[1],l))}" stroke="${C.purple}" stroke-width="1.6" opacity=".7"/>`+(l>.95?T(q[0]<PX1-130?q[0]+7:q[0]-7,q[1]-6+k*13,o.name,{size:11,fill:C.purple,anchor:q[0]<PX1-130?'start':'end'}):'')});
+ g+=`<circle cx="${f2(cur[0])}" cy="${f2(cur[1])}" r="10" fill="${col}" stroke="${C.ink}" stroke-width="2.5"/>`;
+ const lab=it.name.length>22?it.name.slice(0,21)+'…':it.name,right=cur[0]<PX1-170;
+ g+=`<rect x="${f2(right?cur[0]+14:cur[0]-18-lab.length*7.4)}" y="${f2(cur[1]-11)}" width="${f2(lab.length*7.4+6)}" height="22" rx="6" fill="#fff" opacity=".9"/>`+T(right?cur[0]+17:cur[0]-15,cur[1]+5,lab,{size:13.5,weight:700,anchor:right?'start':'end'});
+ g+=T(PX1-6,PY1+16,'colour: literal → symbolic',{size:10.5,fill:C.muted,anchor:'end'});
+ return g+'</svg>'}
+
+function radarSVG(it){
+ const cx=190,cy=120,R=80,A=i=>(-90+i*60)*Math.PI/180,fam=cats[it.family];
+ let g=`<svg viewBox="0 0 380 240" role="img" aria-label="Six-dimension fingerprint" style="max-width:460px;margin:0 auto">`;
+ [.25,.5,.75,1].forEach(l=>{g+=`<polygon points="${[0,1,2,3,4,5].map(i=>f2(cx+Math.cos(A(i))*R*l)+','+f2(cy+Math.sin(A(i))*R*l)).join(' ')}" fill="${l===1?'#fff':'none'}" stroke="${C.grid}"/>`});
+ for(let i=0;i<6;i++){const x=cx+Math.cos(A(i))*R,y=cy+Math.sin(A(i))*R;g+=`<line x1="${cx}" y1="${cy}" x2="${f2(x)}" y2="${f2(y)}" stroke="${i===4?C.green:C.line}" ${i===4?'stroke-dasharray="4 3"':''}/>`;
+  const lx=cx+Math.cos(A(i))*(R+14),ly=cy+Math.sin(A(i))*(R+14)+4;g+=T(lx,ly,SHORT[i]+' '+it.s[i].toFixed(2),{size:10.5,anchor:Math.abs(lx-cx)<5?'middle':lx>cx?'start':'end',fill:i===4?C.green:C.muted,weight:it.stated.includes(i)?700:400})}
+ const poly=v=>v.map((x,i)=>f2(cx+Math.cos(A(i))*R*x)+','+f2(cy+Math.sin(A(i))*R*x)).join(' ');
+ g+=`<polygon points="${poly(fam.s)}" fill="none" stroke="#9fb0ba" stroke-dasharray="4 3"/>`;
+ const col=famCol(it.family);g+=`<polygon points="${poly(it.s)}" fill="${col}" fill-opacity=".22" stroke="${col}" stroke-width="2"/>`;
+ it.s.forEach((v,i)=>{const st=it.stated.includes(i);g+=`<circle cx="${f2(cx+Math.cos(A(i))*R*v)}" cy="${f2(cy+Math.sin(A(i))*R*v)}" r="${st?5:3}" fill="${st?'#fff':col}" stroke="${col}" stroke-width="2"/>`});
+ return g+'</svg>'}
+
+function timelineSVG(it){
+ const ys=items.filter(i=>i.year).map(i=>i.year),y0=Math.min(1770,...ys),y1=2030,X=y=>lerp(20,580,(y-y0)/(y1-y0));
+ let g=`<svg viewBox="0 0 600 70" role="img" aria-label="When it began, among all therapies in the atlas"><line x1="20" y1="34" x2="580" y2="34" stroke="${C.line}"/>`;
+ for(let y=Math.ceil(y0/50)*50;y<=y1;y+=50)g+=`<line x1="${f2(X(y))}" y1="30" x2="${f2(X(y))}" y2="38" stroke="${C.line}"/>`+T(X(y),56,String(y),{size:10.5,fill:C.muted,anchor:'middle'});
+ items.forEach(o=>{if(!o.year||o===it)return;g+=`<line x1="${f2(X(o.year))}" y1="24" x2="${f2(X(o.year))}" y2="34" stroke="${o.family===it.family?famCol(it.family):'#b8c6ce'}" stroke-width="${o.family===it.family?2:1}"/>`});
+ if(it.year){g+=`<circle cx="${f2(X(it.year))}" cy="29" r="7" fill="${famCol(it.family)}" stroke="${C.ink}" stroke-width="2"/>`+T(clamp(X(it.year),40,560),16,String(it.year),{size:12,anchor:'middle',weight:700})}
+ else g+=T(300,16,'No single founding date — see origins',{size:11.5,anchor:'middle',fill:C.muted});
+ return g+'</svg>'}
+
+/* ---------- index ---------- */
+let raf=0,q='',famF='all',evF='all';
+function index(){
+ cancelAnimationFrame(raf);
+ document.title='Therapy Atlas';$('title').textContent='Therapy Atlas';
+ const famIds=Object.keys(cats).filter(id=>items.some(i=>i.family===id));
+ $('view').innerHTML=`<div class="tools"><label class="sr" for="search">Search therapies</label><input id="search" type="search" placeholder="Search ${items.length} therapies — e.g. trauma, body, Jung, NICE…" value="${esc(q)}">
+ <div class="chips" role="group" aria-label="Family">${['all',...famIds].map(id=>`<button type="button" data-f="${id}" aria-pressed="${famF===id}">${id==='all'?'All families':esc(cats[id].name)}</button>`).join('')}</div>
+ <div class="chips" role="group" aria-label="Evidence">${['all','strong','moderate','emerging','limited','none','harmful'].map(id=>`<button type="button" data-e="${id}" aria-pressed="${evF===id}">${id==='all'?'Any evidence':EVL[id]}</button>`).join('')}</div>
+ <p class="count" id="count" aria-live="polite"></p></div><div class="grid" id="grid"></div>`;
+ const draw=()=>{const ql=q.trim().toLowerCase();const list=items.filter(i=>(famF==='all'||i.family===famF)&&(evF==='all'||i.evidenceLevel===evF)&&(!ql||[i.name,i.display,i.aka,i.what,i.suitability,i.origin].join(' ').toLowerCase().includes(ql)));
+  $('count').textContent=`${list.length} of ${items.length} therapies`;
+  $('grid').innerHTML=list.map(i=>`<a class="card" href="#/t/${i.slug}" style="--fam:${famCol(i.family)}"><h3>${esc(i.display)}</h3><p>${esc(cats[i.family].name)}${i.year?' · '+i.year:''}</p><div class="badges"><span class="badge ev-${i.evidenceLevel}">${EVL[i.evidenceLevel]||''}</span>${STL[i.status]?`<span class="badge st-${i.status}">${STL[i.status]}</span>`:''}</div></a>`).join('')||'<p class="count">No therapies match.</p>'};
+ $('search').oninput=e=>{q=e.target.value;draw()};
+ document.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{famF=b.dataset.f;document.querySelectorAll('[data-f]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.f===famF)));draw()});
+ document.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{evF=b.dataset.e;document.querySelectorAll('[data-e]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.e===evF)));draw()});
+ draw();
+}
+
+/* ---------- detail ---------- */
+function detail(it){
+ cancelAnimationFrame(raf);
+ document.title=it.display+' · Therapy Atlas';$('title').textContent='Therapy Atlas';
+ const fam=cats[it.family],famList=items.filter(i=>i.family===it.family),k=famList.indexOf(it);
+ const prev=famList[(k-1+famList.length)%famList.length],next=famList[(k+1)%famList.length];
+ const pool=o=>o!==it&&(it.family==='hi'||o.family!=='hi');
+ const near=items.filter(pool).map(o=>[o,dist(o.s,it.s)]).sort((a,b)=>a[1]-b[1]).slice(0,5);
+ const stated=it.stated.length?`The source scores <b>${it.stated.map(i=>DIMS[i].toLowerCase()).join(', ')}</b> for ${esc(it.name)} itself (hollow dots); the other dimensions are its family’s averages (dashed outline).`:`The source gives no individual scores for ${esc(it.name)}, so it sits at the average of its family; therapies in the same spot are fanned out so you can see them.`;
+ const S=(h,body)=>body?`<section><h4>${h}</h4>${body}</section>`:'';
+ const P_=t=>t?`<p>${esc(t)}</p>`:'';
+ const factsHtml=it.facts.length?`<ul class="facts">${it.facts.map(f=>`<li>${esc(f.t)}</li>`).join('')}</ul>`:'';
+ $('view').innerHTML=`<div class="detail">
+ <div class="left">
+  <div class="picture" id="map"></div>
+  <div class="cap"><b>Where it sits.</b> Across: how structured and therapist-led. Up: how body- and action-based. Ringed: the ${esc(fam.name.toLowerCase())} family; purple lines: the three nearest approaches. ${stated}</div>
+  <div class="dtools"><button type="button" id="replay">↺ Replay</button><a href="#/" class="badge" style="align-self:center;text-decoration:none;font-size:13px">All therapies</a></div>
+  <div class="picture" style="margin-top:12px">${radarSVG(it)}<div class="cap"><b>Fingerprint.</b> Coloured: ${esc(it.name)}. Dashed grey: the ${esc(fam.name.toLowerCase())} average. Green spoke: evidence, which is about research, not the session.</div></div>
+  <div class="picture" style="margin-top:12px">${timelineSVG(it)}<div class="cap"><b>When it began</b>, among every approach in the atlas; same-family ticks are coloured.</div></div>
+ </div>
+ <article class="right" aria-labelledby="name">
+  <p class="eyebrow"><a href="#/" style="text-decoration:none">Atlas</a> · ${esc(fam.name)}</p>
+  <h2 id="name" tabindex="-1">${esc(it.display)}</h2>
+  ${it.aka?`<p class="aka">${esc(it.aka)}</p>`:''}
+  <div class="badges" style="margin-bottom:14px"><span class="badge ev-${it.evidenceLevel}">${EVL[it.evidenceLevel]||''}</span>${STL[it.status]?`<span class="badge st-${it.status}">${STL[it.status]}</span>`:''}${it.year?`<span class="badge">since ${it.year}</span>`:''}</div>
+  ${S('What it is',`<p class="lead">${esc(it.what)}</p>`)}
+  ${S('Origins',P_(it.origin))}
+  ${S('Evidence',P_(it.evidence))}
+  ${S('In practice',P_(it.practice))}
+  ${S('Who it may suit',P_(it.suitability))}
+  ${S('Cautions',P_(it.cautions))}
+  ${S('In the UK',P_(it.uk))}
+  ${S('In the source report',factsHtml)}
+  ${S('Nearest on the map',`<div class="links">${near.map(([o,d])=>`<a href="#/t/${o.slug}">${esc(o.name)} · ${d.toFixed(2)}</a>`).join('')}</div>`)}
+  ${it.related.length?S('Related',`<div class="links">${it.related.map(n=>byName[n]).filter(Boolean).map(o=>`<a href="#/t/${o.slug}">${esc(o.name)}</a>`).join('')}</div>`):''}
+  ${it.familyNote?`<p class="note">${esc(it.familyNote)}</p>`:''}
+ </article></div>
+ <nav class="pager" aria-label="More in this family"><a href="#/t/${prev.slug}">← ${esc(prev.name)}</a><span class="count">${k+1} of ${famList.length} in ${esc(fam.name.toLowerCase())}</span><a href="#/t/${next.slug}">${esc(next.name)} →</a></nav>`;
+ const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const run=()=>{cancelAnimationFrame(raf);const t0=performance.now();const step=now=>{const m=$('map');if(!m)return;const p=reduce?1:clamp((now-t0)/1800,0,1);m.innerHTML=mapSVG(it,p);if(p<1)raf=requestAnimationFrame(step)};raf=requestAnimationFrame(step)};
+ run();$('replay').onclick=run;
+ $('name').focus({preventScroll:true});window.scrollTo(0,0);
+}
+
+function route(){const m=location.hash.match(/^#\/t\/([\w-]+)/);if(m&&bySlug[m[1]])detail(bySlug[m[1]]);else index()}
+addEventListener('hashchange',route);route();
+window.__ATLAS={items,route};
+})();
+</script>
+</body>
+</html>
