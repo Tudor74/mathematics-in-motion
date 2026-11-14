@@ -1,0 +1,483 @@
+================================================================================
+UNIFIED SYMBOLIC FRAMEWORK - COMPREHENSIVE THERAPY LANDSCAPE ANALYSIS
+Generated: 2025-08-14 08:00:50
+================================================================================
+EXECUTIVE SUMMARY
+-----------------
+This report analyzes 130 therapeutic modalities across 6 dimensions:
+1. Time Structure (0=fluid, 1=structured)
+2. Directiveness (0=client-led, 1=therapist-directed)
+3. Somatic Focus (0=cognitive, 1=somatic)
+4. Symbolic Depth (0=literal, 1=symbolic)
+5. Evidence Base (0=anecdotal, 1=RCT-supported)
+6. Experiential Level (0=talk-based, 1=action-based)
+The analysis reveals 15 distinct therapeutic categories
+spanning 3 historical eras.
+DIMENSIONAL ANALYSIS
+================================================================================
+Dimension 1: Time Structure
+----------------------------------------
+Statistics:
+Mean: 0.507, Median: 0.500, Std Dev: 0.225
+Range: 0.100 to 1.000
+Highest Scoring (Most Time):
+1. Psychosurgery (1.000)
+2. Insulin Shock (1.000 if len(top_5) > 1 else '')
+3. CBT (0.900 if len(top_5) > 2 else '')
+Lowest Scoring (Least Time):
+1. Forest Bathing (0.100)
+2. Shamanic Healing (0.100 if len(bottom_5) > 1 else '')
+3. Forest Bathing (0.100 if len(bottom_5) > 2 else '')
+Dimension 2: Directiveness
+----------------------------------------
+Statistics:
+Mean: 0.474, Median: 0.500, Std Dev: 0.204
+Range: 0.100 to 1.000
+Highest Scoring (Most Directiveness):
+1. Psychosurgery (1.000)
+2. Insulin Shock (1.000 if len(top_5) > 1 else '')
+3. Hydrotherapy (0.900 if len(top_5) > 2 else '')
+Lowest Scoring (Least Directiveness):
+1. Person-Centered (0.100)
+2. Peer Support (0.100 if len(bottom_5) > 1 else '')
+3. Person-Centered (0.100 if len(bottom_5) > 2 else '')
+Dimension 3: Somatic Focus
+----------------------------------------
+Statistics:
+Mean: 0.452, Median: 0.400, Std Dev: 0.259
+Range: 0.000 to 1.000
+Highest Scoring (Most Somatic):
+1. Somatic Experiencing (1.000)
+2. Somatic Experiencing (1.000 if len(top_5) > 1 else '')
+3. Feldenkrais (0.950 if len(top_5) > 2 else '')
+Lowest Scoring (Least Somatic):
+1. Psychosurgery (0.000)
+2. App-Based CBT (0.100 if len(bottom_5) > 1 else '')
+3. Bowenian (0.100 if len(bottom_5) > 2 else '')
+Dimension 4: Symbolic Depth
+----------------------------------------
+Statistics:
+Mean: 0.528, Median: 0.500, Std Dev: 0.265
+Range: 0.000 to 1.000
+Highest Scoring (Most Symbolic):
+1. Jungian Analysis (1.000)
+2. Native American Healing (1.000 if len(top_5) > 1 else '')
+3. Art Therapy (1.000 if len(top_5) > 2 else '')
+Lowest Scoring (Least Symbolic):
+1. Behavioral Activation (0.000)
+2. Insulin Shock (0.000 if len(bottom_5) > 1 else '')
+3. Behavioral Activation (0.000 if len(bottom_5) > 2 else '')
+Dimension 5: Evidence Base
+----------------------------------------
+Statistics:
+Mean: 0.519, Median: 0.500, Std Dev: 0.222
+Range: 0.000 to 1.000
+Highest Scoring (Most Evidence):
+1. CBT (1.000)
+2. DBT (0.950 if len(top_5) > 1 else '')
+3. Exposure Therapy (0.950 if len(top_5) > 2 else '')
+Lowest Scoring (Least Evidence):
+1. Phrenology-Based (0.000)
+2. Pranic Healing (0.100 if len(bottom_5) > 1 else '')
+3. Chakra Balancing (0.100 if len(bottom_5) > 2 else '')
+Dimension 6: Experiential Level
+----------------------------------------
+Statistics:
+Mean: 0.566, Median: 0.500, Std Dev: 0.248
+Range: 0.100 to 1.000
+Highest Scoring (Most Experiential):
+1. Rolfing (1.000)
+2. Equine Therapy (1.000 if len(top_5) > 1 else '')
+3. Adventure Therapy (1.000 if len(top_5) > 2 else '')
+Lowest Scoring (Least Experiential):
+1. Psychoanalysis (0.100)
+2. Lacanian Analysis (0.100 if len(bottom_5) > 1 else '')
+3. Psychoanalysis (0.100 if len(bottom_5) > 2 else '')
+CATEGORY ANALYSIS
+================================================================================
+Category: Other
+----------------------------------------
+Members: 19 therapies
+Representative: Eclectic (most central)
+Cohesion Score: 0.582 (lower = more cohesive)
+Dimensional Profile (mean ± std):
+Time Structure: 0.55 ± 0.18
+Directiveness: 0.53 ± 0.17
+Somatic Focus: 0.31 ± 0.13
+Symbolic Depth: 0.46 ± 0.24
+Evidence Base: 0.58 ± 0.14
+Experiential: 0.47 ± 0.17
+Members: Solution-Focused, Brief Strategic, Single Session, Problem-Solving, Clinical Hypnosis, Ericksonian, Regression Therapy, Parts Therapy...
+Category: Animal & Nature
+----------------------------------------
+Members: 11 therapies
+Representative: Canine-Assisted (most central)
+Cohesion Score: 0.369 (lower = more cohesive)
+Dimensional Profile (mean ± std):
+Time Structure: 0.26 ± 0.09
+Directiveness: 0.35 ± 0.14
+Somatic Focus: 0.72 ± 0.12
+Symbolic Depth: 0.54 ± 0.11
+Evidence Base: 0.41 ± 0.09
+Experiential: 0.95 ± 0.07
+Members: Equine Therapy, Canine-Assisted, Dolphin Therapy, Animal-Assisted Play, Therapeutic Riding, Wilderness Therapy, Adventure Therapy, Ecotherapy...
+Category: Cognitive & Behavioral
+----------------------------------------
+Members: 10 therapies
+Representative: DBT (most central)
+Cohesion Score: 0.429 (lower = more cohesive)
+Dimensional Profile (mean ± std):
+Time Structure: 0.81 ± 0.09
+Directiveness: 0.72 ± 0.12
+Somatic Focus: 0.23 ± 0.09
+Symbolic Depth: 0.22 ± 0.15
+Evidence Base: 0.85 ± 0.12
+Experiential: 0.40 ± 0.15
+Members: CBT, DBT, ACT, REBT, Behavioral Activation, Exposure Therapy, CPT, MCT...
+Category: Somatic & Body-Based
+----------------------------------------
+Members: 10 therapies
+Representative: Body Psychotherapy (most central)
+Cohesion Score: 0.460 (lower = more cohesive)
+Dimensional Profile (mean ± std):
+Time Structure: 0.42 ± 0.12
+Directiveness: 0.38 ± 0.15
+Somatic Focus: 0.93 ± 0.05
+Symbolic Depth: 0.52 ± 0.20
+Evidence Base: 0.44 ± 0.13
+Experiential: 0.87 ± 0.09
+Members: Somatic Experiencing, Hakomi, Bioenergetics, Rolfing, Feldenkrais, Alexander Technique, Sensorimotor, Dance/Movement...
+Category: Psychodynamic & Analytic
+----------------------------------------
+Members: 9 therapies
+Representative: Object Relations (most central)
+Cohesion Score: 0.437 (lower = more cohesive)
+Dimensional Profile (mean ± std):
+Time Structure: 0.42 ± 0.16
+Directiveness: 0.38 ± 0.10
+Somatic Focus: 0.23 ± 0.07
+Symbolic Depth: 0.78 ± 0.18
+Evidence Base: 0.57 ± 0.13
+Experiential: 0.24 ± 0.10
+Members: Psychoanalysis, Psychodynamic, Jungian Analysis, Adlerian Therapy, Object Relations, Self Psychology, Lacanian Analysis, Brief Psychodynamic...
+Category: Creative & Expressive
+----------------------------------------
+Members: 9 therapies
+Representative: PhotoTherapy (most central)
+Cohesion Score: 0.474 (lower = more cohesive)
+Dimensional Profile (mean ± std):
+Time Structure: 0.40 ± 0.07
+Directiveness: 0.30 ± 0.08
+Somatic Focus: 0.41 ± 0.19
+Symbolic Depth: 0.86 ± 0.10
+Evidence Base: 0.47 ± 0.12
+Experiential: 0.71 ± 0.22
+Members: Art Therapy, Music Therapy, Drama Therapy, Poetry Therapy, Sandplay, Play Therapy, Bibliotherapy, PhotoTherapy...
+Category: Historical & Retired
+----------------------------------------
+Members: 9 therapies
+Representative: EST (most central)
+Cohesion Score: 0.887 (lower = more cohesive)
+Dimensional Profile (mean ± std):
+Time Structure: 0.59 ± 0.30
+Directiveness: 0.77 ± 0.19
+Somatic Focus: 0.49 ± 0.33
+Symbolic Depth: 0.42 ± 0.31
+Evidence Base: 0.16 ± 0.08
+Experiential: 0.56 ± 0.28
+Members: Primal Scream, Orgone Therapy, Rebirthing, EST, Psychosurgery, Insulin Shock, Hydrotherapy, Mesmerism...
+Category: Humanistic & Existential
+----------------------------------------
+Members: 8 therapies
+Representative: Process-Experiential (most central)
+Cohesion Score: 0.569 (lower = more cohesive)
+Dimensional Profile (mean ± std):
+Time Structure: 0.40 ± 0.10
+Directiveness: 0.35 ± 0.15
+Somatic Focus: 0.41 ± 0.23
+Symbolic Depth: 0.55 ± 0.13
+Evidence Base: 0.56 ± 0.13
+Experiential: 0.39 ± 0.18
+Members: Person-Centered, Gestalt, Existential, Logotherapy, Focusing, Emotion-Focused, Process-Experiential, Transactional Analysis
+Category: Trauma-Specialized
+----------------------------------------
+Members: 8 therapies
+Representative: NET (most central)
+Cohesion Score: 0.547 (lower = more cohesive)
+Dimensional Profile (mean ± std):
+Time Structure: 0.71 ± 0.16
+Directiveness: 0.60 ± 0.19
+Somatic Focus: 0.44 ± 0.14
+Symbolic Depth: 0.35 ± 0.17
+Evidence Base: 0.71 ± 0.19
+Experiential: 0.50 ± 0.07
+Members: EMDR, PE, TF-CBT, NET, BSP, ART, IFS, STAIR
+Category: Systemic & Family
+----------------------------------------
+Members: 8 therapies
+Representative: Family Systems (most central)
+Cohesion Score: 0.406 (lower = more cohesive)
+Dimensional Profile (mean ± std):
+Time Structure: 0.60 ± 0.09
+Directiveness: 0.58 ± 0.15
+Somatic Focus: 0.19 ± 0.11
+Symbolic Depth: 0.42 ± 0.13
+Evidence Base: 0.64 ± 0.10
+Experiential: 0.38 ± 0.10
+Members: Family Systems, Structural Family, Strategic Family, Milan Systemic, Bowenian, EFT Couples, Imago, Solution-Focused Family
+SIMILARITY ANALYSIS
+================================================================================
+Most Similar Therapy Pairs:
+----------------------------------------
+1. DBT ↔ TF-CBT: 0.050 (cross-category)
+2. Solution-Focused Family ↔ Solution-Focused: 0.100 (cross-category)
+3. TF-CBT ↔ Unified Protocol: 0.122 (cross-category)
+4. MCT ↔ Brief Strategic: 0.141 (cross-category)
+5. CBT ↔ CPT: 0.141 (same category)
+6. Adlerian Therapy ↔ Milan Systemic: 0.141 (cross-category)
+7. Dance/Movement ↔ Equine Therapy: 0.141 (cross-category)
+8. STAIR ↔ Unified Protocol: 0.141 (cross-category)
+9. TM-based ↔ Imago: 0.141 (cross-category)
+10. Zen Therapy ↔ Psychedelic Integration: 0.141 (cross-category)
+Most Dissimilar Therapy Pairs:
+----------------------------------------
+1. Authentic Movement ↔ Psychosurgery: 1.880
+2. Shamanic Healing ↔ Psychosurgery: 1.863
+3. Psychosurgery ↔ Native American Healing: 1.808
+4. Authentic Movement ↔ Insulin Shock: 1.796
+5. Shamanic Healing ↔ Insulin Shock: 1.778
+6. Crystal Healing ↔ Psychosurgery: 1.775
+7. Dance/Movement ↔ Psychosurgery: 1.769
+8. CBT ↔ Shamanic Healing: 1.766
+9. Rebirthing ↔ Psychosurgery: 1.738
+10. Insulin Shock ↔ Native American Healing: 1.726
+Bridge Therapies (connecting different approaches):
+----------------------------------------
+1. Brief Psychodynamic: connects 7 categories
+Categories: Other, Humanistic & Existential, Trauma-Specialized, Psychodynamic & Analytic, Systemic & Family
+2. Person-Centered: connects 7 categories
+Categories: Other, Humanistic & Existential, Creative & Expressive, Trauma-Specialized, Psychodynamic & Analytic
+3. Gestalt: connects 7 categories
+Categories: Animal & Nature, Other, Humanistic & Existential, Creative & Expressive, Psychedelic-Assisted
+4. Focusing: connects 7 categories
+Categories: Somatic & Body-Based, Animal & Nature, Humanistic & Existential, Energy & Alternative, Cultural & Indigenous
+5. BSP: connects 7 categories
+Categories: Somatic & Body-Based, Animal & Nature, Humanistic & Existential, Energy & Alternative, Psychedelic-Assisted
+6. IFS: connects 7 categories
+Categories: Other, Humanistic & Existential, Psychedelic-Assisted, Creative & Expressive, Psychodynamic & Analytic
+7. Narrative Therapy: connects 7 categories
+Categories: Other, Humanistic & Existential, Creative & Expressive, Psychedelic-Assisted, Trauma-Specialized
+8. Vipassana-based: connects 7 categories
+Categories: Somatic & Body-Based, Animal & Nature, Humanistic & Existential, Psychedelic-Assisted, Creative & Expressive
+9. TM-based: connects 7 categories
+Categories: Other, Humanistic & Existential, Psychedelic-Assisted, Trauma-Specialized, Psychodynamic & Analytic
+10. Bowenian: connects 7 categories
+Categories: Digital & Technology, Other, Humanistic & Existential, Creative & Expressive, Psychodynamic & Analytic
+HIERARCHICAL CLUSTER ANALYSIS
+================================================================================
+At distance threshold 0.5:
+Number of clusters: 34
+At distance threshold 1.0:
+Number of clusters: 12
+Cluster 11 (20 members): ACT, Schema Therapy, FAP, Brief Psychodynamic, Mentalization-Based...
+Cluster 12 (17 members): Psychodynamic, Person-Centered, Gestalt, Process-Experiential, IFS...
+Cluster 6 (14 members): REBT, MCT, STAIR, Structural Family, Strategic Family...
+Cluster 2 (14 members): Somatic Experiencing, Bioenergetics, Rolfing, Feldenkrais, Alexander Technique...
+Cluster 3 (13 members): Reiki, Pranic Healing, Chakra Balancing, Crystal Healing, Shamanic Healing...
+At distance threshold 1.5:
+Number of clusters: 7
+Cluster 2 (25 members): Art Therapy, Music Therapy, Drama Therapy, Poetry Therapy, Sandplay...
+Cluster 1 (23 members): Focusing, Somatic Experiencing, Hakomi, Bioenergetics, Rolfing...
+Cluster 3 (22 members): CBT, DBT, REBT, Behavioral Activation, Exposure Therapy...
+Cluster 6 (20 members): ACT, Schema Therapy, FAP, Brief Psychodynamic, Mentalization-Based...
+Cluster 7 (17 members): Psychodynamic, Person-Centered, Gestalt, Process-Experiential, IFS...
+At distance threshold 2.0:
+Number of clusters: 5
+Cluster 5 (37 members): ACT, Schema Therapy, FAP, Psychodynamic, Brief Psychodynamic...
+Cluster 3 (29 members): CBT, DBT, REBT, Behavioral Activation, Exposure Therapy...
+Cluster 2 (25 members): Art Therapy, Music Therapy, Drama Therapy, Poetry Therapy, Sandplay...
+Cluster 1 (23 members): Focusing, Somatic Experiencing, Hakomi, Bioenergetics, Rolfing...
+Cluster 4 (16 members): Psychoanalysis, Jungian Analysis, Adlerian Therapy, Object Relations, Self Psychology...
+HISTORICAL EVOLUTION ANALYSIS
+================================================================================
+HISTORICAL ERA (10 therapies)
+----------------------------------------
+Dimensional Profile (mean):
+Time Structure : 0.550
+Directiveness : 0.720
+Somatic Focus : 0.460
+Symbolic Depth : 0.475
+Evidence Base : 0.200
+Experiential Level : 0.510
+Examples: Psychoanalysis, Primal Scream, Orgone Therapy, Rebirthing, EST, Psychosurgery, Insulin Shock, Hydrotherapy, Mesmerism, Phrenology-Based
+Characteristics: High Directiveness. Low Evidence Base.
+CONTEMPORARY ERA (113 therapies)
+----------------------------------------
+Dimensional Profile (mean):
+Time Structure : 0.496
+Directiveness : 0.453
+Somatic Focus : 0.453
+Symbolic Depth : 0.535
+Evidence Base : 0.542
+Experiential Level : 0.571
+Examples: CBT, DBT, ACT, REBT, Behavioral Activation, Exposure Therapy, CPT, MCT, Schema Therapy, FAP...
+EMERGING ERA (7 therapies)
+----------------------------------------
+Dimensional Profile (mean):
+Time Structure : 0.614
+Directiveness : 0.457
+Somatic Focus : 0.414
+Symbolic Depth : 0.500
+Evidence Base : 0.600
+Experiential Level : 0.571
+Examples: MDMA-Assisted, Psilocybin-Assisted, Ketamine-Assisted, Psychedelic Integration, VR Therapy, AI-Assisted, Neurofeedback
+THERAPEUTIC PATHWAY ANALYSIS
+================================================================================
+Optimal Pathways Between Common Modalities:
+----------------------------------------
+Person-Centered → ACT:
+Direct distance: 0.800
+Via EFT Couples: 0.821
+Path: Person-Centered → EFT Couples → ACT
+Person-Centered → IFS:
+Direct distance: 0.500
+Via Narrative Therapy: 0.754
+Path: Person-Centered → Narrative Therapy → IFS
+Person-Centered → Somatic Experiencing:
+Direct distance: 1.039
+Via Process-Experiential: 1.076
+Path: Person-Centered → Process-Experiential → Somatic Experiencing
+CBT → ACT:
+Direct distance: 0.480
+Via DBT: 0.489
+Path: CBT → DBT → ACT
+CBT → IFS:
+Direct distance: 1.049
+Via Schema Therapy: 1.077
+Path: CBT → Schema Therapy → IFS
+CBT → Somatic Experiencing:
+Direct distance: 1.245
+Via EMDR: 1.268
+Path: CBT → EMDR → Somatic Experiencing
+Psychodynamic → ACT:
+Direct distance: 0.592
+Via Schema Therapy: 0.648
+Path: Psychodynamic → Schema Therapy → ACT
+Psychodynamic → IFS:
+Direct distance: 0.245
+Via Narrative Therapy: 0.529
+Path: Psychodynamic → Narrative Therapy → IFS
+Psychodynamic → Somatic Experiencing:
+Direct distance: 0.843
+Via Ketamine-Assisted: 0.854
+Path: Psychodynamic → Ketamine-Assisted → Somatic Experiencing
+QUADRANT ANALYSIS
+================================================================================
+High Evidence + High Structure:
+----------------------------------------
+Count: 12 therapies
+Members: CBT, DBT, ACT, REBT, Behavioral Activation, Exposure Therapy, CPT, EMDR, PE, TF-CBT...
+Low Evidence + High Experience:
+----------------------------------------
+Count: 8 therapies
+Members: Dolphin Therapy, Crystal Healing, Shamanic Healing, Primal Scream, Orgone Therapy, Rebirthing, Curanderismo, Native American Healing
+High Somatic + High Symbolic:
+----------------------------------------
+Count: 3 therapies
+Members: Authentic Movement, Chakra Balancing, Rebirthing
+High Cognitive + High Directive:
+----------------------------------------
+Count: 8 therapies
+Members: CBT, REBT, CPT, Structural Family, Strategic Family, Psychosurgery, Insulin Shock, Phrenology-Based
+OUTLIER ANALYSIS
+================================================================================
+Most Isolated Therapies (unique approaches):
+----------------------------------------
+1. Psychosurgery (mean distance: 1.224)
+Category: Historical & Retired, Era: historical
+Unique features: Very high Time Structure, Very high Directiveness, Very low Somatic Focus, Very low Symbolic Depth
+2. Insulin Shock (mean distance: 1.186)
+Category: Historical & Retired, Era: historical
+Unique features: Very high Time Structure, Very high Directiveness, Very low Symbolic Depth
+3. Exposure Therapy (mean distance: 1.038)
+Category: Cognitive & Behavioral, Era: contemporary
+Unique features: Very low Symbolic Depth, Very high Evidence Base
+4. Lacanian Analysis (mean distance: 1.024)
+Category: Psychodynamic & Analytic, Era: contemporary
+Unique features: Very high Symbolic Depth
+5. CBT (mean distance: 1.003)
+Category: Cognitive & Behavioral, Era: contemporary
+Unique features: Very high Evidence Base
+6. Shamanic Healing (mean distance: 0.983)
+Category: Energy & Alternative, Era: contemporary
+Unique features: Very high Symbolic Depth
+7. Rolfing (mean distance: 0.969)
+Category: Somatic & Body-Based, Era: contemporary
+Unique features: Very high Somatic Focus, Very high Experiential Level
+8. Hydrotherapy (mean distance: 0.963)
+Category: Historical & Retired, Era: historical
+9. PE (mean distance: 0.957)
+Category: Trauma-Specialized, Era: contemporary
+Unique features: Very high Evidence Base
+10. REBT (mean distance: 0.951)
+Category: Cognitive & Behavioral, Era: contemporary
+Most Central Therapies (balanced approaches):
+----------------------------------------
+1. Eclectic (mean distance: 0.578, Category: Other)
+2. Imago (mean distance: 0.584, Category: Systemic & Family)
+3. TM-based (mean distance: 0.584, Category: Mindfulness & Meditation)
+4. Integrative (mean distance: 0.587, Category: Other)
+5. Gestalt (mean distance: 0.603, Category: Humanistic & Existential)
+6. Process-Experiential (mean distance: 0.610, Category: Humanistic & Existential)
+7. MSC (mean distance: 0.614, Category: Mindfulness & Meditation)
+8. IFS (mean distance: 0.614, Category: Trauma-Specialized)
+9. Mindfulness-Based Stress (mean distance: 0.618, Category: Mindfulness & Meditation)
+10. NET (mean distance: 0.619, Category: Trauma-Specialized)
+SUMMARY STATISTICS
+================================================================================
+Overall Space Metrics:
+----------------------
+Total Therapies: 130
+Total Categories: 15
+Total Unique Pairs: 8385
+Distance Statistics:
+Mean: 0.770
+Median: 0.743
+Std Dev: 0.305
+Min: 0.050
+Max: 1.880
+25th Percentile: 0.532
+75th Percentile: 0.976
+Era Distribution:
+Historical: 10 therapies
+Contemporary: 113 therapies
+Emerging: 7 therapies
+Category Size Distribution:
+Other : 19 therapies
+Animal & Nature : 11 therapies
+Cognitive & Behavioral : 10 therapies
+Somatic & Body-Based : 10 therapies
+Psychodynamic & Analytic : 9 therapies
+Creative & Expressive : 9 therapies
+Historical & Retired : 9 therapies
+Humanistic & Existential : 8 therapies
+Trauma-Specialized : 8 therapies
+Systemic & Family : 8 therapies
+Dimensional Correlations:
+Time Structure vs Directiveness: 0.763
+Time Structure vs Somatic Focus: -0.511
+Time Structure vs Symbolic Depth: -0.759
+Time Structure vs Evidence Base: 0.607
+Time Structure vs Experiential Level: -0.469
+Directiveness vs Somatic Focus: -0.337
+Directiveness vs Symbolic Depth: -0.607
+Directiveness vs Experiential Level: -0.309
+Somatic Focus vs Evidence Base: -0.398
+Somatic Focus vs Experiential Level: 0.831
+Symbolic Depth vs Evidence Base: -0.467
+Evidence Base vs Experiential Level: -0.347
+================================================================================
+END OF REPORT
+Generated using the Unified Symbolic Framework (USF)
+Total analysis time: ~4 seconds
+=========

@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light">
-<title>Therapies In Motion — v0.1</title>
+<title>Therapies In Motion — v0.2</title>
 <meta name="description" content="An animated, interactive map of how psychotherapies differ in approach, built from the six-dimension framework in The Therapeutic Landscape in 2025.">
-<meta name="application-version" content="0.1">
+<meta name="application-version" content="0.2">
 <style>
 :root{--ink:#192c37;--muted:#546873;--blue:#1772b7;--pale:#e8f2f8;--line:#c7d8e3;--paper:#fff;--bg:#f3f6f7;--warm:#ad472a;--purple:#7156a6;--green:#2c776c}
 *{box-sizing:border-box}
@@ -88,10 +88,10 @@ dialog::backdrop{background:#192c3755}
 <main class="frame" id="app" aria-label="Therapies In Motion: an animated map of how therapies differ">
 <header>
  <div>
-  <p class="eyebrow" id="stage-eyebrow">Therapies In Motion · v0.1</p>
+  <p class="eyebrow" id="stage-eyebrow">Therapies In Motion · v0.2</p>
   <h1 id="stage-title">Six ways therapies differ</h1>
  </div>
- <div class="counter" id="counter" aria-live="polite">1 / 22</div>
+ <div class="counter" id="counter" aria-live="polite">1 / 23</div>
 </header>
 <p class="honest"><strong>How to read this:</strong> the 0–1 scores are judgements assigned in the source essay, not measurements. This page maps how therapies differ in <em>approach</em>; it is not clinical advice. Choosing a therapy is a conversation with a GP or therapist. In England you can refer yourself to NHS Talking Therapies. If you need help now: NHS 111 (option 2), or Samaritans on 116 123.</p>
 <nav class="stages" id="stages" aria-label="Stages"></nav>
@@ -132,7 +132,7 @@ dialog::backdrop{background:#192c3755}
  </div>
 </section>
 <footer>
- Source: Tudor Watson, <a href="https://tudorwatson900623.substack.com/p/the-therapeutic-landscape-in-2025" rel="noopener">“The Therapeutic Landscape in 2025”</a> (Aug 2025): six dimensions, 15 category profiles and the examples quoted. Where the essay gives only a category average, a therapy is placed at its category’s average, with any score the essay states for that therapy taking priority. Notes on UK guidance summarise NICE recommendations and may change; check the current guideline. Companion to <a href="https://github.com/Tudor74/mathematics-in-motion">Mathematics In Motion</a>. Keys: ←/→ scenes, space play/pause, T try it.
+ Sources: the USF therapy landscape report (14 Aug 2025) and Tudor Watson, <a href="https://tudorwatson900623.substack.com/p/the-therapeutic-landscape-in-2025" rel="noopener">“The Therapeutic Landscape in 2025”</a> (Aug 2025): six dimensions, 15 category profiles and the examples quoted. Where the essay gives only a category average, a therapy is placed at its category’s average, with any score the essay states for that therapy taking priority. Notes on UK guidance summarise NICE recommendations and may change; check the current guideline. Companion to <a href="https://github.com/Tudor74/mathematics-in-motion">Mathematics In Motion</a>. Keys: ←/→ scenes, space play/pause, T try it.
 </footer>
 </main>
 <dialog id="word-dialog" aria-labelledby="word-title"><div class="dlg"><button type="button" class="close" id="word-close" aria-label="Close definition">Close</button><h3 id="word-title"></h3><p id="word-here"></p><p class="contrast" id="word-contrast"></p><p class="ex" id="word-example"></p></div></dialog>
@@ -151,6 +151,7 @@ dialog::backdrop{background:#192c3755}
    14 Distance ........... choose two therapies; the gap is shown per dimension so you can see where they differ.
    15 Bridges ............ switch hubs: a bridge is defined by how many families it touches.
    16 Stepping stones .... choose the middle stop: a detour never shortens the trip, it shrinks the biggest step.
+   16b Pathway numbers .. pick one of the report's nine pathways: see how much each suggested stop adds.
    17 Sequential care .... step through phases: integration as a sequence, not a blend.
    18 Eras ............... scrub the year: the map's balance shifts with history.
    19 Retired ............ inspect each retired practice: directiveness without evidence.
@@ -176,39 +177,39 @@ const DIMS=['Time structure','Directiveness','Somatic focus','Symbolic depth','E
 const SHORT=['Structure','Directive','Body','Symbolic','Evidence','Action'];
 const PROC=[0,1,2,3,5];
 const CATS={
- cb:{name:'Cognitive & behavioural',n:10,coh:.429,s:[.81,.72,.23,.22,.85,.40],inc:'DBT, CBT, ACT, REBT',gist:'Structured and coach-like: change thoughts and behaviour in the present.'},
- pd:{name:'Psychodynamic & analytic',n:9,coh:.437,s:[.42,.38,.23,.78,.57,.24],inc:'Object relations, psychoanalysis, Jungian, Adlerian',gist:'Talk that follows the unconscious; symptoms are read as symbols.'},
- hu:{name:'Humanistic & existential',n:8,coh:.569,s:[.40,.35,.41,.55,.56,.39],inc:'Process-experiential, person-centred, Gestalt, existential',gist:'The here and now, the relationship and authenticity.'},
- sy:{name:'Systemic & family',n:8,coh:.406,s:[.60,.58,.19,.42,.64,.38],inc:'Family systems, structural family therapy',gist:'The relationship system, not one person, is the client.'},
- so:{name:'Somatic & body-based',n:10,coh:.460,s:[.42,.38,.93,.52,.44,.87],inc:'Body psychotherapy, Somatic Experiencing, Hakomi, Rolfing',gist:'Bottom-up: the body is the route to regulation.'},
- an:{name:'Animal & nature',n:11,coh:.369,s:[.26,.35,.72,.54,.41,.95],inc:'Equine, adventure therapy, forest bathing',gist:'Doing things, outdoors or alongside animals.'},
- cr:{name:'Creative & expressive',n:9,coh:.474,s:[.40,.30,.41,.86,.47,.71],inc:'Phototherapy, art, music, drama, play therapy',gist:'Making something says what words cannot.'},
- mi:{name:'Mindfulness & meditation',n:7,coh:.489,s:[.49,.39,.56,.49,.61,.47],inc:'Members not listed in the source',gist:'Training attention and acceptance, often in groups.'},
- tr:{name:'Trauma-specialised',n:8,coh:.547,s:[.71,.60,.44,.35,.71,.50],inc:'NET, EMDR, prolonged exposure, TF-CBT',gist:'Structured protocols that bring the body in.'},
- ps:{name:'Psychedelic-assisted',n:4,coh:.613,s:[.55,.40,.50,.50,.55,.65],inc:'MDMA-assisted, psilocybin-assisted therapy',gist:'A drug-assisted session inside a therapeutic container, mostly in trials.'},
+ cb:{name:'Cognitive & behavioural',n:10,coh:.429,s:[.81,.72,.23,.22,.85,.40],inc:'CBT, DBT, ACT, REBT, behavioural activation, exposure, CPT, MCT',gist:'Structured and coach-like: change thoughts and behaviour in the present.'},
+ pd:{name:'Psychodynamic & analytic',n:9,coh:.437,s:[.42,.38,.23,.78,.57,.24],inc:'Psychoanalysis, psychodynamic, Jungian, Adlerian, object relations, self psychology, Lacanian, brief psychodynamic',gist:'Talk that follows the unconscious; symptoms are read as symbols.'},
+ hu:{name:'Humanistic & existential',n:8,coh:.569,s:[.40,.35,.41,.55,.56,.39],inc:'Person-centred, Gestalt, existential, logotherapy, focusing, emotion-focused, process-experiential, transactional analysis',gist:'The here and now, the relationship and authenticity.'},
+ sy:{name:'Systemic & family',n:8,coh:.406,s:[.60,.58,.19,.42,.64,.38],inc:'Family systems, structural, strategic, Milan systemic, Bowenian, EFT couples, Imago, solution-focused family',gist:'The relationship system, not one person, is the client.'},
+ so:{name:'Somatic & body-based',n:10,coh:.460,s:[.42,.38,.93,.52,.44,.87],inc:'Somatic Experiencing, Hakomi, bioenergetics, Rolfing, Feldenkrais, Alexander technique, sensorimotor, dance/movement',gist:'Bottom-up: the body is the route to regulation.'},
+ an:{name:'Animal & nature',n:11,coh:.369,s:[.26,.35,.72,.54,.41,.95],inc:'Equine, canine-assisted, dolphin therapy, animal-assisted play, therapeutic riding, wilderness, adventure, ecotherapy',gist:'Doing things, outdoors or alongside animals.'},
+ cr:{name:'Creative & expressive',n:9,coh:.474,s:[.40,.30,.41,.86,.47,.71],inc:'Art, music, drama, poetry therapy, sandplay, play therapy, bibliotherapy, phototherapy',gist:'Making something says what words cannot.'},
+ mi:{name:'Mindfulness & meditation',n:7,coh:.489,s:[.49,.39,.56,.49,.61,.47],inc:'TM-based, mindful self-compassion (MSC), mindfulness-based stress reduction',gist:'Training attention and acceptance, often in groups.'},
+ tr:{name:'Trauma-specialised',n:8,coh:.547,s:[.71,.60,.44,.35,.71,.50],inc:'EMDR, prolonged exposure, TF-CBT, NET, BSP, ART, IFS, STAIR',gist:'Structured protocols that bring the body in.'},
+ ps:{name:'Psychedelic-assisted',n:4,coh:.613,s:[.55,.40,.50,.50,.55,.65],inc:'MDMA-, psilocybin- and ketamine-assisted therapy, psychedelic integration',gist:'A drug-assisted session inside a therapeutic container, mostly in trials.'},
  di:{name:'Digital & technology',n:4,coh:.598,s:[.65,.50,.25,.25,.55,.50],inc:'App-based CBT, VR therapy, AI-assisted tools, neurofeedback',gist:'Structured programmes delivered or extended by technology.'},
- ot:{name:'Mixed / other',n:19,coh:.582,s:[.55,.53,.31,.46,.58,.47],inc:'Eclectic, solution-focused brief therapy, clinical hypnosis, integrative',gist:'The pragmatic middle: drawing on several models.'},
- en:{name:'Energy & alternative',n:7,coh:.388,s:[.23,.27,.61,.71,.16,.61],inc:'Pranic healing, chakra balancing, crystal healing',gist:'Built on energy systems that are hard to test.'},
- cu:{name:'Cultural & indigenous',n:5,coh:.521,s:[.20,.38,.60,.80,.24,.66],inc:'Shamanic healing, indigenous practices',gist:'Healing inside a cultural and spiritual cosmology.'},
- hi:{name:'Historical & retired',n:9,coh:.887,s:[.59,.77,.49,.42,.16,.56],inc:'Primal scream, psychosurgery, insulin shock',gist:'Abandoned practices: a lesson in authority without evidence.',hist:true}
+ ot:{name:'Mixed / other',n:19,coh:.582,s:[.55,.53,.31,.46,.58,.47],inc:'Eclectic, integrative, solution-focused, brief strategic, single session, problem-solving, clinical hypnosis, Ericksonian',gist:'The pragmatic middle: drawing on several models.'},
+ en:{name:'Energy & alternative',n:7,coh:.388,s:[.23,.27,.61,.71,.16,.61],inc:'Reiki, pranic healing, chakra balancing, crystal healing, shamanic healing',gist:'Built on energy systems that are hard to test.'},
+ cu:{name:'Cultural & indigenous',n:5,coh:.521,s:[.20,.38,.60,.80,.24,.66],inc:'Not listed in the report (curanderismo and Native American healing appear in its lists without a category)',gist:'Healing inside a cultural and spiritual cosmology.'},
+ hi:{name:'Historical & retired',n:9,coh:.887,s:[.59,.77,.49,.42,.16,.56],inc:'Primal scream, orgone therapy, rebirthing, EST, psychosurgery, insulin shock, hydrotherapy, mesmerism',gist:'Abandoned practices: a lesson in authority without evidence.',hist:true}
 };
 const CAT_IDS=Object.keys(CATS);
 /* Therapies: category average, overridden by any score the source states for that therapy. */
 const TH=[
- ['CBT','cb',{0:.9,4:1}],['DBT','cb',{4:.95}],['Exposure therapy','cb',{4:.95}],['Behavioural activation','cb',{3:0}],['ACT','cb',{}],
- ['EMDR','tr',{}],['TF-CBT','tr',{}],['Prolonged exposure','tr',{}],
- ['Psychoanalysis','pd',{5:.1}],['Lacanian analysis','pd',{5:.1}],['Jungian analysis','pd',{3:1}],
- ['Person-centred','hu',{1:.1}],['Gestalt','hu',{}],['Existential','hu',{}],
- ['Bowenian family','sy',{2:.1}],['Structural family','sy',{}],
- ['Somatic Experiencing','so',{2:1}],['Feldenkrais','so',{2:.95}],['Rolfing','so',{5:1}],['Hakomi','so',{}],
- ['Equine therapy','an',{5:1}],['Adventure therapy','an',{5:1}],['Forest bathing','an',{0:.1}],
- ['Art therapy','cr',{3:1}],['Music therapy','cr',{}],['Drama therapy','cr',{}],
- ['Psilocybin-assisted','ps',{}],['MDMA-assisted','ps',{}],
+ ['CBT','cb',{0:.9,4:1}],['DBT','cb',{4:.95}],['Exposure therapy','cb',{4:.95}],['Behavioural activation','cb',{3:0}],['ACT','cb',{}],['CPT','cb',{}],['MCT','cb',{}],
+ ['EMDR','tr',{}],['IFS','tr',{}],['NET','tr',{}],['TF-CBT','tr',{}],['Prolonged exposure','tr',{}],
+ ['Psychoanalysis','pd',{5:.1}],['Lacanian analysis','pd',{5:.1}],['Brief psychodynamic','pd',{}],['Jungian analysis','pd',{3:1}],
+ ['Person-centred','hu',{1:.1}],['Focusing','hu',{}],['Emotion-focused','hu',{}],['Gestalt','hu',{}],['Existential','hu',{}],
+ ['Bowenian family','sy',{2:.1}],['Structural family','sy',{}],['EFT couples','sy',{}],['Imago','sy',{}],
+ ['Somatic Experiencing','so',{2:1}],['Feldenkrais','so',{2:.95}],['Rolfing','so',{5:1}],['Hakomi','so',{}],['Dance/movement','so',{}],
+ ['Equine therapy','an',{5:1}],['Adventure therapy','an',{5:1}],['Forest bathing','an',{0:.1}],['Canine-assisted','an',{}],
+ ['Art therapy','cr',{3:1}],['Music therapy','cr',{}],['Drama therapy','cr',{}],['Sandplay','cr',{}],
+ ['Psilocybin-assisted','ps',{}],['MDMA-assisted','ps',{}],['Ketamine-assisted','ps',{}],
  ['App-based CBT','di',{2:.1}],['VR therapy','di',{}],
- ['Solution-focused brief','ot',{}],['Clinical hypnosis','ot',{}],['Peer support','ot',{1:.1}],
+ ['Solution-focused brief','ot',{}],['Clinical hypnosis','ot',{}],['Peer support','ot',{1:.1}],['Eclectic','ot',{}],['Integrative','ot',{}],['MBSR','mi',{}],['Mindful self-compassion','mi',{}],
  ['Pranic healing','en',{4:.1}],['Chakra balancing','en',{4:.1}],
- ['Shamanic healing','cu',{0:.1}],
- ['Psychosurgery','hi',{0:1,1:1,2:0}],['Insulin shock','hi',{1:1,3:0}],['Phrenology','hi',{4:0}]
+ ['Shamanic healing','en',{0:.1}],['Reiki','en',{}],
+ ['Psychosurgery','hi',{0:1,1:1,2:0}],['Insulin shock','hi',{0:1,1:1,3:0}],['Phrenology','hi',{4:0}],['Hydrotherapy','hi',{1:.9}]
 ].map(([name,cat,ov])=>{const s=CATS[cat].s.slice();const stated=[];for(const k in ov){s[k]=ov[k];stated.push(+k)}return {name,cat,s,stated,hist:!!CATS[cat].hist}});
 const thBy=n=>TH.find(t=>t.name===n);
 const dist=(a,b,idx=PROC)=>Math.sqrt(idx.reduce((m,i)=>m+(a[i]-b[i])**2,0));
@@ -409,10 +410,10 @@ DIMTEXT.forEach((d,i)=>SCENES.push({stage:'six',term:d.term,def:d.def,ex:d.ex,sr
   out:s=>{const n=nearestCat(i,s.v);return `At <b>${s.v.toFixed(2)}</b> you are closest to the <b>${esc(CATS[n].name.toLowerCase())}</b> family on this one dimension. One axis is never the whole story — see the map.`}})
 }));
 /* 8 Two continents */
-const CORR=[[0,1,.763],[0,4,.607],[2,5,.831],[0,3,-.759],[0,2,-.511],[4,3,-.467],[4,2,-.398]];
+const CORR=[[0,1,.763],[0,4,.607],[2,5,.831],[0,3,-.759],[0,2,-.511],[0,5,-.469],[1,3,-.607],[1,2,-.337],[1,5,-.309],[4,3,-.467],[4,2,-.398],[4,5,-.347]];
 SCENES.push({stage:'shape',term:'Two continents',
  def:`The six scores are not independent. In the source’s ratings, structure, directiveness and evidence rise together, while body, symbol and action rise together — and the two groups pull against each other. Each line is a ${W('correlation','correlation')}.`,
- ex:'Time structure and directiveness: r = 0.763. Somatic focus and experiential level: r = 0.831. Time structure and symbolic depth: r = −0.759.',
+ ex:'Time structure and directiveness: r = 0.763. Somatic focus and experiential level: r = 0.831. Time structure and symbolic depth: r = −0.759. Three pairs are not reported at all (directiveness–evidence, somatic–symbolic, symbolic–experiential).',
  src:'<b>Caution:</b> these correlations are between the scores the source assigned. They show how the ratings hang together, which is suggestive, not a measured law of therapy.',
  phases:['Six dimensions in a ring.','Solid green lines: scores that rise together.','Dashed coral lines: scores that pull apart.','The ring splits into two camps: “structured & tested” and “embodied & symbolic”.'],
  init:()=>({hi:null}),
@@ -522,15 +523,17 @@ SCENES.push({stage:'near',term:'Distance between therapies',
 });
 /* 15 Bridges */
 const BRIDGES=[
- {k:'Person-centred',named:['hu','pd','cr','tr'],total:7,why:'Empathy, unconditional positive regard and congruence make the relationship safe for almost any kind of work.'},
- {k:'Internal Family Systems (IFS)',named:['pd','hu','tr','ps'],total:7,why:'“Parts” and a core “Self” echo psychodynamic ideas, but are approached with humanistic compassion; it suits trauma work.'},
- {k:'Gestalt',named:['hu','so','cr','an'],total:4,why:'Here-and-now awareness, experiments like the empty chair, and attention to how emotion is held in the body.'}
+ {k:'Person-centred',named:['ot','hu','cr','tr','pd'],total:7,why:'Empathy, unconditional positive regard and congruence make the relationship safe for almost any kind of work.'},
+ {k:'Internal Family Systems (IFS)',named:['ot','hu','ps','cr','pd'],total:7,why:'“Parts” and a core “Self” echo psychodynamic ideas, approached with humanistic compassion. The report files IFS under trauma-specialised.'},
+ {k:'Gestalt',named:['an','ot','hu','cr','ps'],total:7,why:'Here-and-now awareness and experiments like the empty chair. (The essay linked it to somatic work; the report’s list does not.)'},
+ {k:'Focusing',named:['so','an','hu','en','cu'],total:7,why:'Gendlin’s method of attending to the bodily “felt sense”: talk therapy that listens to the body.'},
+ {k:'Brief psychodynamic',named:['ot','hu','tr','pd','sy'],total:7,why:'Psychodynamic ideas in a time-limited, focused format, so it borders on structured approaches.'}
 ];
 SCENES.push({stage:'near',term:'Bridge therapies',
  def:`A ${W('bridge','bridge therapy')} has a balanced profile and shares features with several families, so it can act as a translator between them. Bridges are where integration is most natural.`,
  ex:'Internal Family Systems connects psychodynamic, humanistic, trauma-specialised and psychedelic-assisted work.',
- src:'<b>From the source</b> (section IV): person-centred and IFS each connect seven categories, Gestalt connects four. Solid links are the categories the source names; faint stubs are connections it counts but does not name.',
- phases:['Person-centred: links to seven families.','Internal Family Systems: also seven.','Gestalt: humanistic, somatic, creative and nature-based.','A bridge is a good translator, not a “best” therapy. Try it: switch bridges.'],
+ src:'<b>From the USF report</b> (14 Aug 2025): ten therapies each connect seven categories; it names five for each. Solid links are the named five; faint stubs are the two it counts but does not name.',
+ phases:['Person-centred: links to seven families.','Internal Family Systems: also seven.','Gestalt: seven too, including nature-based and psychedelic-assisted.','A bridge is a good translator, not a “best” therapy. Try it: switch bridges.'],
  init:()=>({b:1}),
  anim:p=>({b:Math.min(2,Math.floor(p*3.2)),p}),
  draw(p,s){let g=mapFrame();const B=BRIDGES[s.b];
@@ -568,6 +571,23 @@ SCENES.push({stage:'near',term:'Stepping stones',
   bind(q,re){q('#mid').onchange=e=>{s.mid=e.target.value;re()}},
   out:s=>{const A=thBy('CBT'),M=thBy(s.mid),B=thBy('Somatic Experiencing');const a=dist(A.s,M.s),b=dist(M.s,B.s),d=dist(A.s,B.s);return Math.max(a,b)<d?`<b>${esc(M.name)}</b> splits the leap into steps of ${a.toFixed(2)} and ${b.toFixed(2)}, each smaller than ${d.toFixed(2)}.`:`<b>${esc(M.name)}</b> does not help: one step (${Math.max(a,b).toFixed(2)}) is as big as the direct leap (${d.toFixed(2)}).`}})
 });
+const PATHS=[['Person-centred','EFT couples','ACT',.800,.821],['Person-centred','Narrative therapy','IFS',.500,.754],['Person-centred','Process-experiential','Somatic Experiencing',1.039,1.076],['CBT','DBT','ACT',.480,.489],['CBT','Schema therapy','IFS',1.049,1.077],['CBT','EMDR','Somatic Experiencing',1.245,1.268],['Psychodynamic','Schema therapy','ACT',.592,.648],['Psychodynamic','Narrative therapy','IFS',.245,.529],['Psychodynamic','Ketamine-assisted','Somatic Experiencing',.843,.854]];
+SCENES.push({stage:'near',term:'What the pathway numbers say',
+ def:'The source lists nine “optimal pathways” between common therapies, each with a direct distance and a distance via one stop. In every case the route via the stop is longer — as it must be, since a detour can never beat a straight line.',
+ ex:'Psychodynamic → IFS is 0.245 direct but 0.529 via narrative therapy: more than double. So these routes are best read as “a sensible stop on the way”, not as shortest paths.',
+ src:'<b>From the USF report</b> (therapeutic pathway analysis). The report gives only the total via the stop, not each leg, so the size of the biggest step cannot be checked from these numbers.',
+ phases:['Nine pathways from the report.','Blue: the direct distance.','Purple: the distance via the suggested stop — always longer.','Try it: pick a pathway to see how much the stop adds.'],
+ init:()=>({k:7}),anim:p=>({k:null,p}),
+ draw(p,s){const o=s.p!=null?p:1;let g=T(300,28,'direct vs via the suggested stop',{size:14,anchor:'middle',weight:700});
+  PATHS.forEach((r,k)=>{const y=48+k*35,on=s.k==null||s.k===k;const a=seg(o,.15+k*.03,.35+k*.03),b=seg(o,.45+k*.03,.65+k*.03);
+   g+=`<g opacity="${on?1:.3}">`+T(28,y+12,r[0]+' → '+r[2],{size:12,weight:600})+T(28,y+26,'via '+r[1],{size:11,fill:C.muted})+
+   `<rect x="300" y="${y+1}" width="${f2(r[3]*160*a)}" height="12" rx="3" fill="${C.blue}"/><rect x="300" y="${y+16}" width="${f2(r[4]*160*b)}" height="12" rx="3" fill="${C.purple}"/>`+
+   T(306+r[3]*160*a,y+11,r[3].toFixed(3),{size:11,op:a})+T(306+r[4]*160*b,y+26,r[4].toFixed(3)+'  (+'+Math.round((r[4]/r[3]-1)*100)+'%)',{size:11,op:b,weight:700,fill:C.purple})+'</g>'});
+  return g},
+ tryUI:s=>({html:`<div class="row"><label>Pathway <select id="pk">${PATHS.map((r,i)=>`<option value="${i}"${i===s.k?' selected':''}>${esc(r[0]+' → '+r[2])}</option>`).join('')}</select></label></div><p class="out" id="tout"></p>`,
+  bind(q,re){q('#pk').onchange=e=>{s.k=+e.target.value;re()}},
+  out:s=>{const r=PATHS[s.k];return `${esc(r[0])} → ${esc(r[2])}: direct <b>${r[3].toFixed(3)}</b>, via ${esc(r[1])} <b>${r[4].toFixed(3)}</b>. The stop adds ${(r[4]-r[3]).toFixed(3)} (${Math.round((r[4]/r[3]-1)*100)}%).`}})
+});
 /* 17 Sequential care */
 const SEQ=[['Stabilise','DBT','Build skills for emotion regulation, distress tolerance and mindfulness.'],['Process','EMDR','Work through specific traumatic memories in a structured, contained way.'],['Integrate','Somatic Experiencing','Less structured depth work (IFS or Somatic Experiencing) on relational and attachment wounds.']];
 SCENES.push({stage:'near',term:'Sequential care',
@@ -588,13 +608,13 @@ SCENES.push({stage:'near',term:'Sequential care',
   out:s=>`Phase ${Math.floor(s.k)+1}: <b>${esc(SEQ[Math.floor(s.k)][1])}</b>. ${esc(SEQ[Math.floor(s.k)][2])}`})
 });
 /* 18 Eras */
-const ERAS=[{k:'Historical',a:1890,b:1970,sig:[['Directiveness',.72],['Evidence',.20]],th:'Psychoanalysis, psychosurgery, insulin shock, orgone therapy, EST',ethos:'Authority-based, theory-driven'},
- {k:'Contemporary',a:1970,b:2020,sig:[['Directiveness',.45],['Evidence',.54]],th:'CBT, DBT, ACT, EMDR, family systems, integrative therapy',ethos:'Evidence-based, problem-focused'},
- {k:'Emerging',a:2020,b:2032,sig:[['Experiential',.57],['Evidence',.60]],th:'MDMA- and psilocybin-assisted therapy, VR, AI-assisted tools, neurofeedback',ethos:'Experience and evidence integrated'}];
+const ERAS=[{k:'Historical',a:1890,b:1970,n:10,v:[.550,.720,.460,.475,.200,.510],th:'Psychoanalysis, primal scream, orgone therapy, rebirthing, EST, psychosurgery, insulin shock, hydrotherapy, mesmerism',ethos:'Authority-based, theory-driven'},
+ {k:'Contemporary',a:1970,b:2020,n:113,v:[.496,.453,.453,.535,.542,.571],th:'CBT, DBT, ACT, REBT, behavioural activation, exposure, CPT, schema therapy …',ethos:'Evidence-based, problem-focused'},
+ {k:'Emerging',a:2020,b:2032,n:7,v:[.614,.457,.414,.500,.600,.571],th:'MDMA-, psilocybin- and ketamine-assisted therapy, psychedelic integration, VR, AI-assisted, neurofeedback',ethos:'Experience and evidence integrated'}];
 SCENES.push({stage:'time',term:'Three eras',
  def:'The source reads the history of therapy as three eras, each with its own signature: authority without evidence, then evidence-based and problem-focused, and now an attempt to combine evidence with body, symbol and experience.',
- ex:'Directiveness falls from 0.72 to 0.45 between the historical and contemporary eras, while evidence rises from 0.20 to 0.54.',
- src:'<b>From the source</b> (Table 3). Era boundaries are approximate. Claims about emerging therapies are about research in progress; most psychedelic-assisted therapy is still within trials.',
+ ex:'Directiveness falls from 0.72 to 0.45 between the historical and contemporary eras, while evidence rises from 0.20 to 0.54. But the historical era has only 10 therapies and the emerging era 7, against 113 contemporary ones.',
+ src:'<b>From the USF report:</b> full six-dimension era profiles. Era boundaries are approximate. Claims about emerging therapies are about research in progress; most psychedelic-assisted therapy is still within trials.',
  phases:['1890s–1960s: grand theories and medical authority.','1970s–2020s: the cognitive revolution and the demand for trials.','2020s onwards: evidence plus experience — psychedelics, VR, neurofeedback.','Try it: drag through the years.'],
  init:()=>({y:1995}),
  anim:p=>({y:lerp(1890,2032,smooth(p*1.05)),p}),
@@ -604,8 +624,9 @@ SCENES.push({stage:'time',term:'Three eras',
   g+=`<line x1="${f2(X(s.y))}" y1="250" x2="${f2(X(s.y))}" y2="300" stroke="${C.purple}" stroke-width="3"/>`+T(X(s.y),244,String(Math.round(s.y)),{size:13,anchor:'middle',fill:C.purple,weight:700});
   const e=ERAS[s.y<1970?0:s.y<2020?1:2];
   g+=T(50,46,e.k+' era',{size:18,weight:700})+T(50,68,e.ethos,{size:13,fill:C.muted});
-  e.sig.forEach(([lab,v],k)=>{const y=100+k*44;g+=T(50,y+14,lab,{size:13,fill:C.muted})+`<rect x="150" y="${y}" width="300" height="20" rx="5" fill="#eef3f6"/><rect x="150" y="${y}" width="${f2(300*v)}" height="20" rx="5" fill="${lab==='Evidence'?C.green:lab==='Directiveness'?C.blue:C.coral}"/>`+T(160+300*v,y+15,v.toFixed(2),{size:12.5,weight:700})});
-  g+=wrap(50,206,'Representative: '+e.th,70,12.5,C.ink);
+  e.v.forEach((v,k)=>{const y=84+k*22;const col=k===4?C.green:k===1?C.blue:C.muted;g+=T(50,y+12,DIMS[k],{size:12,fill:C.muted})+`<rect x="180" y="${y}" width="260" height="14" rx="4" fill="#eef3f6"/><rect x="180" y="${y}" width="${f2(260*v)}" height="14" rx="4" fill="${col}" opacity="${k===4||k===1?1:.55}"/>`+T(186+260*v,y+12,v.toFixed(2),{size:11.5,weight:700})});
+  g+=T(470,100,e.n+' therapies',{size:13,fill:C.ink,weight:700})+(e.n<12?T(470,118,'small group:',{size:11.5,fill:C.coral})+T(470,133,'averages are fragile',{size:11.5,fill:C.coral}):'');
+  g+=wrap(50,222,'Includes: '+e.th,82,12,C.ink);
   return g},
  tryUI:s=>({html:`<div class="row"><label>Year <input type="range" id="yr" min="1890" max="2032" step="1" value="${Math.round(s.y)}" aria-label="Year"></label></div><p class="out" id="tout"></p>`,
   bind(q,re){q('#yr').oninput=e=>{s.y=+e.target.value;re()}},

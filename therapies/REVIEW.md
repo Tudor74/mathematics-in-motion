@@ -48,3 +48,21 @@ The question this review answers: **is the framework useful as a diagram that ma
 ## Verdict
 
 As a **diagram of how therapies differ in approach**, the framework is useful and well suited to motion. As **evidence about which therapies work or how minds are shaped**, it isn't, and the page should not present it that way. Separating "process" from "evidence" and labelling the scores honestly turns the weak points into teaching moments.
+
+## Addendum: the USF report (14 Aug 2025)
+
+The underlying analysis output is now in `source-usf-report-2025-08-14.txt`. It adds data the essay left out, and it confirms several points above.
+
+**Now used on the page (v0.2):**
+- Fuller member lists for the categories. IFS sits in *trauma-specialised*, and shamanic healing in *energy & alternative*; v0.1 had both wrong.
+- All twelve reported correlations. Three pairs are not reported at all: directiveness–evidence, somatic–symbolic and symbolic–experiential.
+- The bridge lists: ten therapies, each said to connect 7 categories, with 5 named. The essay said Gestalt connects four categories, including somatic; the report says seven, and its list doesn't include somatic.
+- Full six-dimension profiles for the three eras, plus the era sizes: 10 historical, 113 contemporary and 7 emerging therapies, so the historical and emerging averages are fragile.
+- All nine "optimal pathways", in a new scene.
+
+**What the report confirms or reveals:**
+1. **Pathways are never shortest.** In all nine pathways, the route via the stop is longer than the direct one: from +1% up to +116% (Psychodynamic → IFS: 0.245 direct, 0.529 via narrative therapy). So the algorithm picks a *stop*, not a shortest path. Only the total via the stop is reported, not each leg, so "the biggest step gets smaller" cannot be checked from the report.
+2. **Bug in the summary code.** The top/bottom lists print Python source text (`1.000 if len(top_5) > 1 else ''`), and several lists repeat a therapy (Forest Bathing, Person-Centered, Somatic Experiencing, Behavioral Activation, Psychoanalysis). That looks like an f-string or slicing bug in the report generator, so the top-3 lists shouldn't be relied on.
+3. **Only 10 of the 15 categories are profiled.** They total 101 therapies. The essay adds five more categories totalling 27, which makes 128, not 130.
+4. **Categories and clusters disagree.** Nine of the ten most similar pairs are *cross-category* (e.g. DBT ↔ TF-CBT at 0.050), and the hierarchical clusters mix families (e.g. ACT, schema therapy and brief psychodynamic together). This supports drawing categories as soft regions, not boxes.
+5. **Still missing: the 130 × 6 score table itself.** The report never prints it. It probably lives in the script that generated the report (a dictionary or CSV of therapy → six scores). With it, every therapy could be plotted from its own scores instead of its category average.
