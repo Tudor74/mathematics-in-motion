@@ -1,0 +1,749 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Electronic Music In Motion — v0.1</title>
+<meta name="description" content="An animated, playable guide to how electronic music works: sound, synthesis, digital audio, rhythm, effects and history. Every Try it scene makes live sound in the browser.">
+<meta name="application-version" content="0.1">
+<style>
+:root{--ink:#192c37;--muted:#546873;--blue:#1772b7;--pale:#e8f2f8;--line:#c7d8e3;--paper:#fff;--bg:#f3f6f7;--coral:#c45238;--purple:#7156a6;--green:#2c776c}
+*{box-sizing:border-box}
+html{background:var(--bg);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}
+body{margin:0;padding:22px;background:var(--bg)}
+button,select,input{font:inherit}
+button,select{min-height:44px}
+button{background:#fff;border:1px solid #aec3cf;border-radius:10px;padding:10px 17px;cursor:pointer;color:var(--ink);font-weight:600;touch-action:manipulation}
+button:hover{background:#edf5fa}button:active{background:#dfedf5}
+button:disabled{cursor:default;opacity:.5}
+button.primary{background:var(--blue);border-color:var(--blue);color:#fff;min-width:112px}
+button.primary:hover{background:#115c95}
+button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #a44289;outline-offset:3px}
+select{border:1px solid #aec3cf;border-radius:10px;padding:8px 12px;background:#fff;color:var(--ink);max-width:100%}
+.frame{max-width:1160px;margin:0 auto;background:var(--paper);border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 8px 35px #192c3709}
+header{padding:25px 30px 18px;display:flex;gap:18px;align-items:center;justify-content:space-between;border-bottom:1px solid #e3ebef;background:linear-gradient(120deg,#fff 50%,#e9f1f8 80%,#efe9f8)}
+.eyebrow{font-size:12px;letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--muted);margin:0 0 7px}
+h1{font-size:clamp(22px,3.2vw,30px);font-weight:650;letter-spacing:-.035em;margin:0}
+.counter{font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap;border:1px solid var(--line);padding:8px 12px;border-radius:30px;color:var(--muted)}
+.honest{margin:0;padding:10px 30px;font-size:13px;line-height:1.5;color:var(--muted);background:#fbfaf6;border-bottom:1px solid #ece7da}
+.honest strong{color:var(--ink)}
+.stages{display:flex;gap:6px;padding:12px 30px;border-bottom:1px solid #e3ebef;overflow-x:auto;scrollbar-width:thin}
+.stages button{min-height:38px;padding:6px 12px;font-size:13px;white-space:nowrap;border-radius:30px}
+.lesson{display:grid;grid-template-columns:minmax(0,1.24fr) minmax(0,1fr);align-items:start;gap:28px;padding:26px 30px 22px}
+.picture{background:#f3f7fa;border:1px solid #e0e9ee;border-radius:16px;min-width:0;overflow:hidden}
+.picture svg{display:block;width:100%;height:auto;aspect-ratio:600/380}
+.picture svg text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.phase{padding:10px 14px;border-top:1px solid #dfe9ef;min-height:64px;font-size:13.5px;color:var(--muted);line-height:1.5;background:#fff}
+.progress{height:4px;background:#eaf0f3;position:relative;overflow:hidden}
+.progress span{position:absolute;top:0;bottom:0;left:0;background:var(--blue);width:0}
+.try{border-top:1px solid #dfe9ef;background:#fcfbff;padding:14px;display:none}
+.try.on{display:block}
+.try .row{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin:0 0 8px}
+.try label{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.try input[type=range]{width:150px;accent-color:var(--purple)}
+.try .chip{min-height:36px;padding:5px 11px;font-size:13px;border-radius:30px}
+.try .out{font-size:13.5px;line-height:1.5;color:var(--ink);margin:6px 0 0}
+.try .snd{background:var(--purple);border-color:var(--purple);color:#fff}
+.try .snd[aria-pressed="true"]{background:var(--coral);border-color:var(--coral)}
+.keys{display:flex;gap:3px;flex-wrap:wrap;margin:4px 0 8px}
+.keys button{min-width:38px;min-height:56px;padding:4px 2px;font-size:12px;border-radius:6px;display:flex;align-items:flex-end;justify-content:center;user-select:none;-webkit-user-select:none}
+.keys button.blk{background:#2a3a44;color:#fff;border-color:#2a3a44}
+.keys button.on{background:var(--purple)!important;color:#fff;border-color:var(--purple)}
+.grid16{display:grid;grid-template-columns:70px repeat(16,1fr);gap:3px;margin:4px 0 8px;align-items:center}
+.grid16 span{font-size:12px;color:var(--muted)}
+.grid16 button{min-height:30px;min-width:0;padding:0;border-radius:5px}
+.grid16 button.beat{border-color:#7e98a8}
+.grid16 button[aria-pressed="true"]{background:var(--purple);border-color:var(--purple)}
+.sliders{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px 16px}
+.sliders label{justify-content:space-between}
+.explanation{min-width:0}
+.explanation .eyebrow{margin-bottom:12px}
+h2{margin:0 0 16px;font-size:clamp(27px,3.9vw,41px);line-height:1.08;letter-spacing:-.04em;font-weight:600;overflow-wrap:anywhere}
+.definition{font-size:clamp(17px,2.1vw,21px);line-height:1.5;margin:0 0 18px}
+.example{font-size:15px;line-height:1.6;margin:0 0 16px;color:var(--muted);padding-left:14px;border-left:3px solid #bdd3e1;max-width:50ch}
+.source{font-size:13px;line-height:1.5;color:var(--muted);margin:0;padding:10px 12px;border-radius:10px;background:#f6f4ee}
+.source b{color:var(--ink)}
+button.word{display:inline;min-height:0;padding:0 2px;border:0;border-bottom:2px dotted var(--purple);border-radius:0;background:none;font-weight:inherit;color:inherit;cursor:help}
+button.word:hover{background:#f0ebf9}
+.controls{padding:18px 30px 22px;background:#fcfdfd;border-top:1px solid #e3ebef}
+.navrow{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.buttons{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.speed{font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:center}
+.modes{display:flex;border:1px solid #aec3cf;border-radius:12px;overflow:hidden}
+.modes button{border:0;border-radius:0;min-width:92px}
+footer{padding:14px 30px 20px;font-size:12.5px;line-height:1.55;color:var(--muted);border-top:1px solid #e3ebef}
+footer a{color:var(--blue)}
+dialog{border:1px solid var(--line);border-radius:18px;padding:0;max-width:min(520px,92vw);color:var(--ink);box-shadow:0 20px 60px #192c3733}
+dialog::backdrop{background:#192c3755}
+.dlg{padding:22px 24px}.dlg h3{margin:0 0 10px;font-size:24px;letter-spacing:-.02em}
+.dlg p{margin:0 0 12px;line-height:1.55}.dlg .contrast{color:var(--muted);font-size:14.5px}
+.dlg .ex{font-size:14.5px;border-left:3px solid #d6cbe9;padding-left:10px}
+.dlg .close{float:right;min-height:36px;padding:4px 12px}
+@media (max-width:860px){
+ body{padding:0}.frame{border-radius:0;border-left:0;border-right:0}
+ header,.lesson,.controls,footer,.honest,.stages{padding-left:16px;padding-right:16px}
+ .lesson{grid-template-columns:1fr;gap:18px}
+ .try input[type=range]{width:120px}
+ .grid16{grid-template-columns:44px repeat(16,1fr);gap:2px}
+ .keys button{min-width:30px}
+}
+</style>
+</head>
+<body>
+<main class="frame" id="app" aria-label="Electronic Music In Motion">
+<header>
+ <div><p class="eyebrow">Electronic Music In Motion · v0.1</p><h1 id="stage-title">Sound</h1></div>
+ <div class="counter" id="counter" aria-live="polite">1 / 27</div>
+</header>
+<p class="honest"><strong>Before you press Sound on:</strong> turn your volume down first. Every Try it scene generates sound live in your browser — nothing is downloaded — and some tones (high frequencies, distortion) are harsh at full volume. Headphones make the stereo scene work best.</p>
+<nav class="stages" id="stages" aria-label="Stages"></nav>
+<section class="lesson" aria-labelledby="term">
+ <div><div class="picture">
+  <svg id="drawing" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 380" role="img" aria-labelledby="svg-title"><title id="svg-title">Diagram</title></svg>
+  <div class="progress" aria-hidden="true"><span id="bar"></span></div>
+  <div class="phase" id="phase" aria-live="polite"></div>
+  <div class="try" id="try" aria-label="Try it controls"></div>
+ </div></div>
+ <div class="explanation">
+  <p class="eyebrow" id="scene-eyebrow"></p>
+  <h2 id="term" tabindex="-1"></h2>
+  <p class="definition" id="definition"></p>
+  <p class="example" id="example"></p>
+  <p class="source" id="source"></p>
+ </div>
+</section>
+<section class="controls" aria-label="Playback controls">
+ <div class="navrow">
+  <div class="buttons">
+   <button type="button" id="previous">← Previous</button>
+   <button type="button" id="play" class="primary">▶ Play</button>
+   <button type="button" id="next">Next →</button>
+   <button type="button" id="replay">↺ Replay</button>
+  </div>
+  <div class="buttons">
+   <label class="speed">Speed <select id="speed" aria-label="Playback speed"><option value="0.6">Slow</option><option value="1" selected>Normal</option><option value="1.6">Fast</option></select></label>
+   <div class="modes" role="group" aria-label="Mode"><button type="button" id="mode-watch" aria-pressed="true">Watch</button><button type="button" id="mode-try" aria-pressed="false">Try it</button></div>
+  </div>
+ </div>
+</section>
+<footer>A companion to <a href="https://github.com/Tudor74/mathematics-in-motion">Mathematics In Motion</a>, built the same way: every diagram is a pure function of time, so Watch can rewind, and Try it hands the same diagram to you — here with live Web Audio. Facts about instruments and dates are summarised from standard histories of electronic music; tempo ranges are typical, not rules. Keys: ←/→ scenes, space play/pause, T try it.</footer>
+</main>
+<dialog id="word-dialog" aria-labelledby="word-title"><div class="dlg"><button type="button" class="close" id="word-close">Close</button><h3 id="word-title"></h3><p id="word-here"></p><p class="contrast" id="word-contrast"></p><p class="ex" id="word-example"></p></div></dialog>
+<script>
+(function(){
+'use strict';
+/* Design note — the interaction chosen for each scene, and why.
+   Every picture is a pure function of (progress p, state s). Watch animates p; Try it freezes p = 1, hands s to you,
+   and (where it helps) attaches live Web Audio so you hear exactly what the diagram shows.
+   Sound: wave → change frequency and hear pitch move; pitch → play keys, see frequencies double per octave;
+     loudness → slider in decibels; waveforms → switch shapes, see and hear harmonics; harmonics → draw your own
+     timbre from 8 partials; spectrum → live analyser so the picture IS the sound.
+   Synthesis: filter → sweep cutoff over a sawtooth's harmonics; envelope → hold a key, watch ADSR trace;
+     LFO → pick a target to wobble; FM → ratio and index sliders; voice → a whole playable synth.
+   Digital: sampling and bit depth → a crusher you can hear; aliasing → raise the frequency past Nyquist and watch it fold.
+   Rhythm: tempo, step grid, groove presets, swing, Euclidean circles, polyrhythm — all play on a sample-accurate clock.
+   Effects: delay, reverb, distortion, sidechain, panning — each knob moves the picture and the sound together.
+   History: a year scrubber; MIDI: press keys, read the three bytes. */
+const $=id=>document.getElementById(id);
+const C={ink:'#192c37',muted:'#546873',blue:'#1772b7',pale:'#e1eef7',line:'#abc3d3',coral:'#c45238',coralp:'#f9e2d9',green:'#2c776c',greenp:'#dceee8',purple:'#7156a6',purplep:'#ece6f6',grid:'#d5e1e8',gold:'#b07d1a'};
+const DUR=9;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),lerp=(a,b,t)=>a+(b-a)*t,smooth=v=>{v=clamp(v,0,1);return v*v*(3-2*v)},seg=(p,a,b)=>smooth((p-a)/(b-a));
+const f2=n=>Number(n).toFixed(2);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const T=(x,y,s,o={})=>`<text x="${f2(x)}" y="${f2(y)}" font-size="${o.size||13}" fill="${o.fill||C.ink}" text-anchor="${o.anchor||'start'}" font-weight="${o.weight||400}"${o.op!=null?` opacity="${f2(o.op)}"`:''}${o.style?` font-style="${o.style}"`:''}>${esc(s)}</text>`;
+const W=(k,txt)=>`[[${k}|${txt}]]`;
+const TAU=Math.PI*2;
+const NOTE=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'];
+const mtof=m=>440*Math.pow(2,(m-69)/12);
+const mname=m=>NOTE[m%12]+(Math.floor(m/12)-1);
+/* waveforms as functions of phase (cycles) */
+const WF={sine:x=>Math.sin(TAU*x),square:x=>((x%1+1)%1)<.5?1:-1,saw:x=>{const f=((x%1)+1)%1;return 2*f-1},triangle:x=>{const f=((x%1)+1)%1;return f<.5?4*f-1:3-4*f}};
+const HARM={sine:n=>n===1?1:0,square:n=>n%2?1/n:0,saw:n=>1/n,triangle:n=>n%2?1/(n*n):0};
+function path(fn,x0,yMid,w,amp,n=300){let d='';for(let i=0;i<=n;i++){const t=i/n;d+=(i?'L':'M')+f2(x0+w*t)+' '+f2(yMid-clamp(fn(t),-1.6,1.6)*amp)}return d}
+function axis(x0,yMid,w,amp,lab){return `<line x1="${x0}" y1="${yMid}" x2="${x0+w}" y2="${yMid}" stroke="${C.grid}"/><line x1="${x0}" y1="${yMid-amp-6}" x2="${x0}" y2="${yMid+amp+6}" stroke="${C.grid}"/>`+(lab?T(x0+w,yMid+amp+20,lab,{size:11.5,fill:C.muted,anchor:'end'}):'')}
+const P=(d,col,w=2.5,extra='')=>`<path d="${d}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linejoin="round" ${extra}/>`;
+function bars(vals,x0,yBase,w,h,col,labels){const n=vals.length,bw=w/n;let g='';vals.forEach((v,i)=>{const bh=clamp(v,0,1)*h;g+=`<rect x="${f2(x0+i*bw+bw*.15)}" y="${f2(yBase-bh)}" width="${f2(bw*.7)}" height="${f2(bh)}" rx="2" fill="${typeof col==='function'?col(i):col}"/>`;if(labels)g+=T(x0+i*bw+bw/2,yBase+15,labels(i),{size:10.5,anchor:'middle',fill:C.muted})});return g}
+
+/* ---------------- Audio ---------------- */
+const AU={ctx:null,out:null,noiseBuf:null,
+ ensure(){if(!this.ctx){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;this.ctx=new AC();const g=this.ctx.createGain();g.gain.value=.22;const comp=this.ctx.createDynamicsCompressor();comp.threshold.value=-10;g.connect(comp);comp.connect(this.ctx.destination);this.out=g}
+  if(this.ctx.state==='suspended')this.ctx.resume();return this.ctx},
+ noise(){if(!this.noiseBuf){const c=this.ctx,b=c.createBuffer(1,c.sampleRate,c.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;this.noiseBuf=b}return this.noiseBuf}};
+const fadeOut=(g,ctx,t=.04)=>{try{g.gain.cancelScheduledValues(ctx.currentTime);g.gain.setTargetAtTime(0,ctx.currentTime,t/3)}catch(e){}};
+function periodic(ctx,amps){const re=new Float32Array(amps.length+1),im=new Float32Array(amps.length+1);amps.forEach((a,i)=>{im[i+1]=a});return ctx.createPeriodicWave(re,im,{disableNormalization:false})}
+/* drum voices */
+function kick(ctx,out,t,v=1){const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(45,t+.12);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+.4);o.connect(g);g.connect(out);o.start(t);o.stop(t+.42)}
+function snare(ctx,out,t,v=1){const n=ctx.createBufferSource();n.buffer=AU.noise();const f=ctx.createBiquadFilter();f.type='highpass';f.frequency.value=1200;const g=ctx.createGain();g.gain.setValueAtTime(.55*v,t);g.gain.exponentialRampToValueAtTime(.001,t+.18);n.connect(f);f.connect(g);g.connect(out);n.start(t);n.stop(t+.2);
+ const o=ctx.createOscillator(),g2=ctx.createGain();o.type='triangle';o.frequency.value=190;g2.gain.setValueAtTime(.35*v,t);g2.gain.exponentialRampToValueAtTime(.001,t+.09);o.connect(g2);g2.connect(out);o.start(t);o.stop(t+.1)}
+function hat(ctx,out,t,v=1,open=false){const n=ctx.createBufferSource();n.buffer=AU.noise();const f=ctx.createBiquadFilter();f.type='highpass';f.frequency.value=7500;const g=ctx.createGain();const d=open?.25:.05;g.gain.setValueAtTime(.28*v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);n.connect(f);f.connect(g);g.connect(out);n.start(t);n.stop(t+d+.02)}
+function click(ctx,out,t,freq=1000,v=.5){const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=freq;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+.05);o.connect(g);g.connect(out);o.start(t);o.stop(t+.06)}
+function pluck(ctx,out,t,freq,dur=.35,type='sawtooth',v=.5){const o=ctx.createOscillator(),f=ctx.createBiquadFilter(),g=ctx.createGain();o.type=type;o.frequency.value=freq;f.type='lowpass';f.frequency.setValueAtTime(4000,t);f.frequency.exponentialRampToValueAtTime(300,t+dur);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);o.connect(f);f.connect(g);g.connect(out);o.start(t);o.stop(t+dur+.02)}
+/* sample-accurate step clock: calls onStep(stepIndex, time) ahead of time */
+function clock(ctx,s,steps,onStep,stepLen){let next=ctx.currentTime+.08,i=0,alive=true;const ui=[];
+ const tick=()=>{if(!alive)return;const len=stepLen?stepLen():60/(s.bpm||120)/4;while(next<ctx.currentTime+.12){const sw=(s.swing||50)/100,off=(i%2===1)?(2*sw-1)*len:0;onStep(i%steps,next+off);const k=i%steps,when=(next+off-ctx.currentTime)*1000;ui.push(setTimeout(()=>{s.step=k},Math.max(0,when)));next+=len;i++}if(ui.length>64)ui.splice(0,32)};
+ const id=setInterval(tick,25);tick();return {stop(){alive=false;clearInterval(id);ui.forEach(clearTimeout);s.step=-1}}}
+/* a reusable mono voice: osc → filter → amp */
+function voice(ctx,out,o={}){const osc=ctx.createOscillator(),flt=ctx.createBiquadFilter(),amp=ctx.createGain();osc.type=o.type||'sawtooth';osc.frequency.value=o.freq||220;flt.type='lowpass';flt.frequency.value=o.cutoff||20000;flt.Q.value=o.q||.7;amp.gain.value=o.gain==null?0:o.gain;osc.connect(flt);flt.connect(amp);amp.connect(out);osc.start();
+ return {osc,flt,amp,stop(){fadeOut(amp,ctx);setTimeout(()=>{try{osc.stop()}catch(e){}amp.disconnect()},200)}}}
+
+/* ---------------- Glossary ---------------- */
+const GLOSSARY={
+ hertz:{t:'Hertz (Hz)',h:'Cycles per second. A 440 Hz tone vibrates 440 times every second.',c:'Hertz measures how often, not how loud.',e:'Concert A is 440 Hz; human hearing runs from about 20 Hz to 20,000 Hz, less as we age.'},
+ octave:{t:'Octave',h:'The gap between a note and the note with double its frequency. They sound like “the same note, higher”.',c:'An octave is a ratio (×2), not a fixed number of hertz.',e:'A3 = 220 Hz, A4 = 440 Hz, A5 = 880 Hz.'},
+ semitone:{t:'Semitone',h:'One twelfth of an octave in equal temperament: each step multiplies frequency by about 1.0595.',c:'Other tuning systems divide the octave differently.',e:'A4 440 Hz → A♯4 about 466 Hz.'},
+ decibel:{t:'Decibel (dB)',h:'A logarithmic scale for comparing levels. Every 6 dB roughly doubles or halves the wave’s height.',c:'Decibels compare two levels; a lone “80 dB” assumes a reference.',e:'Halving a signal’s amplitude lowers it by about 6 dB.'},
+ harmonic:{t:'Harmonic',h:'A component of a sound at a whole-number multiple of its fundamental frequency.',c:'Not every overtone is harmonic: bells and drums have inharmonic ones.',e:'A 110 Hz saw also contains 220, 330, 440 Hz …'},
+ timbre:{t:'Timbre',h:'The colour of a sound — what makes a flute and a saw wave differ at the same pitch and loudness.',c:'Mostly set by which harmonics are present and how they change over time.',e:'A square wave sounds hollow because it has only odd harmonics.'},
+ oscillator:{t:'Oscillator',h:'The part of a synthesiser that produces a repeating wave at a chosen frequency.',c:'An oscillator only makes the raw tone; filters and envelopes shape it.',e:'A sawtooth oscillator at 110 Hz.'},
+ filter:{t:'Filter',h:'A circuit or algorithm that lets some frequencies through and weakens others.',c:'A low-pass filter removes highs; a high-pass removes lows.',e:'Turning a low-pass cutoff down makes a sound darker.'},
+ resonance:{t:'Resonance (Q)',h:'A boost of frequencies right at a filter’s cutoff, giving a whistling, vocal edge.',c:'High resonance can make a filter ring on its own.',e:'The squelch of acid house comes from sweeping a resonant filter.'},
+ envelope:{t:'Envelope (ADSR)',h:'A shape over time — attack, decay, sustain, release — that controls how a sound starts, holds and ends.',c:'Sustain is a level, not a time; the other three are times.',e:'Fast attack and short release: a pluck. Slow attack: a swell.'},
+ lfo:{t:'LFO',h:'Low-frequency oscillator: a slow wave (usually below 20 Hz) used to move another setting up and down.',c:'You do not hear an LFO directly; you hear what it moves.',e:'An LFO on pitch gives vibrato; on volume, tremolo.'},
+ modulation:{t:'Modulation',h:'Using one signal to change a setting of another over time.',c:'The modulator is the controller; the carrier is what you hear.',e:'An LFO modulating filter cutoff makes a wah.'},
+ fm:{t:'FM synthesis',h:'Frequency modulation: one oscillator changes another’s frequency at audio rate, creating new sidebands.',c:'Unlike subtractive synthesis, FM adds complexity instead of removing it.',e:'Developed by John Chowning at Stanford; the basis of the Yamaha DX7 (1983).'},
+ samplerate:{t:'Sample rate',h:'How many times per second a digital system measures the wave.',c:'Higher rates capture higher frequencies, not “more detail” in the audible range beyond that.',e:'CD audio uses 44,100 samples per second.'},
+ bitdepth:{t:'Bit depth',h:'How many levels each sample can take. Each bit adds about 6 dB of dynamic range.',c:'Bit depth sets the noise floor, not the highest pitch.',e:'16-bit audio has 65,536 levels and about 96 dB of range.'},
+ nyquist:{t:'Nyquist frequency',h:'Half the sample rate: the highest frequency a digital system can represent.',c:'Frequencies above it do not vanish; they fold back as aliases.',e:'At 44.1 kHz, Nyquist is 22.05 kHz — just above human hearing.'},
+ aliasing:{t:'Aliasing',h:'When a frequency above Nyquist is sampled, it appears as a false, lower frequency.',c:'Converters use filters to prevent it; bitcrushers use it on purpose.',e:'A wagon wheel seeming to spin backwards on film is visual aliasing.'},
+ bpm:{t:'BPM',h:'Beats per minute: the tempo of a piece.',c:'Genres have typical ranges, but plenty of tracks sit outside them.',e:'House often runs around 120–130 BPM; drum and bass around 170–175.'},
+ sequencer:{t:'Step sequencer',h:'A grid that plays a pattern step by step, usually 16 steps per bar.',c:'A step sequencer places notes on a grid; a recorder captures timing as played.',e:'Classic drum machines are programmed one step at a time.'},
+ swing:{t:'Swing',h:'Delaying every second step slightly, so pairs of notes feel long–short.',c:'50% is straight; around 66% approaches a triplet feel.',e:'Swing settings were popularised by Roger Linn’s drum machines.'},
+ euclidean:{t:'Euclidean rhythm',h:'Spreading k hits as evenly as possible over n steps.',c:'It is a rule for spacing, not a style; many traditional rhythms happen to fit it.',e:'E(3,8) gives the tresillo: x..x..x.'},
+ polyrhythm:{t:'Polyrhythm',h:'Two or more pulses with different divisions of the same span, played together.',c:'Different from a time-signature change: both run at once.',e:'Three against four: they line up only every 12 subdivisions.'},
+ feedback:{t:'Feedback',h:'Sending part of an effect’s output back into its input.',c:'Above 100% it grows instead of fading — careful.',e:'Delay feedback sets how many echoes you hear.'},
+ reverb:{t:'Reverb',h:'The dense wash of reflections that tells you the size of a space.',c:'Reverb is thousands of overlapping echoes; delay is a few distinct ones.',e:'A cathedral has a long reverb tail; a bedroom a short one.'},
+ clipping:{t:'Clipping',h:'When a wave is pushed past the maximum level and its peaks are cut flat, adding harmonics.',c:'Soft clipping rounds the peaks; hard clipping squares them.',e:'Overdrive pedals clip on purpose.'},
+ compression:{t:'Compression',h:'Automatically turning loud parts down, reducing the gap between loud and quiet.',c:'A compressor reacts to level; it does not change pitch or timbre directly.',e:'Vocals are compressed so quiet words still come through.'},
+ sidechain:{t:'Sidechain',h:'Letting one sound control a compressor acting on another.',c:'The kick is heard normally; it is the pad that ducks.',e:'The “pumping” in much French house and EDM.'},
+ panning:{t:'Panning',h:'Placing a sound between the left and right speakers.',c:'Panning moves position; it does not add reverb or depth by itself.',e:'Hi-hats a little left, shakers a little right.'},
+ midi:{t:'MIDI',h:'A 1983 standard for instruments to send performance messages — note on, note off, velocity — to each other.',c:'MIDI carries instructions, not audio.',e:'Note on, middle C, velocity 100: 0x90 0x3C 0x64.'},
+ velocity:{t:'Velocity',h:'How hard a key was struck, sent as a number from 0 to 127.',c:'What velocity changes (loudness, brightness) depends on the receiving instrument.',e:'A note-on with velocity 0 is treated as a note-off.'}
+};
+
+/* ---------------- Scenes ---------------- */
+const STAGES=[{id:'sound',name:'Sound'},{id:'synth',name:'Synthesis'},{id:'digital',name:'Digital sound'},{id:'rhythm',name:'Rhythm'},{id:'fx',name:'Effects & mix'},{id:'history',name:'History & MIDI'}];
+const SCENES=[];
+const add=o=>SCENES.push(o);
+
+/* 1 A wave */
+add({stage:'sound',term:'Sound is a wave',
+ def:`A vibrating object — a string, a drum skin, a speaker cone — pushes and pulls the air. Those waves of higher and lower pressure reach your ear. Electronic music starts here: a speaker cone moved by a voltage that rises and falls.`,
+ ex:`Draw the pressure over time and you get a waveform. How often it repeats is its frequency, measured in ${W('hertz','hertz')}.`,
+ src:'<b>Physics:</b> in air at room temperature, sound travels at about 343 metres per second.',
+ phases:['A speaker cone moves out and in.','Each push squeezes air molecules together; each pull spreads them out.','Plot the pressure at one point and you get a wave.','Try it: change how fast the cone vibrates — and hear it.'],
+ init:()=>({f:220}),anim:p=>({f:220,p}),
+ draw(p,s){const live=s.p==null?performance.now()/1000:p*6;const fr=s.f/220,ph=live*2*fr;let g='';
+  const cone=Math.sin(TAU*ph)*8;g+=`<rect x="40" y="80" width="26" height="100" rx="4" fill="${C.ink}"/><path d="M66 ${110} L${f2(96+cone)} 60 L${f2(96+cone)} 200 L66 150 Z" fill="${C.line}" stroke="${C.ink}" stroke-width="2"/>`;
+  for(let r=0;r<9;r++)for(let c=0;c<26;c++){const x0=110+c*17,disp=Math.sin(TAU*(ph-c/(14/fr)))*5,op=s.p!=null?seg(p,.12,.3):1;g+=`<circle cx="${f2(x0+disp)}" cy="${78+r*15}" r="2.4" fill="${C.blue}" opacity="${f2(op*.75)}"/>`}
+  const op=s.p!=null?seg(p,.45,.65):1;g+=`<g opacity="${f2(op)}">${axis(110,300,450,48,'time →')}${P(path(t=>Math.sin(TAU*(t*4*fr-ph)),110,300,450,44),C.purple)}`+T(110,240,'pressure',{size:12,fill:C.muted})+T(560,240,s.f.toFixed(0)+' Hz',{size:14,anchor:'end',weight:700,fill:C.purple})+'</g>';
+  return g},
+ live:true,
+ tryUI:s=>({html:`<div class="row"><label>Frequency <input type="range" id="f" min="40" max="1200" step="1" value="${s.f}"></label></div><p class="out" id="tout"></p>`,
+  bind(q,re){q('#f').oninput=e=>{s.f=+e.target.value;re()}},out:s=>`${s.f} vibrations per second. Below about 20 Hz you would feel it rather than hear a pitch.`}),
+ audio(ctx,out,s){const v=voice(ctx,out,{type:'sine',freq:s.f,gain:.5});return {update(s){v.osc.frequency.setTargetAtTime(s.f,ctx.currentTime,.02)},stop:()=>v.stop()}}
+});
+/* 2 Pitch */
+add({stage:'sound',term:'Frequency and pitch',
+ def:`We hear frequency as pitch. Double the frequency and the note sounds the same but higher — an ${W('octave','octave')}. Western music splits each octave into 12 equal steps, ${W('semitone','semitones')}.`,
+ ex:'A4 is 440 Hz. A5 is 880 Hz, A3 is 220 Hz. Each semitone multiplies the frequency by the twelfth root of 2, about 1.0595.',
+ src:'<b>Formula:</b> frequency = 440 × 2^((n − 69) / 12), where n is the MIDI note number. Middle C (C4) is note 60, about 261.6 Hz.',
+ phases:['Three As, an octave apart.','The waves line up: every A5 cycle fits twice into A4’s.','In between: 12 semitones, each about 6% higher than the last.','Try it: play the keys and read the frequencies.'],
+ init:()=>({m:69}),anim:p=>({m:p<.33?57:p<.66?69:81,p}),
+ draw(p,s){let g='';const rows=[[57,'A3 · 220 Hz',C.blue],[69,'A4 · 440 Hz',C.purple],[81,'A5 · 880 Hz',C.coral]];
+  rows.forEach(([m,l,col],k)=>{const y=70+k*85,on=s.m===m||s.p==null;const cyc=mtof(m)/220*2;g+=T(40,y-30,l,{size:13,weight:700,fill:col,op:on?1:.45})+P(path(t=>Math.sin(TAU*t*cyc),40,y,520,26),col,on?2.6:1.4,`opacity="${on?1:.4}"`)});
+  if(s.p==null&&![57,69,81].includes(s.m))g+=T(560,340,mname(s.m)+' · '+mtof(s.m).toFixed(1)+' Hz',{size:15,anchor:'end',weight:700,fill:C.green})+P(path(t=>Math.sin(TAU*t*mtof(s.m)/110),40,330,380,14),C.green,2);
+  else if(s.p==null)g+=T(560,340,mname(s.m)+' · '+mtof(s.m).toFixed(1)+' Hz',{size:15,anchor:'end',weight:700,fill:C.green});
+  return g},
+ tryUI:s=>({html:keysHTML(57,25)+'<p class="out" id="tout"></p>',bind(q,re,root){bindKeys(root,(m,on)=>{if(on){s.m=m;re()}Sound.note(m,on)})},out:s=>`${mname(s.m)}: MIDI note ${s.m}, ${mtof(s.m).toFixed(2)} Hz.`}),
+ audio(ctx,out){const vs={};return {note(m,on){if(on){if(vs[m])return;const v=voice(ctx,out,{type:'triangle',freq:mtof(m),gain:0});v.amp.gain.setTargetAtTime(.5,ctx.currentTime,.01);vs[m]=v}else if(vs[m]){vs[m].stop();delete vs[m]}},update(){},stop(){Object.values(vs).forEach(v=>v.stop())}}}
+});
+/* 3 Amplitude */
+add({stage:'sound',term:'Amplitude and loudness',
+ def:`The height of the wave is its amplitude. We hear it as loudness, but on a curve: levels are measured in ${W('decibel','decibels')}, a logarithmic scale.`,
+ ex:'Halving the amplitude lowers the level by about 6 dB. To sound “twice as loud”, a level typically needs to rise by around 10 dB.',
+ src:'<b>Formula:</b> level in dB = 20 × log₁₀(amplitude ÷ reference). Here the reference is the loudest setting, 0 dB.',
+ phases:['A wave at full height: 0 dB.','Half the height: about −6 dB.','A tenth of the height: −20 dB.','Try it: set the level and listen.'],
+ init:()=>({a:.5}),anim:p=>({a:p<.33?1:p<.66?.5:.1,p}),
+ draw(p,s){const db=20*Math.log10(Math.max(s.a,.001));let g=axis(40,180,520,120,'time →')+P(path(t=>s.a*Math.sin(TAU*t*5),40,180,520,120),C.purple,2.8);
+  g+=`<line x1="40" y1="${f2(180-120*s.a)}" x2="560" y2="${f2(180-120*s.a)}" stroke="${C.coral}" stroke-dasharray="4 4"/>`+T(560,f2(172-120*s.a),'amplitude '+s.a.toFixed(2),{size:12.5,anchor:'end',fill:C.coral,weight:700});
+  g+=T(40,340,'level: '+(db>-0.05?'0':db.toFixed(1))+' dB',{size:22,weight:700})+`<rect x="300" y="322" width="260" height="20" rx="5" fill="#eef3f6"/><rect x="300" y="322" width="${f2(260*clamp((db+40)/40,0,1))}" height="20" rx="5" fill="${C.green}"/>`+T(300,360,'−40 dB',{size:11,fill:C.muted})+T(560,360,'0 dB',{size:11,fill:C.muted,anchor:'end'});
+  return g},
+ tryUI:s=>({html:`<div class="row"><label>Amplitude <input type="range" id="a" min="0.01" max="1" step="0.01" value="${s.a}"></label></div><p class="out" id="tout"></p>`,bind(q,re){q('#a').oninput=e=>{s.a=+e.target.value;re()}},out:s=>`Amplitude ${s.a.toFixed(2)} → ${(20*Math.log10(s.a)).toFixed(1)} dB. Notice the slider’s top half changes loudness much less than the bottom half.`}),
+ audio(ctx,out,s){const v=voice(ctx,out,{type:'sine',freq:330,gain:s.a*.6});return {update(s){v.amp.gain.setTargetAtTime(s.a*.6,ctx.currentTime,.02)},stop:()=>v.stop()}}
+});
+/* 4 Waveforms */
+const WAVES=['sine','triangle','square','saw'];
+add({stage:'sound',term:'Waveforms and harmonics',
+ def:`The four classic synthesiser waves sound different because they contain different ${W('harmonic','harmonics')}: extra frequencies at whole-number multiples of the note. That mix is the sound’s ${W('timbre','timbre')}.`,
+ ex:'A sine has no harmonics — pure and flute-like. A saw has every harmonic, each weaker (1/n): bright and buzzy. Square and triangle have only odd ones; the triangle’s fade much faster (1/n²).',
+ src:'<b>Maths:</b> any repeating wave can be built from sines — Fourier’s insight. The bars show each harmonic’s strength.',
+ phases:['Sine: one frequency, nothing else.','Triangle: odd harmonics, fading fast — soft.','Square: odd harmonics, fading slower — hollow.','Saw: every harmonic — bright. Try it: switch and listen.'],
+ init:()=>({w:'saw'}),anim:p=>({w:WAVES[Math.min(3,Math.floor(p*4))],p}),
+ draw(p,s){const fn=WF[s.w==='saw'?'saw':s.w];let g=axis(40,110,520,70)+P(path(t=>fn(t*3),40,110,520,70),C.purple,2.8)+T(40,30,s.w==='saw'?'sawtooth':s.w,{size:16,weight:700});
+  const h=Array.from({length:16},(_,i)=>HARM[s.w==='saw'?'saw':s.w](i+1));g+=bars(h,40,330,520,110,i=>i===0?C.blue:C.purple,i=>String(i+1))+T(40,205,'harmonic strength',{size:12,fill:C.muted})+T(560,205,'harmonic number',{size:12,fill:C.muted,anchor:'end'});
+  return g},
+ tryUI:s=>({html:`<div class="row">${WAVES.map(w=>`<button type="button" class="chip" data-w="${w}" aria-pressed="${s.w===w}">${w}</button>`).join('')}</div><p class="out" id="tout"></p>`,bind(q,re,root){root.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>{s.w=b.dataset.w;root.querySelectorAll('[data-w]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.w===s.w)));re()})},out:s=>({sine:'Only the fundamental.',triangle:'Odd harmonics at 1/n².',square:'Odd harmonics at 1/n.',saw:'All harmonics at 1/n.'})[s.w]+' Same pitch (110 Hz), different colour.'}),
+ audio(ctx,out,s){const v=voice(ctx,out,{type:s.w==='saw'?'sawtooth':s.w,freq:110,gain:.45});return {update(s){v.osc.type=s.w==='saw'?'sawtooth':s.w},stop:()=>v.stop()}}
+});
+/* 5 Additive */
+add({stage:'sound',term:'Build a sound from harmonics',
+ def:'Additive synthesis builds a timbre by stacking sine waves at harmonic frequencies, each at its own level. Change the recipe and the waveform — and the sound — changes.',
+ ex:'Turn up only the odd harmonics and you approach a square wave; turn them all up at 1/n and you approach a saw.',
+ src:'<b>History:</b> the idea goes back to organ stops and to Thaddeus Cahill’s Telharmonium (c. 1897); digital additive synths appeared from the late 1970s.',
+ phases:['Harmonic 1 alone: a sine.','Add the 3rd and 5th …','… and the wave starts to square off.','Try it: draw your own recipe with eight sliders.'],
+ init:()=>({h:[1,0,.33,0,.2,0,.14,0]}),
+ anim:p=>{const h=[1,0,0,0,0,0,0,0];[2,4,6].forEach((i,k)=>{h[i]=seg(p,.2+k*.15,.35+k*.15)/(i+1)});return {h,p}},
+ draw(p,s){const fn=t=>s.h.reduce((m,a,i)=>m+a*Math.sin(TAU*(i+1)*t),0);const mx=Math.max(.3,...Array.from({length:120},(_,i)=>Math.abs(fn(i/120))));
+  let g=axis(40,110,520,70)+P(path(t=>fn(t*3)/mx,40,110,520,70),C.purple,2.8);
+  g+=bars(s.h,40,330,520,110,i=>i%2?C.coral:C.blue,i=>String(i+1))+T(40,205,'your recipe: level of each harmonic',{size:12,fill:C.muted});return g},
+ tryUI:s=>({html:`<div class="sliders">${s.h.map((v,i)=>`<label>Harmonic ${i+1} <input type="range" data-h="${i}" min="0" max="1" step="0.01" value="${v}"></label>`).join('')}</div><p class="out" id="tout"></p>`,
+  bind(q,re,root){root.querySelectorAll('[data-h]').forEach(x=>x.oninput=()=>{s.h[+x.dataset.h]=+x.value;re()})},out:s=>`Fundamental 110 Hz. Odd harmonics in blue, even in coral.`}),
+ audio(ctx,out,s){const v=voice(ctx,out,{type:'sine',freq:110,gain:.45});const set=s=>v.osc.setPeriodicWave(periodic(ctx,s.h.map(x=>x+1e-4)));set(s);return {update:set,stop:()=>v.stop()}}
+});
+/* 6 Spectrum */
+const SPECSRC=['sine','saw','chord','noise'];
+add({stage:'sound',term:'Seeing sound: the spectrum',
+ def:'A spectrum analyser splits a sound into its frequencies and shows how strong each is, moment by moment. It turns what you hear into a picture: one spike for a sine, a picket fence for a saw, a smear for noise.',
+ ex:'Producers use analysers to spot clashes — two sounds fighting over the same frequencies — and to balance a mix.',
+ src:'<b>How:</b> the Fast Fourier Transform (FFT) computes the spectrum from short slices of the signal. In Try it, the bars are the live sound.',
+ phases:['A sine: a single spike.','A saw: evenly spaced harmonics, each a little weaker.','A chord: three picket fences overlapping.','Noise: energy everywhere. Try it: switch on the sound to see the live analysis.'],
+ init:()=>({src:'saw'}),anim:p=>({src:SPECSRC[Math.min(3,Math.floor(p*4))],p}),live:true,
+ draw(p,s){let g=T(40,34,s.src,{size:16,weight:700})+`<line x1="40" y1="320" x2="560" y2="320" stroke="${C.ink}"/>`+T(40,342,'low',{size:11.5,fill:C.muted})+T(560,342,'high frequency',{size:11.5,fill:C.muted,anchor:'end'});
+  let v;if(s.fft){v=Array.from(s.fft.slice(0,96),x=>x/255)}else{v=Array.from({length:96},(_,i)=>{const hz=(i+.5)*(5500/96);const peak=(f,a)=>a*Math.exp(-(((hz-f)/30)**2));
+   if(s.src==='sine')return peak(220,1);if(s.src==='noise')return .45+.25*Math.sin(i*12.9898)%1*.5+.2*Math.abs(Math.sin(i*3.7+p*40));
+   if(s.src==='saw'){let m=0;for(let n=1;n<25;n++)m+=peak(110*n,Math.min(1,1.6/n));return m}
+   let m=0;[220,277.2,329.6].forEach(f=>{for(let n=1;n<12;n++)m+=peak(f*n,.8/n)});return Math.min(1,m)})}
+  g+=bars(v,40,320,520,250,i=>s.src==='noise'?C.muted:C.purple);return g},
+ tryUI:s=>({html:`<div class="row">${SPECSRC.map(w=>`<button type="button" class="chip" data-w="${w}" aria-pressed="${s.src===w}">${w}</button>`).join('')}</div><p class="out" id="tout"></p>`,bind(q,re,root){root.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>{s.src=b.dataset.w;root.querySelectorAll('[data-w]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.w===s.src)));Sound.restart();re()})},out:s=>Sound.on?'Live: the bars are the sound you are hearing (0 to about 5.5 kHz).':'Press Sound on to see the live spectrum.'}),
+ audio(ctx,out,s){const an=ctx.createAnalyser();an.fftSize=8192;an.smoothingTimeConstant=.6;const bus=ctx.createGain();bus.connect(an);an.connect(out);const nodes=[];
+  if(s.src==='noise'){const n=ctx.createBufferSource();n.buffer=AU.noise();n.loop=true;const g=ctx.createGain();g.gain.value=.25;n.connect(g);g.connect(bus);n.start();nodes.push({stop(){fadeOut(g,ctx);setTimeout(()=>{try{n.stop()}catch(e){}},200)}})}
+  else (s.src==='chord'?[220,277.18,329.63]:[s.src==='sine'?220:110]).forEach(f=>nodes.push(voice(ctx,bus,{type:s.src==='sine'?'sine':'sawtooth',freq:f,gain:s.src==='chord'?.18:.4})));
+  const buf=new Uint8Array(an.frequencyBinCount);const bin=ctx.sampleRate/an.fftSize,per=Math.round((5500/96)/bin);let id=0;
+  const loop=()=>{an.getByteFrequencyData(buf);const out=new Uint8Array(96);for(let i=0;i<96;i++){let m=0;for(let k=0;k<per;k++)m=Math.max(m,buf[i*per+k]);out[i]=m}s.fft=out;id=requestAnimationFrame(loop)};loop();
+  return {update(){},stop(){cancelAnimationFrame(id);s.fft=null;nodes.forEach(n=>n.stop())}}}
+});
+/* 7 Filter */
+add({stage:'synth',term:'The filter',
+ def:`Subtractive synthesis starts with a bright, harmonic-rich wave and carves it with a ${W('filter','filter')}. A low-pass filter lets frequencies below its cutoff through and fades those above. ${W('resonance','Resonance')} boosts the cutoff point itself.`,
+ ex:'Sweeping cutoff up and down is the classic “filter sweep”. Turn resonance up while sweeping and you get the squelch of acid house.',
+ src:'<b>Picture:</b> the purple bars are a 110 Hz sawtooth’s harmonics; the curve is the filter; the dark bars are what gets through.',
+ phases:['A sawtooth: bright, every harmonic present.','Cutoff closes: the high harmonics fade — darker.','Resonance up: a peak at the cutoff — a vocal whistle.','Try it: sweep cutoff and resonance.'],
+ init:()=>({cut:1200,q:6}),anim:p=>({cut:Math.exp(lerp(Math.log(8000),Math.log(250),seg(p,.15,.55))),q:lerp(.7,14,seg(p,.6,.85)),p}),
+ draw(p,s){const x0=40,w=520,yb=320,h=240,fmax=4000,X=f=>x0+f/fmax*w;
+  const resp=f=>{const r=f/s.cut,qq=Math.max(.5,s.q);return 1/Math.sqrt((1-r*r)**2+(r/qq)**2)};
+  let g='';for(let n=1;n<=36;n++){const f=110*n;if(f>fmax)break;const a=1/n,out=a*Math.min(resp(f),6)/1;g+=`<rect x="${f2(X(f)-4)}" y="${f2(yb-a*h)}" width="8" height="${f2(a*h)}" fill="${C.purplep}" stroke="${C.purple}" stroke-width=".6"/><rect x="${f2(X(f)-2.5)}" y="${f2(yb-clamp(out,0,1.3)*h)}" width="5" height="${f2(clamp(out,0,1.3)*h)}" fill="${C.ink}"/>`}
+  let d='';for(let i=0;i<=200;i++){const f=fmax*i/200+1;d+=(i?'L':'M')+f2(X(f))+' '+f2(yb-clamp(resp(f)*.5,0,1.25)*h)}g+=P(d,C.coral,2.5);
+  g+=`<line x1="${f2(X(Math.min(s.cut,fmax)))}" y1="${yb}" x2="${f2(X(Math.min(s.cut,fmax)))}" y2="60" stroke="${C.coral}" stroke-dasharray="4 4"/>`+T(X(Math.min(s.cut,fmax))+6,62,'cutoff '+Math.round(s.cut)+' Hz',{size:12.5,fill:C.coral,weight:700});
+  g+=`<line x1="${x0}" y1="${yb}" x2="${x0+w}" y2="${yb}" stroke="${C.ink}"/>`+T(x0,yb+20,'0 Hz',{size:11,fill:C.muted})+T(x0+w,yb+20,'4 kHz',{size:11,fill:C.muted,anchor:'end'})+T(x0,36,'resonance (Q) '+s.q.toFixed(1),{size:12.5,fill:C.muted});
+  return g},
+ tryUI:s=>({html:`<div class="row"><label>Cutoff <input type="range" id="c" min="${Math.log(80)}" max="${Math.log(10000)}" step="0.01" value="${Math.log(s.cut)}"></label><label>Resonance <input type="range" id="r" min="0.7" max="20" step="0.1" value="${s.q}"></label></div><p class="out" id="tout"></p>`,
+  bind(q,re){q('#c').oninput=e=>{s.cut=Math.exp(+e.target.value);re()};q('#r').oninput=e=>{s.q=+e.target.value;re()}},out:s=>`Cutoff ${Math.round(s.cut)} Hz, resonance ${s.q.toFixed(1)}.`}),
+ audio(ctx,out,s){const v=voice(ctx,out,{type:'sawtooth',freq:110,cutoff:s.cut,q:s.q,gain:.4});return {update(s){v.flt.frequency.setTargetAtTime(s.cut,ctx.currentTime,.02);v.flt.Q.setTargetAtTime(s.q,ctx.currentTime,.02)},stop:()=>v.stop()}}
+});
+/* 8 Envelope */
+add({stage:'synth',term:'The envelope (ADSR)',
+ def:`An ${W('envelope','envelope')} shapes a note over time. Attack: how fast it rises. Decay: how fast it falls to the sustain level. Sustain: the level held while the key is down. Release: how long it fades after you let go.`,
+ ex:'A plucked string: instant attack, short decay, no sustain. A string section: slow attack, high sustain, long release.',
+ src:'<b>Origin:</b> ADSR envelopes became standard on synthesisers in the 1960s; the four-stage idea is usually credited to Vladimir Ussachevsky’s suggestions to Robert Moog.',
+ phases:['Key pressed: attack rises to full level.','Decay falls to the sustain level.','Sustain holds while the key is down.','Key released: release fades to silence. Try it: hold the key.'],
+ init:()=>({a:.05,d:.3,su:.5,r:.6,held:false,t0:0,t1:0}),anim:p=>({a:.5,d:.6,su:.55,r:1,p}),live:true,
+ draw(p,s){const x0=60,yb=300,h=220,sc=110;const A=s.a,D=s.d,R=s.r,S=s.su,hold=1.2;
+  const env=t=>t<A?t/A:t<A+D?1-(1-S)*(t-A)/D:t<A+D+hold?S:Math.max(0,S*(1-(t-A-D-hold)/R));
+  const tot=A+D+hold+R;let d='';for(let i=0;i<=300;i++){const t=tot*i/300;d+=(i?'L':'M')+f2(x0+t*sc*(470/(tot*sc)))+' '+f2(yb-env(t)*h)}
+  let g=`<line x1="${x0}" y1="${yb}" x2="540" y2="${yb}" stroke="${C.ink}"/>`+P(d,C.purple,3);
+  const X=t=>x0+t*(470/tot);[[0,A,'A'],[A,A+D,'D'],[A+D,A+D+hold,'S'],[A+D+hold,tot,'R']].forEach(([a,b,l],k)=>{g+=`<rect x="${f2(X(a))}" y="${yb+8}" width="${f2(X(b)-X(a))}" height="18" fill="${[C.blue,C.green,C.gold,C.coral][k]}" opacity=".25"/>`+T((X(a)+X(b))/2,yb+22,l,{size:12,anchor:'middle',weight:700})});
+  let tp=null;if(s.p!=null)tp=p*tot;else if(s.held||s.t1){const now=Sound.time();tp=s.held?Math.min(now-s.t0,A+D+hold*.99):A+D+hold+(now-s.t1)}
+  if(tp!=null&&tp<tot){g+=`<circle cx="${f2(X(tp))}" cy="${f2(yb-env(tp)*h)}" r="8" fill="${C.coral}"/>`}
+  g+=T(x0,50,s.held?'key held':'key up',{size:13,fill:s.held?C.coral:C.muted,weight:700});return g},
+ tryUI:s=>({html:`<div class="sliders"><label>Attack <input type="range" data-k="a" min="0.005" max="2" step="0.005" value="${s.a}"></label><label>Decay <input type="range" data-k="d" min="0.02" max="2" step="0.01" value="${s.d}"></label><label>Sustain <input type="range" data-k="su" min="0" max="1" step="0.01" value="${s.su}"></label><label>Release <input type="range" data-k="r" min="0.02" max="3" step="0.01" value="${s.r}"></label></div><div class="row"><button type="button" id="hold" class="primary">Hold to play</button></div><p class="out" id="tout"></p>`,
+  bind(q,re,root){root.querySelectorAll('[data-k]').forEach(x=>x.oninput=()=>{s[x.dataset.k]=+x.value;re()});const b=q('#hold');const dn=e=>{e.preventDefault();if(s.held)return;Sound.note(57,true);s.held=true;s.t0=Sound.time();s.t1=0;re()},up=()=>{if(!s.held)return;Sound.note(57,false);s.held=false;s.t1=Sound.time();re()};b.addEventListener('pointerdown',dn);b.addEventListener('pointerup',up);b.addEventListener('pointerleave',up);b.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter')dn(e)});b.addEventListener('keyup',up)},
+  out:s=>`A ${s.a.toFixed(2)} s · D ${s.d.toFixed(2)} s · S ${Math.round(s.su*100)}% · R ${s.r.toFixed(2)} s.`}),
+ audio(ctx,out,s){let v=null;return {note(m,on){const t=ctx.currentTime;if(on){if(v)v.stop();v=voice(ctx,out,{type:'sawtooth',freq:mtof(m),cutoff:2500,gain:0});const g=v.amp.gain;g.setValueAtTime(0,t);g.linearRampToValueAtTime(.5,t+s.a);g.linearRampToValueAtTime(.5*s.su,t+s.a+s.d)}else if(v){const g=v.amp.gain;g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(0,t+s.r);const vv=v;setTimeout(()=>{try{vv.osc.stop()}catch(e){}},s.r*1000+100);v=null}},update(){},stop(){if(v)v.stop()}}}
+});
+/* 9 LFO */
+const LFOT=['pitch','volume','filter'];
+add({stage:'synth',term:'The LFO',
+ def:`A ${W('lfo','low-frequency oscillator')} is a slow wave you do not hear directly. Instead it moves another setting up and down — ${W('modulation','modulation')}. On pitch it makes vibrato, on volume tremolo, on the filter a wah or a wobble.`,
+ ex:'The “wobble” bass of dubstep is an LFO on filter cutoff, often synced to the tempo so it wobbles in time.',
+ src:'<b>Picture:</b> the slow grey wave is the LFO; the purple wave is the sound it modulates.',
+ phases:['The LFO: a slow sine, a few times a second.','Patched to pitch: the wave squeezes and stretches — vibrato.','Patched to volume: the wave swells and shrinks — tremolo.','Try it: pick a target, rate and depth.'],
+ init:()=>({tgt:'filter',rate:3,depth:.6}),anim:p=>({tgt:p<.5?'pitch':'volume',rate:2,depth:.7,p}),live:true,
+ draw(p,s){const now=s.p!=null?p*3:performance.now()/1000;let g=T(40,36,'LFO → '+s.tgt,{size:15,weight:700});
+  const lfo=t=>Math.sin(TAU*(t*s.rate/2+now*0));g+=axis(40,90,520,30,'LFO, '+s.rate.toFixed(1)+' Hz')+P(path(t=>Math.sin(TAU*(t*s.rate*1.5-now*.3)),40,90,520,26),C.muted,2);
+  let ph=0;const pts=[];for(let i=0;i<=500;i++){const t=i/500,l=Math.sin(TAU*(t*s.rate*1.5-now*.3));let f=14,a=1;if(s.tgt==='pitch')f=14*(1+.45*s.depth*l);if(s.tgt==='volume')a=1-.5*s.depth*(1-l);ph+=f/500;let y=Math.sin(TAU*ph);if(s.tgt==='filter'){const b=.5+.5*s.depth*l;y=WF.saw(ph)*b+Math.sin(TAU*ph)*(1-b)}pts.push([40+520*t,250-y*a*70])}
+  g+=axis(40,250,520,72,'sound')+P(pts.map((q,i)=>(i?'L':'M')+f2(q[0])+' '+f2(q[1])).join(''),C.purple,2);return g},
+ tryUI:s=>({html:`<div class="row">${LFOT.map(w=>`<button type="button" class="chip" data-w="${w}" aria-pressed="${s.tgt===w}">${w}</button>`).join('')}</div><div class="row"><label>Rate <input type="range" id="rt" min="0.2" max="12" step="0.1" value="${s.rate}"></label><label>Depth <input type="range" id="dp" min="0" max="1" step="0.01" value="${s.depth}"></label></div><p class="out" id="tout"></p>`,
+  bind(q,re,root){root.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>{s.tgt=b.dataset.w;root.querySelectorAll('[data-w]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.w===s.tgt)));Sound.restart();re()});q('#rt').oninput=e=>{s.rate=+e.target.value;re()};q('#dp').oninput=e=>{s.depth=+e.target.value;re()}},out:s=>({pitch:'Vibrato',volume:'Tremolo',filter:'Wah / wobble'})[s.tgt]+` at ${s.rate.toFixed(1)} Hz.`}),
+ audio(ctx,out,s){const v=voice(ctx,out,{type:'sawtooth',freq:110,cutoff:s.tgt==='filter'?900:3000,q:s.tgt==='filter'?8:1,gain:.4});const l=ctx.createOscillator(),lg=ctx.createGain();l.frequency.value=s.rate;l.connect(lg);l.start();
+  const dest=s.tgt==='pitch'?v.osc.frequency:s.tgt==='volume'?v.amp.gain:v.flt.frequency;const depthOf=s=>s.tgt==='pitch'?110*.06*s.depth:s.tgt==='volume'?.38*s.depth:800*s.depth;lg.gain.value=depthOf(s);lg.connect(dest);
+  return {update(s){l.frequency.setTargetAtTime(s.rate,ctx.currentTime,.02);lg.gain.setTargetAtTime(depthOf(s),ctx.currentTime,.02)},stop(){v.stop();setTimeout(()=>{try{l.stop()}catch(e){}},200)}}}
+});
+/* 10 FM */
+add({stage:'synth',term:'FM synthesis',
+ def:`In ${W('fm','FM synthesis')} one oscillator (the modulator) wobbles another’s frequency (the carrier) so fast that you no longer hear a wobble — you hear new frequencies, called sidebands. Ratio sets which frequencies appear; index sets how many.`,
+ ex:'Whole-number ratios give harmonic, musical tones (electric pianos, basses); odd ratios give metallic, bell-like ones.',
+ src:'<b>History:</b> John Chowning developed FM synthesis at Stanford from the late 1960s; Stanford licensed it to Yamaha, whose DX7 (1983) became one of the best-selling synthesisers ever.',
+ phases:['A carrier sine wave.','A modulator nudges its frequency — the wave bunches and stretches.','Higher index: more sidebands, a brighter sound.','Try it: change ratio and index.'],
+ init:()=>({ratio:2,index:3}),anim:p=>({ratio:2,index:lerp(0,6,seg(p,.2,.85)),p}),
+ draw(p,s){const fn=t=>Math.sin(TAU*3*t+s.index*Math.sin(TAU*3*s.ratio*t));let g=axis(40,110,520,70)+P(path(fn,40,110,520,70,600),C.purple,2.2)+T(40,30,'ratio '+s.ratio.toFixed(2)+' · index '+s.index.toFixed(1),{size:14,weight:700});
+  const bess=(n,x)=>{let sum=0;for(let m=0;m<20;m++){let f=1;for(let k=1;k<=m;k++)f*=k;let f2_=1;for(let k=1;k<=m+n;k++)f2_*=k;sum+=Math.pow(-1,m)/(f*f2_)*Math.pow(x/2,2*m+n)}return sum};
+  const lines=[];for(let k=-8;k<=8;k++){const f=1+k*s.ratio;const a=Math.abs(bess(Math.abs(k),s.index));if(f>0&&f<9)lines.push([f,a]);else if(f<0&&-f<9)lines.push([-f,a])}
+  g+=`<line x1="40" y1="330" x2="560" y2="330" stroke="${C.ink}"/>`;lines.forEach(([f,a])=>{const x=40+f/9*520;g+=`<line x1="${f2(x)}" y1="330" x2="${f2(x)}" y2="${f2(330-clamp(a,0,1)*110)}" stroke="${C.coral}" stroke-width="4"/>`});
+  g+=T(40,210,'spectrum: carrier and sidebands',{size:12,fill:C.muted})+T(560,350,'× carrier frequency',{size:11,fill:C.muted,anchor:'end'});return g},
+ tryUI:s=>({html:`<div class="row"><label>Ratio <input type="range" id="ra" min="0.5" max="7" step="0.01" value="${s.ratio}"></label><label>Index <input type="range" id="ix" min="0" max="10" step="0.1" value="${s.index}"></label></div><div class="row">${[1,2,3.5,1.41].map(r=>`<button type="button" class="chip" data-r="${r}">ratio ${r}</button>`).join('')}</div><p class="out" id="tout"></p>`,
+  bind(q,re,root){q('#ra').oninput=e=>{s.ratio=+e.target.value;re()};q('#ix').oninput=e=>{s.index=+e.target.value;re()};root.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{s.ratio=+b.dataset.r;q('#ra').value=s.ratio;re()})},out:s=>Math.abs(s.ratio-Math.round(s.ratio))<.02?'Whole-number ratio: harmonic, pitched.':'Non-integer ratio: inharmonic, bell-like or metallic.'}),
+ audio(ctx,out,s){const fc=165,c=ctx.createOscillator(),m=ctx.createOscillator(),mg=ctx.createGain(),a=ctx.createGain();c.frequency.value=fc;m.frequency.value=fc*s.ratio;mg.gain.value=fc*s.ratio*s.index;a.gain.value=.4;m.connect(mg);mg.connect(c.frequency);c.connect(a);a.connect(out);c.start();m.start();
+  return {update(s){m.frequency.setTargetAtTime(fc*s.ratio,ctx.currentTime,.02);mg.gain.setTargetAtTime(fc*s.ratio*s.index,ctx.currentTime,.02)},stop(){fadeOut(a,ctx);setTimeout(()=>{try{c.stop();m.stop()}catch(e){}},200)}}}
+});
+/* 11 A whole voice */
+add({stage:'synth',term:'A whole synth voice',
+ def:'Put the parts together and you have the classic subtractive synth: oscillator → filter → amplifier, with an envelope shaping the amplifier and the filter. Almost every hardware and software synth is a variation on this chain.',
+ ex:'The Minimoog (1970) put this chain in a portable keyboard instrument and set the template that synths still follow.',
+ src:'<b>Picture:</b> a patch diagram. Signal flows left to right; dashed lines are control signals, not audio.',
+ phases:['The oscillator makes a raw wave.','The filter shapes its harmonics.','The amplifier sets its level, guided by the envelope.','Try it: play the keys and shape the sound.'],
+ init:()=>({w:'sawtooth',cut:1400,q:5,a:.01,r:.4,fenv:.6}),anim:p=>({w:'sawtooth',cut:1400,q:5,a:.01,r:.4,fenv:.6,p}),
+ draw(p,s){const o=s.p!=null?p:1;const box=(x,y,l,sub,col,op)=>`<g opacity="${f2(op)}"><rect x="${x}" y="${y}" width="120" height="70" rx="12" fill="#fff" stroke="${col}" stroke-width="2.5"/>${T(x+60,y+32,l,{size:15,anchor:'middle',weight:700})}${T(x+60,y+52,sub,{size:11.5,anchor:'middle',fill:C.muted})}</g>`;
+  let g=box(40,140,'OSC',s.w,C.blue,seg(o,0,.15))+box(240,140,'FILTER','cutoff '+Math.round(s.cut),C.purple,seg(o,.25,.4))+box(440,140,'AMP','',C.green,seg(o,.5,.65));
+  g+=`<g opacity="${f2(seg(o,.2,.3))}"><line x1="160" y1="175" x2="240" y2="175" stroke="${C.ink}" stroke-width="3"/></g><g opacity="${f2(seg(o,.45,.55))}"><line x1="360" y1="175" x2="440" y2="175" stroke="${C.ink}" stroke-width="3"/></g><g opacity="${f2(seg(o,.62,.7))}"><line x1="560" y1="175" x2="590" y2="175" stroke="${C.ink}" stroke-width="3"/>${T(586,165,'🔊',{size:16,anchor:'end'})}</g>`;
+  g+=`<g opacity="${f2(seg(o,.7,.85))}"><rect x="340" y="280" width="120" height="56" rx="12" fill="#fff" stroke="${C.coral}" stroke-width="2"/>${T(400,306,'ENVELOPE',{size:13,anchor:'middle',weight:700})}${T(400,324,'A '+s.a.toFixed(2)+' · R '+s.r.toFixed(2),{size:11,anchor:'middle',fill:C.muted})}<path d="M400 280 L500 212" stroke="${C.coral}" stroke-width="2" stroke-dasharray="5 4" fill="none"/><path d="M400 280 L300 212" stroke="${C.coral}" stroke-width="2" stroke-dasharray="5 4" fill="none"/></g>`;
+  g+=`<g opacity="${f2(seg(o,.1,.2))}">${P(path(t=>WF[s.w==='sawtooth'?'saw':s.w](t*3),48,90,104,22),C.blue,2)}</g><g opacity="${f2(seg(o,.35,.45))}">${P(path(t=>{const ph=t*3;return WF.saw(ph)*.4+Math.sin(TAU*ph)*.6},248,90,104,22),C.purple,2)}</g><g opacity="${f2(seg(o,.55,.65))}">${P(path(t=>(t<.1?t/.1:Math.max(0,1-(t-.1)/.9))*Math.sin(TAU*t*8),448,90,104,26),C.green,2)}</g>`;
+  return g},
+ tryUI:s=>({html:`<div class="row">${['sawtooth','square','triangle'].map(w=>`<button type="button" class="chip" data-w="${w}" aria-pressed="${s.w===w}">${w}</button>`).join('')}</div><div class="sliders"><label>Cutoff <input type="range" data-k="cut" min="100" max="6000" step="10" value="${s.cut}"></label><label>Resonance <input type="range" data-k="q" min="0.7" max="18" step="0.1" value="${s.q}"></label><label>Filter envelope <input type="range" data-k="fenv" min="0" max="1" step="0.01" value="${s.fenv}"></label><label>Attack <input type="range" data-k="a" min="0.003" max="1" step="0.001" value="${s.a}"></label><label>Release <input type="range" data-k="r" min="0.03" max="2" step="0.01" value="${s.r}"></label></div>${keysHTML(45,25)}<p class="out" id="tout"></p>`,
+  bind(q,re,root){root.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>{s.w=b.dataset.w;root.querySelectorAll('[data-w]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.w===s.w)));re()});root.querySelectorAll('[data-k]').forEach(x=>x.oninput=()=>{s[x.dataset.k]=+x.value;re()});bindKeys(root,(m,on)=>Sound.note(m,on))},out:()=>'Play with the mouse, a finger, or the computer keyboard: A W S E D F T G Y H U J K.'}),
+ audio(ctx,out,s){const vs={};return {note(m,on){const t=ctx.currentTime;if(on){if(vs[m])return;const v=voice(ctx,out,{type:s.w,freq:mtof(m),cutoff:s.cut,q:s.q,gain:0});v.amp.gain.setValueAtTime(0,t);v.amp.gain.linearRampToValueAtTime(.35,t+s.a);v.flt.frequency.setValueAtTime(s.cut*(1+6*s.fenv),t);v.flt.frequency.exponentialRampToValueAtTime(s.cut,t+.35);vs[m]=v}else if(vs[m]){const v=vs[m];delete vs[m];v.amp.gain.cancelScheduledValues(t);v.amp.gain.setValueAtTime(v.amp.gain.value,t);v.amp.gain.linearRampToValueAtTime(0,t+s.r);setTimeout(()=>{try{v.osc.stop()}catch(e){}},s.r*1000+80)}},update(){},stop(){Object.values(vs).forEach(v=>v.stop())}}}
+});
+/* 12 Sampling */
+function crusher(ctx,out,s,src){const sp=ctx.createScriptProcessor(1024,1,1);let held=0,ph=0;sp.onaudioprocess=e=>{const i=e.inputBuffer.getChannelData(0),o=e.outputBuffer.getChannelData(0);const step=ctx.sampleRate/(s.rate||ctx.sampleRate),lv=Math.pow(2,s.bits||16);for(let k=0;k<i.length;k++){ph+=1;if(ph>=step){ph-=step;const x=i[k];held=Math.round((x*.5+.5)*(lv-1))/(lv-1)*2-1}o[k]=held}};src.connect(sp);sp.connect(out);return sp}
+add({stage:'digital',term:'Sampling',
+ def:`To store sound digitally, a converter measures the wave many times a second — the ${W('samplerate','sample rate')} — and keeps only those values. Playback joins the dots again.`,
+ ex:'CD audio takes 44,100 samples per second. Old samplers and games used much lower rates, which is part of their gritty, lo-fi character.',
+ src:'<b>In Try it</b> you hear a sample-and-hold effect: each measured value is held until the next one, which is what early digital gear and bitcrusher effects do.',
+ phases:['A smooth wave.','Measured at regular moments: samples.','Fewer samples per cycle: a rougher staircase.','Try it: lower the sample rate and listen.'],
+ init:()=>({rate:4000}),anim:p=>({rate:Math.exp(lerp(Math.log(20000),Math.log(1500),seg(p,.3,.9))),p}),
+ draw(p,s){const fsig=440,cycles=3,dur=cycles/fsig,n=Math.max(2,Math.round(dur*s.rate));let g=axis(40,190,520,120,'time →')+P(path(t=>Math.sin(TAU*cycles*t),40,190,520,120),C.line,2);
+  const pts=[];for(let k=0;k<=n;k++){const t=k/n;pts.push([40+520*t,190-Math.sin(TAU*cycles*t)*120])}
+  let st='';pts.forEach((q,k)=>{st+=(k?'H'+f2(q[0])+'V':'M'+f2(q[0])+' ')+f2(q[1])});g+=P(st,C.purple,2.4);
+  if(n<120)pts.forEach(q=>{g+=`<line x1="${f2(q[0])}" y1="190" x2="${f2(q[0])}" y2="${f2(q[1])}" stroke="${C.coral}" stroke-width="1.2"/><circle cx="${f2(q[0])}" cy="${f2(q[1])}" r="3.5" fill="${C.coral}"/>`});
+  g+=T(40,40,Math.round(s.rate)+' samples per second · '+(s.rate/fsig).toFixed(1)+' per cycle of a 440 Hz tone',{size:13.5,weight:700});return g},
+ tryUI:s=>({html:`<div class="row"><label>Sample rate <input type="range" id="sr" min="${Math.log(800)}" max="${Math.log(44100)}" step="0.01" value="${Math.log(s.rate)}"></label></div><p class="out" id="tout"></p>`,bind(q,re){q('#sr').oninput=e=>{s.rate=Math.exp(+e.target.value);re()}},out:s=>`${Math.round(s.rate)} Hz sample rate → can represent up to ${Math.round(s.rate/2)} Hz.`}),
+ audio(ctx,out,s){const o=ctx.createOscillator();o.type='triangle';o.frequency.value=440;const g=ctx.createGain();g.gain.value=.4;crusher(ctx,g,s,o);g.connect(out);o.start();return {update(){},stop(){fadeOut(g,ctx);setTimeout(()=>{try{o.stop()}catch(e){}},200)}}}
+});
+/* 13 Bit depth */
+add({stage:'digital',term:'Bit depth',
+ def:`Each sample is stored as a number with a fixed number of levels — the ${W('bitdepth','bit depth')}. Too few levels and the wave becomes a staircase; the rounding errors are heard as noise and grit.`,
+ ex:'16-bit audio has 65,536 levels — about 96 dB of range. 8-bit has 256 levels; 4-bit just 16, the crunchy sound of early game consoles and bitcrusher effects.',
+ src:'<b>Rule of thumb:</b> each extra bit adds about 6 dB of dynamic range.',
+ phases:['16 bits: the staircase is invisibly fine.','8 bits: still smooth to the eye.','3 bits: just 8 levels — a staircase.','Try it: crush the bits and listen.'],
+ init:()=>({bits:4}),anim:p=>({bits:Math.round(lerp(10,2,seg(p,.2,.85))),p}),
+ draw(p,s){const lv=Math.pow(2,s.bits);let g=axis(40,190,520,130,'time →');if(lv<=64)for(let k=0;k<lv;k++){const y=190-130*(k/(lv-1)*2-1);g+=`<line x1="40" y1="${f2(y)}" x2="560" y2="${f2(y)}" stroke="${C.grid}" stroke-width=".8"/>`}
+  g+=P(path(t=>Math.sin(TAU*2*t),40,190,520,130),C.line,2)+P(path(t=>{const x=Math.sin(TAU*2*t);return Math.round((x*.5+.5)*(lv-1))/(lv-1)*2-1},40,190,520,130,600),C.purple,2.6);
+  g+=T(40,36,s.bits+' bits · '+lv.toLocaleString('en-GB')+' levels · about '+Math.round(6.02*s.bits)+' dB range',{size:14,weight:700});return g},
+ tryUI:s=>({html:`<div class="row"><label>Bit depth <input type="range" id="bd" min="1" max="16" step="1" value="${s.bits}"></label></div><p class="out" id="tout"></p>`,bind(q,re){q('#bd').oninput=e=>{s.bits=+e.target.value;re()}},out:s=>`${s.bits}-bit: ${Math.pow(2,s.bits).toLocaleString('en-GB')} levels.`}),
+ audio(ctx,out,s){const o=ctx.createOscillator();o.type='sine';o.frequency.value=220;const g=ctx.createGain();g.gain.value=.4;const st={get bits(){return s.bits},rate:0};crusher(ctx,g,st,o);g.connect(out);o.start();return {update(){},stop(){fadeOut(g,ctx);setTimeout(()=>{try{o.stop()}catch(e){}},200)}}}
+});
+/* 14 Aliasing */
+add({stage:'digital',term:'Nyquist and aliasing',
+ def:`A sample rate can only capture frequencies up to half its value — the ${W('nyquist','Nyquist frequency')}. Anything higher is not lost: it folds back and pretends to be a lower frequency, an ${W('aliasing','alias')}.`,
+ ex:'That is why CD audio uses 44.1 kHz: Nyquist is 22.05 kHz, just above the roughly 20 kHz limit of human hearing. Converters filter out higher frequencies before sampling.',
+ src:'<b>Folding rule:</b> a tone at frequency f sampled at rate r appears at |f − r × round(f ÷ r)|.',
+ phases:['Sample rate fixed; a tone well below Nyquist is captured faithfully.','The tone rises towards Nyquist: barely two samples per cycle.','Past Nyquist: the dots trace a slower, false wave — an alias.','Try it: drag the tone past the line.'],
+ init:()=>({f:7000}),anim:p=>({f:lerp(1000,9500,seg(p,.1,.9)),p}),
+ draw(p,s){const r=10000,ny=r/2,alias=Math.abs(s.f-r*Math.round(s.f/r));const span=.0016;let g=axis(40,150,520,90,'');
+  g+=P(path(t=>Math.sin(TAU*s.f*span*t),40,150,520,90,900),C.line,1.4)+P(path(t=>Math.sin(TAU*(s.f-r*Math.round(s.f/r))*span*t),40,150,520,90,300),s.f>ny?C.coral:C.purple,2.4,'stroke-dasharray="6 4"');
+  const n=Math.round(span*r);for(let k=0;k<=n;k++){const t=k/n,y=Math.sin(TAU*s.f*span*t);g+=`<circle cx="${f2(40+520*t)}" cy="${f2(150-y*90)}" r="4" fill="${C.ink}"/>`}
+  const X=f=>40+f/10000*520;g+=`<line x1="40" y1="320" x2="560" y2="320" stroke="${C.ink}"/><line x1="${X(ny)}" y1="290" x2="${X(ny)}" y2="330" stroke="${C.coral}" stroke-width="2"/>`+T(X(ny),285,'Nyquist 5 kHz',{size:12,anchor:'middle',fill:C.coral,weight:700});
+  g+=`<circle cx="${f2(X(s.f))}" cy="320" r="7" fill="${C.line}"/>`+T(X(s.f),346,'tone '+Math.round(s.f)+' Hz',{size:11.5,anchor:'middle',fill:C.muted});
+  g+=`<circle cx="${f2(X(alias))}" cy="320" r="7" fill="${s.f>ny?C.coral:C.purple}"/>`+(s.f>ny?T(X(alias),306,'heard as '+Math.round(alias)+' Hz',{size:12,anchor:'middle',fill:C.coral,weight:700}):'');
+  g+=T(40,36,'sample rate 10 kHz (dots)',{size:13.5,weight:700});return g},
+ tryUI:s=>({html:`<div class="row"><label>Tone <input type="range" id="tf" min="200" max="9800" step="10" value="${s.f}"></label></div><p class="out" id="tout"></p>`,bind(q,re){q('#tf').oninput=e=>{s.f=+e.target.value;re()}},out:s=>{const a=Math.abs(s.f-10000*Math.round(s.f/10000));return s.f>5000?`${Math.round(s.f)} Hz is above Nyquist, so it is recorded as ${Math.round(a)} Hz.`:`${Math.round(s.f)} Hz is below Nyquist: captured correctly.`}})
+});
+/* 15 Tempo */
+add({stage:'rhythm',term:'Tempo and BPM',
+ def:`Tempo is the speed of the beat, counted in ${W('bpm','beats per minute')}. Dance genres cluster around typical tempos, which is part of what makes them recognisable.`,
+ ex:'Hip-hop often sits around 85–95 BPM, house around 120–130, techno around 125–140, dubstep around 140 (with a half-time feel), drum and bass around 170–175.',
+ src:'<b>Arithmetic:</b> one beat lasts 60 ÷ BPM seconds. At 120 BPM, a beat is half a second; a 16th note is 0.125 s.',
+ phases:['A pulse at 90 BPM.','At 125: house and techno territory.','At 174: drum and bass.','Try it: set a tempo and hear the click.'],
+ init:()=>({bpm:124,step:-1}),anim:p=>({bpm:p<.33?90:p<.66?125:174,p}),live:true,
+ draw(p,s){const now=s.p!=null?p*DUR:performance.now()/1000;const beat=60/s.bpm,ph=s.p!=null?(now/beat)%1:(s.step>=0?(s.step%4)/4:0);const pulse=s.p!=null?Math.exp(-ph*6):(s.step>=0&&s.step%4===0?1:.2);
+  let g=`<circle cx="300" cy="160" r="${f2(60+30*pulse)}" fill="${C.purple}" opacity="${f2(.2+.5*pulse)}"/><circle cx="300" cy="160" r="54" fill="#fff" stroke="${C.purple}" stroke-width="3"/>`+T(300,170,Math.round(s.bpm)+' BPM',{size:22,anchor:'middle',weight:700});
+  const G=[['hip-hop',85,95],['house',120,130],['techno',125,140],['dubstep',138,142],['drum & bass',170,176]];const X=b=>40+(b-60)/(190-60)*520;
+  g+=`<line x1="40" y1="300" x2="560" y2="300" stroke="${C.ink}"/>`;const ROW=[0,0,1,2,0];G.forEach(([n,a,b],k)=>{const yy=300-14-ROW[k]*24;g+=`<rect x="${f2(X(a))}" y="${yy}" width="${f2(X(b)-X(a))}" height="10" rx="3" fill="${C.green}" opacity=".5"/>`+T(ROW[k]?X(b)+6:(X(a)+X(b))/2,ROW[k]?yy+9:yy-4,n,{size:11,anchor:ROW[k]?'start':'middle',fill:C.green})});
+  g+=`<path d="M${f2(X(s.bpm))} 304 l-7 12 h14 z" fill="${C.purple}"/>`+T(40,340,'60',{size:11,fill:C.muted})+T(560,340,'190 BPM',{size:11,fill:C.muted,anchor:'end'});return g},
+ tryUI:s=>({html:`<div class="row"><label>Tempo <input type="range" id="bp" min="60" max="190" step="1" value="${s.bpm}"></label></div><p class="out" id="tout"></p>`,bind(q,re){q('#bp').oninput=e=>{s.bpm=+e.target.value;re()}},out:s=>`${s.bpm} BPM: one beat every ${(60/s.bpm).toFixed(3)} s.`}),
+ audio(ctx,out,s){const c=clock(ctx,s,16,(i,t)=>{if(i%4===0)click(ctx,out,t,i===0?1500:1000,.5)});return {update(){},stop:()=>c.stop()}}
+});
+/* 16 Step sequencer & 17 grooves share a drum grid */
+const ROWS=[['kick',kick],['snare',snare],['hat',hat]];
+const GROOVES={
+ 'four-on-the-floor':[[0,4,8,12],[4,12],[2,6,10,14]],
+ 'breakbeat':[[0,10],[4,12],[0,2,4,6,8,10,12,14]],
+ 'half-time':[[0,10],[8],[0,2,4,6,8,10,12,14]],
+ 'two-step':[[0,7,10],[4,12],[0,2,4,6,8,10,12,14]]};
+const toGrid=g=>g.map(r=>Array.from({length:16},(_,i)=>r.includes(i)));
+function gridSVG(grid,step,y0=60,lab=true){let g='';const x0=100,w=460,cw=w/16;grid.forEach((row,r)=>{const y=y0+r*58;if(lab)g+=T(30,y+28,ROWS[r][0],{size:13,weight:700});row.forEach((on,i)=>{const x=x0+i*cw;g+=`<rect x="${f2(x+2)}" y="${y}" width="${f2(cw-4)}" height="44" rx="6" fill="${on?C.purple:(i%4===0?'#e6edf2':'#f6f9fb')}" stroke="${i===step?C.coral:C.grid}" stroke-width="${i===step?3:1}"/>`})});
+ for(let b=0;b<4;b++)g+=T(x0+b*4*cw+cw/2,y0-10,String(b+1),{size:12,anchor:'middle',fill:C.muted});return g}
+function gridUI(s){return `<div class="grid16">${s.grid.map((row,r)=>`<span>${ROWS[r][0]}</span>`+row.map((on,i)=>`<button type="button" class="${i%4===0?'beat':''}" data-r="${r}" data-i="${i}" aria-pressed="${on}" aria-label="${ROWS[r][0]} step ${i+1}"></button>`).join('')).join('')}</div>`}
+function bindGrid(root,s,re){root.querySelectorAll('.grid16 button').forEach(b=>b.onclick=()=>{const r=+b.dataset.r,i=+b.dataset.i;s.grid[r][i]=!s.grid[r][i];b.setAttribute('aria-pressed',String(s.grid[r][i]));re()})}
+const drumAudio=(ctx,out,s)=>{const c=clock(ctx,s,16,(i,t)=>{s.grid.forEach((row,r)=>{if(row[i])ROWS[r][1](ctx,out,t,i%4===0?1:.8)})});return {update(){},stop:()=>c.stop()}};
+add({stage:'rhythm',term:'The step sequencer',
+ def:`A ${W('sequencer','step sequencer')} divides a bar into 16 steps (sixteenth notes). Light a step and the sound plays there. Most drum machines and grooveboxes are programmed this way.`,
+ ex:'Kick on 1, 5, 9 and 13 is a steady four-to-the-floor pulse; snare on 5 and 13 lands on beats 2 and 4, the backbeat.',
+ src:'<b>History:</b> step programming spread with drum machines such as the Roland TR-808 (1980) and TR-909 (1983), which became the backbone of hip-hop, house and techno.',
+ phases:['Sixteen steps: four beats of four.','Kick on every beat.','Snare on 2 and 4, hats in between.','Try it: switch on Sound, then click the grid.'],
+ init:()=>({grid:toGrid(GROOVES['four-on-the-floor']),bpm:122,step:-1}),anim:p=>({grid:toGrid(GROOVES['four-on-the-floor']).map((row,r)=>row.map(v=>v&&p>(r+1)*.22)),step:Math.floor(p*32)%16,p}),live:true,
+ draw(p,s){return gridSVG(s.grid,s.step,70)+T(100,280,(s.p==null?'tempo '+s.bpm+' BPM':'')+'',{size:12.5,fill:C.muted})},
+ tryUI:s=>({html:gridUI(s)+`<div class="row"><label>Tempo <input type="range" id="bp" min="70" max="180" value="${s.bpm}"></label></div><p class="out" id="tout"></p>`,bind(q,re,root){bindGrid(root,s,re);q('#bp').oninput=e=>{s.bpm=+e.target.value;re()}},out:s=>`${s.bpm} BPM. Click any square to add or remove a hit.`}),
+ audio:drumAudio
+});
+add({stage:'rhythm',term:'Grooves: four-on-the-floor to breakbeat',
+ def:'Where the kick and snare fall gives each genre its body language. A kick on every beat drives house and techno; syncopated kicks against a backbeat give breakbeat, hip-hop and jungle their swing; half-time puts the snare on beat 3 so a fast tempo feels slow.',
+ ex:'Jungle and drum and bass grew from chopping up sampled funk drum breaks — most famously the six-second “Amen” break (The Winstons, 1969) — and playing them fast.',
+ src:'<b>Patterns here</b> are simplified, generic versions of each feel, not transcriptions of particular records.',
+ phases:['Four-on-the-floor: a kick on every beat.','Breakbeat: the kick dodges around the backbeat.','Half-time: the snare moves to beat 3.','Two-step: a skipping kick from UK garage. Try it: switch and listen.'],
+ init:()=>({g:'breakbeat',grid:toGrid(GROOVES.breakbeat),bpm:132,step:-1}),anim:p=>{const k=Object.keys(GROOVES)[Math.min(3,Math.floor(p*4))];return {g:k,grid:toGrid(GROOVES[k]),step:Math.floor(p*64)%16,p}},live:true,
+ draw(p,s){return T(100,36,s.g,{size:16,weight:700})+gridSVG(s.grid,s.step,80)},
+ tryUI:s=>({html:`<div class="row">${Object.keys(GROOVES).map(k=>`<button type="button" class="chip" data-g="${k}" aria-pressed="${s.g===k}">${k}</button>`).join('')}</div><div class="row"><label>Tempo <input type="range" id="bp" min="70" max="180" value="${s.bpm}"></label></div><p class="out" id="tout"></p>`,
+  bind(q,re,root){root.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{s.g=b.dataset.g;s.grid=toGrid(GROOVES[s.g]);root.querySelectorAll('[data-g]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.g===s.g)));re()});q('#bp').oninput=e=>{s.bpm=+e.target.value;re()}},out:s=>`${s.g} at ${s.bpm} BPM. Try half-time at 170 to hear how drum and bass can feel like 85.`}),
+ audio:drumAudio
+});
+/* 18 Swing */
+add({stage:'rhythm',term:'Swing',
+ def:`${W('swing','Swing')} delays every second sixteenth note. At 50% the steps are even (straight); push it towards 66% and pairs of notes become long–short, like a shuffle.`,
+ ex:'A little swing (54–58%) is enough to make programmed hats feel played rather than machined — a trademark of much house and hip-hop.',
+ src:'<b>Picture:</b> grey ticks are the straight grid; purple blocks show where swung notes actually land.',
+ phases:['Straight: every step evenly spaced.','Swing 58%: the off-steps lean late.','Swing 66%: close to a triplet shuffle.','Try it: set the swing and listen to the hats.'],
+ init:()=>({swing:58,bpm:118,step:-1}),anim:p=>({swing:lerp(50,66,seg(p,.2,.8)),step:Math.floor(p*32)%16,p}),live:true,
+ draw(p,s){const x0=60,w=480,cw=w/16;let g=T(60,40,'swing '+Math.round(s.swing)+'%',{size:16,weight:700});
+  for(let i=0;i<16;i++){const x=x0+i*cw;g+=`<line x1="${f2(x)}" y1="110" x2="${f2(x)}" y2="250" stroke="${C.grid}"/>`;const off=i%2?(2*s.swing/100-1)*cw:0;g+=`<rect x="${f2(x+off)}" y="${i%4===0?120:160}" width="${f2(cw*.55)}" height="${i%4===0?120:80}" rx="4" fill="${i===s.step?C.coral:C.purple}" opacity="${i%2?.95:.6}"/>`}
+  g+=T(60,290,'long',{size:12,fill:C.muted})+T(60+cw*1.1,290,'short',{size:12,fill:C.muted});return g},
+ tryUI:s=>({html:`<div class="row"><label>Swing <input type="range" id="sw" min="50" max="75" step="1" value="${s.swing}"></label><label>Tempo <input type="range" id="bp" min="70" max="160" value="${s.bpm}"></label></div><p class="out" id="tout"></p>`,bind(q,re){q('#sw').oninput=e=>{s.swing=+e.target.value;re()};q('#bp').oninput=e=>{s.bpm=+e.target.value;re()}},out:s=>s.swing<=51?'Straight.':s.swing<60?'A light groove.':s.swing<68?'Shuffle.':'Heavy — almost lurching.'}),
+ audio(ctx,out,s){const c=clock(ctx,s,16,(i,t)=>{hat(ctx,out,t,i%2?.7:1);if(i%8===0)kick(ctx,out,t,.9);if(i%8===4)snare(ctx,out,t,.7)});return {update(){},stop:()=>c.stop()}}
+});
+/* 19 Euclidean */
+const euclid=(k,n,rot=0)=>Array.from({length:n},(_,i)=>{const j=(i+rot)%n;return ((j*k)%n)<k});
+add({stage:'rhythm',term:'Euclidean rhythms',
+ def:`Spread k hits as evenly as possible across n steps and you get a ${W('euclidean','Euclidean rhythm')}. A surprising number of rhythms from around the world fit this one rule.`,
+ ex:'E(3,8) is the tresillo (x..x..x.), heard across Afro-Cuban music and pop. E(5,8) is a rotation of the cinquillo; E(4,16) is four-on-the-floor.',
+ src:'<b>Source:</b> Godfried Toussaint, “The Euclidean Algorithm Generates Traditional Musical Rhythms” (2005). The spacing comes from the same idea as Euclid’s algorithm for common divisors.',
+ phases:['Eight steps round a circle.','Three hits, spread as evenly as possible: the tresillo.','Five of eight: denser, still balanced.','Try it: choose hits, steps and rotation.'],
+ init:()=>({k:5,n:16,rot:0,bpm:120,step:-1}),anim:p=>({k:p<.5?3:5,n:8,rot:0,step:Math.floor(p*32)%8,p}),live:true,
+ draw(p,s){const pat=euclid(s.k,s.n,s.rot),cx=300,cy=185,R=130;let g=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${C.grid}" stroke-width="2"/>`;
+  const hits=[];pat.forEach((on,i)=>{const a=-Math.PI/2+i/s.n*TAU,x=cx+Math.cos(a)*R,y=cy+Math.sin(a)*R;if(on)hits.push([x,y]);g+=`<circle cx="${f2(x)}" cy="${f2(y)}" r="${on?13:6}" fill="${on?C.purple:'#fff'}" stroke="${i===s.step%s.n?C.coral:C.ink}" stroke-width="${i===s.step%s.n?4:1.5}"/>`});
+  if(hits.length>2)g+=`<polygon points="${hits.map(q=>q.map(f2).join(',')).join(' ')}" fill="${C.purple}" fill-opacity=".1" stroke="${C.purple}" stroke-dasharray="4 4"/>`;
+  g+=T(cx,cy-4,`E(${s.k},${s.n})`,{size:22,anchor:'middle',weight:700})+T(cx,cy+20,pat.map(v=>v?'x':'.').join(''),{size:13,anchor:'middle',fill:C.muted});return g},
+ tryUI:s=>({html:`<div class="row"><label>Hits <input type="range" id="k" min="1" max="16" value="${s.k}"></label><label>Steps <input type="range" id="n" min="2" max="16" value="${s.n}"></label><label>Rotate <input type="range" id="ro" min="0" max="15" value="${s.rot}"></label></div><div class="row">${[[3,8],[5,8],[4,16],[7,12],[5,16]].map(([k,n])=>`<button type="button" class="chip" data-k="${k}" data-n="${n}">E(${k},${n})</button>`).join('')}</div><p class="out" id="tout"></p>`,
+  bind(q,re,root){const sync=()=>{s.k=Math.min(s.k,s.n);q('#k').value=s.k;q('#n').value=s.n;re()};q('#k').oninput=e=>{s.k=+e.target.value;sync()};q('#n').oninput=e=>{s.n=+e.target.value;sync()};q('#ro').oninput=e=>{s.rot=+e.target.value;re()};root.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{s.k=+b.dataset.k;s.n=+b.dataset.n;s.rot=0;q('#ro').value=0;sync()})},
+  out:s=>({'3,8':'The tresillo.','5,8':'A rotation of the cinquillo.','4,16':'Four-on-the-floor.','7,12':'A common West African bell pattern, in one rotation.'})[s.k+','+s.n]||`${s.k} hits over ${s.n} steps.`}),
+ audio(ctx,out,s){const c=clock(ctx,s,1e6,(i,t)=>{const j=i%s.n;const pat=euclid(s.k,s.n,s.rot);if(pat[j])pluck(ctx,out,t,j===0?220:330,.18,'triangle',.6);else hat(ctx,out,t,.35)});return {update(){},stop:()=>c.stop()}}
+});
+/* 20 Polyrhythm */
+add({stage:'rhythm',term:'Polyrhythm',
+ def:`A ${W('polyrhythm','polyrhythm')} plays two different divisions of the same span at once. In three against four, one voice plays three even beats while the other plays four; they meet again only at the start.`,
+ ex:'Polyrhythms are central to many West African drumming traditions and run through jazz, techno and IDM.',
+ src:'<b>Arithmetic:</b> a:b polyrhythms line up every lowest-common-multiple subdivisions — 12 for 3:4, 15 for 3:5.',
+ phases:['Three beats round one circle.','Four beats round another, same length.','Together, they meet only at the top.','Try it: choose the two numbers.'],
+ init:()=>({a:3,b:4,bpm:90,t:0}),anim:p=>({a:3,b:4,p}),live:true,
+ draw(p,s){const span=4*60/(s.bpm||90);const now=s.p!=null?p*2:(Sound.on&&s.t0?(((Sound.time()-s.t0)%span+span)%span)/span:0);let g='';
+  [[s.a,170,C.purple],[s.b,430,C.coral]].forEach(([n,cx,col])=>{const R=95,cy=180;g+=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${C.grid}" stroke-width="2"/>`;for(let i=0;i<n;i++){const a=-Math.PI/2+i/n*TAU;const hit=Math.abs(((now%1)*n)-i)<.12;g+=`<circle cx="${f2(cx+Math.cos(a)*R)}" cy="${f2(cy+Math.sin(a)*R)}" r="${hit?16:11}" fill="${col}" opacity="${hit?1:.55}"/>`}
+   const a=-Math.PI/2+(now%1)*TAU;g+=`<line x1="${cx}" y1="${cy}" x2="${f2(cx+Math.cos(a)*R)}" y2="${f2(cy+Math.sin(a)*R)}" stroke="${C.ink}" stroke-width="2"/>`+T(cx,cy+8,String(n),{size:26,anchor:'middle',weight:700,fill:col})});
+  g+=T(300,340,`${s.a} against ${s.b}`,{size:16,anchor:'middle',weight:700});return g},
+ tryUI:s=>({html:`<div class="row"><label>Left <input type="range" id="pa" min="2" max="9" value="${s.a}"></label><label>Right <input type="range" id="pb" min="2" max="9" value="${s.b}"></label><label>Tempo <input type="range" id="bp" min="50" max="150" value="${s.bpm}"></label></div><p class="out" id="tout"></p>`,bind(q,re){q('#pa').oninput=e=>{s.a=+e.target.value;Sound.restart();re()};q('#pb').oninput=e=>{s.b=+e.target.value;Sound.restart();re()};q('#bp').oninput=e=>{s.bpm=+e.target.value;Sound.restart();re()}},out:s=>{const g=(x,y)=>y?g(y,x%y):x;return `They line up every ${s.a*s.b/g(s.a,s.b)} subdivisions.`}}),
+ audio(ctx,out,s){const span=4*60/s.bpm,L=s.a*s.b;s.t0=ctx.currentTime+.08;const c=clock(ctx,{bpm:0},L,(i,t)=>{if(i%(L/s.a)===0)pluck(ctx,out,t,i===0?440:330,.12,'triangle',.5);if(i%(L/s.b)===0)pluck(ctx,out,t,i===0?660:550,.1,'square',.25)},()=>span/L);return {update(){},stop:()=>c.stop()}}
+});
+/* 21 Delay */
+const pluckLoop=(ctx,dest,s)=>clock(ctx,{bpm:100},16,(i,t)=>{const seq=[57,null,null,60,null,null,64,null,62,null,null,null,null,null,null,null];if(seq[i])pluck(ctx,dest,t,mtof(seq[i]),.22,'sawtooth',.45)});
+add({stage:'fx',term:'Delay and feedback',
+ def:`A delay plays the sound back again after a set time. Feed some of that echo back in — ${W('feedback','feedback')} — and you get a trail of repeats, each quieter than the last.`,
+ ex:'Dub producers in 1970s Jamaica, such as King Tubby and Lee “Scratch” Perry, turned the mixing desk’s echo into an instrument; dub’s techniques flow straight into dubstep and much electronic music.',
+ src:'<b>Arithmetic:</b> a delay of 60 ÷ BPM × ¾ seconds gives the popular “dotted eighth” echo that sits between beats.',
+ phases:['One note.','An echo after the delay time.','Feedback: echoes of echoes, each a bit quieter.','Try it: set time and feedback.'],
+ init:()=>({time:.375,fb:.5,mix:.45}),anim:p=>({time:.35,fb:lerp(0,.7,seg(p,.4,.8)),mix:.5,p}),
+ draw(p,s){const x0=40,w=520,yb=300,sc=w/3;let g=`<line x1="${x0}" y1="${yb}" x2="${x0+w}" y2="${yb}" stroke="${C.ink}"/>`+T(x0+w,yb+20,'3 seconds',{size:11,fill:C.muted,anchor:'end'});
+  const n=s.p!=null&&p<.25?0:s.p!=null&&p<.4?1:30;let a=1,t=0;g+=`<rect x="${x0}" y="${yb-200}" width="10" height="200" fill="${C.purple}"/>`;
+  for(let k=1;k<=n;k++){t+=s.time;a=k===1?s.mix:a*s.fb;if(t>3||a<.02)break;g+=`<rect x="${f2(x0+t*sc)}" y="${f2(yb-200*a)}" width="10" height="${f2(200*a)}" fill="${C.coral}" opacity=".85"/>`}
+  g+=T(x0,40,'delay '+Math.round(s.time*1000)+' ms · feedback '+Math.round(s.fb*100)+'%',{size:14,weight:700});return g},
+ tryUI:s=>({html:`<div class="row"><label>Time <input type="range" id="dt" min="0.05" max="1" step="0.005" value="${s.time}"></label><label>Feedback <input type="range" id="fb" min="0" max="0.92" step="0.01" value="${s.fb}"></label><label>Mix <input type="range" id="mx" min="0" max="1" step="0.01" value="${s.mix}"></label></div><p class="out" id="tout"></p>`,bind(q,re){q('#dt').oninput=e=>{s.time=+e.target.value;re()};q('#fb').oninput=e=>{s.fb=+e.target.value;re()};q('#mx').oninput=e=>{s.mix=+e.target.value;re()}},out:s=>`At 100 BPM a dotted-eighth echo is ${(60/100*.75*1000).toFixed(0)} ms — try it.`}),
+ audio(ctx,out,s){const dry=ctx.createGain(),d=ctx.createDelay(2),fb=ctx.createGain(),wet=ctx.createGain();d.delayTime.value=s.time;fb.gain.value=s.fb;wet.gain.value=s.mix;dry.connect(out);dry.connect(d);d.connect(fb);fb.connect(d);d.connect(wet);wet.connect(out);const c=pluckLoop(ctx,dry,s);
+  return {update(s){d.delayTime.setTargetAtTime(s.time,ctx.currentTime,.05);fb.gain.setTargetAtTime(s.fb,ctx.currentTime,.02);wet.gain.setTargetAtTime(s.mix,ctx.currentTime,.02)},stop(){c.stop();fadeOut(fb,ctx);fadeOut(wet,ctx)}}}
+});
+/* 22 Reverb */
+function irBuf(ctx,sec){const len=Math.max(1,Math.floor(ctx.sampleRate*sec)),b=ctx.createBuffer(2,len,ctx.sampleRate);for(let c=0;c<2;c++){const d=b.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.6)}return b}
+add({stage:'fx',term:'Reverb',
+ def:`In a real room, sound bounces off every surface. Thousands of reflections blur into a smooth tail — ${W('reverb','reverb')} — whose length tells your ear how big the space is.`,
+ ex:'A short reverb makes a drum sound like it is in a small room; a long one sends a synth pad into a cathedral. Too much on everything turns a mix to mush.',
+ src:'<b>How it is made here:</b> convolution — the sound is combined with a recorded or generated “impulse response”, a fingerprint of the space. This page generates one from decaying noise.',
+ phases:['A clap in a room: the direct sound arrives first.','Early reflections follow from the nearest walls.','Then a dense, decaying tail.','Try it: change the size and the mix.'],
+ init:()=>({size:2.2,mix:.4}),anim:p=>({size:lerp(.4,3,seg(p,.6,.95)),mix:.4,p}),
+ draw(p,s){const o=s.p!=null?p:1;let g=`<rect x="40" y="40" width="240" height="150" fill="#fff" stroke="${C.ink}" stroke-width="2"/>`+T(160,210,'a room',{size:12,anchor:'middle',fill:C.muted});
+  const src=[90,140],ear=[230,90];g+=`<circle cx="${src[0]}" cy="${src[1]}" r="7" fill="${C.purple}"/><circle cx="${ear[0]}" cy="${ear[1]}" r="7" fill="${C.green}"/>`;
+  if(o>.1)g+=`<line x1="${src[0]}" y1="${src[1]}" x2="${ear[0]}" y2="${ear[1]}" stroke="${C.purple}" stroke-width="2.4"/>`;
+  [[90,40],[280,115],[160,190],[40,100]].forEach(([wx,wy],k)=>{if(o>.3+k*.05)g+=`<path d="M${src[0]} ${src[1]} L${wx} ${wy} L${ear[0]} ${ear[1]}" fill="none" stroke="${C.coral}" stroke-width="1.4" stroke-dasharray="4 3"/>`});
+  const x0=320,w=240,yb=200;g+=`<line x1="${x0}" y1="${yb}" x2="${x0+w}" y2="${yb}" stroke="${C.ink}"/>`+T(x0+w,yb+18,'time',{size:11,fill:C.muted,anchor:'end'});
+  if(o>.1)g+=`<rect x="${x0}" y="${yb-140}" width="5" height="140" fill="${C.purple}"/>`;
+  if(o>.3)[18,26,35,41,50].forEach((t,k)=>{g+=`<rect x="${x0+t}" y="${yb-90+k*12}" width="3" height="${90-k*12}" fill="${C.coral}"/>`});
+  if(o>.55){let d=`M${x0+55} ${yb}`;for(let i=0;i<=120;i++){const t=i/120,x=x0+55+t*(w-60)*Math.min(1,s.size/3),a=50*Math.pow(1-t,2.6)*(.6+.4*Math.abs(Math.sin(i*1.7)));d+=` L${f2(x)} ${f2(yb-a)}`}g+=`<path d="${d} L${f2(x0+55+(w-60)*Math.min(1,s.size/3))} ${yb} Z" fill="${C.coral}" opacity=".35"/>`}
+  g+=T(40,300,'decay '+s.size.toFixed(1)+' s · mix '+Math.round(s.mix*100)+'%',{size:15,weight:700});return g},
+ tryUI:s=>({html:`<div class="row"><label>Size <input type="range" id="rs" min="0.2" max="5" step="0.1" value="${s.size}"></label><label>Mix <input type="range" id="rm" min="0" max="1" step="0.01" value="${s.mix}"></label></div><p class="out" id="tout"></p>`,bind(q,re){q('#rs').onchange=e=>{s.size=+e.target.value;Sound.restart();re()};q('#rs').oninput=e=>{s.size=+e.target.value;re()};q('#rm').oninput=e=>{s.mix=+e.target.value;re()}},out:s=>s.size<.8?'A small room.':s.size<2.5?'A hall.':'A cathedral.'}),
+ audio(ctx,out,s){const dry=ctx.createGain(),cv=ctx.createConvolver(),wet=ctx.createGain(),src=ctx.createGain();cv.buffer=irBuf(ctx,s.size);dry.gain.value=1-s.mix*.5;wet.gain.value=s.mix*1.4;src.connect(dry);dry.connect(out);src.connect(cv);cv.connect(wet);wet.connect(out);const c=clock(ctx,{bpm:90},16,(i,t)=>{if(i%8===0)snare(ctx,src,t,.8);if(i===4||i===11)pluck(ctx,src,t,mtof(i===4?64:67),.15,'triangle',.5)});
+  return {update(s){wet.gain.setTargetAtTime(s.mix*1.4,ctx.currentTime,.02);dry.gain.setTargetAtTime(1-s.mix*.5,ctx.currentTime,.02)},stop(){c.stop();setTimeout(()=>fadeOut(wet,ctx),300)}}}
+});
+/* 23 Distortion */
+const shape=(x,d)=>Math.tanh(x*d)/Math.tanh(d);
+add({stage:'fx',term:'Distortion and clipping',
+ def:`Push a wave harder than a circuit can pass and its peaks get squashed — ${W('clipping','clipping')}. The flattened shape contains new harmonics, so the sound gets brighter, fuzzier and louder-seeming.`,
+ ex:'The acid house sound often pairs a resonant filter with overdrive. Gentle saturation adds warmth; hard clipping adds aggressive buzz.',
+ src:'<b>Picture:</b> grey is the clean sine; purple is the same wave through a soft-clipping curve (tanh). The bars show the odd harmonics clipping creates.',
+ phases:['A clean sine.','A little drive: the peaks round off.','More drive: the wave squares off — new harmonics appear.','Try it: turn up the drive (gently!).'],
+ init:()=>({drive:4}),anim:p=>({drive:lerp(1,12,seg(p,.2,.85)),p}),
+ draw(p,s){let g=axis(40,120,520,80)+P(path(t=>Math.sin(TAU*2*t),40,120,520,80),C.line,2)+P(path(t=>shape(Math.sin(TAU*2*t),s.drive),40,120,520,80),C.purple,2.8)+T(40,30,'drive ×'+s.drive.toFixed(1),{size:15,weight:700});
+  const N=64,h=[];for(let n=1;n<=9;n++){let re=0,im=0;for(let i=0;i<N;i++){const t=i/N,y=shape(Math.sin(TAU*t),s.drive);re+=y*Math.cos(TAU*n*t);im+=y*Math.sin(TAU*n*t)}h.push(Math.sqrt(re*re+im*im)*2/N)}
+  g+=bars(h,40,340,520,110,i=>i===0?C.blue:C.coral,i=>String(i+1))+T(40,222,'harmonics',{size:12,fill:C.muted});return g},
+ tryUI:s=>({html:`<div class="row"><label>Drive <input type="range" id="dr" min="1" max="30" step="0.1" value="${s.drive}"></label></div><p class="out" id="tout"></p>`,bind(q,re){q('#dr').oninput=e=>{s.drive=+e.target.value;re()}},out:s=>s.drive<2?'Clean.':s.drive<6?'Warm saturation.':'Hard clipping.'}),
+ audio(ctx,out,s){const o=ctx.createOscillator();o.frequency.value=110;const ws=ctx.createWaveShaper(),g=ctx.createGain();const set=s=>{const c=new Float32Array(1024);for(let i=0;i<1024;i++)c[i]=shape(i/511.5-1,s.drive);ws.curve=c};set(s);ws.oversample='4x';g.gain.value=.3;o.connect(ws);ws.connect(g);g.connect(out);o.start();return {update:set,stop(){fadeOut(g,ctx);setTimeout(()=>{try{o.stop()}catch(e){}},200)}}}
+});
+/* 24 Sidechain */
+add({stage:'fx',term:'Compression and sidechain',
+ def:`A ${W('compression','compressor')} turns a sound down when it gets loud. Route the kick drum into the compressor’s ${W('sidechain','sidechain')} input and the pad ducks every time the kick hits, then swells back — the “pumping” of much dance music.`,
+ ex:'Sidechain pumping became a signature of French house in the late 1990s and of much EDM since; it also simply makes room so the kick cuts through.',
+ src:'<b>Picture:</b> purple is the pad’s volume over one bar; coral marks the kicks. Amount sets how deep it ducks.',
+ phases:['A sustained pad, steady volume.','A kick on every beat.','Sidechain: the pad dips under each kick, then recovers.','Try it: set the amount and hear it pump.'],
+ init:()=>({amt:.75,bpm:124,step:-1}),anim:p=>({amt:lerp(0,.85,seg(p,.5,.8)),step:-1,p}),live:true,
+ draw(p,s){const x0=40,w=520,yb=300,h=200;let g=`<line x1="${x0}" y1="${yb}" x2="${x0+w}" y2="${yb}" stroke="${C.ink}"/>`;
+  const env=t=>{const ph=(t*4)%1;return 1-s.amt*Math.exp(-ph*6)};let d='';for(let i=0;i<=400;i++){const t=i/400;d+=(i?'L':'M')+f2(x0+w*t)+' '+f2(yb-h*.8*env(t))}g+=P(d,C.purple,3);
+  if(s.p==null||p>.25)for(let b=0;b<4;b++){const on=s.step>=0&&Math.floor(s.step/4)===b;g+=`<rect x="${x0+b*w/4}" y="${yb+8}" width="16" height="22" rx="4" fill="${C.coral}" opacity="${on?1:.6}"/>`}
+  g+=T(x0,40,'sidechain amount '+Math.round(s.amt*100)+'%',{size:15,weight:700})+T(x0,yb+48,'kick',{size:11.5,fill:C.coral});return g},
+ tryUI:s=>({html:`<div class="row"><label>Amount <input type="range" id="am" min="0" max="0.95" step="0.01" value="${s.amt}"></label></div><p class="out" id="tout"></p>`,bind(q,re){q('#am').oninput=e=>{s.amt=+e.target.value;re()}},out:s=>s.amt<.1?'No ducking: the kick and pad fight.':'Pumping.'}),
+ audio(ctx,out,s){const pad=ctx.createGain();pad.gain.value=.0;const lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=1800;lp.connect(pad);pad.connect(out);const oscs=[[57,-7],[60,6],[64,-4],[69,5]].map(([m,dt])=>{const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=mtof(m);o.detune.value=dt;const g=ctx.createGain();g.gain.value=.12;o.connect(g);g.connect(lp);o.start();return o});
+  const c=clock(ctx,s,16,(i,t)=>{if(i%4===0){kick(ctx,out,t,1);const g=pad.gain;g.cancelScheduledValues(t);g.setValueAtTime(.9*(1-s.amt),t);g.setTargetAtTime(.9,t+.02,.12)}});return {update(){},stop(){c.stop();fadeOut(pad,ctx);setTimeout(()=>oscs.forEach(o=>{try{o.stop()}catch(e){}}),250)}}}
+});
+/* 25 Panning */
+add({stage:'fx',term:'Stereo and panning',
+ def:`With two speakers, every sound can be placed somewhere between left and right — ${W('panning','panning')}. Spreading sounds across the stereo field keeps them from crowding each other.`,
+ ex:'Kick, bass and lead vocal usually sit in the centre; hats, percussion and pads are spread out. Auto-pan sweeps a sound side to side with an LFO.',
+ src:'<b>Headphones</b> make this scene clearest. Equal-power panning keeps the loudness steady as a sound moves.',
+ phases:['A sound in the centre.','Panned hard left.','Hard right.','Try it: place it yourself, or let it auto-pan.'],
+ init:()=>({pan:0,auto:0}),anim:p=>({pan:p<.33?0:p<.66?-1:1,auto:0,p}),live:true,
+ draw(p,s){const now=performance.now()/1000;const pan=s.p==null&&s.auto>0?Math.sin(TAU*s.auto*now):s.pan;let g=`<rect x="60" y="120" width="70" height="110" rx="10" fill="${C.ink}"/><rect x="470" y="120" width="70" height="110" rx="10" fill="${C.ink}"/>`+T(95,255,'L',{size:14,anchor:'middle',weight:700})+T(505,255,'R',{size:14,anchor:'middle',weight:700});
+  const L=Math.cos((pan+1)*Math.PI/4),R=Math.sin((pan+1)*Math.PI/4);g+=`<circle cx="95" cy="175" r="${f2(14+24*L)}" fill="${C.purple}" opacity=".5"/><circle cx="505" cy="175" r="${f2(14+24*R)}" fill="${C.purple}" opacity=".5"/>`;
+  g+=`<line x1="150" y1="320" x2="450" y2="320" stroke="${C.ink}"/><circle cx="${f2(300+pan*150)}" cy="320" r="11" fill="${C.coral}"/>`+person(300,140,C.green,'',.9)+T(300,355,pan<-.05?'left '+Math.round(-pan*100)+'%':pan>.05?'right '+Math.round(pan*100)+'%':'centre',{size:13,anchor:'middle',weight:700});return g},
+ tryUI:s=>({html:`<div class="row"><label>Pan <input type="range" id="pn" min="-1" max="1" step="0.01" value="${s.pan}"></label><label>Auto-pan rate <input type="range" id="au" min="0" max="2" step="0.05" value="${s.auto}"></label></div><p class="out" id="tout"></p>`,bind(q,re){q('#pn').oninput=e=>{s.pan=+e.target.value;re()};q('#au').oninput=e=>{s.auto=+e.target.value;Sound.restart();re()}},out:s=>s.auto>0?`Auto-panning ${s.auto.toFixed(2)} times a second.`:'Fixed position.'}),
+ audio(ctx,out,s){const pn=ctx.createStereoPanner();pn.pan.value=s.pan;pn.connect(out);let l=null;if(s.auto>0){l=ctx.createOscillator();l.frequency.value=s.auto;l.connect(pn.pan);l.start();pn.pan.value=0}const c=clock(ctx,{bpm:120},16,(i,t)=>{hat(ctx,pn,t,i%4===0?1:.6);if(i%4===2)pluck(ctx,pn,t,mtof([64,67,71,74][(i/4)|0]),.15,'square',.25)});
+  return {update(s){if(!l)pn.pan.setTargetAtTime(s.pan,ctx.currentTime,.02)},stop(){c.stop();if(l)setTimeout(()=>{try{l.stop()}catch(e){}},200)}}}
+});
+/* 26 Timeline */
+const EVENTS=[
+ [1897,'Telharmonium','Thaddeus Cahill’s vast electric instrument piped music down telephone lines.'],
+ [1920,'Theremin','Léon Theremin’s instrument, played without touch: hands move near two antennas.'],
+ [1928,'Ondes Martenot','Maurice Martenot’s keyboard and ribbon instrument, later used by Messiaen.'],
+ [1948,'Musique concrète','Pierre Schaeffer in Paris builds music from recorded sounds on disc and tape.'],
+ [1951,'Cologne studio','The WDR studio for electronic music; Stockhausen works there from 1953.'],
+ [1957,'Computer music','Max Mathews writes MUSIC at Bell Labs, the first widely used program to synthesise sound.'],
+ [1958,'Radiophonic Workshop','The BBC opens it; in 1963 Delia Derbyshire realises Ron Grainer’s Doctor Who theme.'],
+ [1964,'Moog modular','Robert Moog’s voltage-controlled synthesiser; Don Buchla builds his own on the US west coast.'],
+ [1968,'Switched-On Bach','Wendy Carlos’s Moog album brings synthesisers to a mass audience.'],
+ [1970,'Minimoog','A portable, playable synth that set the template for decades.'],
+ [1974,'Autobahn','Kraftwerk’s album makes machine-made pop.'],
+ [1977,'I Feel Love','Giorgio Moroder’s sequenced synths behind Donna Summer point the way to dance music.'],
+ [1980,'TR-808','Roland’s drum machine flops at first, then shapes hip-hop, electro and beyond.'],
+ [1983,'MIDI & DX7','A shared language for instruments arrives; Yamaha’s FM synth sells in huge numbers.'],
+ [1984,'Chicago house','DJs and producers around clubs such as the Warehouse turn drum machines into house music.'],
+ [1985,'Detroit techno','Juan Atkins, Derrick May and Kevin Saunderson shape techno.'],
+ [1987,'Acid house','Phuture’s “Acid Tracks” makes the squelch of the TB-303 a genre; UK rave follows in 1988.'],
+ [1993,'Jungle','Chopped, sped-up breakbeats and heavy bass from London; drum and bass grows from it.'],
+ [2001,'Laptop studios','Software such as Ableton Live makes a computer a complete studio and live instrument.'],
+ [2003,'Dubstep','From south London garage: half-time beats at about 140 BPM and sub-bass.']];
+add({stage:'history',term:'A short history',
+ def:'Electronic music has been invented several times over: as strange new instruments, as tape and studio experiments, as synthesisers and drum machines, and as software. Each wave of technology was bent to new uses by musicians — often ones its makers did not expect.',
+ ex:'The TR-808 and TB-303 were commercial failures as practice and accompaniment machines; second-hand and cheap, they became the sound of hip-hop and acid house.',
+ src:'<b>Dates</b> are approximate where the source history is fuzzy (genres rarely have one birthday). This is a sample of milestones, not a full history.',
+ phases:['Early electric instruments.','Tape, studios and the first computer music.','Synthesisers and drum machines go mainstream.','Clubs, genres and laptops. Try it: drag through the years.'],
+ init:()=>({y:1983}),anim:p=>({y:lerp(1895,2005,smooth(p)),p}),
+ draw(p,s){const X=y=>lerp(40,560,(y-1890)/(2010-1890));let g=`<line x1="40" y1="250" x2="560" y2="250" stroke="${C.ink}" stroke-width="2"/>`;for(let y=1900;y<=2000;y+=20)g+=T(X(y),272,String(y),{size:11,anchor:'middle',fill:C.muted});
+  let cur=EVENTS[0];EVENTS.forEach(e=>{if(e[0]<=s.y)cur=e;const on=e[0]<=s.y;g+=`<circle cx="${f2(X(e[0]))}" cy="250" r="${e===cur?9:5}" fill="${on?C.purple:'#fff'}" stroke="${C.purple}" stroke-width="2"/>`});
+  g+=`<line x1="${f2(X(s.y))}" y1="225" x2="${f2(X(s.y))}" y2="262" stroke="${C.coral}" stroke-width="3"/>`;
+  g+=T(40,60,String(cur[0]),{size:30,weight:700,fill:C.purple})+T(150,60,cur[1],{size:20,weight:700});const words=cur[2].split(' ');let line='',n=0;words.forEach(w=>{if((line+' '+w).length>62){g+=T(40,100+n*22,line.trim(),{size:15});n++;line=w}else line+=' '+w});g+=T(40,100+n*22,line.trim(),{size:15});
+  return g},
+ tryUI:s=>({html:`<div class="row"><label>Year <input type="range" id="yr" min="1890" max="2010" step="1" value="${Math.round(s.y)}"></label></div><div class="row">${EVENTS.filter((e,i)=>i%2===0).map(e=>`<button type="button" class="chip" data-y="${e[0]}">${e[0]}</button>`).join('')}</div><p class="out" id="tout"></p>`,
+  bind(q,re,root){q('#yr').oninput=e=>{s.y=+e.target.value;re()};root.querySelectorAll('[data-y]').forEach(b=>b.onclick=()=>{s.y=+b.dataset.y;q('#yr').value=s.y;re()})},out:s=>`${EVENTS.filter(e=>e[0]<=s.y).length} of ${EVENTS.length} milestones reached.`})
+});
+/* 27 MIDI */
+add({stage:'history',term:'MIDI',
+ def:`${W('midi','MIDI')} lets keyboards, drum machines, computers and synths talk. It sends instructions, not sound: “note 60 on, this hard”, then “note 60 off”. The receiving instrument decides what that sounds like.`,
+ ex:'A note-on message is three bytes: status (0x90 = note on, channel 1), note number (60 = middle C) and velocity (0–127).',
+ src:'<b>History:</b> MIDI was agreed by several manufacturers and shown publicly in 1983; MIDI 2.0 followed in 2020. The original five-pin cable ran at 31,250 bits per second.',
+ phases:['A key is pressed.','A note-on message travels down the cable.','The synth plays the note.','Try it: play and read the bytes.'],
+ init:()=>({m:60,vel:100,on:false}),anim:p=>({m:60,vel:100,on:p>.1&&p<.85,p}),
+ draw(p,s){const o=s.p!=null?p:1;let g=`<rect x="30" y="140" width="150" height="80" rx="10" fill="#fff" stroke="${C.ink}" stroke-width="2"/>`;for(let i=0;i<7;i++)g+=`<rect x="${42+i*18}" y="${160}" width="16" height="48" fill="${i===3&&s.on?C.purple:'#fff'}" stroke="${C.ink}"/>`;g+=T(105,240,'keyboard',{size:12,anchor:'middle',fill:C.muted});
+  g+=`<rect x="420" y="140" width="150" height="80" rx="10" fill="#fff" stroke="${C.ink}" stroke-width="2"/>`+T(495,185,'SYNTH',{size:15,anchor:'middle',weight:700})+T(495,240,'sound module',{size:12,anchor:'middle',fill:C.muted});
+  g+=`<path d="M180 180 C 260 120, 340 240, 420 180" fill="none" stroke="${C.ink}" stroke-width="3"/>`;
+  const st=s.on?0x90:0x80,bytes=[st,s.m,s.on?s.vel:64];const prog=s.p!=null?seg(p,.1,.4):1;
+  bytes.forEach((b,k)=>{const x=lerp(150,330,prog)+k*72;g+=`<g opacity="${f2(prog>0?1:0)}"><rect x="${f2(x)}" y="70" width="64" height="30" rx="6" fill="${[C.coral,C.blue,C.green][k]}"/>${T(x+32,90,'0x'+b.toString(16).toUpperCase().padStart(2,'0'),{size:13,anchor:'middle',fill:'#fff',weight:700})}</g>`});
+  g+=T(300,300,`${s.on?'Note on':'Note off'} · ${bytes.map(b=>'0x'+b.toString(16).toUpperCase().padStart(2,'0')).join(' ')}`,{size:17,anchor:'middle',weight:700});
+  g+=T(300,326,`status ${s.on?'note on':'note off'}, ch 1 · note ${s.m} (${mname(s.m)}) · velocity ${bytes[2]}`,{size:12.5,anchor:'middle',fill:C.muted});
+  if(s.on&&o>.4)g+=`<circle cx="575" cy="130" r="10" fill="${C.purple}" opacity=".6"/>`;return g},
+ tryUI:s=>({html:`<div class="row"><label>Velocity <input type="range" id="vl" min="1" max="127" value="${s.vel}"></label></div>`+keysHTML(55,18)+'<p class="out" id="tout"></p>',bind(q,re,root){q('#vl').oninput=e=>{s.vel=+e.target.value};bindKeys(root,(m,on)=>{s.m=m;s.on=on;re();Sound.note(m,on,s.vel)})},out:s=>`Each press sends three bytes. Velocity changes this synth’s loudness.`}),
+ audio(ctx,out){const vs={};return {note(m,on,vel=100){if(on){if(vs[m])return;const v=voice(ctx,out,{type:'square',freq:mtof(m),cutoff:1200+vel*25,gain:0});v.amp.gain.setTargetAtTime(.45*vel/127,ctx.currentTime,.005);vs[m]=v}else if(vs[m]){vs[m].stop();delete vs[m]}},update(){},stop(){Object.values(vs).forEach(v=>v.stop())}}}
+});
+
+/* ---------- keyboard helpers ---------- */
+const KEYMAP='awsedftgyhujkolp;';
+function keysHTML(start,count){let h='<div class="keys" role="group" aria-label="Keyboard">';for(let m=start;m<start+count;m++){const blk=[1,3,6,8,10].includes(m%12);h+=`<button type="button" class="${blk?'blk':''}" data-m="${m}" aria-label="${mname(m)}">${m%12===0||m===start?mname(m):''}</button>`}return h+'</div>'}
+let keyHandler=null;
+function bindKeys(root,fn){const down=new Set();root.querySelectorAll('[data-m]').forEach(b=>{const m=+b.dataset.m;const on=e=>{e.preventDefault();b.classList.add('on');fn(m,true)},off=()=>{if(!b.classList.contains('on'))return;b.classList.remove('on');fn(m,false)};b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointerleave',off)});
+ const first=+root.querySelector('[data-m]').dataset.m,base=first+((12-first%12)%12);
+ keyHandler=e=>{if(e.target.closest('input,select'))return;const i=KEYMAP.indexOf(e.key.toLowerCase());if(i<0||e.repeat)return;const m=base+i;const b=root.querySelector(`[data-m="${m}"]`);if(!b)return;if(e.type==='keydown'){if(down.has(m))return;down.add(m);b.classList.add('on');fn(m,true)}else{down.delete(m);b.classList.remove('on');fn(m,false)}e.preventDefault()}}
+
+/* ---------- Sound manager ---------- */
+const Sound={on:false,h:null,
+ time(){return AU.ctx?AU.ctx.currentTime:performance.now()/1000},
+ start(){const sc=SCENES[idx];if(!sc.audio)return;const ctx=AU.ensure();if(!ctx)return;this.h=sc.audio(ctx,AU.out,states[idx]);this.on=true;this.btn()},
+ stop(){if(this.h){try{this.h.stop()}catch(e){}}this.h=null;this.on=false;this.btn()},
+ restart(){if(this.on){if(this.h){try{this.h.stop()}catch(e){}}const sc=SCENES[idx];this.h=sc.audio(AU.ctx,AU.out,states[idx])}},
+ update(){if(this.h&&this.h.update)this.h.update(states[idx])},
+ note(m,on,v){if(!this.on&&on)this.start();if(this.h&&this.h.note)this.h.note(m,on,v)},
+ btn(){const b=document.getElementById('snd');if(b){b.setAttribute('aria-pressed',String(this.on));b.textContent=this.on?'■ Sound off':'🔊 Sound on'}}};
+
+/* ---------- App ---------- */
+let idx=0,t=0,playing=false,last=0,mode='watch',speed=1,hold=0,liveRaf=0;
+const states=SCENES.map(sc=>sc.init());
+const svg=$('drawing'),tryEl=$('try');
+const rich=s=>s.replace(/\[\[(\w+)\|([^\]]+)\]\]/g,(m,k,txt)=>GLOSSARY[k]?`<button type="button" class="word" data-word="${k}">${esc(txt)}</button>`:esc(txt));
+function render(){const sc=SCENES[idx];const p=mode==='try'?1:clamp(t/DUR,0,1);const st=mode==='try'?states[idx]:(sc.anim?sc.anim(p):states[idx]);
+ svg.innerHTML=`<title id="svg-title">${esc(sc.term)}</title>`+sc.draw(p,st);$('bar').style.width=(p*100).toFixed(1)+'%';
+ const ph=sc.phases;$('phase').textContent=mode==='try'?(ph[ph.length-1].includes('Try it:')?'Try it:'+ph[ph.length-1].split('Try it:')[1]:'Try it.'):ph[Math.min(ph.length-1,Math.floor(p*ph.length*.9999))];
+ if(mode==='try'){Sound.update();const o=$('tout');if(o&&tryEl._out)o.innerHTML=tryEl._out(states[idx])}}
+function liveLoop(){cancelAnimationFrame(liveRaf);const sc=SCENES[idx];if(mode==='try'&&sc.live){const step=()=>{render();liveRaf=requestAnimationFrame(step)};liveRaf=requestAnimationFrame(step)}}
+function setTry(){const sc=SCENES[idx];tryEl.innerHTML='';tryEl._out=null;keyHandler=null;const can=!!sc.tryUI;$('mode-try').disabled=!can;if(mode==='try'&&!can)mode='watch';
+ $('mode-watch').setAttribute('aria-pressed',String(mode==='watch'));$('mode-try').setAttribute('aria-pressed',String(mode==='try'));tryEl.classList.toggle('on',mode==='try');
+ if(mode==='try'){const ui=sc.tryUI(states[idx]);tryEl.innerHTML=(sc.audio?`<div class="row"><button type="button" class="snd" id="snd" aria-pressed="false">🔊 Sound on</button><span style="font-size:12.5px;color:var(--muted)">Volume down first.</span></div>`:'')+ui.html;tryEl._out=ui.out||null;ui.bind(sel=>tryEl.querySelector(sel),render,tryEl);
+  const b=$('snd');if(b)b.onclick=()=>{Sound.on?Sound.stop():Sound.start();render()}}
+ liveLoop()}
+function go(i,keepPlay){Sound.stop();idx=clamp(i,0,SCENES.length-1);t=keepPlay?0:DUR;hold=0;if(!keepPlay)setPlaying(false);
+ const sc=SCENES[idx],si=STAGES.findIndex(s=>s.id===sc.stage);$('stage-title').textContent=STAGES[si].name;$('counter').textContent=`${idx+1} / ${SCENES.length}`;
+ $('scene-eyebrow').textContent=`Stage ${si+1} · scene ${SCENES.filter((s,k)=>s.stage===sc.stage&&k<=idx).length} of ${SCENES.filter(s=>s.stage===sc.stage).length}`;
+ $('term').textContent=sc.term;$('definition').innerHTML=rich(sc.def);$('example').innerHTML=rich(sc.ex);$('source').innerHTML=rich(sc.src);
+ $('stages').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.stage===sc.stage)));
+ $('previous').disabled=idx===0;$('next').disabled=idx===SCENES.length-1;setTry();render();try{history.replaceState(null,'','#'+(idx+1))}catch(e){}}
+function setPlaying(on){playing=on;$('play').textContent=on?'❚❚ Pause':'▶ Play';if(on){last=performance.now();requestAnimationFrame(loop)}}
+function loop(now){if(!playing)return;const dt=Math.min(.1,(now-last)/1000);last=now;if(t<DUR){t=Math.min(DUR,t+dt*speed);render()}else{hold+=dt;if(hold>2.2){if(idx<SCENES.length-1){go(idx+1,true)}else{setPlaying(false);return}}}requestAnimationFrame(loop)}
+$('stages').innerHTML=STAGES.map((s,i)=>`<button type="button" data-stage="${s.id}" aria-pressed="false">${i+1} · ${esc(s.name)}</button>`).join('');
+$('stages').querySelectorAll('button').forEach(b=>b.onclick=()=>go(SCENES.findIndex(sc=>sc.stage===b.dataset.stage)));
+$('play').onclick=()=>{if(mode==='try'){mode='watch';Sound.stop();setTry()}if(playing)setPlaying(false);else{if(t>=DUR)t=0;hold=0;setPlaying(true)}};
+$('replay').onclick=()=>{if(mode==='try'){mode='watch';Sound.stop();setTry()}t=0;hold=0;setPlaying(true)};
+$('previous').onclick=()=>go(idx-1);$('next').onclick=()=>go(idx+1);$('speed').onchange=e=>{speed=+e.target.value};
+$('mode-watch').onclick=()=>{mode='watch';Sound.stop();setTry();render()};
+$('mode-try').onclick=()=>{if(!SCENES[idx].tryUI)return;mode='try';setPlaying(false);t=DUR;setTry();render()};
+document.addEventListener('keydown',e=>{if(keyHandler&&mode==='try'){keyHandler(e);if(e.defaultPrevented)return}if(e.target.closest('input,select,textarea,dialog'))return;if(e.key==='ArrowRight')go(idx+1);else if(e.key==='ArrowLeft')go(idx-1);else if(e.key===' '&&!e.target.closest('button')){e.preventDefault();$('play').click()}else if((e.key==='t'||e.key==='T')&&!keyHandler){mode==='try'?$('mode-watch').click():$('mode-try').click()}});
+document.addEventListener('keyup',e=>{if(keyHandler&&mode==='try')keyHandler(e)});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)Sound.stop()});
+const dlg=$('word-dialog');document.addEventListener('click',e=>{const b=e.target.closest('button.word');if(!b)return;const g=GLOSSARY[b.dataset.word];if(!g)return;$('word-title').textContent=g.t;$('word-here').textContent=g.h;$('word-contrast').textContent=g.c;$('word-example').textContent='Example: '+g.e;dlg.showModal?dlg.showModal():dlg.setAttribute('open','')});
+$('word-close').onclick=()=>dlg.close();
+function person(x,y,col,label,sc=1){return `<g><circle cx="${x}" cy="${y-30*sc}" r="${13*sc}" fill="${col}"/><path d="M${x-20*sc} ${y+10*sc} q${20*sc} ${-46*sc} ${40*sc} 0 z" fill="${col}"/></g>`}
+const h=parseInt((location.hash||'').slice(1),10);go(h>=1&&h<=SCENES.length?h-1:0);
+window.__EM={SCENES,go,renderAt:p=>{t=p*DUR;render()},Sound,states};
+})();
+</script>
+</body>
+</html>
