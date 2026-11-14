@@ -1,5 +1,5 @@
 <title>Zigzag Realms</title>
-<meta name="application-version" content="0.1">
+<meta name="application-version" content="0.1.1">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -247,7 +247,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
 <div class="wrap">
  <header class="top">
   <div>
-   <p class="eyebrow">A map that writes itself · v0.1</p>
+   <p class="eyebrow">A map that writes itself · v0.1.1</p>
    <h1>Zigzag Realms</h1>
    <p class="sub">A river with three towns, a woodland and its magical grove, a mountain with lakes, a waterfall and caves, and a desert are laid out when your journey begins, with townsfolk and creatures living among them. Claude writes everything else one step ahead of you. Every place is kept as a cell in a ZigZag structure, so you can find your way back.</p>
   </div>
@@ -2165,7 +2165,9 @@ function render(){renderPills();renderScriptButton();renderMap();renderCompass()
    events (birdsong, owls, crickets, drips, clinking cups, fire crackle, thunder) are
    scheduled at random, at rates set the same way.
    ============================================================ */
-const sound={ctx:null,on:true,started:false,beds:{},
+const sound={ctx:null,on:true,started:false,beds:{},vol:.8,revF:1,lastHere:null,lastScape:null,scapeName:"",
+ /* Each kind of place has its own room sound: [reverb seconds, wet level]. */
+ SCAPES:{cave:[4.6,.55,"cave"],falls:[2.3,.38,"waterfall"],water:[1.7,.28,"water"],forest:[1.3,.22,"woodland"],grove:[3.2,.42,"grove"],town:[.9,.18,"town"],open:[.8,.12,"open country"],heights:[2.9,.3,"heights"],desert:[.45,.05,"desert"]},
  init(){try{if(localStorage.getItem("zr-sound")==="off")this.on=false}catch(e){}},
  noise(type){const c=this.ctx,len=c.sampleRate*4,b=c.createBuffer(1,len,c.sampleRate),d=b.getChannelData(0);
   let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0,last=0;
@@ -2183,7 +2185,11 @@ const sound={ctx:null,on:true,started:false,beds:{},
  start(){
   if(this.started||!this.on)return;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
   try{this.ctx=new AC()}catch(e){return}
-  const c=this.ctx;this.master=c.createGain();this.master.gain.value=0;this.master.connect(c.destination);this.master.gain.setTargetAtTime(.8,c.currentTime,1);
+  const c=this.ctx;this.master=c.createGain();this.master.gain.value=0;this.master.gain.setTargetAtTime(this.vol,c.currentTime,1);
+  // master → dry path and two crossfading reverbs → out. A new reverb is grown on every move.
+  this.out=c.createGain();this.out.connect(c.destination);
+  this.dry=c.createGain();this.dry.gain.value=1;this.master.connect(this.dry);this.dry.connect(this.out);
+  this.verbs=[0,1].map(()=>{const cv=c.createConvolver(),g=c.createGain();g.gain.value=0;this.master.connect(cv);cv.connect(g);g.connect(this.out);return{cv,g}});this.verbIdx=0;
   this.echo=c.createDelay(1);this.echo.delayTime.value=.33;const fb=c.createGain();fb.gain.value=.42;this.echo.connect(fb);fb.connect(this.echo);this.echo.connect(this.master);
   const W=this.noise("white"),P=this.noise("pink"),B=this.noise("brown");
   this.white=W;this.brownBuf=B;
@@ -2200,7 +2206,7 @@ const sound={ctx:null,on:true,started:false,beds:{},
  },
  setOn(v){
   this.on=v;try{localStorage.setItem("zr-sound",v?"on":"off")}catch(e){}
-  if(v){if(!this.started)this.start();else{this.ctx.resume();this.master.gain.setTargetAtTime(.8,this.ctx.currentTime,.4)}}
+  if(v){if(!this.started)this.start();else{this.ctx.resume();this.master.gain.setTargetAtTime(this.vol,this.ctx.currentTime,.4)}}
   else if(this.started)this.master.gain.setTargetAtTime(0,this.ctx.currentTime,.3);
   renderSoundButton();
  },
@@ -2229,8 +2235,79 @@ const sound={ctx:null,on:true,started:false,beds:{},
    thunder:w.storm>.2?w.storm:ws&&ws.storm?.12:0
   };
  },
+ scape(){
+  const H=hereId()&&cell(hereId());if(!H)return"open";const T=H.terrain,z=zOf(H);
+  if(z<0||T==="cave"||T==="dungeon")return"cave";
+  if(H.falls||H.hole||H.t==="Behind the Falls")return"falls";
+  if(H.town)return"town";if(H.grove)return"grove";
+  if(H.river||H.lake||T==="water"||T==="swamp")return"water";
+  if(T==="forest")return"forest";if(T==="desert")return"desert";
+  if(T==="mountain"||T==="sky"||z>0)return"heights";
+  return"open";
+ },
+ impulse(seconds){
+  const c=this.ctx,len=Math.max(1,Math.floor(seconds*c.sampleRate)),b=c.createBuffer(2,len,c.sampleRate);
+  for(let ch=0;ch<2;ch++){const d=b.getChannelData(ch);for(let i=0;i<len;i++){const t=i/len;d[i]=(Math.random()*2-1)*Math.pow(1-t,2.2)*Math.exp(-t*2)}}
+  return b;
+ },
+ // Every move shifts the reverb and the volume by 20%, up or down, within sensible bounds
+ shift(v,lo,hi){const up=Math.random()<.5;let n=v*(up?1.2:.8);if(n>hi||n<lo)n=v*(up?.8:1.2);return n},
+ setReverb(scape,swell){
+  const c=this.ctx,now=c.currentTime,[sec,wet]=this.SCAPES[scape]||this.SCAPES.open;
+  this.revF=this.shift(this.revF,.55,1.6);
+  const next=this.verbs[1-this.verbIdx],prev=this.verbs[this.verbIdx];this.verbIdx=1-this.verbIdx;
+  next.cv.buffer=this.impulse(sec*this.revF);
+  const target=Math.min(.85,wet*this.revF);
+  next.g.gain.cancelScheduledValues(now);next.g.gain.setValueAtTime(next.g.gain.value,now);
+  if(swell){next.g.gain.setTargetAtTime(Math.min(1,target*2.2),now+.35,.2);next.g.gain.setTargetAtTime(target,now+2.4,1.1)}
+  else next.g.gain.setTargetAtTime(target,now,.35);
+  prev.g.gain.cancelScheduledValues(now);prev.g.gain.setValueAtTime(prev.g.gain.value,now);prev.g.gain.setTargetAtTime(0,now,swell?.12:.4);
+  this.dry.gain.setTargetAtTime(1-target*.45,now,.4);
+ },
+ onMove(e){
+  const c=this.ctx,now=c.currentTime,scape=this.scape(),changed=this.lastScape&&scape!==this.lastScape;
+  if(!this.on){this.lastScape=scape;return}
+  this.vol=this.shift(this.vol,.45,1);
+  this.setReverb(scape,changed);
+  const beds=["wind","water","falls","rain","leaves","crowd","drone","hum"];
+  if(changed){
+   // A new soundscape: the old one is cut away, a sweep carries you across, and the new one swells in too loud before settling
+   this.master.gain.cancelScheduledValues(now);this.master.gain.setValueAtTime(this.master.gain.value,now);
+   this.master.gain.setTargetAtTime(this.vol*.25,now,.08);this.master.gain.setTargetAtTime(this.vol*1.15,now+.4,.25);this.master.gain.setTargetAtTime(this.vol,now+2.6,1.2);
+   for(const k of beds){const g=this.beds[k].gain;g.cancelScheduledValues(now);g.setValueAtTime(g.value,now);g.setTargetAtTime(0,now,.07);g.setTargetAtTime(Math.min(1,e[k]*2.1),now+.42,.22);g.setTargetAtTime(e[k],now+2.6,1.3)}
+   this.sweep(this.lastScape,scape);this.signature(scape);
+  }else{
+   this.master.gain.setTargetAtTime(this.vol,now,.3);
+   for(const k of beds)this.beds[k].gain.setTargetAtTime(e[k],now,1.2);
+  }
+  this.lastScape=scape;this.scapeName=(this.SCAPES[scape]||this.SCAPES.open)[2];renderSoundButton();
+ },
+ // A filtered noise sweep across the boundary: up toward open and high places, down into enclosed and wet ones
+ sweep(from,to){
+  const c=this.ctx,t=c.currentTime,s=c.createBufferSource(),bp=this.filt("bandpass",800,1.4),g=c.createGain();s.buffer=this.white;
+  const rank={cave:0,falls:1,water:2,forest:3,grove:3,town:4,open:5,heights:6,desert:7};
+  const up=(rank[to]??4)>=(rank[from]??4),f0=up?250:5200,f1=up?5200:180;
+  bp.frequency.setValueAtTime(f0,t);bp.frequency.exponentialRampToValueAtTime(f1,t+1.1);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.45,t+.3);g.gain.exponentialRampToValueAtTime(.0001,t+1.3);
+  s.connect(bp);bp.connect(g);g.connect(this.master);s.start(t,Math.random()*2);s.stop(t+1.4);
+ },
+ // A short sound that announces each kind of place as you arrive
+ signature(scape){
+  const c=this.ctx,t=c.currentTime,burst=(buf,type,f,q,peak,dur,at=0)=>{const s=c.createBufferSource(),fl=this.filt(type,f,q),g=c.createGain();s.buffer=buf;g.gain.setValueAtTime(0,t+at);g.gain.linearRampToValueAtTime(peak,t+at+.04);g.gain.exponentialRampToValueAtTime(.0001,t+at+dur);s.connect(fl);fl.connect(g);g.connect(this.master);s.start(t+at,Math.random()*2);s.stop(t+at+dur+.1)};
+  if(scape==="water"){burst(this.white,"bandpass",1400,.8,.5,.6,.45);burst(this.white,"highpass",3000,.5,.25,.35,.6)}
+  else if(scape==="falls"){burst(this.brownBuf,"lowpass",700,.5,.9,2.2,.4)}
+  else if(scape==="desert"){burst(this.white,"bandpass",2600,3,.35,1.6,.4)}
+  else if(scape==="cave"){this.tone(70,38,2.2,.5,.4);this.drip();setTimeout(()=>this.started&&this.drip(),700)}
+  else if(scape==="forest"){for(let i=0;i<3;i++)setTimeout(()=>this.started&&this.birds(),450+i*260)}
+  else if(scape==="grove"){[523,659,784,1046].forEach((f,i)=>this.tone(f,f,1.6,.06,.45+i*.18))}
+  else if(scape==="town"){this.tone(392,392,2.4,.12,.45);this.tone(784,784,1.8,.04,.45);this.clink()}
+  else if(scape==="heights"){burst(this.white,"bandpass",600,.7,.55,1.8,.4)}
+  else{burst(this.white,"bandpass",900,.6,.25,1.1,.4)}
+ },
  update(){
   if(!this.started)return;const e=this.env();if(!e)return;const now=this.ctx.currentTime;
+  const here=hereId();
+  if(here!==this.lastHere){this.lastHere=here;this.e=e;this.onMove(e);return}
   for(const k of ["wind","water","falls","rain","leaves","crowd","drone","hum"])this.beds[k].gain.setTargetAtTime(e[k],now,1.5);
   this.e=e;
  },
@@ -2265,7 +2342,7 @@ sound.init();
 // Browsers only allow sound after the first click or key press, so the soundtrack starts then
 for(const ev of ["pointerdown","keydown"])document.addEventListener(ev,()=>{if(sound.on&&!sound.started)sound.start();else if(sound.started&&sound.ctx.state==="suspended"&&sound.on)sound.ctx.resume()},{capture:true});
 setInterval(()=>sound.tick(),1000);
-function renderSoundButton(){const b=$("sound-toggle");if(!b)return;b.setAttribute("aria-pressed",String(sound.on));b.innerHTML=sound.on?`Sound: <b>on</b>${sound.started?"":" (click anywhere to start)"}`:"Sound: <b>off</b>"}
+function renderSoundButton(){const b=$("sound-toggle");if(!b)return;b.setAttribute("aria-pressed",String(sound.on));b.innerHTML=sound.on?`Sound: <b>on</b>${sound.started?(sound.scapeName?` · ${esc(sound.scapeName)}, ${Math.round(sound.vol*100)}%, reverb ${Math.round(sound.revF*100)}%`:""):" (click anywhere to start)"}`:"Sound: <b>off</b>"}
 
 /* ============================================================
    Events and start-up
