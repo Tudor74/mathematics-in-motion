@@ -93,7 +93,9 @@ header.top .sub{color:var(--faint);font-size:15px;margin:4px 0 0;max-width:62ch}
 .legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--faint);margin:0}
 .legend .r{color:var(--danger)}.legend .p{color:var(--water)}.legend .m{color:var(--magic)}
 
-.compass{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-areas:". n u" "w c e" ". s d";gap:6px}
+.compass{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-areas:"nw n ne" "w c e" "sw s se" "u . d";gap:6px}
+.compass .nw{grid-area:nw}.compass .ne{grid-area:ne}.compass .sw{grid-area:sw}.compass .se{grid-area:se}
+.compass button.diag .dir{font-size:15px}
 .compass button{display:grid;gap:0;padding:6px 6px;min-height:58px;text-align:center;line-height:1.2}
 .compass button .dir{font-family:var(--display);font-size:17px;font-weight:700}
 .compass button .to{font-size:12px;color:var(--faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
@@ -214,12 +216,12 @@ details.zz summary{cursor:pointer;font-family:var(--mono);font-size:13px;color:v
 /* What you can see */
 .sees{list-style:none;margin:0 -7px;padding:0;display:grid;gap:2px}
 .sees li{font-size:15px}
-.sees li.shut{display:grid;grid-template-columns:4.6em minmax(0,1fr);gap:10px;align-items:baseline}
+.sees li.shut{display:grid;grid-template-columns:6.4em minmax(0,1fr);gap:10px;align-items:baseline}
 .sees .dname{font-family:var(--display);font-weight:700;text-transform:capitalize}
 .sees .dname button.dirlink{font-family:var(--display);font-weight:700;text-transform:capitalize}
 .sees .why{display:block;font-size:12.5px;color:var(--faint)}
 .sees li.shut{color:var(--faint);padding:4px 7px}
-.sees button.go{display:grid;grid-template-columns:4.6em minmax(0,1fr) auto;gap:10px;align-items:baseline;width:100%;min-height:36px;padding:4px 7px;text-align:left;font-weight:400;font-size:15px;background:transparent;border:1px solid transparent;border-radius:6px;color:var(--ink)}
+.sees button.go{display:grid;grid-template-columns:6.4em minmax(0,1fr) auto;gap:10px;align-items:baseline;width:100%;min-height:36px;padding:4px 7px;text-align:left;font-weight:400;font-size:15px;background:transparent;border:1px solid transparent;border-radius:6px;color:var(--ink)}
 .sees button.go .dname{color:var(--water);text-decoration:underline;text-decoration-style:dotted;text-underline-offset:.2em}
 .sees button.go .what{text-decoration:underline;text-decoration-color:transparent;text-underline-offset:.2em}
 .sees button.go .arrow{color:var(--faint);transition:transform .15s}
@@ -350,15 +352,19 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
    <section class="panel" aria-labelledby="moves-h" data-fold="moves">
     <div class="sectionhead"><h3 id="moves-h">Directions</h3></div>
     <div class="compass" id="compass">
+     <button class="nw diag" id="go-northwest" data-dir="northwest"><span class="dir">NW</span><span class="to"></span></button>
      <button class="n" id="go-north" data-dir="north"><span class="dir">North</span><span class="to"></span></button>
+     <button class="ne diag" id="go-northeast" data-dir="northeast"><span class="dir">NE</span><span class="to"></span></button>
      <button class="u vert" id="go-up" data-dir="up"><span class="dir">Up</span><span class="to"></span></button>
      <button class="w" id="go-west" data-dir="west"><span class="dir">West</span><span class="to"></span></button>
      <div class="c" id="compass-c">—</div>
      <button class="e" id="go-east" data-dir="east"><span class="dir">East</span><span class="to"></span></button>
+     <button class="sw diag" id="go-southwest" data-dir="southwest"><span class="dir">SW</span><span class="to"></span></button>
      <button class="s" id="go-south" data-dir="south"><span class="dir">South</span><span class="to"></span></button>
+     <button class="se diag" id="go-southeast" data-dir="southeast"><span class="dir">SE</span><span class="to"></span></button>
      <button class="d vert" id="go-down" data-dir="down"><span class="dir">Down</span><span class="to"></span></button>
     </div>
-    <p class="keys">Keys: arrows or W A S D to walk, E or Page Up to climb, Q or Page Down to descend, F to attack, R to make camp or take a room. Each step takes half an hour. Without a lantern you cannot travel at night or go underground.</p>
+    <p class="keys">Keys: arrows or W A S D to walk; Y U B N (or 7 9 1 3) to cut across a corner north-west, north-east, south-west or south-east, which takes 45 minutes; E or Page Up to climb, Q or Page Down to descend, F to attack, R to make camp or take a room. Each step takes half an hour. Without a lantern you cannot travel at night or go underground.</p>
    </section>
    <section class="panel social" aria-labelledby="soc-h" data-fold="social">
     <div class="sectionhead"><h3 id="soc-h">Who knows whom</h3><span class="mono" id="soc-count" style="font-size:12px;color:var(--faint)"></span></div>
@@ -1628,6 +1634,7 @@ function rangeBlock(H,v){
  return plan()==="free"?`A grey mist closes in beyond here. Free explorers can travel ${lim} squares from the start; supporters can roam the whole world.`:`A grey mist closes in beyond here. The world ends ${lim} squares from the start, for now.`;
 }
 async function move(dir){
+ if(DIAG[dir])return moveDiag(dir);
  if(busy||!charId()||!hereId()||isDowned())return;
  const here=hereId(),v=DIRS[dir],H=cell(here);
  const block=blockedBy(here,dir)||rangeBlock(H,v);
@@ -1652,15 +1659,68 @@ async function move(dir){
   busy=null;
   const b2=blockedBy(here,dir);if(b2){flash=b2;store.flush();render();return}
  }
- const next=coord.get(key),N=cell(next),firstTime=!N.visited;
- spendNight(STEP_MIN,gameNow());
- if(wrapC(H.x+v.dx)!==H.x+v.dx||wrapC(H.y+v.dy)!==H.y+v.dy)log("You walk into the veil of golden mist. For a long moment there is nothing but warm, bright haze, and then it thins, and you are on the far side of the world.","time");
+ arriveAt(coord.get(key),verb,H,v.dx,v.dy,STEP_MIN);
+}
+function arriveAt(next,verb,H,dx,dy,mins){
+ const N=cell(next),firstTime=!N.visited;
+ spendNight(mins,gameNow());
+ if(wrapC(H.x+dx)!==H.x+dx||wrapC(H.y+dy)!==H.y+dy)log("You walk into the veil of golden mist. For a long moment there is nothing but warm, bright haze, and then it thins, and you are on the far side of the world.","time");
  log(`You ${verb} ${firstTime?"into somewhere new: ":"to "}${N.t}.`);
  if(N.river&&N.river.crossing==="ford")fordCheck();
  enter(next,firstTime);shunPlayer();
- if(!isDowned())passTime(STEP_MIN);
+ if(!isDowned())passTime(mins);
  store.flush();render();
  if(!isDowned())ensureNeighbours(hereId());
+}
+
+/* Diagonal steps cut across a corner. They are not ZigZag dimensions: a diagonal step is allowed only
+   where you could also have gone round the corner, through one of the two side squares, so walls,
+   rivers, lakes, fires and anomalies still stand in the way. It takes 45 minutes instead of 30. */
+const DIAG={northeast:{dx:1,dy:1,via:["north","east"],keys:["9","u","U"],label:"north-east"},northwest:{dx:-1,dy:1,via:["north","west"],keys:["7","y","Y"],label:"north-west"},
+ southeast:{dx:1,dy:-1,via:["south","east"],keys:["3","n","N"],label:"south-east"},southwest:{dx:-1,dy:-1,via:["south","west"],keys:["1","b","B"],label:"south-west"}};
+const DIAG_MIN=45;
+function diagCheck(here,d){
+ const H=cell(here),D=DIAG[d],Z=zOf(H),key=ck(H.x+D.dx,H.y+D.dy,Z),tid=coord.get(key);
+ let why=null;
+ const rb=rangeBlock(H,{dx:D.dx,dy:D.dy,dz:0});if(rb)return{block:rb,key,target:tid};
+ for(const [a,b] of [D.via,[D.via[1],D.via[0]]]){
+  const b1=blockedBy(here,a);if(b1){why=why||b1;continue}
+  const sid=coord.get(ck(H.x+DIRS[a].dx,H.y+DIRS[a].dy,Z));if(!sid)continue;
+  const S=cell(sid),f=foeId(sid);if(f){why=why||`${cell(f).t} lurks at ${S.t}, on the corner.`;continue}
+  const b2=blockedBy(sid,b);if(b2){why=why||b2;continue}
+  return{side:sid,a,b,key,target:tid};
+ }
+ return{block:why||"You cannot see a way to cut across that corner yet.",key,target:tid};
+}
+async function moveDiag(d){
+ if(busy||!charId()||!hereId()||isDowned())return;
+ const here=hereId(),H=cell(here),D=DIAG[d];let r=diagCheck(here,d);
+ if(r.block){flash=r.block;render();return}
+ flash=null;
+ const f=foeId();
+ if(f){
+  const F=cell(f),dc=10+Math.floor(F.atk/2),dd=rnd(20),m=mod(sv("DEX")),tot=dd+m,txt=`DEX check: d20 → ${dd} ${sgn(m)} = ${tot} against DC ${dc}`;
+  if(tot<dc){say(`You try to get away ${D.label}, but ${F.t} cuts you off.`,"bad",txt);monsterTurn();store.flush();render();return}
+  log(`You escape ${F.designation} ${F.t}, heading ${D.label}.`,"good",txt);
+ }
+ if(!coord.get(r.key)){
+  busy={dir:d};render();
+  await ensureNeighbours(r.side);
+  if(!coord.get(r.key)){
+   const pos={x:wrapC(H.x+D.dx),y:wrapC(H.y+D.dy),z:zOf(H)};pos.dist=Math.abs(pos.x)+Math.abs(pos.y)+Math.abs(pos.z);
+   const data=await narrate(r.side,r.b,pos);data.exits=normExits(null,r.b);
+   if(!coord.get(r.key))createLocation(data,pos);
+  }
+  busy=null;
+  r=diagCheck(here,d);if(r.block){flash=r.block;store.flush();render();return}
+ }
+ arriveAt(coord.get(r.key),"walk "+D.label,H,D.dx,D.dy,DIAG_MIN);
+}
+function diagView(here,d){
+ const H=cell(here),r=diagCheck(here,d),T=r.target&&cell(r.target);
+ if(r.block&&!T)return null;              // nothing to show for an unknown corner you cannot reach
+ const text=T?(T.glimpse?`${T.glimpse}${T.glimpse.includes(T.t)?"":` (${T.t})`}`:T.t):"unexplored";
+ return{text,open:!r.block,why:r.block};
 }
 function fordCheck(){
  const d=rnd(20),m=mod(sv("STR")),tot=d+m,txt=`STR check: d20 → ${d} ${sgn(m)} = ${tot} against DC 10`;
@@ -2842,6 +2902,13 @@ function renderCompass(){
   to.textContent=fighting&&view.open?"Try to flee":view.text;
   b.title=view.why||(fighting?`Try to flee ${d}: a DEX check, and it strikes if you fail`:`You can see ${view.text}`);
  }
+ for(const d of Object.keys(DIAG)){
+  const b=$("go-"+d),to=b.querySelector(".to");
+  const view=here&&!isDowned()?diagView(here,d):null;
+  if(!view){b.disabled=true;to.textContent="";b.title=`No way ${DIAG[d].label} that you can see`;continue}
+  b.disabled=!!busy||!view.open;to.textContent=fighting&&view.open?"Try to flee":view.text;
+  b.title=view.why||`Cut across ${DIAG[d].label} (45 minutes): ${view.text}`;
+ }
  $("compass-c").innerHTML=here?`${coord.size} places<br>${esc(depthName(zOf(cell(here))))}`:"—";
 }
 function renderSees(here){
@@ -2853,6 +2920,11 @@ function renderSees(here){
   // An open way is one link across the whole row; a closed way stays plain text with its reason
   rows.push(view.open?`<li><button class="go" data-go="${d}" ${busy?"disabled":""} title="${verb}"><span class="dname">${d}</span><span class="what">${what}</span><span class="arrow" aria-hidden="true">→</span></button></li>`
    :`<li class="shut"><span class="dname">${d}</span><span>${what}${view.why?`<span class="why">${esc(view.why)}</span>`:""}</span></li>`);
+ }
+ for(const d of Object.keys(DIAG)){
+  const view=diagView(here,d);if(!view)continue;const lab=DIAG[d].label;
+  rows.push(view.open?`<li><button class="go" data-go="${d}" ${busy?"disabled":""} title="Go ${lab} (45 minutes)"><span class="dname">${lab}</span><span class="what">${esc(view.text)}</span><span class="arrow" aria-hidden="true">→</span></button></li>`
+   :`<li class="shut"><span class="dname">${lab}</span><span>${esc(view.text)}${view.why?`<span class="why">${esc(view.why)}</span>`:""}</span></li>`);
  }
  return`<div class="sectionhead"><h3>What you can see</h3></div><ul class="sees">${rows.join("")}</ul>`;
 }
@@ -3448,7 +3520,8 @@ document.addEventListener("click",e=>{
  const d=e.target.closest("#compass button[data-dir]");if(d){move(d.dataset.dir);return}
  const g=e.target.closest("#map g");if(g){if(g.dataset.dir)move(g.dataset.dir);else if(g.dataset.loc){const id=g.dataset.loc,H=cell(hereId()),C=cell(id);
   const dir=H&&C?Object.keys(DIRS).find(k=>coord.get(ck(H.x+DIRS[k].dx,H.y+DIRS[k].dy,zOf(H)+DIRS[k].dz))===id):null;
-  if(dir)move(dir);else travelTo(id)}}
+  const dg=!dir&&H&&C&&zOf(C)===zOf(H)?Object.keys(DIAG).find(k=>coord.get(ck(H.x+DIAG[k].dx,H.y+DIAG[k].dy,zOf(H)))===id&&!diagCheck(hereId(),k).block):null;
+  if(dir)move(dir);else if(dg)moveDiag(dg);else travelTo(id)}}
 });
 document.addEventListener("toggle",e=>{if(e.target.id==="zz-details")zzOpen=e.target.open},true);
 document.addEventListener("submit",e=>{const sf=e.target.closest("form[data-say]");if(sf){e.preventDefault();const t=sf.querySelector("input").value.trim();if(t){sf.querySelector("input").value="";mpPing(t.slice(0,160))}}});
@@ -3459,6 +3532,7 @@ document.addEventListener("keydown",e=>{
  if(e.target.closest("#map g")&&(e.key==="Enter"||e.key===" ")){e.preventDefault();e.target.closest("#map g").dispatchEvent(new MouseEvent("click",{bubbles:true}));return}
  if(e.metaKey||e.ctrlKey||e.altKey)return;
  for(const [d,v] of Object.entries(DIRS))if(v.keys.includes(e.key)){e.preventDefault();move(d);return}
+ for(const [d,v] of Object.entries(DIAG))if(v.keys.includes(e.key)){e.preventDefault();moveDiag(d);return}
  if(e.key==="r"||e.key==="R")rest();
  if(e.key==="f"||e.key==="F")attack(0);
 });
