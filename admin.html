@@ -29,7 +29,7 @@ td.num{font-variant-numeric:tabular-nums}
 <main>
 <section>
  <h1>Research refresh</h1>
- <p class="muted">Keeps every lesson's research panels pre-loaded, so visitors never wait for arXiv or the AI. A Puter schedule on your account calls the research worker every 15 minutes; each call refreshes the lesson with the oldest data, cycling through all lessons about twice a day.</p>
+ <p class="muted">Keeps every lesson's research panels pre-loaded, so visitors never wait for arXiv or the AI. A Puter schedule on your account calls the research worker every 15 minutes; each call refreshes the lesson with the oldest data, so every lesson is refreshed once a day and AI text is written at most once a day per lesson.</p>
  <p>Schedule: <span id="state">checking…</span></p>
  <div class="row">
   <button class="primary" id="enable">Enable automatic refresh</button>
@@ -99,7 +99,7 @@ async function runOnce(){
 }
 async function loadAges(){
  try{const d=await (await fetch(WORKER+'/refresh-status',{cache:'no-store'})).json();
-  const cell=h=>h==null?'<td class="none">never</td>':`<td class="num ${h<12?'fresh':'old'}">${h<1?Math.round(h*60)+' min':h.toFixed(1)+' h'}</td>`;
+  const cell=h=>h==null?'<td class="none">never</td>':`<td class="num ${h<26?'fresh':'old'}">${h<1?Math.round(h*60)+' min':h.toFixed(1)+' h'}</td>`;
   $('ages').innerHTML=d.lessons.map(r=>`<tr><td>${r.id}</td>${cell(r.papersHours)}${cell(r.openHours)}${cell(r.peopleHours)}</tr>`).join('');
   $('last').textContent=d.last?`Last refresh: ${d.last.lesson} (${d.last.done.join(', ')}) at ${new Date(d.last.at).toLocaleString('en-GB')} in ${(d.last.ms/1000).toFixed(1)} s.`:'No scheduled refresh has run yet.';
  }catch(e){$('last').textContent='Could not reach the research worker.'}

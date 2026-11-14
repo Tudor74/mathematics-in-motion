@@ -3607,13 +3607,13 @@ const WAIT = 3100;                // ms between arXiv requests
 const BUDGET = 21000;             // ms of arXiv work per incoming request
 const PAPERS_TTL = 6 * 3600e3;    // re-check the newest submissions every six hours
 const OPEN_TTL = 24 * 3600e3;     // counts for the current year/month refresh daily
-const MODEL = 'claude-sonnet-4-6';
+const MODEL = 'gpt-4o-mini';      // cheapest capable model on Puter (~0.3 credits per call)
 const PEOPLE_TTL = 7 * 24 * 3600e3;  // Wikipedia bios and arXiv author records refresh weekly
 // Visitors are served the cache while it is younger than VISITOR_MAX_AGE; the scheduled
 // /refresh-next job keeps it fresh, so pages never wait on arXiv or the AI. If the job stops,
 // requests fall back to refreshing live once the cache is older than this.
-const VISITOR_MAX_AGE = 26 * 3600e3;
-const REFRESH_AGE = 6 * 3600e3;      // the job refreshes a lesson once its data is older than this
+const VISITOR_MAX_AGE = 48 * 3600e3;
+const REFRESH_AGE = 24 * 3600e3;     // the job refreshes each lesson once a day, so AI text is written at most daily
 const UA = 'MathematicsInMotion/0.16 (educational site; https://mathematics-in-motion.puter.site)';
 const API = 'https://export.arxiv.org/api/query';
 const K = (...parts) => 'mimr:' + parts.join(':');

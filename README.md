@@ -42,8 +42,9 @@ flag and the curated card shows it for about four months.
 
 `admin.html` (served at `/admin.html` on the Puter site) creates a Puter schedule on the
 owner's account that calls the worker's `/refresh-next` every 15 minutes. Each call refreshes
-the lesson with the oldest cached data. Visitors are served the cache while it is under
-26 hours old, so pages never wait for arXiv or the AI. `/refresh-status` shows cache ages.
+the lesson with the oldest cached data, so each lesson (and its AI text, written with
+gpt-4o-mini) is refreshed once a day. Visitors are served the cache while it is under
+48 hours old, so pages never wait for arXiv or the AI. `/refresh-status` shows cache ages.
 
 ## Browser history (v0.19)
 
