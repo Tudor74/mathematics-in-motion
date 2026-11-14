@@ -213,6 +213,7 @@ function detail(it){
   ${S('Nearest on the map',`<div class="links">${near.map(([o,d])=>`<a href="#/t/${o.slug}">${esc(o.name)} · ${d.toFixed(2)}</a>`).join('')}</div>`)}
   ${it.related.length?S('Related',`<div class="links">${it.related.map(n=>byName[n]).filter(Boolean).map(o=>`<a href="#/t/${o.slug}">${esc(o.name)}</a>`).join('')}</div>`):''}
   ${it.familyNote?`<p class="note">${esc(it.familyNote)}</p>`:''}
+  ${it.confidence!=='high'?`<p class="note" style="margin-top:8px"><b>Check before relying on this:</b> some details in this entry, such as dates, the evidence rating or the current guidance position, could not be fully verified.</p>`:''}
  </article></div>
  <nav class="pager" aria-label="More in this family"><a href="#/t/${prev.slug}">← ${esc(prev.name)}</a><span class="count">${k+1} of ${famList.length} in ${esc(fam.name.toLowerCase())}</span><a href="#/t/${next.slug}">${esc(next.name)} →</a></nav>`;
  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
