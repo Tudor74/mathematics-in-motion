@@ -60,3 +60,10 @@ hard to confuse. Run `node tools/realm-script.mjs` to regenerate.
 - **Allies**: friends and following creatures strike anomalies beside you.
 - **Reputation** (the mean of everyone's tie to you) decides who gives work, how
   well it pays, quest rewards of magic items, and which magic items shops offer.
+- **The paladin** (v0.2.1): your standing is ranked against every townsperson's
+  and creature's standing in the social graph. At the 5th percentile or below,
+  with a negative reputation, a paladin rides out from a sanctuary and pursues
+  you at two squares per half hour (twice your speed), routing around the river.
+  On catching you they defeat you, take your magic items, restore your standing
+  to a random point between the 5th and 20th percentile, and leave seven days of
+  rations. They do not ride out again for two days.

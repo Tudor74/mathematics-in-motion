@@ -1,5 +1,5 @@
 <title>Zigzag Realms</title>
-<meta name="application-version" content="0.2">
+<meta name="application-version" content="0.2.1">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -257,7 +257,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
 <div class="wrap">
  <header class="top">
   <div>
-   <p class="eyebrow">A map that writes itself · v0.2</p>
+   <p class="eyebrow">A map that writes itself · v0.2.1</p>
    <h1>Zigzag Realms</h1>
    <p class="sub">A river with three towns, a woodland and its magical grove, a mountain with lakes, a waterfall and caves, and a desert are laid out when your journey begins, with townsfolk and creatures living among them. Claude writes everything else one step ahead of you. Every place is kept as a cell in a ZigZag structure, so you can find your way back.</p>
   </div>
@@ -1253,9 +1253,10 @@ function simulate(){
    f.wild?creatureTick(f,t):npcTick(f,t);
   }
   socialStep();
+  paladinTick();
  }
  for(const f of npcs())touch(f.id);
- r.npcT=t;touch("root");recordBloom();
+ r.npcT=t;touch("root");recordBloom();checkPaladin();
 }
 function passTime(min){const r=cell("root");if(!r)return;r.clock={base:gameNow()+min,real:Date.now()};touch("root");simulate()}
 
@@ -2027,7 +2028,7 @@ function attackAgent(id){
   n.fight="over";n.fear={loc:hereId(),until:gameNow()+1440};log(`${n.t} ${n.wild?"bolts":"flees"} from you. The fight is over.`,"bad");
   if(n.wild&&["fox","badger"].includes(n.species)&&Math.random()<.4){const r=roll("1d4");setStat("HP",sv("HP")-r.total);log(`${n.t} bites you as it goes: ${r.total} damage.`,"bad",r.text)}
  }
- passTime(1);store.flush();render();
+ passTime(1);checkPaladin();store.flush();render();
 }
 
 /* Allies: friends at your side and companions who follow you join fights against anomalies */
@@ -2194,6 +2195,69 @@ function shunPlayer(){
 }
 
 /* ============================================================
+   The paladin. Your standing is ranked against every townsperson's and creature's standing
+   in the social graph (each one's mean incoming tie, creatures counting half). If you fall to
+   the 5th percentile or below while your reputation is negative, a paladin rides out from a
+   sanctuary and pursues you at twice your speed: two squares for every half hour. When they
+   reach you they defeat you, take your magic items, restore your standing to a random point
+   between the 5th and 20th percentile, and leave you provisions for seven days.
+   ============================================================ */
+const PALADIN_NAMES=["Dame Aldith","Sir Corran","Dame Ysmay","Sir Hollis","Dame Wenna","Sir Bertrand"];
+function standingOf(target){
+ const ch=charId()&&cell(charId());let s=0,w=0;
+ for(const a of npcs().concat(ch?[ch]:[])){if(a===target)continue;const k=a.wild?.5:1;s+=tie(a,target)*k;w+=k}
+ return w?s/w:0;
+}
+function standingPercentile(){
+ const ch=charId()&&cell(charId());if(!ch)return 50;const mine=reputation(),others=npcs().map(standingOf);
+ return others.length?100*others.filter(s=>s<mine).length/others.length:50;
+}
+const paladin=()=>Object.values(zz.cells).find(c=>c.k==="paladin");
+function checkPaladin(){
+ const r=cell("root");if(!r||!charId()||paladin()||isDowned())return;
+ if(r.paladinRestUntil&&gameNow()<r.paladinRestUntil)return;
+ if(reputation()>=-.05||standingPercentile()>5)return;
+ const H=cell(hereId()),S=sanctuaries().sort((a,b)=>(Math.abs(b.x-H.x)+Math.abs(b.y-H.y))-(Math.abs(a.x-H.x)+Math.abs(a.y-H.y)))[0]||cell(r.home);
+ const id=newCell("paladin",{t:`${pick(PALADIN_NAMES)} of ${S.t.replace(/^(The |Sanctuary of the |Shrine of |Hospice of the )/,"")}`,x:S.x,y:S.y,from:S.t});
+ log(`Your name has sunk to the bottom of the world's regard. ${cell(id).t}, a paladin, rides out from ${S.t} to find you.`,"bad");
+}
+// Shortest paths for the paladin across the whole wrapped world, around the river and lakes
+function pathDist(tx,ty){
+ const n=2*WORLD_R+1,dist=new Map([[ck(tx,ty,0),0]]),q=[[wrapC(tx),wrapC(ty)]],magic=magicPresent();
+ for(let h=0;h<q.length;h++){const [x,y]=q[h],d=dist.get(ck(x,y,0));
+  for(const k of FLAT){const v=DIRS[k],nx=wrapC(x+v.dx),ny=wrapC(y+v.dy),key=ck(nx,ny,0);if(dist.has(key)||!passXY(nx,ny,magic))continue;dist.set(key,d+1);q.push([nx,ny])}}
+ return dist;
+}
+function paladinTick(){
+ const P=paladin();if(!P||isDowned())return;const H=cell(hereId());if(!H)return;
+ const field=pathDist(H.x,H.y);
+ for(let s=0;s<2;s++){
+  if(P.x===H.x&&P.y===H.y)break;
+  const cur=field.get(ck(P.x,P.y,0))??1e9;let best=null,bd=cur;
+  for(const k of FLAT){const v=DIRS[k],nx=wrapC(P.x+v.dx),ny=wrapC(P.y+v.dy),d=field.get(ck(nx,ny,0));if(d!==undefined&&d<bd){bd=d;best=[nx,ny]}}
+  if(best){P.x=best[0];P.y=best[1]}else break;
+ }
+ touch(P.id);
+ const d=field.get(ck(P.x,P.y,0))??99;
+ if(P.x===H.x&&P.y===H.y)paladinCatch(P);
+ else if(d<=3&&!P.warned){P.warned=true;log(`Hoofbeats behind you: ${P.t} is ${d} squares away.`,"bad")}
+}
+function paladinCatch(P){
+ const ch=cell(charId()),H=cell(hereId());
+ const magic=packIds().filter(id=>cell(id).magic),names=magic.map(id=>cell(id).t);
+ for(const id of magic){excise(id,"contain");destroy(id)}
+ setStat("HP",Math.max(1,Math.floor(sv("MAXHP")/3)));
+ // Restore standing to a random point between the 5th and 20th percentile
+ const others=npcs().map(standingOf).sort((a,b)=>a-b),p=5+Math.random()*15;
+ const target=others.length?others[Math.min(others.length-1,Math.floor(p/100*others.length))]+.005:0,delta=target-reputation();
+ for(const n of npcs()){n.ties=n.ties||{};n.ties[ch.id]=+clamp1((n.ties[ch.id]||0)+delta).toFixed(3);touch(n.id)}
+ for(let i=0;i<7;i++)appendTo(ch.id,"contain",itemCell(normItem({name:"Paladin's ration",description:`One day's food, left by ${P.t}.`,kind:"food",weight:1,value:1,heal:"1d4"})));
+ rounds=[];
+ log(`${P.t} catches you at ${H.t}. The fight is short: you are beaten to the ground.${names.length?` The paladin takes ${names.join(", ")}.`:""} Before riding away, ${P.t.split(" ")[0]==="Dame"?"she":"he"} sets your name back among the living and leaves you food for seven days. Your standing is now at the ${Math.round(standingPercentile())}th percentile.`,"bad");
+ destroy(P.id);cell("root").paladinRestUntil=gameNow()+2*1440;touch("root");
+}
+
+/* ============================================================
    Rendering
    ============================================================ */
 const $=id=>document.getElementById(id);
@@ -2267,6 +2331,7 @@ function renderMap(){
   out+=`</g>`;}
  for(const d of FLAT){const v=DIRS[d],id=coord.get(ck(H.x+v.dx,H.y+v.dy,Z));if((id&&visible(cell(id)))||!exitOpen(H,d))continue;const [px,py]=P(v.dx,v.dy);
   out+=`<g data-dir="${d}"><rect class="frontier" x="${px+7}" y="${py+7}" width="46" height="46" rx="5" tabindex="0" role="button" aria-label="Explore ${d}"><title>Explore ${d}</title></rect><text class="q" x="${px+30}" y="${py+36}" text-anchor="middle">${genFor===here?"…":"?"}</text></g>`;}
+ const pal=paladin();if(pal&&Z>=0){const dx=wrapC(pal.x-H.x),dy=wrapC(pal.y-H.y);if(Math.abs(dx)<=R&&Math.abs(dy)<=R){const [qx,qy]=P(dx,dy);out+=`<path class="threat" d="M${qx+22} ${qy+10} h16 v8 q0 10 -8 14 q-8 -4 -8 -14 Z"><title>${esc(pal.t)}, a paladin hunting you</title></path>`}}
  const [hx,hy]=P(0,0);
  out+=`<rect class="here" x="${hx+3}" y="${hy+3}" width="54" height="54" rx="7" pointer-events="none"/><circle class="pawn" cx="${hx+44}" cy="${hy+44}" r="6"/>`;
  if(ws&&ws.storm&&Z>=0){const sx=wrapC(Math.round(ws.storm.x)-H.x),sy=wrapC(Math.round(ws.storm.y)-H.y);const [qx,qy]=P(sx,sy);out+=`<circle class="stormring" cx="${qx+30}" cy="${qy+30}" r="${ws.storm.r*S*.8}"/>`}
@@ -2405,6 +2470,7 @@ function renderPlace(){
  else if(fireNear(L.x,L.y)&&zOf(L)===0)html+=`<p class="flash">Smoke drifts across your path: there is a fire close by.</p>`;
  if(isNight(t)&&!hasLight()&&!L.town&&zOf(L)>=0)html+=`<p class="note">It is dark and you have no lantern. Make camp here until dawn, or reach a town and take a room at the inn.</p>`;
  if(L.town)html+=`<p class="note">A room at the inn costs 2 gp and heals you fully. ${cell(here).c["residents+"]?`${rank(here,"residents").length} people call ${esc(L.t)} home.`:""} Goods for sale are listed below.</p>`;
+ const P=paladin();if(P){const d=Math.abs(wrapC(P.x-L.x))+Math.abs(wrapC(P.y-L.y));html+=`<p class="flash sharp">${esc(P.t)}, a paladin from ${esc(P.from)}, is hunting you, about ${d} square${d===1?"":"s"} away, moving two squares for each of yours. When they reach you, they will take your magic items.</p>`}
  if(L.monument)html+=renderMonument(L);
  if(L.hazard&&L.outcome){const o=L.outcome;html+=`<div class="hazard${o.ok?" passed":""}"><b>${esc(L.hazard.name)}.</b> ${esc(L.hazard.text)} ${o.ok?"You get through unharmed.":`You take ${o.dmg} damage.`}${here===lastHazard?`<span class="roll">${esc(o.roll)}</span>`:""}</div>`}
  if(f)html+=renderFoe(f);
@@ -2456,7 +2522,7 @@ function renderSheet(){
  <dl class="facts"><div><dt>Armour class</dt><dd>${armourClass()}</dd></div><div><dt>Proficiency</dt><dd>+${prof()}</dd></div><div><dt>Weapon</dt><dd>${w?esc(w.dmg||"1d6"):"1d2"}</dd></div><div><dt>Light</dt><dd>${hasLight()?"lantern":"none"}</dd></div><div><dt>XP</dt><dd>${sv("XP")} / ${sv("LVL")*100}</dd></div><div><dt>Gold</dt><dd>${sv("GP")} gp</dd></div></dl>
  <p class="note">${esc(CLASS_NOTES[ch.cls]||"")}</p>
  <div class="btnrow"><button id="rest" ${restBlocked?"disabled":""} title="${L&&L.town?"Pay 2 gp for a room and sleep until dawn (or eight hours): full HP.":"Make camp: sleep until dawn at night, or eight hours by day, for half your HP."}">${L&&L.town?"Take a room at the inn · 2 gp":"Make camp"}</button>${foeId()?'<span class="note">Not while it is here.</span>':""}</div>
- <dl class="facts"><div><dt>Reputation</dt><dd>${repTier()} ${reputation()>=0?"+":"−"}${Math.abs(reputation()).toFixed(2)}</dd></div><div><dt>Magic offered</dt><dd>${reputation()>=.5?"rare and common":reputation()>=.25?"common":"none"}</dd></div></dl>
+ <dl class="facts"><div><dt>Reputation</dt><dd>${repTier()} ${reputation()>=0?"+":"−"}${Math.abs(reputation()).toFixed(2)}</dd></div><div><dt>Standing</dt><dd>${Math.round(standingPercentile())}th pct</dd></div><div><dt>Magic offered</dt><dd>${reputation()>=.5?"rare and common":reputation()>=.25?"common":"none"}</dd></div></dl>
  <dl class="facts"><div><dt>Plan</dt><dd>${e.plan==="supporter"?"supporter":"free explorer"}</dd></div><div><dt>Range</dt><dd>${exploreRange()>=WORLD_R?"whole world":exploreRange()+" squares"}</dd></div><div><dt>Resurrections</dt><dd>${e.tokens}</dd></div></dl>
  <div class="btnrow"><button class="small" id="plan-info">Plans and prices</button><button class="small" id="plan-preview" title="For testing only: payments are not connected yet">${e.plan==="supporter"?"Stop supporter preview":"Preview supporter (testing)"}</button></div>
  ${quests().length?`<div class="sectionhead"><h3>Quests</h3><span class="mono" style="font-size:12px;color:var(--faint)">${quests().filter(q=>!q.done).length} open</span></div><ul class="quests">${quests().slice(-8).reverse().map(q=>`<li class="${q.done?(q.failed?"failed":"done"):""}">${q.done?(q.failed?"Failed: ":"Done: "):""}${esc(q.giverName)} asked you to ${esc(q.desc)} · ${q.gold} gp</li>`).join("")}</ul>`:""}
