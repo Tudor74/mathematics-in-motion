@@ -2755,9 +2755,22 @@ function renderAccount(){
  const el=$("account");if(!el)return;
  const signin=puterReady&&store.mode!=="puter"?`<button class="small" id="puter-signin">Sign in to save and use AI</button>`:"";
  const who=(puterUser?`<span class="pill">Signed in: <b>${esc(puterUser)}</b></span>`:"")+(mp.on()?`<span class="pill" title="Players seen in the last three minutes">Shared realm: <b>${mp.status?esc(mp.status):mp.online==null?"connecting…":mp.online+" online"}</b></span>`:"");
- el.innerHTML=`${who}${signin}`;
+ // Players who already have a world of their own can move to the shared realm from here
+ const join=canJoinRealm()&&!mp.on()&&charId()?(joinArmed
+  ?`<span class="confirm">Move to the shared realm? You roll a new character there and this world is erased. <button class="small" id="join-yes">Move</button><button class="small" id="join-no">Stay</button></span>`
+  :`<button class="small primary" id="join-realm">Join the shared realm</button>`):"";
+ el.innerHTML=`${who}${signin}${join}`;
  const b=$("puter-signin");if(b)b.onclick=puterSignIn;
+ if($("join-realm"))$("join-realm").onclick=()=>{joinArmed=true;renderAccount()};
+ if($("join-no"))$("join-no").onclick=()=>{joinArmed=false;renderAccount()};
+ if($("join-yes"))$("join-yes").onclick=()=>{
+  joinArmed=false;const ch=cell(charId()),keep=cell("root")&&cell("root").ent;
+  draft.name=ch.t;draft.cls=ch.cls;draft.stats=rollStats();draft.ent=keep;draft.shared=true;
+  for(const id of Object.keys(zz.cells))zz.removed.add(id);zz.cells={};coord.clear();fieldCache.clear();zz.dirty.clear();rounds=[];flash=null;
+  store.flush();render();window.scrollTo(0,0);
+ };
 }
+let joinArmed=false;
 
 const GLYPH_MON={arch:"M16 35 V21 Q26 6 36 21 V35 M20 35 V22 Q26 12 32 22 V35",stones:"M13 35 V21 M21 35 V15 M29 35 V17 M37 35 V22 M11 35 H41",temple:"M11 20 L26 11 L41 20 Z M14 20 V32 M21 20 V32 M31 20 V32 M38 20 V32 M11 33 H41"};
 function renderMap(){
