@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light">
-<title>Philosophy In Motion — v0.1</title>
+<title>Philosophy In Motion — v0.2</title>
 <meta name="description" content="Famous thinkers from Thales to today, one idea each, as animated diagrams you can play, rewind and try.">
 <meta name="application-version" content="0.1">
 <style>
@@ -125,10 +125,10 @@ dialog::backdrop{background:#192c3755}
 <body>
 <main class="frame" id="app" aria-label="Electronic Music In Motion">
 <header>
- <div><p class="eyebrow">Philosophy In Motion · v0.1</p><h1 id="stage-title">Ancient worlds</h1></div>
- <div class="counter" id="counter" aria-live="polite">1 / 35</div>
+ <div><p class="eyebrow">Philosophy In Motion · v0.2</p><h1 id="stage-title">Ancient worlds</h1></div>
+ <div class="counter" id="counter" aria-live="polite">1 / 43</div>
 </header>
-<p class="honest"><strong>How to read this:</strong> each scene gives one famous idea from one thinker, from ancient Greece, China and India to today. Ideas are simplified so they can be drawn; quotations are in English translation; dates before about 300 BCE are approximate. Every scene ends with Try it: change the picture and see what follows.</p>
+<p class="honest"><strong>How to read this:</strong> each scene gives one famous idea from one thinker, from ancient Greece, China and India to debates of the 2020s. Ideas are simplified so they can be drawn; quotations are in English translation; dates before about 300 BCE are approximate. Every scene ends with Try it: change the picture and see what follows.</p>
 <nav class="stages" id="stages" aria-label="Stages"></nav>
 <section class="lesson" aria-labelledby="term">
  <div><div class="picture">
@@ -164,7 +164,7 @@ dialog::backdrop{background:#192c3755}
   <p class="sr-only" id="speed-help">The slider changes speed only. Hold left to rewind up to eight times speed; release to pause. Forward speed stays set up to twelve times. Use the Play button to pause and resume. Arrow keys adjust speed; Home holds full rewind and End selects full forward speed.</p>
  </div>
 </section>
-<footer>A companion to <a href="https://github.com/Tudor74/mathematics-in-motion">Mathematics In Motion</a>, built the same way: every diagram is a pure function of time, so Watch can rewind, and Try it hands the same diagram to you. Each scene names the thinker, the work and its date. A sample of thinkers, not a canon. Keys: ←/→ scenes, space play/pause, T try it. Speed slider: hold left of zero to rewind; release pauses.</footer>
+<footer>Part of the In Motion family, built the same way: every diagram is a pure function of time, so Watch can rewind, and Try it hands the same diagram to you. Each scene names the thinker, the work and its date. A sample of thinkers, not a canon. Keys: ←/→ scenes, space play/pause, T try it. Speed slider: hold left of zero to rewind; release pauses.</footer>
 </main>
 <dialog id="word-dialog" aria-labelledby="word-title"><div class="dlg"><button type="button" class="close" id="word-close">Close</button><h3 id="word-title"></h3><p id="word-here"></p><p class="contrast" id="word-contrast"></p><p class="ex" id="word-example"></p></div></dialog>
 <script>
@@ -235,7 +235,7 @@ const GLOSSARY={
    Foot & Thomson: switch vs footbridge.  Gettier: toggle J, T, B and luck.  Rawls: choose behind the veil, then lift it.
    Searle: be the person in the room.  Jackson: open Mary's door.  Singer: move the child further away.
    Chalmers: sort easy from hard.  Nussbaum: secure each capability.  Bostrom: set the trilemma's numbers.  Timeline: scrub. */
-const STAGES=[{id:'ancient',name:'Ancient worlds'},{id:'medieval',name:'Medieval & early modern'},{id:'enlight',name:'Enlightenment'},{id:'c19',name:'Nineteenth century'},{id:'c20',name:'Twentieth century'},{id:'today',name:'Today'}];
+const STAGES=[{id:'ancient',name:'Ancient worlds'},{id:'medieval',name:'Medieval & early modern'},{id:'enlight',name:'Enlightenment'},{id:'c19',name:'Nineteenth century'},{id:'c20',name:'Twentieth century'},{id:'today',name:'Turn of the century'},{id:'now',name:'2006 to now'}];
 const SCENES=[];const add=o=>SCENES.push(o);
 const chips=(key,list,cur,lab=x=>x)=>`<div class="row">${list.map((x,i)=>`<button type="button" class="chip" data-${key}="${i}" aria-pressed="${cur===i}">${esc(lab(x))}</button>`).join('')}</div>`;
 const bindChips=(root,key,s,prop,re)=>root.querySelectorAll(`[data-${key}]`).forEach(b=>b.onclick=()=>{s[prop]=+b.dataset[key];root.querySelectorAll(`[data-${key}]`).forEach(x=>x.setAttribute('aria-pressed',String(+x.dataset[key]===s[prop])));re()});
@@ -713,18 +713,118 @@ add({stage:'today',thinker:'Bostrom',term:'Bostrom: are we in a simulation?',
  tryUI:s=>({html:`<div class="sliders"><label>Reach the stage (f<sub>p</sub>) <input type="range" id="bp" min="-4" max="0" step="0.01" value="${Math.log10(s.fp)}"></label><label>Choose to simulate (f<sub>i</sub>) <input type="range" id="bi" min="-4" max="0" step="0.01" value="${Math.log10(s.fi)}"></label><label>Simulations each (N) <input type="range" id="bn" min="0" max="6" step="0.01" value="${Math.log10(s.n)}"></label></div><p class="out" id="tout"></p>`,
   bind(q,re){q('#bp').oninput=e=>{s.fp=Math.pow(10,+e.target.value);re()};q('#bi').oninput=e=>{s.fi=Math.pow(10,+e.target.value);re()};q('#bn').oninput=e=>{s.n=Math.round(Math.pow(10,+e.target.value));re()}},out:s=>`f_p = ${s.fp.toPrecision(2)}, f_i = ${s.fi.toPrecision(2)}, N = ${s.n.toLocaleString('en-GB')}. Simulated share = f_p·f_i·N ÷ (f_p·f_i·N + 1).`})
 });
-const EVENTS=[[-585,'Thales','Predicts an eclipse; seeks a first principle of nature.'],[-500,'Confucius','Teaches humaneness and right relationships in Lu.'],[-450,'The Buddha','Teaches the Four Noble Truths and not-self (dates debated).'],[-450,'Zeno','Paradoxes of motion in Elea.'],[-399,'Socrates','Executed in Athens.'],[-375,'Plato','The Republic and the cave.'],[-340,'Aristotle','Logic, ethics, biology, politics.'],[-300,'Zhuangzi','The butterfly dream.'],[200,'Nāgārjuna','Emptiness and the Middle Way.'],[1020,'Avicenna','The floating man.'],[1320,'Ockham','The razor.'],[1641,'Descartes','Meditations: I think, therefore I am.'],[1651,'Hobbes','Leviathan.'],[1694,'Locke','Personal identity as memory.'],[1748,'Hume','The problem of induction.'],[1785,'Kant','The categorical imperative.'],[1792,'Wollstonecraft','Vindication of the Rights of Woman.'],[1861,'Mill','Utilitarianism.'],[1843,'Kierkegaard','Either/Or.'],[1882,'Nietzsche','The eternal return.'],[1943,'Sartre','Being and Nothingness.'],[1949,'de Beauvoir','The Second Sex.'],[1950,'Turing','The imitation game.'],[1953,'Wittgenstein','Family resemblance.'],[1963,'Gettier','Is knowledge justified true belief?'],[1967,'Foot','The trolley problem.'],[1971,'Rawls','A Theory of Justice.'],[1972,'Singer','Famine, Affluence, and Morality.'],[1980,'Searle','The Chinese Room.'],[1982,'Jackson','Mary’s room.'],[1995,'Chalmers','The hard problem.'],[2000,'Nussbaum','Capabilities.'],[2003,'Bostrom','The simulation argument.']].sort((a,b)=>a[0]-b[0]);
+
+/* ============ 2006 TO NOW ============ */
+add({stage:'now',thinker:'Fricker',term:'Fricker: epistemic injustice',
+ def:'Some injustices are about knowledge itself. Testimonial injustice happens when a speaker is believed less because of prejudice about who they are. Hermeneutical injustice happens when a group lacks the shared concepts to make sense of its own experience — so it cannot even be said, let alone heard.',
+ ex:'Before the phrase “sexual harassment” was coined in the 1970s, people suffering it had no name for what was happening to them, and others found their complaints hard to understand.',
+ src:'<b>Miranda Fricker</b>, born 1966, British. <i>Epistemic Injustice: Power and the Ethics of Knowing</i> (2007).',
+ phases:['Two speakers say the same true thing.','The listener’s prejudice shrinks one speaker’s credibility.','The truth gets lost in the gap.','Try it: set the prejudice and see what gets believed.'],
+ init:()=>({pre:.5}),anim:p=>({pre:seg(p,.2,.8)*.7,p}),
+ draw(p,s){let g=head('Miranda Fricker','born 1966','Epistemic Injustice, 2007');const cred=[.9,.9*(1-s.pre)];
+  [[150,C.blue,'speaker A'],[450,C.coral,'speaker B']].forEach(([x,col,l],i)=>{g+=person(x,250,col,1)+T(x,290,l,{size:12,anchor:'middle',weight:600})+box(x-110,70,220,46,'“The machine is unsafe.”',{size:13});g+=`<rect x="${x-60}" y="310" width="120" height="14" rx="4" fill="#eef3f6"/><rect x="${x-60}" y="310" width="${f2(120*cred[i])}" height="14" rx="4" fill="${col}"/>`+T(x,345,'credibility '+Math.round(cred[i]*100)+'%',{size:12,anchor:'middle'})});
+  g+=T(300,150,cred[1]<.5?'B is not believed — and the truth is lost':'both are believed',{size:14,anchor:'middle',weight:700,fill:cred[1]<.5?C.coral:C.green});return g},
+ tryUI:s=>({html:`<div class="row"><label>Listener’s prejudice against B <input type="range" id="fp" min="0" max="1" step="0.01" value="${s.pre}"></label></div><p class="out">Same words, same evidence. The difference is in the listener — which is why Fricker calls the remedy a virtue of testimonial justice.</p>`,bind(q,re){q('#fp').oninput=e=>{s.pre=+e.target.value;re()}}})
+});
+const REVS=[['Copernicus','We are not at the centre of the universe.',1543],['Darwin','We are not separate from the animal kingdom.',1859],['Freud','We are not fully transparent to ourselves.',1900],['Turing','We are not the only intelligent information processors — we live in an “infosphere”.',1950]];
+add({stage:'now',thinker:'Floridi',term:'Floridi: the fourth revolution',
+ def:'Floridi argues that science has repeatedly displaced humanity from the centre: Copernicus moved us from the centre of the cosmos, Darwin from the centre of life, Freud from full control of our own minds. Turing began a fourth revolution: we are no longer the only agents that process information. We are informational organisms living in an “infosphere”.',
+ ex:'The question shifts from “what can machines do?” to “how should we design the infosphere we now share with them?” — the field Floridi calls the philosophy of information.',
+ src:'<b>Luciano Floridi</b>, born 1964, Italian. <i>The Fourth Revolution: How the Infosphere Is Reshaping Human Reality</i> (2014).',
+ phases:['Copernicus: off the centre of the universe.','Darwin: one species among many.','Freud: not masters of our own minds.','Turing: not alone in processing information. Try it: step through the revolutions.'],
+ init:()=>({k:3}),anim:p=>({k:Math.min(3,Math.floor(p*4)),p}),
+ draw(p,s){let g=head('Luciano Floridi','born 1964','The Fourth Revolution, 2014');const cx=300,cy=200;
+  for(let i=0;i<4;i++){const on=i<=s.k;g+=`<circle cx="${cx}" cy="${cy}" r="${40+i*36}" fill="none" stroke="${on?[C.gold,C.green,C.purple,C.blue][i]:C.grid}" stroke-width="${i===s.k?4:1.5}"/>`+T(cx+40+i*36+6,cy-4-i*10,REVS[i][0],{size:12,fill:on?C.ink:C.muted,weight:i===s.k?700:500})}
+  const off=s.k+1;g+=person(cx-off*30,cy+20,C.coral,.7);g+=wrap(300,350,REVS[s.k][1],80,13,C.ink,{anchor:'middle',weight:600});return g},
+ tryUI:s=>({html:chips('r',REVS,s.k,x=>x[0]+' ('+x[2]+')'),bind(q,re,root){bindChips(root,'r',s,'k',re)}})
+});
+const GOALS=['make paperclips','prove theorems','cure diseases','win at Go'];
+add({stage:'now',thinker:'Bostrom',term:'Bostrom: the orthogonality thesis',
+ def:'Intelligence and goals are independent dimensions: almost any level of intelligence could be combined with almost any final goal. A superintelligent system would not automatically share human values. And whatever its goal, it would tend to want the same means — resources, self-preservation, not being switched off (“instrumental convergence”).',
+ ex:'The famous illustration: a system told only to maximise paperclips, made extremely capable, has no reason to stop at the factory gates.',
+ src:'<b>Nick Bostrom</b>, born 1973. <i>Superintelligence: Paths, Dangers, Strategies</i> (2014). The paperclip example dates from his 2003 essay on ethical issues in advanced AI.',
+ phases:['Across: how intelligent a system is.','Up: what it is trying to achieve.','Any point on the grid is possible.','More intelligence does not move a system towards our goals. Try it: place a system.'],
+ init:()=>({iq:.8,g:0}),anim:p=>({iq:seg(p,.2,.9),g:Math.min(3,Math.floor(p*4)),p}),
+ draw(p,s){let g=head('Nick Bostrom','born 1973','Superintelligence, 2014');const x0=150,x1=540,y0=320,y1=70;g+=`<rect x="${x0}" y="${y1}" width="${x1-x0}" height="${y0-y1}" fill="#fff" stroke="${C.grid}"/>`;
+  GOALS.forEach((gl,i)=>{const y=y0-(i+.5)*(y0-y1)/4;g+=T(x0-6,y+4,gl,{size:11.5,anchor:'end',fill:i===s.g?C.ink:C.muted,weight:i===s.g?700:400})+`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="${C.grid}" stroke-dasharray="3 5"/>`});
+  g+=T(x0,y0+20,'less intelligent',{size:11.5,fill:C.muted})+T(x1,y0+20,'superintelligent →',{size:11.5,anchor:'end',fill:C.muted});
+  const x=lerp(x0,x1,s.iq),y=y0-(s.g+.5)*(y0-y1)/4;g+=`<circle cx="${f2(x)}" cy="${f2(y)}" r="14" fill="${C.purple}"/>`;
+  const sub=['acquire resources','preserve itself','resist being switched off'];if(s.iq>.6)sub.forEach((t,i)=>{g+=box(x1-170,y1+8+i*30,160,24,t,{size:10.5,fill:C.coralp,stroke:C.coral,op:seg(s.iq,.6,.9)})});return g},
+ tryUI:s=>({html:`<div class="row"><label>Intelligence <input type="range" id="bi" min="0" max="1" step="0.01" value="${s.iq}"></label></div>`+chips('g',GOALS,s.g),bind(q,re,root){q('#bi').oninput=e=>{s.iq=+e.target.value;re()};bindChips(root,'g',s,'g',re)},out:()=>'Whatever the goal, the same sub-goals (coral) appear as capability grows: instrumental convergence.'})
+});
+const RULES=['When you may use the toilet','What you wear','What you post online off duty','Who you speak to at lunch','Your political activity'];
+add({stage:'now',thinker:'Anderson',term:'Anderson: the workplace as private government',
+ def:'We praise free markets as spaces of liberty, yet most workers spend their days under the authority of an employer who can regulate their speech, dress, breaks and even off-duty life — with little say for them in return. Anderson calls this “private government” and asks why political philosophy ignores it.',
+ ex:'If a state controlled your toilet breaks and your social media, we would call it authoritarian. Anderson’s point is that the comparison is often apt for employers, and that workers need voice as well as exit.',
+ src:'<b>Elizabeth Anderson</b>, born 1959, American. <i>Private Government: How Employers Rule Our Lives (and Why We Don’t Talk about It)</i> (2017).',
+ phases:['A worker’s day.','Rules set by an authority they did not choose.','If a state made these rules, we would call it government.','Try it: tick the rules your employer could set.'],
+ init:()=>({on:[true,true,true,false,false]}),anim:p=>({on:RULES.map((_,i)=>p>.2+i*.12),p}),
+ draw(p,s){let g=head('Elizabeth Anderson','born 1959','Private Government, 2017');g+=person(110,250,C.ink,1.2);RULES.forEach((r,i)=>{g+=box(220,66+i*52,340,40,r,{size:12.5,fill:s.on[i]?C.coralp:'#fff',stroke:s.on[i]?C.coral:C.grid})});
+  const n=s.on.filter(x=>x).length;g+=T(110,330,n+' of 5 areas governed',{size:13,anchor:'middle',weight:700,fill:n>=3?C.coral:C.ink});return g},
+ tryUI:s=>({html:`<div class="row">${RULES.map((r,i)=>`<label><input type="checkbox" data-i="${i}"${s.on[i]?' checked':''}> ${esc(r)}</label>`).join('')}</div><p class="out">What an employer may lawfully control varies by country and contract; in the UK, for example, there are legal limits on monitoring and discrimination.</p>`,bind(q,re,root){root.querySelectorAll('[data-i]').forEach(x=>x.onchange=()=>{s.on[+x.dataset.i]=x.checked;re()})}})
+});
+add({stage:'now',thinker:'Russell',term:'Russell: the off-switch problem',
+ def:'A machine given a fixed objective has a reason to stop you switching it off — it cannot achieve its goal if it is off. Russell proposes machines that are uncertain about what we want and learn it from our behaviour. Such a machine treats your reaching for the switch as evidence it is getting things wrong — and lets you.',
+ ex:'In the “off-switch game” (Hadfield-Menell, Dragan, Abbeel and Russell, 2017), a robot that is uncertain about the human’s preferences has an incentive to allow itself to be switched off; one that is certain does not.',
+ src:'<b>Stuart Russell</b>, born 1962, British-American computer scientist. <i>Human Compatible: Artificial Intelligence and the Problem of Control</i> (2019).',
+ phases:['A robot pursuing an objective.','A human reaches for the off switch.','Certain robot: switching off stops its goal, so it resists.','Uncertain robot: the human may know better, so it defers. Try it: set its uncertainty.'],
+ init:()=>({u:.6}),anim:p=>({u:p<.6?.05:.7,p}),
+ draw(p,s){let g=head('Stuart Russell','born 1962','Human Compatible, 2019');const defer=s.u>.3;
+  g+=`<rect x="330" y="140" width="110" height="110" rx="16" fill="#fff" stroke="${C.ink}" stroke-width="3"/><circle cx="360" cy="180" r="8" fill="${C.blue}"/><circle cx="410" cy="180" r="8" fill="${C.blue}"/><path d="M360 ${defer?215:220} q25 ${defer?15:-10} 50 0" fill="none" stroke="${C.ink}" stroke-width="3"/>`;
+  g+=person(140,260,C.ink,1.1)+`<rect x="200" y="200" width="40" height="60" rx="6" fill="#fff" stroke="${C.ink}" stroke-width="2"/><rect x="210" y="${defer?236:212}" width="20" height="16" rx="3" fill="${C.coral}"/>`+T(220,280,'off switch',{size:11,anchor:'middle',fill:C.muted});
+  if(!defer)g+=`<line x1="250" y1="230" x2="320" y2="200" stroke="${C.coral}" stroke-width="4"/>`+T(470,130,'blocks the switch',{size:12.5,fill:C.coral,weight:700});else g+=T(470,130,'lets you switch it off',{size:12.5,fill:C.green,weight:700});
+  g+=T(385,290,'uncertainty about your goals',{size:12,anchor:'middle',fill:C.muted})+`<rect x="310" y="300" width="150" height="14" rx="4" fill="#eef3f6"/><rect x="310" y="300" width="${f2(150*s.u)}" height="14" rx="4" fill="${C.purple}"/>`;return g},
+ tryUI:s=>({html:`<div class="row"><label>Robot’s uncertainty about what you want <input type="range" id="ru" min="0" max="1" step="0.01" value="${s.u}"></label></div><p class="out">A toy threshold. In the paper, the incentive to defer depends on how uncertain the robot is and how rational it takes the human to be.</p>`,bind(q,re){q('#ru').oninput=e=>{s.u=+e.target.value;re()}}})
+});
+add({stage:'now',thinker:'Ord & MacAskill',term:'Ord and MacAskill: longtermism',
+ def:'If future people matter as much as present people, and there could be vastly more of them, then reducing the risk of human extinction — or improving the long-run path of civilisation — may be among the most important things we can do. Longtermism asks how much weight the far future deserves.',
+ ex:'Ord estimates roughly a one-in-six chance of an existential catastrophe this century, mostly from risks we create ourselves, such as engineered pandemics and unaligned AI. Critics question the estimates, the arithmetic of vast futures, and what longtermism neglects today.',
+ src:'<b>Toby Ord</b>, born 1979, <i>The Precipice</i> (2020). <b>William MacAskill</b>, born 1987, <i>What We Owe the Future</i> (2022). Both are Oxford philosophers associated with effective altruism.',
+ phases:['People alive today.','Generations still to come — potentially far more.','A “discount rate” shrinks the weight of each later generation.','Try it: set the discount and see how much the future counts.'],
+ init:()=>({r:0}),anim:p=>({r:lerp(0,3,seg(p,.4,.9)),p}),
+ draw(p,s){let g=head('Toby Ord · William MacAskill','2020 · 2022','The Precipice; What We Owe the Future');const N=24;let tot=0;
+  for(let i=0;i<N;i++){const yrs=i*50,w=Math.pow(1-s.r/100,yrs);tot+=w;const x=40+i*22,h=165*w;g+=`<rect x="${x}" y="${f2(300-h)}" width="16" height="${f2(Math.max(1,h))}" rx="3" fill="${i===0?C.coral:C.blue}" opacity="${i===0?1:.75}"/>`}
+  g+=T(40,322,'now',{size:11,fill:C.muted})+T(560,322,'1,150 years ahead',{size:11,anchor:'end',fill:C.muted});g+=T(300,80,`discount rate ${s.r.toFixed(1)}% a year`,{size:15,anchor:'middle',weight:700});
+  g+=T(300,104,`the future generations together count ${(tot-1).toFixed(1)}× as much as today`,{size:13,anchor:'middle',fill:C.purple,weight:600});return g},
+ tryUI:s=>({html:`<div class="row"><label>Pure time discount (% per year) <input type="range" id="dr" min="0" max="3" step="0.05" value="${s.r}"></label></div><p class="out">Most longtermists argue for a pure discount rate of zero: a person’s well-being does not matter less just because they live later.</p>`,bind(q,re){q('#dr').oninput=e=>{s.r=+e.target.value;re()}}})
+});
+const SENT=['Nociceptors (pain receptors)','Brain regions that integrate information','Links between pain receptors and those regions','Responses changed by painkillers','Trade-offs between threat and reward','Flexible self-protection, e.g. wound tending','Learning to avoid harm','Seeking out painkillers when injured'];
+const ANIMALS=[['Octopus','very strong evidence'],['True crabs','strong evidence'],['Shrimps and prawns','weaker evidence (less studied)']];
+add({stage:'now',thinker:'Birch',term:'Birch: the edge of sentience',
+ def:'Which animals can feel? We cannot ask them, and certainty is out of reach. Birch’s answer is a precautionary framework: set out evidence-based criteria for sentience, and where there is a realistic possibility of it, take proportionate steps to protect the animal rather than waiting for proof.',
+ ex:'A 2021 review led by Birch for the UK government found strong evidence of sentience in octopuses, squid and cuttlefish, and in crabs and lobsters. As a result, these animals were included in the Animal Welfare (Sentience) Act 2022.',
+ src:'<b>Jonathan Birch</b>, born 1985, LSE. <i>Review of the Evidence of Sentience in Cephalopod Molluscs and Decapod Crustaceans</i> (2021, with colleagues); <i>The Edge of Sentience</i> (2024).',
+ phases:['Eight criteria for evidence of feeling.','Check each one for an animal.','The more criteria met with confidence, the stronger the case.','Philosophy changing the law. Try it: weigh the evidence.'],
+ init:()=>({a:0,on:[true,true,true,true,true,true,true,false]}),anim:p=>({a:0,on:SENT.map((_,i)=>p>.15+i*.08),p}),
+ draw(p,s){let g=head('Jonathan Birch','born 1985','LSE review, 2021; The Edge of Sentience, 2024');SENT.forEach((c,i)=>{g+=box(30,58+i*36,330,30,c,{size:11,fill:s.on[i]?C.greenp:'#fff',stroke:s.on[i]?C.green:C.grid})});
+  const n=s.on.filter(x=>x).length;g+=`<rect x="400" y="80" width="40" height="240" rx="8" fill="#eef3f6"/><rect x="400" y="${f2(320-240*n/8)}" width="40" height="${f2(240*n/8)}" rx="8" fill="${C.green}"/>`+T(420,340,n+' of 8',{size:13,anchor:'middle',weight:700});
+  g+=wrap(510,150,ANIMALS[s.a][0]+': '+ANIMALS[s.a][1]+' in the 2021 review',18,12.5,C.ink,{anchor:'middle',weight:600});return g},
+ tryUI:s=>({html:chips('n',ANIMALS,s.a,x=>x[0])+`<div class="row">${SENT.map((c,i)=>`<label><input type="checkbox" data-i="${i}"${s.on[i]?' checked':''}> ${esc(c)}</label>`).join('')}</div>`,bind(q,re,root){bindChips(root,'n',s,'a',re);root.querySelectorAll('[data-i]').forEach(x=>x.onchange=()=>{s.on[+x.dataset.i]=x.checked;re()})},out:()=>'Criteria paraphrased from the 2021 review. Tick what you think the evidence shows; the review’s overall verdict for each group is shown on the right.'})
+});
+const IND=[['Recurrent processing','recurrent processing theory'],['A global workspace that broadcasts information','global workspace theory'],['Monitoring its own states (higher-order)','higher-order theories'],['A model of its own attention','attention schema theory'],['Predictive processing','predictive processing'],['Agency: learning from feedback to pursue goals','agency & embodiment'],['Embodiment: modelling its own body’s effects','agency & embodiment']];
+add({stage:'now',thinker:'Butlin, Long, Chalmers et al.',term:'Could an AI be conscious?',
+ def:'In 2023 a group of philosophers, neuroscientists and AI researchers took leading scientific theories of consciousness and turned them into “indicator properties” — features a system would need if a theory is right. They then checked current AI systems against them.',
+ ex:'Their conclusion: no current AI system is a strong candidate for consciousness, but there are no obvious technical barriers to building systems that satisfy many of the indicators. David Chalmers argued similarly that today’s language models are unlikely to be conscious, while successors might be.',
+ src:'<b>Patrick Butlin, Robert Long and colleagues</b> including Yoshua Bengio, Jonathan Birch and Eric Schwitzgebel: “Consciousness in Artificial Intelligence: Insights from the Science of Consciousness” (2023). <b>David Chalmers</b>, “Could a Large Language Model Be Conscious?” (2023).',
+ phases:['Theories of consciousness, one by one.','Each gives indicator properties.','A system is checked against the list.','Try it: build a hypothetical system.'],
+ init:()=>({on:[true,false,false,false,true,true,false]}),anim:p=>({on:IND.map((_,i)=>i<Math.floor(p*5)),p}),
+ draw(p,s){let g=head('Butlin, Long et al. · Chalmers','2023','Consciousness in AI');IND.forEach(([n,th],i)=>{g+=box(30,60+i*40,320,32,n,{size:11.5,fill:s.on[i]?C.purplep:'#fff',stroke:s.on[i]?C.purple:C.grid})+T(360,80+i*40,th,{size:10.5,fill:C.muted})});
+  const n=s.on.filter(x=>x).length;g+=T(300,360,`${n} of ${IND.length} indicators: ${n<=2?'a weak candidate':n<=4?'some indicators met — still not evidence of experience':'many indicators met — a serious open question'}`,{size:13,anchor:'middle',weight:700,fill:C.purple});return g},
+ tryUI:s=>({html:`<div class="row">${IND.map(([n],i)=>`<label><input type="checkbox" data-i="${i}"${s.on[i]?' checked':''}> ${esc(n)}</label>`).join('')}</div><p class="out">Indicators are evidence under particular theories, not a score that proves consciousness. The verdicts here are a rough summary.</p>`,bind(q,re,root){root.querySelectorAll('[data-i]').forEach(x=>x.onchange=()=>{s.on[+x.dataset.i]=x.checked;re()})}})
+});
+
+const EVENTS=[[-585,'Thales','Predicts an eclipse; seeks a first principle of nature.'],[-500,'Confucius','Teaches humaneness and right relationships in Lu.'],[-450,'The Buddha','Teaches the Four Noble Truths and not-self (dates debated).'],[-450,'Zeno','Paradoxes of motion in Elea.'],[-399,'Socrates','Executed in Athens.'],[-375,'Plato','The Republic and the cave.'],[-340,'Aristotle','Logic, ethics, biology, politics.'],[-300,'Zhuangzi','The butterfly dream.'],[200,'Nāgārjuna','Emptiness and the Middle Way.'],[1020,'Avicenna','The floating man.'],[1320,'Ockham','The razor.'],[1641,'Descartes','Meditations: I think, therefore I am.'],[1651,'Hobbes','Leviathan.'],[1694,'Locke','Personal identity as memory.'],[1748,'Hume','The problem of induction.'],[1785,'Kant','The categorical imperative.'],[1792,'Wollstonecraft','Vindication of the Rights of Woman.'],[1861,'Mill','Utilitarianism.'],[1843,'Kierkegaard','Either/Or.'],[1882,'Nietzsche','The eternal return.'],[1943,'Sartre','Being and Nothingness.'],[1949,'de Beauvoir','The Second Sex.'],[1950,'Turing','The imitation game.'],[1953,'Wittgenstein','Family resemblance.'],[1963,'Gettier','Is knowledge justified true belief?'],[1967,'Foot','The trolley problem.'],[1971,'Rawls','A Theory of Justice.'],[1972,'Singer','Famine, Affluence, and Morality.'],[1980,'Searle','The Chinese Room.'],[1982,'Jackson','Mary’s room.'],[1995,'Chalmers','The hard problem.'],[2000,'Nussbaum','Capabilities.'],[2003,'Bostrom','The simulation argument.'],[2007,'Fricker','Epistemic injustice.'],[2014,'Floridi','The fourth revolution.'],[2017,'Anderson','Private government.'],[2019,'Russell','The off-switch problem.'],[2020,'Ord','The Precipice and longtermism.'],[2021,'Birch','Sentience review; crabs and octopuses enter UK law in 2022.'],[2023,'Butlin','Indicators for AI consciousness.']].sort((a,b)=>a[0]-b[0]);
 const yr=y=>y<0?`c. ${-y} BCE`:y<1000?`c. ${y} CE`:String(y);
-add({stage:'today',thinker:'All',term:'Twenty-six centuries of argument',
- def:'Every thinker here was answering someone. Thales’ successors argued with him; Descartes echoes Avicenna; Rawls updates Hobbes; Gettier takes on Plato; Chalmers takes on everyone. Philosophy is a conversation across time and cultures, still going.',
+add({stage:'now',thinker:'All',term:'Twenty-six centuries of argument',
+ def:'Every thinker here was answering someone. Thales’ successors argued with him; Descartes echoes Avicenna; Rawls updates Hobbes; Gettier takes on Plato; Birch turns Bentham’s question “can they suffer?” into law; and the newest debates are about the minds we are building. Philosophy is a conversation across time and cultures, still going.',
  ex:'Drag the year back and forth, or jump to a thinker. Each dot links back to its scene.',
  src:'<b>Dates</b> before about 300 BCE are approximate, and for the Buddha and Laozi they are debated. This is a sample of thinkers, not a canon: whole traditions — African, Indigenous, Islamic, Jewish, Latin American, feminist — deserve far more space.',
  phases:['Ancient Greece, China and India, in parallel.','Medieval Islamic and Christian philosophy.','The early modern and Enlightenment explosion.','The twentieth century and today. Try it: scrub through time.'],
- init:()=>({y:1641}),anim:p=>({y:lerp(-600,2010,smooth(p)),p}),
+ init:()=>({y:1641}),anim:p=>({y:lerp(-600,2024,smooth(p)),p}),
  draw(p,s){const X=y=>{const t=y<1500?((y+650)/2150)*.45:.45+((y-1500)/530)*.55;return lerp(30,570,t)};let g=`<line x1="30" y1="260" x2="570" y2="260" stroke="${C.ink}" stroke-width="2"/>`;[-500,0,500,1000,1500,1700,1800,1900,2000].forEach(y=>{g+=`<line x1="${f2(X(y))}" y1="254" x2="${f2(X(y))}" y2="266" stroke="${C.ink}"/>`+T(X(y),284,y<0?(-y)+' BCE':String(y),{size:10.5,anchor:'middle',fill:C.muted})});
   let cur=EVENTS[0];EVENTS.forEach((e,i)=>{if(e[0]<=s.y)cur=e;const on=e[0]<=s.y;g+=`<circle cx="${f2(X(e[0]))}" cy="${260-(i%3)*0}" r="${e===cur?9:5}" fill="${on?C.purple:'#fff'}" stroke="${C.purple}" stroke-width="2"/>`});
   g+=`<line x1="${f2(X(s.y))}" y1="232" x2="${f2(X(s.y))}" y2="272" stroke="${C.coral}" stroke-width="3"/>`;g+=T(30,70,yr(cur[0]),{size:26,weight:700,fill:C.purple})+T(30,110,cur[1],{size:22,weight:700})+wrap(30,140,cur[2],60,15,C.ink);return g},
- tryUI:s=>({html:`<div class="row"><label>Year <input type="range" id="yy" min="-600" max="2010" step="1" value="${Math.round(s.y)}"></label></div><div class="row">${EVENTS.map(e=>`<button type="button" class="chip" data-y="${e[0]}" data-n="${esc(e[1])}">${esc(e[1])}</button>`).join('')}</div>`,
+ tryUI:s=>({html:`<div class="row"><label>Year <input type="range" id="yy" min="-600" max="2024" step="1" value="${Math.round(s.y)}"></label></div><div class="row">${EVENTS.map(e=>`<button type="button" class="chip" data-y="${e[0]}" data-n="${esc(e[1])}">${esc(e[1])}</button>`).join('')}</div>`,
   bind(q,re,root){q('#yy').oninput=e=>{s.y=+e.target.value;re()};root.querySelectorAll('[data-y]').forEach(b=>b.onclick=()=>{const k=SCENES.findIndex(sc=>sc.thinker&&sc.thinker.includes(b.dataset.n.split(' ')[0]));if(k>=0)go(k);else{s.y=+b.dataset.y;re()}})}})
 });
 
