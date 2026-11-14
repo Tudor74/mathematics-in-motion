@@ -1,5 +1,5 @@
 <title>Zigzag Realms</title>
-<meta name="application-version" content="0.2.7">
+<meta name="application-version" content="0.2.8">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -239,6 +239,16 @@ details.zz summary{cursor:pointer;font-family:var(--mono);font-size:13px;color:v
 .ties .w{font-family:var(--mono);font-size:12px}
 .ties .w.pos{color:var(--water)}.ties .w.neg{color:var(--danger)}
 .sharp{color:var(--danger)}
+/* Nightfall reminder */
+.nudge{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:color-mix(in srgb,var(--veil) 55%,transparent)}
+.nudge-card{background:var(--sheet);color:var(--ink);border:1px solid var(--rule);border-radius:14px;padding:22px 22px 18px;max-width:440px;width:100%;display:grid;gap:12px;box-shadow:0 18px 60px #0004}
+.nudge-card h2{font-size:26px}
+.nudge-card p{margin:0;font-size:17px;line-height:1.55}
+.nudge-moon{width:40px;height:40px;fill:var(--amber)}
+.nudge-list{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.nudge-list li{font-family:var(--mono);font-size:12px;padding:3px 9px;border-radius:99px;background:var(--wash);color:var(--faint)}
+.nudge-off{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--faint);margin-left:auto}
+.nudge-off input{width:auto}
 button.pill{min-height:0;cursor:pointer;font-weight:400}
 button.pill[aria-pressed="false"] b{color:var(--faint)}
 .map .rune{fill:none;stroke:var(--amber);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
@@ -290,10 +300,19 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
+<div class="nudge" id="night-nudge" hidden>
+ <div class="nudge-card" role="dialog" aria-modal="true" aria-labelledby="nudge-h" aria-describedby="nudge-text">
+  <svg class="nudge-moon" viewBox="0 0 40 40" aria-hidden="true"><path d="M27 6a15 15 0 1 0 7 20 12 12 0 1 1-7-20Z"/></svg>
+  <h2 id="nudge-h">Night falls on the realm</h2>
+  <p id="nudge-text">The world sleeps quickly: dawn is about <b id="nudge-mins">20</b> real minutes away. A good moment to get up and stretch, pet the cat (or the dog, or your imaginary friend), and fetch yourself a glass of water.</p>
+  <ul class="nudge-list"><li>Stretch</li><li>Pet a friend</li><li>Drink some water</li></ul>
+  <div class="btnrow"><button class="primary" id="nudge-ok" type="button">I'm back</button><label class="nudge-off" for="nudge-never"><input type="checkbox" id="nudge-never"> Don't remind me at nightfall</label></div>
+ </div>
+</div>
 <div class="wrap">
  <header class="top">
   <div>
-   <p class="eyebrow">A map that writes itself · v0.2.7</p>
+   <p class="eyebrow">A map that writes itself · v0.2.8</p>
    <h1>Zigzag Realms</h1>
    <p class="sub">A river with three towns, a woodland and its magical grove, a mountain with lakes, a waterfall and caves, and a desert are laid out when your journey begins, with townsfolk and creatures living among them. Claude writes everything else one step ahead of you. Every place is kept as a cell in a ZigZag structure, so you can find your way back.</p>
   </div>
@@ -541,7 +560,17 @@ const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(M
    spend time: half an hour a step, eight hours a rest.
    ============================================================ */
 const CLOCK_RATE=4,TICK=30,STEP_MIN=30,REST_MIN=480;
-function gameNow(){const c=cell("root")?.clock;if(!c)return 8*60;return c.base+(Date.now()-c.real)/60000*CLOCK_RATE}
+// By day the clock runs at 4× real time; at night at 30×, so the ten hours of night pass in twenty real minutes.
+const NIGHT_RATE=30;
+function nightOrDayEdge(t){const h=((t%1440)+1440)%1440/60;return(h<6?6-h:h>=20?30-h:20-h)*60}
+function advanceClock(t,ms){
+ let left=ms;for(let guard=0;left>0&&guard<4000;guard++){
+  const r=isNight(t)?NIGHT_RATE:CLOCK_RATE,edge=nightOrDayEdge(t),need=edge/r*60000;
+  if(left<need){t+=left/60000*r;left=0}else{t+=edge+1e-6;left-=need}}
+ return t;
+}
+function gameNow(){const c=cell("root")?.clock;if(!c)return 8*60;return advanceClock(c.base,Date.now()-c.real)}
+const realMinutesToDawn=t=>isNight(t)?nightOrDayEdge(t)/NIGHT_RATE:0;
 const hourOf=t=>((t%1440)+1440)%1440/60;
 const isNight=t=>{const h=hourOf(t);return h<6||h>=20};
 const dayOf=t=>Math.floor(t/1440)+1;
@@ -1784,7 +1813,7 @@ const RULES=[
  {title:"The ZigZag",text:"Every place, person, item and anomaly is a cell. Each cell has at most one neighbour in each direction of each dimension: east and west, north and south, up and down, and the hidden ones, the river's flow, a town's people, a store's contents. Walking is following a link."},
  {title:"The round world",text:`The world is ${2*WORLD_R+1} squares across and closes on itself. Walk ${WORLD_R+1} squares in any direction and you pass through the veil of golden mist to the far side. Its shape is a torus.`},
  {title:"Nothing before sight",text:"No place exists until you can see it. Each time you arrive, the squares you can see are written one step ahead of you, from where you stand, and are never written again."},
- {title:"Four times faster",text:`Time here runs ${CLOCK_RATE} times faster than yours. A step costs half an hour and night lasts ten hours. The magical bridge stands during about three hours in ten, chosen by the world's seed and the hour, not by chance at the moment.`},
+ {title:"Four times faster",text:`By day, time here runs ${CLOCK_RATE} times faster than yours; at night, ${NIGHT_RATE} times, so ten hours of darkness pass in twenty of your minutes. A step costs half an hour. The magical bridge stands during about three hours in ten, chosen by the world's seed and the hour, not by chance at the moment.`},
  {title:"Two hearts of weather",text:"The mountain stores storm energy each afternoon, E ← E + 0.06·sun − 0.03·E, and the desert breathes with the sun. Wind runs from the high to the low between them, and storms are born on the peak and die over the sand."},
  {title:"The lightning tithe",text:"Every half hour in the open, lightning takes one chance in two hundred and fifty, times the square of the storm's strength. On the peak it takes three times as many."},
  {title:"The law of affection",text:"Each half hour together, a tie moves w ← w + 0.08·(h − w) + 0.04·(friends in common). Apart, it fades: w ← 0.997·w. Like seeks like, and friends of friends drift closer."},
@@ -2321,8 +2350,8 @@ function linkify(text){
 function renderClock(){
  const t=gameNow(),night=isNight(t),p=$("pill-clock");
  p.dataset.night=String(night);
- $("clock-text").textContent=`${fmtClock(t)} · ${night?"night":"day"}`;
- p.title=`The world clock runs at ${CLOCK_RATE}× real time. Each step takes half an hour. Night runs from 20:00 to 06:00.`;
+ $("clock-text").textContent=`${fmtClock(t)} · ${night?`night, dawn in ${Math.max(1,Math.ceil(realMinutesToDawn(t)))} min`:"day"}`;
+ p.title=`The world clock runs at ${CLOCK_RATE}× real time by day and ${NIGHT_RATE}× at night, so night (20:00 to 06:00) lasts about twenty real minutes. Each step takes half an hour.`;
  const H=hereId()&&cell(hereId()),w=H&&weatherAt(H.x,H.y,zOf(H),t);
  $("pill-weather").innerHTML=w?`Weather: <b>${esc(w.label)}</b>`:"Weather: <b>—</b>";
 }
@@ -3011,6 +3040,28 @@ document.addEventListener("keydown",e=>{
  if(e.key==="f"||e.key==="F")attack(0);
 });
 // The clock ticks on screen. Day, night, the magical bridge and the weather change the world as they turn.
+/* At nightfall a friendly overlay suggests a break; it can be switched off */
+let nudgeOff=false;try{nudgeOff=localStorage.getItem("zr-nudge")==="off"}catch(e){}
+let lastNight=null,nudgeReturn=null;
+function showNudge(){
+ if(nudgeOff)return;const el=$("night-nudge");if(!el.hidden)return;
+ $("nudge-mins").textContent=Math.max(1,Math.round(realMinutesToDawn(gameNow())));$("nudge-never").checked=false;
+ nudgeReturn=document.activeElement;el.hidden=false;$("nudge-ok").focus();
+}
+function hideNudge(){
+ const el=$("night-nudge");if(el.hidden)return;el.hidden=true;
+ if($("nudge-never").checked){nudgeOff=true;try{localStorage.setItem("zr-nudge","off")}catch(e){}}
+ if(nudgeReturn&&nudgeReturn.focus)nudgeReturn.focus();
+}
+document.addEventListener("click",e=>{if(e.target.id==="nudge-ok"||e.target.id==="night-nudge")hideNudge()});
+document.addEventListener("keydown",e=>{if(!$("night-nudge").hidden){if(e.key==="Escape"){e.preventDefault();hideNudge()}else if(e.key==="Tab"){const f=[$("nudge-ok"),$("nudge-never")],i=f.indexOf(document.activeElement);e.preventDefault();f[(i+(e.shiftKey?-1:1)+f.length)%f.length].focus()}else e.stopPropagation()}},true);
+setInterval(()=>{
+ if(!charId()||!hereId()||busy){return}
+ const night=isNight(gameNow());
+ if(lastNight===false&&night)showNudge();
+ if(!night)hideNudge();
+ lastNight=night;
+},1000);
 let lastSig="";
 setInterval(()=>{
  if(!cell("root"))return;renderClock();

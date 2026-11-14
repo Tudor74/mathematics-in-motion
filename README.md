@@ -74,3 +74,8 @@ hard to confuse. Run `node tools/realm-script.mjs` to regenerate.
   song, scaled by size (talk by day, carts by day, singing mostly at night).
   Sanctuaries are hushed. Resting at one heals fully, with a 4% chance of a boon
   of +1 or +2 to one ability for 7 to 30 days.
+- **Night** (v0.2.8): the clock runs at 4× real time by day and 30× at night, so
+  night (20:00 to 06:00) lasts about twenty real minutes and a full day about
+  3 hours 50 minutes. At nightfall a friendly overlay suggests a break: stretch,
+  pet the cat (or dog, or imaginary friend), and get some water. It can be
+  switched off.
