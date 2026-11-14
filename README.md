@@ -31,3 +31,14 @@ account. Hosted on puter.site (wrap the file in a doctype/html/body shell as
 `index.html`) it uses Puter sign-in, a cheap model through `puter.ai.chat`, and
 Puter KV storage. Opened as a plain file it uses built-in tables and saves in
 the browser.
+
+### The realm script
+
+`tools/realm-script.mjs` generates a new 26-letter alphabet for English and writes
+`tools/realm-script.json`, which the game embeds and turns into a font in the
+browser (toggle "Script" in the header). Each letter is described by 21
+features (Latin form, English sound, the meaning of the Proto-Sinaitic
+pictograph it descends from, frequency), reduced to three principal components
+that set terminals and corners. Glyphs are drawn from the source pictographs,
+and a frequency-weighted search over variants keeps frequent letters light and
+hard to confuse. Run `node tools/realm-script.mjs` to regenerate.
