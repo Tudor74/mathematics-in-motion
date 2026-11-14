@@ -3278,6 +3278,7 @@ function render(){renderPills();renderScriptButton();renderMap();renderCompass()
    ============================================================ */
 const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_EXP:{water:.35},PITCH_BASE:.6,PITCH_RIVER:1.6,pitch:.6,riverNear:0,vol:.8,revF:1,lastHere:null,lastScape:null,scapeName:"",
  /* Each kind of place has its own room sound: [reverb seconds, wet level]. */
+ ECHO:{cave:[.42,.55,.7],falls:[.18,.3,.25],heights:[.62,.38,.4],grove:[.3,.35,.25],forest:[.25,.15,.08],water:[.2,.12,.06]},
  SCAPES:{cave:[4.6,.55,"cave"],falls:[2.3,.38,"waterfall"],water:[1.7,.28,"water"],forest:[1.3,.22,"woodland"],grove:[3.2,.42,"grove"],town:[.9,.18,"town"],sanctuary:[1.1,.1,"sanctuary"],open:[.8,.12,"open country"],heights:[2.9,.3,"heights"],desert:[.45,.05,"desert"]},
  init(){try{if(localStorage.getItem("zr-sound")==="off")this.on=false}catch(e){}},
  noise(type){const c=this.ctx,len=c.sampleRate*4,b=c.createBuffer(1,len,c.sampleRate),d=b.getChannelData(0);
@@ -3312,16 +3313,21 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_EXP:{water:
   const c=this.ctx;this.master=c.createGain();this.master.gain.value=0;this.master.gain.setTargetAtTime(this.vol,c.currentTime,1);
   // master → dry path and two crossfading reverbs → out. A new reverb is grown on every move.
   this.out=c.createGain();this.out.connect(c.destination);
-  this.dry=c.createGain();this.dry.gain.value=1;this.master.connect(this.dry);this.dry.connect(this.out);
-  this.verbs=[0,1].map(()=>{const cv=c.createConvolver(),g=c.createGain();g.gain.value=0;this.master.connect(cv);cv.connect(g);g.connect(this.out);return{cv,g}});this.verbIdx=0;
-  this.echo=c.createDelay(1);this.echo.delayTime.value=.33;const fb=c.createGain();fb.gain.value=.42;this.echo.connect(fb);fb.connect(this.echo);this.echo.connect(this.master);
+  // mod: a slow, wandering volume, so the whole soundscape breathes rather than sitting flat
+  this.mod=c.createGain();this.mod.gain.value=1;this.master.connect(this.mod);this.modLevel=1;
+  this.dry=c.createGain();this.dry.gain.value=1;this.mod.connect(this.dry);this.dry.connect(this.out);
+  this.verbs=[0,1].map(()=>{const cv=c.createConvolver(),g=c.createGain();g.gain.value=0;this.mod.connect(cv);cv.connect(g);g.connect(this.out);return{cv,g}});this.verbIdx=0;
+  this.echo=c.createDelay(2);this.echo.delayTime.value=.33;this.echoFb=c.createGain();this.echoFb.gain.value=.42;this.echo.connect(this.echoFb);this.echoFb.connect(this.echo);this.echo.connect(this.master);
+  // fx: every one-off sound (calls, steps, saws, drips) goes here; echoSend feeds the echo, loud in caves and on the heights
+  this.fx=c.createGain();this.fx.connect(this.master);this.echoSend=c.createGain();this.echoSend.gain.value=0;this.fx.connect(this.echoSend);this.echoSend.connect(this.echo);
+  this.drift={};
   const W=this.noise("white"),P=this.noise("pink"),B=this.noise("brown");
   this.white=W;this.brownBuf=B;
   this.bed("wind",P,[this.filt("bandpass",500,.8)],{rate:.07,depth:300,param:ch=>ch[0].frequency});
   // The river: soft pink noise, low-passed and gently resonant, with bubbles scattered on top (see bubble)
   this.bed("water",P,[this.filt("lowpass",950,.6),this.filt("peaking",420,1.1),this.filt("highpass",120)],{rate:.19,depth:90,param:ch=>ch[1].frequency});
-  this.burbleOut=this.filt("lowpass",1800,.5);this.burbleOut.connect(this.master);
-  this.townOut=this.filt("lowpass",2600,.5);this.townOut.connect(this.master);
+  this.burbleOut=this.filt("lowpass",1800,.5);this.burbleOut.connect(this.fx);
+  this.townOut=this.filt("lowpass",2600,.5);this.townOut.connect(this.fx);
   this.bed("falls",B,[this.filt("lowpass",900)]);
   this.bed("rain",W,[this.filt("highpass",2500)]);
   this.bed("leaves",P,[this.filt("highpass",2800)],{rate:.35,depth:.03,param:(ch,g)=>g.gain});
@@ -3365,6 +3371,18 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_EXP:{water:
    carts:H.town&&!night?townSize:0,
    singing:H.town?townSize*(night?1:.25):0
   };
+  // Creatures within two squares call now and then, louder when near and when it is their time of day
+  out.creatures=[];out.groups=[];
+  if(z===0){
+   const byPlace={};
+   for(const n of npcs()){const dx=wrapC(n.x-H.x),dy=wrapC(n.y-H.y),d=Math.max(Math.abs(dx),Math.abs(dy));if(d>2)continue;
+    if(n.wild)out.creatures.push({species:n.species,d,dx,active:(n.active==="night")===night});
+    else if(!H.town||d>0){const k=n.x+","+n.y;(byPlace[k]||=({n:0,d,dx})).n++}}
+   // Two or more townsfolk together make a group, and groups talk
+   out.groups=Object.values(byPlace).filter(g=>g.n>=2);
+  }
+  // Someone is sawing or chopping wood somewhere in the trees, by day and when it is dry
+  out.saw=!night&&!under&&w.rain<.3&&!H.sanctuary&&!H.grove?(T==="forest"?1:near(c=>c.terrain==="forest")*.5):0;
   // Sanctuaries are hushed: everything is softened and the crowd falls away
   if(H.sanctuary){for(const k of ["wind","water","falls","rain","leaves","drone"])out[k]*=.3;out.crowd=0;out.hum=.025;out.birds*=.4;out.crickets*=.4;out.thunder*=.5;out.crackle=0;out.clinks=0}
   return out;
@@ -3403,6 +3421,8 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_EXP:{water:
   if(!this.on){this.lastScape=scape;return}
   this.vol=this.shift(this.vol,.45,1);
   this.setReverb(scape,changed);
+  {const [d,fb,send]=this.ECHO[scape]||[.3,0,0];this.echo.delayTime.setTargetAtTime(d,now,.3);this.echoFb.gain.setTargetAtTime(fb,now,.3);this.echoSend.gain.setTargetAtTime(send,now,.4)}
+  this.steps(scape);
   const beds=["wind","water","falls","rain","leaves","crowd","drone","hum"];
   if(changed){
    // A new soundscape: the old one is cut away, a sweep carries you across, and the new one swells in too loud before settling
@@ -3442,7 +3462,7 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_EXP:{water:
   if(!this.started)return;const e=this.env();if(!e)return;const now=this.ctx.currentTime;
   const here=hereId();this.setPitch();
   if(here!==this.lastHere){this.lastHere=here;this.e=e;this.onMove(e);return}
-  for(const k of ["wind","water","falls","rain","leaves","crowd","drone","hum"])this.beds[k].gain.setTargetAtTime(e[k],now,1.5);
+  for(const k of ["wind","water","falls","rain","leaves","crowd","drone","hum"])this.beds[k].gain.setTargetAtTime(e[k]*(this.drift[k]||1),now,1.5);
   this.e=e;
  },
  tick(){
@@ -3458,28 +3478,78 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_EXP:{water:
   if((this.singingUntil||0)<this.ctx.currentTime&&r()<.05*e.singing)this.song(e.singing);
   if(e.crackle)for(let i=0;i<3;i++)if(r()<.5*e.crackle)this.pop(i*.25+r()*.2);
   if(r()<.04*e.thunder)this.thunder(e.thunder);
+  // The whole soundscape breathes: a slow wandering volume with the odd swell
+  const now=this.ctx.currentTime;
+  this.modLevel=Math.max(.65,Math.min(1.2,this.modLevel+(r()-.5)*.08));
+  if(r()<.02){this.mod.gain.setTargetAtTime(Math.min(1.35,this.modLevel*1.3),now,1.5);this.mod.gain.setTargetAtTime(this.modLevel,now+4,3)}
+  else this.mod.gain.setTargetAtTime(this.modLevel,now,3);
+  for(const k of ["wind","water","falls","rain","leaves","crowd","drone"]){this.drift[k]=Math.max(.55,Math.min(1.45,(this.drift[k]||1)+(r()-.5)*.12));this.beds[k].gain.setTargetAtTime(e[k]*this.drift[k],now,2.5)}
+  if(e.water>.01){const n=Math.round(e.water*6+r()*e.water*10);for(let i=0;i<n;i++)if(r()<.7)this.gurgle(r(),e.water)}
+  if(e.saw&&(this.sawUntil||0)<now&&r()<.012*e.saw)this.saw(e.saw);
+  for(const cr of e.creatures||[]){const p=(cr.active?.05:.012)*(cr.d===0?1:cr.d===1?.6:.35);if(r()<p)this.call(cr.species,cr.d,cr.dx)}
+  for(const g of e.groups||[]){if(r()<Math.min(.5,.12*g.n)*(g.d===0?1:g.d===1?.55:.3))this.chatter(Math.min(1,.25+.12*g.n)*(g.d===0?1:g.d===1?.6:.35),this.panned(g.dx/2))}
+ },
+ // A stereo position for a sound from dx squares east (+) or west (−)
+ panned(x){const c=this.ctx;if(!c.createStereoPanner)return this.fx;const p=c.createStereoPanner();p.pan.value=Math.max(-1,Math.min(1,x));p.connect(this.fx);return p},
+ // A filtered noise burst: the building block for steps, saws, gurgles and snuffles
+ burst(type,f0,f1,q,peak,dur,at=0,dest){const c=this.ctx,t=c.currentTime+at,s=c.createBufferSource(),fl=this.filt(type,f0,q),g=c.createGain();s.buffer=this.white;
+  fl.frequency.setValueAtTime(f0,t);fl.frequency.exponentialRampToValueAtTime(Math.max(30,f1),t+dur);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(peak,t+Math.min(.03,dur/3));g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  s.connect(fl);fl.connect(g);g.connect(dest||this.fx);s.start(t,Math.random()*3);s.stop(t+dur+.05)},
+ // A gurgle: a resonant pocket of water that glides up, sometimes with a low glug under it
+ gurgle(at,level){
+  const lift=Math.pow(this.pitch,.3),f=(160+Math.random()*320)*lift,dur=.12+Math.random()*.3;
+  this.burst("bandpass",f,f*(1.6+Math.random()),14,Math.min(.22,.05+level*.6),dur,at,this.burbleOut);
+  if(Math.random()<.35)this.tone(90*lift+Math.random()*60,(220+Math.random()*120)*lift,.09+Math.random()*.08,Math.min(.06,.015+level*.15),at+dur*.3,"sine",this.burbleOut);
+ },
+ // Footsteps on arrival, by the ground underfoot; in caves the echo answers them
+ steps(scape){
+  const st={cave:["bandpass",2200,1500,4,.16],town:["bandpass",1600,1100,3,.1],forest:["highpass",3000,2400,.7,.07],grove:["highpass",3200,2600,.7,.05],water:["lowpass",900,500,1,.1],falls:["lowpass",900,500,1,.08],desert:["highpass",4200,3800,.6,.05],heights:["bandpass",1800,900,2,.11],open:["lowpass",1400,700,.8,.06],sanctuary:["bandpass",1500,1000,3,.04]}[scape]||["lowpass",1400,700,.8,.06];
+  for(let i=0;i<4;i++)this.burst(st[0],st[1],st[2],st[3],st[4]*(i%2?.8:1),.08,.05+i*.42+Math.random()*.05);
+ },
+ // A woodcutter at work: a run of saw strokes (push and pull), then sometimes a few axe blows
+ saw(level){
+  const strokes=6+Math.floor(Math.random()*9),len=.32+Math.random()*.16,pan=this.panned((Math.random()-.5)*1.6),v=.05*level*(.5+Math.random()*.6);
+  for(let i=0;i<strokes;i++){const push=i%2===0;this.burst("bandpass",push?850:1500,push?1500:850,3,v,len,i*(len+.04),pan)}
+  let end=strokes*(len+.04);
+  if(Math.random()<.5){const n=2+Math.floor(Math.random()*5);for(let i=0;i<n;i++){const at=end+.8+i*(.9+Math.random()*.3);this.burst("lowpass",500,200,1,v*2.4,.14,at,pan);this.tone(170,85,.12,v*.9,at,"sine",pan)}end+=1+n*1.1}
+  this.sawUntil=this.ctx.currentTime+end+8;
+ },
+ // Each creature has its own voice; d is how many squares away, dx which side
+ call(species,d,dx){
+  const v=d===0?1:d===1?.55:.3,dest=this.panned(dx/2),T=(f0,f1,dur,peak,at=0,type="triangle")=>this.tone(f0,f1,dur,peak*v,at,type,dest);
+  const lp=f=>{const l=this.filt("lowpass",f,.7);l.connect(dest);return l};
+  if(species==="fox"){const n=2+Math.floor(Math.random()*3);for(let i=0;i<n;i++)T(1050,620,.16,.05,i*.32)}
+  else if(species==="raven"){const n=2+Math.floor(Math.random()*3),l=lp(1600);for(let i=0;i<n;i++)this.tone(640,500,.22,.05*v,i*.36,"sawtooth",l)}
+  else if(species==="deer"){const l=lp(900);this.tone(190,120,1.1,.07*v,0,"sawtooth",l)}
+  else if(species==="pony"){const l=lp(2200);this.tone(780,1250,.35,.05*v,0,"sawtooth",l);this.tone(1250,620,.9,.05*v,.35,"sawtooth",l);this.burst("bandpass",700,400,1.5,.08*v,.3,1.35,dest)}
+  else if(species==="otter"){const n=3+Math.floor(Math.random()*3);for(let i=0;i<n;i++)T(2100+Math.random()*300,2600+Math.random()*300,.07,.035,i*.14,"sine")}
+  else if(species==="heron"){const l=lp(1500);this.tone(520,330,.32,.06*v,0,"sawtooth",l)}
+  else if(species==="badger"){for(let i=0;i<4;i++){T(130,100,.12,.05,i*.22);this.burst("bandpass",900,700,2,.03*v,.1,i*.22+.1,dest)}}
+  else if(species==="wisp"){[1568,2093,2637].forEach((f,i)=>{this.tone(f,f*1.01,1.4,.025*v,i*.12,"sine",this.echo);T(f,f*1.01,1.2,.02,i*.12,"sine")})}
+  else T(1800,2200,.1,.03,0,"sine");
  },
  tone(f0,f1,dur,peak,at=0,type="sine",dest){
   const c=this.ctx,t=c.currentTime+at,o=c.createOscillator(),g=c.createGain();o.type=type;
   o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(Math.max(20,f1),t+dur);
   g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(peak,t+Math.min(.02,dur/4));g.gain.exponentialRampToValueAtTime(.0001,t+dur);
-  o.connect(g);g.connect(dest||this.master);o.start(t);o.stop(t+dur+.05)},
+  o.connect(g);g.connect(dest||this.fx||this.master);o.start(t);o.stop(t+dur+.05)},
  /* A voice: a buzzing sawtooth through two vowel formants, so it reads as speech or song */
- voice(f,at,dur,peak,vowel,vib){
+ voice(f,at,dur,peak,vowel,vib,dest){
   const c=this.ctx,t=c.currentTime+at,o=c.createOscillator(),g=c.createGain();o.type="sawtooth";o.frequency.setValueAtTime(f,t);
   if(vib){const l=c.createOscillator(),lg=c.createGain();l.frequency.value=5.2;lg.gain.value=f*.012;l.connect(lg);lg.connect(o.frequency);l.start(t);l.stop(t+dur+.05)}
   const V={a:[750,1150],e:[480,1850],i:[300,2250],o:[480,850],u:[340,750]}[vowel]||[600,1200];
   const mix=c.createGain();mix.gain.value=1;
   for(const [fq,q,lvl] of [[V[0],8,1],[V[1],10,.5]]){const bp=this.filt("bandpass",fq,q),bg=c.createGain();bg.gain.value=lvl;o.connect(bp);bp.connect(bg);bg.connect(mix)}
   g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(peak,t+Math.min(.05,dur/3));g.gain.setValueAtTime(peak,t+dur*.7);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
-  mix.connect(g);g.connect(this.townOut||this.master);o.start(t);o.stop(t+dur+.05);
+  mix.connect(g);g.connect(dest||this.townOut||this.master);o.start(t);o.stop(t+dur+.05);
  },
  // Talking: bursts of syllables with a rising or falling contour, from several speakers
- chatter(level){
+ chatter(level,dest){
   const speakers=1+Math.floor(Math.random()*2+level*2);
   for(let s=0;s<speakers;s++){
    const base=Math.random()<.5?105+Math.random()*40:185+Math.random()*60,n=3+Math.floor(Math.random()*7),start=Math.random()*.8;let t=start;
-   for(let i=0;i<n;i++){const d=.07+Math.random()*.12;this.voice(base*(1+(Math.random()-.5)*.18-(i/n)*.08),t,d,.012+level*.012,pick(["a","e","i","o","u"]),false);t+=d+Math.random()*.06}
+   for(let i=0;i<n;i++){const d=.07+Math.random()*.12;this.voice(base*(1+(Math.random()-.5)*.18-(i/n)*.08),t,d,.012+level*.012,pick(["a","e","i","o","u"]),false,dest);t+=d+Math.random()*.06}
   }
  },
  // A cart passing: low rumble swelling and fading, wheel creaks and hoof clops
@@ -3514,7 +3584,7 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_EXP:{water:
  drip(){const f=900+Math.random()*900;this.tone(f*1.4,f,.18,.06,0,"sine",this.echo);this.tone(f*1.4,f,.18,.04,0)},
  clink(){const f=2600+Math.random()*1200;this.tone(f,f,.35,.03,0);this.tone(f*2.01,f*2,.25,.012,0)},
  pop(at){const c=this.ctx,t=c.currentTime+at,s=c.createBufferSource(),g=c.createGain(),hp=this.filt("highpass",900+Math.random()*1500);s.buffer=this.white;s.playbackRate.value=this.pitch;
-  g.gain.setValueAtTime(.25*Math.random(),t);g.gain.exponentialRampToValueAtTime(.0001,t+.02+Math.random()*.04);s.connect(hp);hp.connect(g);g.connect(this.master);s.start(t,Math.random()*3);s.stop(t+.1)},
+  g.gain.setValueAtTime(.25*Math.random(),t);g.gain.exponentialRampToValueAtTime(.0001,t+.02+Math.random()*.04);s.connect(hp);hp.connect(g);g.connect(this.fx);s.start(t,Math.random()*3);s.stop(t+.1)},
  thunder(strength){const c=this.ctx,t=c.currentTime,s=c.createBufferSource(),lp=this.filt("lowpass",1400),g=c.createGain(),dur=3+Math.random()*3;s.buffer=this.brownBuf;s.playbackRate.value=this.pitch;
   lp.frequency.setValueAtTime(strength>.4?1600:500,t);lp.frequency.exponentialRampToValueAtTime(90,t+dur);
   g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(Math.min(.9,.25+strength*.7),t+(strength>.4?.05:.6));g.gain.exponentialRampToValueAtTime(.0001,t+dur);
