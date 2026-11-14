@@ -8,7 +8,7 @@
 <meta name="description" content="An animated, playable guide to how electronic music works: sound, synthesis, digital audio, rhythm, effects and history. Every Try it scene makes live sound in the browser.">
 <meta name="application-version" content="0.1">
 <style>
-:root{--ink:#192c37;--muted:#546873;--blue:#1772b7;--pale:#e8f2f8;--line:#c7d8e3;--paper:#fff;--bg:#f3f6f7;--coral:#c45238;--purple:#7156a6;--green:#2c776c}
+:root{--thumb:46px;--zero:17%;--rewind:#f3e7e1;--ink:#192c37;--muted:#546873;--blue:#1772b7;--pale:#e8f2f8;--line:#c7d8e3;--paper:#fff;--bg:#f3f6f7;--coral:#c45238;--purple:#7156a6;--green:#2c776c}
 *{box-sizing:border-box}
 html{background:var(--bg);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}
 body{margin:0;padding:22px;background:var(--bg)}
@@ -73,6 +73,37 @@ button.word:hover{background:#f0ebf9}
 .speed{font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:center}
 .modes{display:flex;border:1px solid #aec3cf;border-radius:12px;overflow:hidden}
 .modes button{border:0;border-radius:0;min-width:92px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+/* Time slider: the same shuttle as Mathematics In Motion and Computer Science In Motion. Hold left to rewind (release pauses); forward speed latches. */
+.shuttle{width:100%;margin:10px 0 0;--zero:17%}
+.speed-heading{display:flex;gap:12px;align-items:center;min-height:40px;margin:0}
+.speed-heading label{font-size:14px;font-weight:600}
+.speed-heading output{font-size:14px;font-weight:500;white-space:nowrap;font-variant-numeric:tabular-nums}
+.range-wrap{height:56px;position:relative;display:flex;align-items:center}
+.track-rail{position:absolute;left:calc(var(--thumb)/2);right:calc(var(--thumb)/2);height:11px;border-radius:10px;pointer-events:none;background:linear-gradient(to right,var(--rewind) 0,var(--rewind) var(--zero),#d5e8f4 var(--zero),#d5e8f4 100%);border:1px solid #b2c7d4}
+.track-rail::after{content:"";position:absolute;width:3px;height:24px;top:-7px;left:var(--zero);transform:translateX(-50%);background:#516775;border-radius:2px}
+#speed{appearance:none;-webkit-appearance:none;display:block;width:100%;height:56px;margin:0;background:transparent;position:relative;z-index:2;cursor:grab;touch-action:pan-y;outline:none;min-height:0}
+#speed::-webkit-slider-runnable-track{height:12px;background:transparent;border:none}
+#speed::-moz-range-track{height:12px;background:transparent;border:none}
+#speed::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;height:var(--thumb);width:var(--thumb);border-radius:50%;margin-top:-17px;background:#1772b7;border:4px solid #fff;box-shadow:0 0 0 1px #12598d,0 3px 9px #18354426;transition:background-color .08s,box-shadow .08s}
+#speed::-moz-range-thumb{height:38px;width:38px;border-radius:50%;background:#1772b7;border:4px solid #fff;box-shadow:0 0 0 1px #12598d,0 3px 9px #18354426}
+.holding #speed{cursor:grabbing}
+.holding #speed::-webkit-slider-thumb{background:#b84625;box-shadow:0 0 0 5px #f8d4b5,0 3px 10px #18354435}
+.holding #speed::-moz-range-thumb{background:#b84625;box-shadow:0 0 0 5px #f8d4b5,0 3px 10px #18354435}
+#speed:focus-visible::-webkit-slider-thumb{outline:3px solid #a44289;outline-offset:5px}
+#speed:focus-visible::-moz-range-thumb{outline:3px solid #a44289;outline-offset:5px}
+.scale{position:relative;height:20px;margin:0 calc(var(--thumb)/2);font-size:12px;font-weight:650;color:var(--muted)}
+.scale span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap}
+.scale .start{left:0;transform:none}.scale .end{right:0;transform:none}
+.scale .zero{left:var(--zero);color:var(--ink)}
+.scale .one{left:calc(var(--zero) + (100% - var(--zero))/12)}
+.scale .two{left:calc(var(--zero) + (100% - var(--zero))*.5)}
+.soundbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 14px;border-top:1px solid #dfe9ef;background:#f7f3fc}
+.soundbar .snd{background:var(--purple);border-color:var(--purple);color:#fff;font-size:16px;min-width:150px}
+.soundbar .snd:hover{background:#5d4690}
+.soundbar .snd[aria-pressed="true"]{background:var(--coral);border-color:var(--coral)}
+.soundbar .snd:disabled{background:#c9c2d6;border-color:#c9c2d6}
+.soundbar span{font-size:13px;color:var(--muted)}
 footer{padding:14px 30px 20px;font-size:12.5px;line-height:1.55;color:var(--muted);border-top:1px solid #e3ebef}
 footer a{color:var(--blue)}
 dialog{border:1px solid var(--line);border-radius:18px;padding:0;max-width:min(520px,92vw);color:var(--ink);box-shadow:0 20px 60px #192c3733}
@@ -104,6 +135,7 @@ dialog::backdrop{background:#192c3755}
   <svg id="drawing" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 380" role="img" aria-labelledby="svg-title"><title id="svg-title">Diagram</title></svg>
   <div class="progress" aria-hidden="true"><span id="bar"></span></div>
   <div class="phase" id="phase" aria-live="polite"></div>
+  <div class="soundbar"><button type="button" class="snd" id="snd" aria-pressed="false">🔊 Sound on</button><span id="snd-note">Turn your volume down first.</span></div>
   <div class="try" id="try" aria-label="Try it controls"></div>
  </div></div>
  <div class="explanation">
@@ -123,12 +155,17 @@ dialog::backdrop{background:#192c3755}
    <button type="button" id="replay">↺ Replay</button>
   </div>
   <div class="buttons">
-   <label class="speed">Speed <select id="speed" aria-label="Playback speed"><option value="0.6">Slow</option><option value="1" selected>Normal</option><option value="1.6">Fast</option></select></label>
    <div class="modes" role="group" aria-label="Mode"><button type="button" id="mode-watch" aria-pressed="true">Watch</button><button type="button" id="mode-try" aria-pressed="false">Try it</button></div>
   </div>
  </div>
+ <div class="shuttle" id="shuttle">
+  <div class="speed-heading"><label for="speed">Speed</label><output id="speed-readout" for="speed">0 · Paused</output></div>
+  <div class="range-wrap"><div class="track-rail" aria-hidden="true"></div><input type="range" id="speed" min="0" max="1000" step="1" value="170" aria-label="Playback speed" aria-describedby="speed-help" aria-valuetext="Paused"></div>
+  <div class="scale" aria-hidden="true"><span class="start">−8×</span><span class="zero">0</span><span class="one">1×</span><span class="two">6×</span><span class="end">12×</span></div>
+  <p class="sr-only" id="speed-help">The slider changes speed only. Hold left to rewind up to eight times speed; release to pause. Forward speed stays set up to twelve times. Use the Play button to pause and resume. Arrow keys adjust speed; Home holds full rewind and End selects full forward speed.</p>
+ </div>
 </section>
-<footer>A companion to <a href="https://github.com/Tudor74/mathematics-in-motion">Mathematics In Motion</a>, built the same way: every diagram is a pure function of time, so Watch can rewind, and Try it hands the same diagram to you — here with live Web Audio. Facts about instruments and dates are summarised from standard histories of electronic music; tempo ranges are typical, not rules. Keys: ←/→ scenes, space play/pause, T try it.</footer>
+<footer>A companion to <a href="https://github.com/Tudor74/mathematics-in-motion">Mathematics In Motion</a>, built the same way: every diagram is a pure function of time, so Watch can rewind, and Try it hands the same diagram to you — here with live Web Audio. Facts about instruments and dates are summarised from standard histories of electronic music; tempo ranges are typical, not rules. Keys: ←/→ scenes, space play/pause, T try it. The speed slider works like the one in Mathematics In Motion: hold it left of zero to rewind.</footer>
 </main>
 <dialog id="word-dialog" aria-labelledby="word-title"><div class="dlg"><button type="button" class="close" id="word-close">Close</button><h3 id="word-title"></h3><p id="word-here"></p><p class="contrast" id="word-contrast"></p><p class="ex" id="word-example"></p></div></dialog>
 <script>
@@ -703,10 +740,11 @@ const Sound={on:false,h:null,
  restart(){if(this.on){if(this.h){try{this.h.stop()}catch(e){}}const sc=SCENES[idx];this.h=sc.audio(AU.ctx,AU.out,states[idx])}},
  update(){if(this.h&&this.h.update)this.h.update(states[idx])},
  note(m,on,v){if(!this.on&&on)this.start();if(this.h&&this.h.note)this.h.note(m,on,v)},
- btn(){const b=document.getElementById('snd');if(b){b.setAttribute('aria-pressed',String(this.on));b.textContent=this.on?'■ Sound off':'🔊 Sound on'}}};
+ btn(){soundBar()}};
+function soundBar(){const b=document.getElementById('snd');if(!b)return;const has=!!SCENES[idx].audio;b.disabled=!has;b.setAttribute('aria-pressed',String(Sound.on));b.textContent=!has?'No sound here':Sound.on?'■ Sound off':'🔊 Sound on';document.getElementById('snd-note').textContent=!has?'This scene is visual only.':Sound.on?'Playing live. Change the controls below to hear the difference.':'Turn your volume down first. Starts Try it mode.'}
 
 /* ---------- App ---------- */
-let idx=0,t=0,playing=false,last=0,mode='watch',speed=1,hold=0,liveRaf=0;
+let idx=0,t=0,mode='watch',hold=0,liveRaf=0,speed=0,lastForward=1,last=0,zero=170,held=false,activePointer=null,keyboardHeld=false;
 const states=SCENES.map(sc=>sc.init());
 const svg=$('drawing'),tryEl=$('try');
 const rich=s=>s.replace(/\[\[(\w+)\|([^\]]+)\]\]/g,(m,k,txt)=>GLOSSARY[k]?`<button type="button" class="word" data-word="${k}">${esc(txt)}</button>`:esc(txt));
@@ -717,32 +755,63 @@ function render(){const sc=SCENES[idx];const p=mode==='try'?1:clamp(t/DUR,0,1);c
 function liveLoop(){cancelAnimationFrame(liveRaf);const sc=SCENES[idx];if(mode==='try'&&sc.live){const step=()=>{render();liveRaf=requestAnimationFrame(step)};liveRaf=requestAnimationFrame(step)}}
 function setTry(){const sc=SCENES[idx];tryEl.innerHTML='';tryEl._out=null;keyHandler=null;const can=!!sc.tryUI;$('mode-try').disabled=!can;if(mode==='try'&&!can)mode='watch';
  $('mode-watch').setAttribute('aria-pressed',String(mode==='watch'));$('mode-try').setAttribute('aria-pressed',String(mode==='try'));tryEl.classList.toggle('on',mode==='try');
- if(mode==='try'){const ui=sc.tryUI(states[idx]);tryEl.innerHTML=(sc.audio?`<div class="row"><button type="button" class="snd" id="snd" aria-pressed="false">🔊 Sound on</button><span style="font-size:12.5px;color:var(--muted)">Volume down first.</span></div>`:'')+ui.html;tryEl._out=ui.out||null;ui.bind(sel=>tryEl.querySelector(sel),render,tryEl);
-  const b=$('snd');if(b)b.onclick=()=>{Sound.on?Sound.stop():Sound.start();render()}}
- liveLoop()}
-function go(i,keepPlay){Sound.stop();idx=clamp(i,0,SCENES.length-1);t=keepPlay?0:DUR;hold=0;if(!keepPlay)setPlaying(false);
+ if(mode==='try'){const ui=sc.tryUI(states[idx]);tryEl.innerHTML=ui.html;tryEl._out=ui.out||null;ui.bind(sel=>tryEl.querySelector(sel),render,tryEl);}
+ soundBar();liveLoop()}
+function go(i,o={}){Sound.stop();idx=clamp(i,0,SCENES.length-1);t=o.t!=null?o.t:DUR;hold=0;if(!o.keep&&speed!==0){speed=0;updateControls()}
  const sc=SCENES[idx],si=STAGES.findIndex(s=>s.id===sc.stage);$('stage-title').textContent=STAGES[si].name;$('counter').textContent=`${idx+1} / ${SCENES.length}`;
  $('scene-eyebrow').textContent=`Stage ${si+1} · scene ${SCENES.filter((s,k)=>s.stage===sc.stage&&k<=idx).length} of ${SCENES.filter(s=>s.stage===sc.stage).length}`;
  $('term').textContent=sc.term;$('definition').innerHTML=rich(sc.def);$('example').innerHTML=rich(sc.ex);$('source').innerHTML=rich(sc.src);
  $('stages').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.stage===sc.stage)));
  $('previous').disabled=idx===0;$('next').disabled=idx===SCENES.length-1;setTry();render();try{history.replaceState(null,'','#'+(idx+1))}catch(e){}}
-function setPlaying(on){playing=on;$('play').textContent=on?'❚❚ Pause':'▶ Play';if(on){last=performance.now();requestAnimationFrame(loop)}}
-function loop(now){if(!playing)return;const dt=Math.min(.1,(now-last)/1000);last=now;if(t<DUR){t=Math.min(DUR,t+dt*speed);render()}else{hold+=dt;if(hold>2.2){if(idx<SCENES.length-1){go(idx+1,true)}else{setPlaying(false);return}}}requestAnimationFrame(loop)}
+/* ---- shuttle: identical behaviour to Mathematics In Motion ---- */
+const slider=$('speed'),shuttle=$('shuttle');
+const fmt=n=>String(Math.round(n*10)/10);
+function rawToRate(raw){raw=Number(raw);if(Math.abs(raw-zero)<=9)return 0;return raw<zero?-8*(zero-raw)/zero:12*(raw-zero)/(1000-zero)}
+function rateToRaw(rate){return rate<0?zero*(1+rate/8):zero+(1000-zero)*rate/12}
+function updateControls(){slider.value=String(Math.round(rateToRaw(speed)));
+ slider.setAttribute('aria-valuetext',speed===0?'Paused':speed<0?`Rewinding at ${fmt(-speed)} times normal speed; release to pause`:`Forward at ${fmt(speed)} times normal speed; this speed stays set`);
+ $('speed-readout').value=speed===0?'0 · Paused':`${fmt(Math.abs(speed))}× ${speed<0?'rewind':'forward'}`;
+ $('play').textContent=speed!==0?'❚❚ Pause':'▶ Play';$('play').setAttribute('aria-label',speed!==0?'Pause':`Play at ${fmt(lastForward)} times normal speed`)}
+function setRate(r){r=clamp(Number(r)||0,-8,12);if(Math.abs(r)<.05)r=0;
+ if(r!==0&&mode==='try'){mode='watch';Sound.stop();setTry()}
+ const was=speed;speed=r;if(r>0)lastForward=r;
+ if(speed>0&&was<=0&&t>=DUR&&hold===0)t=0;
+ if(speed!==0&&was===0){last=performance.now();requestAnimationFrame(loop)}
+ updateControls()}
+function loop(now){if(speed===0)return;const dt=Math.min(.1,(now-last)/1000);last=now;
+ if(speed>0){if(t<DUR){t=Math.min(DUR,t+dt*speed);render()}else{hold+=dt*speed;if(hold>2.2){if(idx<SCENES.length-1)go(idx+1,{keep:true,t:0});else{speed=0;updateControls();return}}}}
+ else{hold=0;t+=dt*speed;if(t<=0){if(idx>0)go(idx-1,{keep:true,t:DUR});else{t=0;speed=0;render();updateControls();return}}render()}
+ requestAnimationFrame(loop)}
+function playPause(){if(mode==='try'){mode='watch';Sound.stop();setTry()}if(speed!==0)setRate(0);else setRate(lastForward||1)}
+function sizeShuttle(){const available=Math.max(80,slider.getBoundingClientRect().width-46);const rewindTravel=Math.min(112,available*.24);zero=Math.round(1000*rewindTravel/available);shuttle.style.setProperty('--zero',(100*zero/1000)+'%');updateControls()}
+function beginHold(e){if(e.isPrimary===false||(e.pointerType==='mouse'&&e.button!==0))return;if(held&&activePointer!==null&&activePointer!==e.pointerId)return;held=true;activePointer=e.pointerId;shuttle.classList.add('holding');try{slider.setPointerCapture(e.pointerId)}catch(_e){}}
+function endHold(e){if(e&&activePointer!==null&&e.pointerId!==undefined&&e.pointerId!==activePointer)return;const id=activePointer;held=false;activePointer=null;keyboardHeld=false;shuttle.classList.remove('holding');
+ /* the handle springs back to zero when rewinding; forward speed stays latched */
+ if(speed<0)setRate(0);else updateControls();try{if(id!==null&&slider.hasPointerCapture(id))slider.releasePointerCapture(id)}catch(_e){}}
+const SPEEDKEYS=['ArrowLeft','ArrowRight','ArrowDown','ArrowUp','Home','End','PageUp','PageDown'];
+function speedKeys(e){if(!SPEEDKEYS.includes(e.key))return;e.preventDefault();e.stopPropagation();keyboardHeld=true;shuttle.classList.add('holding');let n=speed;
+ if(e.key==='Home')n=-8;else if(e.key==='End')n=12;else if(e.key==='ArrowRight'||e.key==='ArrowUp')n=Math.round((speed+.1)*10)/10;else if(e.key==='ArrowLeft'||e.key==='ArrowDown')n=Math.round((speed-.1)*10)/10;else if(e.key==='PageUp')n=speed+.5;else if(e.key==='PageDown')n=speed-.5;setRate(n)}
+slider.addEventListener('input',()=>setRate(rawToRate(slider.value)));
+slider.addEventListener('pointerdown',beginHold);slider.addEventListener('lostpointercapture',endHold);
+slider.addEventListener('keydown',speedKeys);slider.addEventListener('keyup',e=>{if(SPEEDKEYS.includes(e.key))endHold()});
+slider.addEventListener('blur',()=>{if(keyboardHeld||held||speed<0)endHold()});
+addEventListener('pointerup',endHold,true);addEventListener('pointercancel',endHold,true);addEventListener('resize',sizeShuttle);
 $('stages').innerHTML=STAGES.map((s,i)=>`<button type="button" data-stage="${s.id}" aria-pressed="false">${i+1} · ${esc(s.name)}</button>`).join('');
 $('stages').querySelectorAll('button').forEach(b=>b.onclick=()=>go(SCENES.findIndex(sc=>sc.stage===b.dataset.stage)));
-$('play').onclick=()=>{if(mode==='try'){mode='watch';Sound.stop();setTry()}if(playing)setPlaying(false);else{if(t>=DUR)t=0;hold=0;setPlaying(true)}};
-$('replay').onclick=()=>{if(mode==='try'){mode='watch';Sound.stop();setTry()}t=0;hold=0;setPlaying(true)};
-$('previous').onclick=()=>go(idx-1);$('next').onclick=()=>go(idx+1);$('speed').onchange=e=>{speed=+e.target.value};
+$('play').onclick=playPause;
+$('replay').onclick=()=>{if(mode==='try'){mode='watch';Sound.stop();setTry()}t=0;hold=0;if(speed<=0)setRate(lastForward||1);render()};
+$('previous').onclick=()=>go(idx-1);$('next').onclick=()=>go(idx+1);
 $('mode-watch').onclick=()=>{mode='watch';Sound.stop();setTry();render()};
-$('mode-try').onclick=()=>{if(!SCENES[idx].tryUI)return;mode='try';setPlaying(false);t=DUR;setTry();render()};
-document.addEventListener('keydown',e=>{if(keyHandler&&mode==='try'){keyHandler(e);if(e.defaultPrevented)return}if(e.target.closest('input,select,textarea,dialog'))return;if(e.key==='ArrowRight')go(idx+1);else if(e.key==='ArrowLeft')go(idx-1);else if(e.key===' '&&!e.target.closest('button')){e.preventDefault();$('play').click()}else if((e.key==='t'||e.key==='T')&&!keyHandler){mode==='try'?$('mode-watch').click():$('mode-try').click()}});
+$('mode-try').onclick=()=>{if(!SCENES[idx].tryUI)return;setRate(0);mode='try';t=DUR;setTry();render()};
+$('snd').onclick=()=>{if(!SCENES[idx].audio)return;if(Sound.on){Sound.stop();render();return}if(mode!=='try'){setRate(0);mode='try';t=DUR;setTry()}Sound.start();render()};
+document.addEventListener('keydown',e=>{if(keyHandler&&mode==='try'){keyHandler(e);if(e.defaultPrevented)return}if(e.target.closest('input,select,textarea,dialog'))return;if(e.key==='ArrowRight')go(idx+1);else if(e.key==='ArrowLeft')go(idx-1);else if(e.key===' '&&!e.target.closest('button')){e.preventDefault();playPause()}else if((e.key==='t'||e.key==='T')&&!keyHandler){mode==='try'?$('mode-watch').click():$('mode-try').click()}});
 document.addEventListener('keyup',e=>{if(keyHandler&&mode==='try')keyHandler(e)});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)Sound.stop()});
 const dlg=$('word-dialog');document.addEventListener('click',e=>{const b=e.target.closest('button.word');if(!b)return;const g=GLOSSARY[b.dataset.word];if(!g)return;$('word-title').textContent=g.t;$('word-here').textContent=g.h;$('word-contrast').textContent=g.c;$('word-example').textContent='Example: '+g.e;dlg.showModal?dlg.showModal():dlg.setAttribute('open','')});
 $('word-close').onclick=()=>dlg.close();
 function person(x,y,col,label,sc=1){return `<g><circle cx="${x}" cy="${y-30*sc}" r="${13*sc}" fill="${col}"/><path d="M${x-20*sc} ${y+10*sc} q${20*sc} ${-46*sc} ${40*sc} 0 z" fill="${col}"/></g>`}
-const h=parseInt((location.hash||'').slice(1),10);go(h>=1&&h<=SCENES.length?h-1:0);
-window.__EM={SCENES,go,renderAt:p=>{t=p*DUR;render()},Sound,states};
+const h=parseInt((location.hash||'').slice(1),10);go(h>=1&&h<=SCENES.length?h-1:0);sizeShuttle();
+window.__EM={SCENES,go,renderAt:p=>{t=p*DUR;render()},Sound,states,setRate,get speed(){return speed},get t(){return t},get idx(){return idx}};
 })();
 </script>
 </body>
