@@ -1,0 +1,453 @@
+{
+ "profile": {
+  "name": "Awais Rashid",
+  "current_role": "Professor of Cyber Security, School of Computer Science, University of Bristol; Director of the Bristol Cyber Security Group; Director of REPHRAIN (National Research Centre on Privacy, Harm Reduction and Adversarial Influence Online); Editor-in-Chief and project lead of CyBOK (Cyber Security Body of Knowledge).",
+  "previous": "Lancaster University, where he began as a lecturer in the Computing Department working on object databases and aspect-oriented software development, and later co-founded and co-directed the Security Lancaster institute.",
+  "areas": [
+   "Object database evolution",
+   "Aspect-oriented software development and early aspects (aspect-oriented requirements engineering)",
+   "Software product lines and variability management",
+   "Cybercrime investigation and online child protection",
+   "Security of cyber-physical systems and industrial control systems",
+   "Human and organisational factors in security decision-making",
+   "Developer-centred security",
+   "Cyber security education and the Cyber Security Body of Knowledge (CyBOK)",
+   "Privacy, privacy-enhancing technologies and online harms"
+  ],
+  "education": "BSc, MSc and PhD (listed on his University of Bristol profile). His doctoral thesis, 'A database evolution approach for object-oriented databases', is held in Lancaster University's research repository.",
+  "honours": [
+   "Fellow of the Alan Turing Institute (stated on a profile page; he has a researcher page at turing.ac.uk)"
+  ],
+  "sources": [
+   "https://www.bristol.ac.uk/people/person/Awais-Rashid-e9d2501a-e131-4d98-99be-49a63f29cdd5/",
+   "https://bristol.ac.uk/engineering/research/cyber-security/people",
+   "https://www.rephrain.ac.uk/awais-rashid/",
+   "https://cybok.org/people/professor-awais-rashid",
+   "https://www.turing.ac.uk/people/researchers/awais-rashid",
+   "https://petras.cs.ucl.ac.uk/person/prof-awais-rashid",
+   "https://dblp.uni-trier.de/pid/26/3330.html",
+   "https://scholar.google.com/citations?user=pI5g2hIAAAAJ",
+   "https://eprints.lancs.ac.uk/id/eprint/57537",
+   "https://research-information.bris.ac.uk/en/projects/rephrain-national-research-centre-on-privacy-harm-reduction-and-a-2/"
+  ]
+ },
+ "eras": [
+  {
+   "id": "objdb",
+   "name": "Evolving object databases",
+   "years": "2000–2005",
+   "summary": "His doctoral work at Lancaster asked how an object database can change its class definitions without breaking the objects already stored. He used separation of concerns and aspects to keep evolution logic out of the classes themselves, which planted the seed for everything that followed."
+  },
+  {
+   "id": "aosd",
+   "name": "Aspects and early aspects",
+   "years": "2002–2007",
+   "summary": "He helped found 'early aspects': finding and modularising cross-cutting concerns such as security or persistence at the requirements stage rather than only in code. Tools such as ARCaDe and EA-Miner showed this could be partly automated with templates and natural-language processing."
+  },
+  {
+   "id": "spl",
+   "name": "Variability and software product lines",
+   "years": "2009–2011",
+   "summary": "Aspects and model-driven engineering were combined to manage families of related products that share a common core but vary in features. The EU AMPLE project produced languages and methods for expressing and tracing that variability."
+  },
+  {
+   "id": "cybercrime",
+   "name": "Cybercrime, digital personas and privacy",
+   "years": "2013–2016",
+   "summary": "His focus turned to security: helping police see through criminals' multiple online identities, finding new child-abuse media on peer-to-peer networks, and exposing the gap between social networks' privacy policies and their actual controls. Language analysis and requirements thinking carried over from his earlier work."
+  },
+  {
+   "id": "cps",
+   "name": "Industrial control and cyber-physical systems",
+   "years": "2017–2026",
+   "summary": "Building real industrial control system testbeds with PLCs and HMIs, his group studied how attacks on physical infrastructure work and how to test defences safely. This line runs through to an open-source operational technology pentesting platform in 2026."
+  },
+  {
+   "id": "humans",
+   "name": "Humans, organisations and security decisions",
+   "years": "2016–2020",
+   "summary": "Security failures are often decision failures. Using incident analysis and the 'Decisions & Disruptions' tabletop game, his teams studied how experts, managers and engineers actually reason about cyber risk, revealing that practice rarely follows the textbook risk-first model."
+  },
+  {
+   "id": "devsec",
+   "name": "Developer-centred security",
+   "years": "2019–2025",
+   "summary": "Rather than blaming developers, this work asks why secure coding is hard: confusing crypto libraries, unclear specifications, and rationales that cover code but not the wider app. It looks for lightweight interventions that genuinely change developer behaviour, and more recently the limits of LLM-generated code."
+  },
+  {
+   "id": "cybok",
+   "name": "CyBOK: mapping the discipline",
+   "years": "2018–2024",
+   "summary": "As Editor-in-Chief he led a community effort to codify the foundational knowledge of cyber security into Knowledge Areas, much as SWEBOK did for software engineering. CyBOK is now used to benchmark degree programmes, curricula and workforce skills."
+  },
+  {
+   "id": "harms",
+   "name": "Privacy, online harms and REPHRAIN",
+   "years": "2019–2025",
+   "summary": "Leading REPHRAIN, he and colleagues study how technology causes or reduces harm online, from smartphone defaults and app permissions to inclusive privacy tools. The work culminates in arguments that weakening end-to-end encryption would harm the very people it claims to protect."
+  }
+ ],
+ "papers": [
+  {
+   "year": 2000,
+   "title": "Object Database Evolution Using Separation of Concerns",
+   "venue": "SIGMOD Record 29(4)",
+   "coauthors": "with Peter Sawyer",
+   "era": "objdb",
+   "summary": "When a class in an object database changes, millions of stored objects may no longer fit. Existing evolution frameworks hard-wired adaptation code into class versions. Rashid and Sawyer moved that code into separate aspects and dynamic relationships, giving a framework that is customisable and extensible with low maintenance overhead.",
+   "diagram": "A class 'Person v1' gains a field to become 'Person v2'. Old objects flow through a separate 'adapter aspect' box that reshapes them on the fly, instead of each class version carrying its own conversion code.",
+   "interaction": "Add or rename a field in a toy class, then watch stored objects either break (no aspect) or adapt automatically (aspect switched on).",
+   "source": "https://doi.org/10.1145/369275.369281",
+   "confidence": "high"
+  },
+  {
+   "year": 2002,
+   "title": "Early Aspects: A Model for Aspect-Oriented Requirements Engineering",
+   "venue": "IEEE Joint International Conference on Requirements Engineering (RE'02)",
+   "coauthors": "with Peter Sawyer, Ana Moreira and João Araújo",
+   "era": "aosd",
+   "summary": "Aspect-oriented programming tamed cross-cutting concerns in code, but concerns like security or response time already cut across many requirements. This short paper proposed a general model for aspect-oriented requirements engineering, illustrated with a road toll collection system, helping launch the 'early aspects' research community.",
+   "diagram": "A grid: rows are requirements (pay toll, register car, issue fine); columns are concerns (security, response time). Highlighted cells show one concern touching many rows, then folding into a single aspect module.",
+   "interaction": "Tick which toll-system requirements each concern affects; the page reveals which concerns are cross-cutting and pulls them out as aspects.",
+   "source": "https://doi.org/10.1109/ICRE.2002.1048526",
+   "confidence": "high"
+  },
+  {
+   "year": 2003,
+   "title": "Modularisation and Composition of Aspectual Requirements",
+   "venue": "Proceedings of the 2nd International Conference on Aspect-Oriented Software Development (AOSD 2003), ACM",
+   "coauthors": "with Ana Moreira and João Araújo",
+   "era": "aosd",
+   "summary": "Separates aspectual requirements, ordinary requirements and the composition rules that join them into distinct, template-based modules. Doing so exposes conflicts early, for example between security and speed, so stakeholders can negotiate trade-offs before design. Realised with viewpoints, XML and the ARCaDe tool.",
+   "diagram": "Three stacks of cards (viewpoints, aspects, composition rules) slide together; where two aspects claim the same requirement a red conflict marker flashes, prompting a priority choice.",
+   "interaction": "Assign priorities to competing concerns such as 'security' and 'response time' on a shared requirement and see the conflict resolve or persist.",
+   "source": "https://doi.org/10.1145/643603.643605",
+   "confidence": "high"
+  },
+  {
+   "year": 2003,
+   "title": "Persistence as an Aspect",
+   "venue": "Proceedings of the 2nd International Conference on Aspect-Oriented Software Development (AOSD 2003), ACM",
+   "coauthors": "with Ruzanna Chitchyan",
+   "era": "aosd",
+   "summary": "Persistence was the textbook example of a cross-cutting concern, but nobody had shown it could really be aspectised in a working system. Using a bibliography database application, the authors showed persistence can be modularised in a highly reusable way, bridging his database and aspect-oriented interests.",
+   "diagram": "Application code with database calls sprinkled everywhere (red dots); an animation lifts every red dot out into a single 'persistence aspect' layer that weaves back in at save and load points.",
+   "interaction": "Toggle the persistence aspect on and off for a small in-browser bibliography app and see whether entries survive a simulated restart.",
+   "source": "https://doi.org/10.1145/643603.643616",
+   "confidence": "high"
+  },
+  {
+   "year": 2004,
+   "title": "Aspect-Oriented Database Systems",
+   "venue": "Springer (monograph)",
+   "coauthors": "sole author",
+   "era": "objdb",
+   "summary": "A book bringing together two directions: using aspect-oriented programming to modularise database features such as versioning and evolution, and making databases able to store and retrieve aspects themselves. It consolidated his doctoral and early research into a single reference.",
+   "diagram": "Two arrows between a database cylinder and an aspect symbol: 'aspects inside the database' (evolution, versioning) and 'aspects stored by the database' (persistent aspects).",
+   "interaction": "Drag database features (versioning, indexing, evolution) onto a core engine as pluggable aspects and see how much of the core stays unchanged.",
+   "source": "https://link.springer.com/9783540009481",
+   "confidence": "high"
+  },
+  {
+   "year": 2005,
+   "title": "EA-Miner: a tool for automating aspect-oriented requirements identification",
+   "venue": "20th IEEE/ACM International Conference on Automated Software Engineering (ASE 2005), ACM",
+   "coauthors": "with Américo Sampaio, Ruzanna Chitchyan and Paul Rayson",
+   "era": "aosd",
+   "summary": "Finding aspects by hand in large, messy requirements documents is a bottleneck. EA-Miner used natural-language processing to suggest candidate concerns, cross-cutting relationships and viewpoints automatically, a later journal version reporting an industrial case study at Siemens.",
+   "diagram": "A paragraph of requirements text scrolls past; words are tagged by part of speech and meaning, and recurring concerns such as 'log', 'secure' and 'fast' are highlighted and linked to every sentence they touch.",
+   "interaction": "Paste a few lines of requirements and see a simple keyword-and-frequency miner highlight possible cross-cutting concerns.",
+   "source": "https://doi.org/10.1145/1101908.1101967",
+   "confidence": "high"
+  },
+  {
+   "year": 2009,
+   "title": "VML* – A Family of Languages for Variability Management in Software Product Lines",
+   "venue": "Software Language Engineering (SLE 2009), LNCS 5969, Springer (published 2010)",
+   "coauthors": "with Steffen Zschaler, Pablo Sánchez, João Santos, Mauricio Alférez et al.",
+   "era": "spl",
+   "summary": "Product lines need a way to say which model elements belong to which features. Rather than one universal variability language, VML* treats such languages as a product line in their own right, generating a tailored variability language for each kind of target model from a domain-specific description.",
+   "diagram": "A feature tree (camera, GPS, music) on the left; ticking features animates actions that add or remove pieces of an architecture model on the right, producing one concrete product.",
+   "interaction": "Choose features for a toy phone product line and watch the corresponding product model assemble itself.",
+   "source": "https://doi.org/10.1007/978-3-642-12107-4_7",
+   "confidence": "high"
+  },
+  {
+   "year": 2011,
+   "title": "Aspect-Oriented, Model-Driven Software Product Lines: The AMPLE Way",
+   "venue": "Cambridge University Press (edited book)",
+   "coauthors": "edited with Jean-Claude Royer and Andreas Rummler",
+   "era": "spl",
+   "summary": "The book distils the EU AMPLE project: combining aspect-oriented development and model-driven engineering to tackle variability analysis, variability implementation and traceability in software product lines, illustrated with three industrial case studies.",
+   "diagram": "A pipeline from requirements to models to code, with variation points marked at every stage and trace links threading through them so a single feature can be followed end to end.",
+   "interaction": "Click a feature and follow its trace lines from requirement through model to code across the pipeline.",
+   "source": "https://eprints.lancs.ac.uk/id/eprint/50778",
+   "confidence": "high"
+  },
+  {
+   "year": 2013,
+   "title": "Who Am I? Analyzing Digital Personas in Cybercrime Investigations",
+   "venue": "IEEE Computer 46(4)",
+   "coauthors": "with Alistair Baron, Paul Rayson, Corinne May-Chahal, Phil Greenwood and James Walkerdine",
+   "era": "cybercrime",
+   "summary": "Offenders, including those targeting children, hide behind many online identities, overwhelming investigators. The Isis toolkit used language analysis to help work out whether several personas belong to the same person or group, and whether claimed attributes such as age ring true.",
+   "diagram": "Several chat avatars each emit text; stylistic fingerprints (word choice, punctuation) are extracted and clustered, and avatars with matching fingerprints link to one hidden author.",
+   "interaction": "Read short messages from four 'users' and guess which share an author; then reveal the stylometric similarity scores.",
+   "source": "https://doi.org/10.1109/MC.2013.68",
+   "confidence": "high"
+  },
+  {
+   "year": 2013,
+   "title": "Social Networking Privacy: Understanding the Disconnect from Policy to Controls",
+   "venue": "IEEE Computer 46(6)",
+   "coauthors": "with Pauline Anthonysamy and Phil Greenwood",
+   "era": "cybercrime",
+   "summary": "Do social networks' privacy settings let users do what their privacy policies promise? Tracing policies to controls on sixteen major sites revealed a significant disconnect: around two-thirds of policy principles had no matching control, a gap the authors linked to business models built on personal data.",
+   "diagram": "Policy statements on the left, privacy toggles on the right; trace lines connect matching pairs, and most policy statements are left dangling with no control.",
+   "interaction": "Match sample policy sentences to available settings; the page counts how many promises you can actually act on.",
+   "source": "https://doi.org/10.1109/MC.2012.326",
+   "confidence": "high"
+  },
+  {
+   "year": 2016,
+   "title": "iCOP: Live forensics to reveal previously unknown criminal media on P2P networks",
+   "venue": "Digital Investigation 18",
+   "coauthors": "with Claudia Peersman, Christian Schulze, Margaret Brennan and Carl Fischer",
+   "era": "cybercrime",
+   "summary": "Police tools spotted child sexual abuse media on peer-to-peer networks only by matching hashes of already-known files, missing new material. iCOP combined filename analysis with image and video analysis to flag previously unseen material live, and was trialled with law enforcement officers.",
+   "diagram": "Files stream across a network; a hash lookup catches only files already in a database, while a second filter of filename and content classifiers flags new suspicious files for human review.",
+   "interaction": "Compare two filters on a stream of harmless dummy files: exact-hash matching versus pattern-based scoring, and count what each misses.",
+   "source": "https://doi.org/10.1016/j.diin.2016.07.002",
+   "confidence": "high"
+  },
+  {
+   "year": 2016,
+   "title": "Discovering \"Unknown Known\" Security Requirements",
+   "venue": "38th International Conference on Software Engineering (ICSE 2016), ACM",
+   "coauthors": "with Syed Asad Ali Naqvi, Rajiv Ramdhany, Matthew Edwards, Ruzanna Chitchyan and M. Ali Babar",
+   "era": "humans",
+   "summary": "Security models encode best practice, but the threat landscape moves on, leaving lessons buried across many incidents: 'unknown knowns'. Combining grounded theory with incident fault trees across 11 major incidents surfaced revisions to a security model widely used in industry.",
+   "diagram": "Several incident fault trees appear side by side; shared branches glow and merge into a new node that is then added to the standard security model.",
+   "interaction": "Read three short incident stories and tag their root causes; shared causes you tag are promoted into a 'new requirement'.",
+   "source": "https://doi.org/10.1145/2884781.2884785",
+   "confidence": "medium"
+  },
+  {
+   "year": 2017,
+   "title": "Pains, Gains and PLCs: Ten Lessons from Building an Industrial Control Systems Testbed for Security Research",
+   "venue": "10th USENIX Workshop on Cyber Security Experimentation and Test (CSET '17)",
+   "coauthors": "with Benjamin Green, Anhtuan Le, Rob Antrobus, Utz Roedig and David Hutchison",
+   "era": "cps",
+   "summary": "Research on industrial control system security needs realistic hardware, but how to build a testbed is rarely written down. Drawing on over three years of building a lab with PLCs, HMIs and RTUs, the paper sets out ten lessons on balancing diversity, scalability and complexity.",
+   "diagram": "A layered plant: field devices, PLCs, a control network and an HMI screen. Layers light up as each lesson is introduced, showing where diversity or complexity costs arise.",
+   "interaction": "Build a mini testbed on a budget by choosing PLC vendors and network layouts, then see a score for realism, cost and complexity.",
+   "source": "https://www.usenix.org/conference/cset17/workshop-program/presentation/green",
+   "confidence": "high"
+  },
+  {
+   "year": 2018,
+   "title": "Scoping the Cyber Security Body of Knowledge",
+   "venue": "IEEE Security & Privacy 16(3)",
+   "coauthors": "with George Danezis, Howard Chivers, Emil Lupu, Andrew Martin, Makayla Lewis and Claudia Peersman",
+   "era": "cybok",
+   "summary": "Cyber security lacked an agreed map of its foundational knowledge. Through community workshops, surveys, expert interviews and analysis of existing curricula and texts, the CyBOK team scoped the field into 19 top-level Knowledge Areas, the skeleton of CyBOK Version 1.0.",
+   "diagram": "Thousands of keywords from curricula and textbooks drift as dots, then cluster into 19 labelled islands, the Knowledge Areas.",
+   "interaction": "Drag security topics such as 'malware', 'privacy law' and 'cryptography' into the Knowledge Area you think they belong to, then compare with CyBOK.",
+   "source": "https://doi.org/10.1109/MSP.2018.2701150",
+   "confidence": "high"
+  },
+  {
+   "year": 2019,
+   "title": "The Good, the Bad and the Ugly: A Study of Security Decisions in a Cyber-Physical Systems Game",
+   "venue": "IEEE Transactions on Software Engineering 45(5)",
+   "coauthors": "with Sylvain Frey, Pauline Anthonysamy, Maria Pinto-Albuquerque and Syed Asad Naqvi",
+   "era": "humans",
+   "summary": "Security experts, computer scientists and managers played a tabletop game defending a cyber-physical utility. Experts were not automatically better players but were more confident; managers and experts favoured technical fixes, computer scientists favoured training. Decision styles ranged from procedure- to intuition-driven.",
+   "diagram": "A small utility company map with a budget bar; players buy defences each round while attack events hit, and the scoreboard compares outcomes for different player groups.",
+   "interaction": "Play a two-round version: spend a limited budget on defences, face random attacks, and see how your choices compare with typical groups in the study.",
+   "source": "https://doi.org/10.1109/TSE.2017.2782813",
+   "confidence": "high"
+  },
+  {
+   "year": 2019,
+   "title": "Usability Smells: An Analysis of Developers' Struggle With Crypto Libraries",
+   "venue": "Fifteenth Symposium on Usable Privacy and Security (SOUPS 2019), USENIX",
+   "coauthors": "with Nikhil Patnaik and Joseph Hallett",
+   "era": "devsec",
+   "summary": "Developers misuse cryptography libraries because the libraries are hard to use. Analysing over 2,400 Stack Overflow questions about seven libraries and mapping issues onto Green and Smith's usability principles, the authors identified four 'usability smells', such as 'Needs a super sleuth', signalling where library design should improve.",
+   "diagram": "Stack Overflow questions fall like tiles into bins labelled by usability principle; four bins overflow and turn into named 'smell' icons.",
+   "interaction": "Read short developer questions and sort each into a smell; see how your classification compares with the paper's themes.",
+   "source": "https://www.usenix.org/conference/soups2019/presentation/patnaik",
+   "confidence": "high"
+  },
+  {
+   "year": 2019,
+   "title": "Interventions for Software Security: Creating a Lightweight Program of Assurance Techniques for Developers",
+   "venue": "41st International Conference on Software Engineering: Software Engineering in Practice (ICSE-SEIP 2019)",
+   "coauthors": "with Charles Weir, Ingolf Becker, James Noble, Lynne Blair and M. Angela Sasse",
+   "era": "devsec",
+   "summary": "Most development teams have no security specialist. Learning from security professionals what actually works, the authors packaged a few lightweight interventions, 'Developer Security Essentials', and trialled them with real teams to see whether they lastingly raised security practice.",
+   "diagram": "A development team timeline before and after a short workshop; security activities such as threat modelling and code review appear as new recurring blocks on the sprint calendar.",
+   "interaction": "Pick two low-cost security practices for a fictional team and see a simulated sprint log show which risks they now catch.",
+   "source": "https://eprints.lancs.ac.uk/id/eprint/131282",
+   "confidence": "high"
+  },
+  {
+   "year": 2019,
+   "title": "Skip, Skip, Skip, Accept!!!: A Study on the Usability of Smartphone Manufacturer Provided Default Features and User Privacy",
+   "venue": "Proceedings on Privacy Enhancing Technologies (PoPETs) 2019(2)",
+   "coauthors": "with Kopo M. Ramokapane and Anthony C. Mazeli",
+   "era": "harms",
+   "summary": "Phones ship with privacy-relevant defaults such as location services, cloud backup, voice assistants and ad tracking. A task-based study with 27 Android and iOS users found that configuring them takes so much time and effort that most people simply skip or accept the defaults.",
+   "diagram": "A phone setup wizard flicks through screens; each 'Skip' or 'Accept' tap silently switches on a data stream that flows away from the phone.",
+   "interaction": "Go through a mock phone setup, then see a summary of which data-sharing features your quick taps left enabled.",
+   "source": "https://petsymposium.org/popets/2019/popets-2019-0027.php",
+   "confidence": "high"
+  },
+  {
+   "year": 2019,
+   "title": "Everything Is Awesome! or Is It? Cyber Security Risks in Critical Infrastructure",
+   "venue": "14th International Conference on Critical Information Infrastructures Security (CRITIS 2019), LNCS 11777, Springer",
+   "coauthors": "with Joseph Gardiner, Benjamin Green and Barnaby Craggs",
+   "era": "cps",
+   "summary": "An invited reflection on a multi-year programme covering both technical and social sides of cyber risk in critical infrastructure. Industrial control systems run power, water and transport, and well-resourced adversaries could disrupt services for large populations; the paper argues risks must be understood across people, processes and technology together.",
+   "diagram": "A city skyline wired to a control room; an attack ripple travels from an engineer's laptop through the control network to grid, water and rail icons, which dim in turn.",
+   "interaction": "Choose an entry point (phishing email, USB stick, remote access) and watch how far an attack spreads through a simplified infrastructure network.",
+   "source": "https://doi.org/10.1007/978-3-030-37670-3_1",
+   "confidence": "high"
+  },
+  {
+   "year": 2019,
+   "title": "The Cyber Security Body of Knowledge (CyBOK), Version 1.0",
+   "venue": "CyBOK project, National Cyber Security Centre (Open Government Licence)",
+   "coauthors": "edited with Howard Chivers, George Danezis, Emil Lupu and Andrew Martin",
+   "era": "cybok",
+   "summary": "Released on 31 October 2019, CyBOK 1.0 brought together 19 Knowledge Areas written and peer-reviewed by international experts, freely available to all. It gives universities, employers and certification bodies a common vocabulary for what cyber security knowledge is; version 1.1 added two further areas.",
+   "diagram": "A wheel of 19 segments grouped into themes (human and organisational, attacks and defences, systems, software and platform, infrastructure) that rotates to reveal each Knowledge Area's title.",
+   "interaction": "Spin the CyBOK wheel and click a Knowledge Area to read a one-line description and test yourself with a quick question.",
+   "source": "https://cybok.org/knowledgebase",
+   "confidence": "high"
+  },
+  {
+   "year": 2020,
+   "title": "Schrödinger's Security: Opening the Box on App Developers' Security Rationale",
+   "venue": "42nd International Conference on Software Engineering (ICSE 2020), ACM",
+   "coauthors": "with Dirk van der Linden, Pauline Anthonysamy, Bashar Nuseibeh, Thein Than Tun, Marian Petre, Mark Levine and John Towse",
+   "era": "devsec",
+   "summary": "Developers often appear to act securely, but why? A task study with 44 app developers and a survey of 274 found only coding was backed by a genuine security rationale; activities such as choosing testers or setting up environments were not. Secure code does not guarantee a secure app.",
+   "diagram": "Six closed boxes labelled with developer tasks; opening each shows whether a security reason sits inside. Only the 'coding' box contains one.",
+   "interaction": "For each everyday developer task, say whether it affects app security, then open the box to see the study's finding.",
+   "source": "https://doi.org/10.1145/3377811.3380394",
+   "confidence": "high"
+  },
+  {
+   "year": 2020,
+   "title": "\"So if Mr Blue Head here clicks the link...\" Risk Thinking in Cyber Security Decision Making",
+   "venue": "ACM Transactions on Privacy and Security 24(1)",
+   "coauthors": "with Benjamin Shreeve, Joseph Hallett, Matthew Edwards, Pauline Anthonysamy and Sylvain Frey",
+   "era": "humans",
+   "summary": "Standards such as ISO 27001 assume decisions start from risk. Analysing 208 sessions and 948 players of the Decisions & Disruptions game, the authors found four patterns of risk thinking and two strategies, risk-first and opportunity-first; good outcomes depended on teams' 'plasticity' in switching between them.",
+   "diagram": "Two paths from a decision node: 'start with risk' and 'start with opportunity'. Team conversation bubbles hop between paths; agile teams weave both and reach better outcomes.",
+   "interaction": "Given a scenario, choose to reason from a threat or from an opportunity at each step, then see which pattern your decisions form.",
+   "source": "https://doi.org/10.1145/3419101",
+   "confidence": "high"
+  },
+  {
+   "year": 2021,
+   "title": "\"Do this! Do that!, And nothing will happen\": Do specifications lead to securely stored passwords?",
+   "venue": "43rd IEEE/ACM International Conference on Software Engineering (ICSE 2021)",
+   "coauthors": "with Joseph Hallett, Nikhil Patnaik and Benjamin Shreeve",
+   "era": "devsec",
+   "summary": "Does asking developers to write a specification first make them store passwords more securely? Developers prompted to specify did slightly better, and reflection helped some see threats, but many still got it wrong; freelancers often used Base64, confusing encoding with hashing.",
+   "diagram": "A password travels three routes into a database: plain text, Base64 (easily reversed with one click), and salted hash (one-way). An attacker icon tries to reverse each.",
+   "interaction": "Type a password and see its Base64 encoding decoded instantly, then its salted hash, which cannot be reversed.",
+   "source": "https://arxiv.org/abs/2102.09790",
+   "confidence": "high"
+  },
+  {
+   "year": 2022,
+   "title": "From Utility to Capability: A New Paradigm to Conceptualize and Develop Inclusive PETs",
+   "venue": "New Security Paradigms Workshop (NSPW 2022), ACM",
+   "coauthors": "with Partha Das Chowdhury, Andrés Domínguez Hernández and Kopo M. Ramokapane",
+   "era": "harms",
+   "summary": "Privacy-enhancing technologies are usually judged by usability for an average user. Drawing on Amartya Sen's capability approach, the paper argues they should be judged by the real opportunities different people have to benefit, given factors such as age, disability, language and gender.",
+   "diagram": "One privacy tool passes through different people; each person's circumstances act as a filter, so the same tool yields very different real capability bars.",
+   "interaction": "Adjust a persona's language, age or accessibility needs and watch how much protection the same privacy tool actually delivers.",
+   "source": "https://arxiv.org/abs/2202.08548",
+   "confidence": "high"
+  },
+  {
+   "year": 2023,
+   "title": "Stuck in the Permissions With You: Developer & End-User Perspectives on App Permissions & Their Privacy Ramifications",
+   "venue": "CHI Conference on Human Factors in Computing Systems (CHI 2023), ACM",
+   "coauthors": "with Mohammad Tahaei and Ruba Abu-Salma",
+   "era": "harms",
+   "summary": "App permissions sit between developers and users, but the two groups see them differently. Developers treat permissions as feature switches and rarely remove unused ones; users grant them for features or out of trust, and some wrongly believe permissions offer legal protection for their data.",
+   "diagram": "A permission dialogue seen from two sides: the developer's view (feature checklist) and the user's view (trust decision), with stale unused permissions piling up between them.",
+   "interaction": "Build a small app by choosing features; see which permissions get added, then try removing ones no longer needed.",
+   "source": "https://arxiv.org/abs/2301.06534",
+   "confidence": "high"
+  },
+  {
+   "year": 2023,
+   "title": "Co-creating a Transdisciplinary Map of Technology-mediated Harms, Risks and Vulnerabilities: Challenges, Ambivalences and Opportunities",
+   "venue": "Proceedings of the ACM on Human-Computer Interaction (CSCW 2023)",
+   "coauthors": "with Andrés Domínguez Hernández, Kopo M. Ramokapane, Partha Das Chowdhury, Ola Michalec et al.",
+   "era": "harms",
+   "summary": "Reflects on 18 months of building, within REPHRAIN, a shared map linking online harms, social goods, research challenges and researchers across disciplines. The authors argue the map, and the act of mapping, works at once as a method, a medium and a provocation.",
+   "diagram": "A network map grows node by node: harms (harassment, fraud), social goods (privacy, safety), and research projects, connected by coloured links that can be filtered.",
+   "interaction": "Filter a small harms map by a social good such as 'safety' and explore which harms and research questions connect to it.",
+   "source": "https://doi.org/10.1145/3610179",
+   "confidence": "high"
+  },
+  {
+   "year": 2024,
+   "title": "A framework for mapping organisational workforce knowledge profile in cyber security",
+   "venue": "Computers & Security 145 (article 103925)",
+   "coauthors": "with Lata Nautiyal",
+   "era": "cybok",
+   "summary": "Organisations rarely know what cyber security knowledge their staff collectively hold. Using CyBOK as a common baseline, the framework maps each person's qualifications, certifications, training and role onto Knowledge Areas, building a workforce profile that reveals strengths and gaps. Developed through three UK case studies.",
+   "diagram": "Individual staff cards each light up a few CyBOK segments; stacking them builds a team heat map with bright strengths and dark gaps.",
+   "interaction": "Add fictional staff with different certificates and roles and watch your organisation's CyBOK coverage heat map change.",
+   "source": "https://arxiv.org/abs/2406.03322",
+   "confidence": "high"
+  },
+  {
+   "year": 2025,
+   "title": "Challenges to Using Large Language Models in Code Generation and Repair",
+   "venue": "IEEE Security & Privacy 23(2)",
+   "coauthors": "with Liliana Pasquale, Antonino Sabetta, Marcelo d'Amorim et al.",
+   "era": "devsec",
+   "summary": "LLMs look impressive at writing and fixing code in benchmarks, but real-world security repairs need context about an application's structure and purpose that even very large context windows may not capture. The column sets out the gaps, including misconfigurations, and why AI-generated code needs scrutiny.",
+   "diagram": "A code snippet with a bug; an LLM patch appears. Zooming out reveals the wider system, where the patch breaks an assumption elsewhere, shown as a red ripple.",
+   "interaction": "Look at a short vulnerable function and three suggested fixes; pick the one that is safe once you see the surrounding code.",
+   "source": "https://doi.org/10.1109/MSEC.2025.3530488",
+   "confidence": "high"
+  },
+  {
+   "year": 2025,
+   "title": "Weakening End-to-End Encryption Considered Harmful",
+   "venue": "IEEE Security & Privacy 23(3)",
+   "coauthors": "with Corinne May-Chahal and Claudia Peersman",
+   "era": "harms",
+   "summary": "Responding to UK and EU proposals to scan end-to-end encrypted messages for child sexual abuse, the authors, who have long worked on child protection, argue that weakening encryption would not tackle the root causes of abuse and would compromise the privacy of everyone, including the young people it aims to protect.",
+   "diagram": "A locked message travels between two phones; adding a scanning 'side door' opens a gap that not only the intended scanner but other attackers can slip through.",
+   "interaction": "Toggle client-side scanning on and off and see who else gains access to messages in each configuration.",
+   "source": "https://doi.org/10.1109/MSEC.2025.3563092",
+   "confidence": "high"
+  },
+  {
+   "year": 2026,
+   "title": "Building an Open Source Operational Technology Pentesting Platform: Lessons from LINICS",
+   "venue": "IEEE Security & Privacy 24(2)",
+   "coauthors": "with Joseph Gardiner and Louise Evans",
+   "era": "cps",
+   "summary": "IT security testers have Kali Linux, but operational technology had no equivalent. LINICS is an open-source OT penetration-testing platform whose tools are mapped to MITRE ATT&CK for ICS, so IT professionals moving into industrial security can find their way, with pre-built virtual machines for ease of use.",
+   "diagram": "A MITRE ATT&CK for ICS matrix of tactics; tool icons from the LINICS toolbox drop into the columns they support, filling the grid.",
+   "interaction": "Pick an attack tactic such as 'discovery' or 'inhibit response function' and see which kinds of tool a tester would reach for.",
+   "source": "https://arxiv.org/abs/2605.22590",
+   "confidence": "high"
+  }
+ ],
+ "notes": "Network access to dblp.org, bristol.ac.uk and other profile pages was blocked in this session, so every paper was verified via web search against repository records (Lancaster EPrints, Bristol research portal, USENIX, ACM/IEEE DOIs, arXiv, DBLP mirror records shown in search results). Citation counts were deliberately omitted. Uncertainties: (1) No IoT-specific paper with Rashid as co-author could be verified, so there is no dedicated Internet of Things scene; IoT is named as an interest on his Bristol profile and he was involved with the PETRAS IoT hub, but this needs a DBLP or Scholar check before adding a scene. (2) Education: the Bristol profile lists BSc, MSc and PhD without institutions; the Lancaster doctoral thesis record supports a Lancaster PhD, but the year was not confirmed. (3) The Alan Turing Institute Fellowship comes from one profile page only. (4) VML* appeared at SLE 2009, but the LNCS volume is dated 2010. (5) The TOPS 'Mr Blue Head' article is in vol. 24(1), which some indexes date to 2021; sources give 2020. (6) The 2026 LINICS article was checked via its arXiv record, which states the IEEE S&P journal reference; the final IEEE version was not seen. The authors are listed with Hacktonics Ltd. (7) Co-author list for 'Discovering \"Unknown Known\" Security Requirements' (Naqvi, Ramdhany, Edwards, Chitchyan, Ali Babar) and the full co-author list for 'Schrödinger's Security' are from memory plus the search summary; the search confirmed the surnames for Schrödinger's Security but not for the ICSE 2016 paper. (8) Verified extras not used: 'A Database Evolution Taxonomy for Object-Oriented Databases' (J. Softw. Maint. Evol. 2005, with Sawyer); 'Multi-Dimensional Separation of Concerns in Requirements Engineering' (RE 2005, Moreira, Rashid, Araújo); 'Semantics-Based Composition for Aspect-Oriented Requirements Engineering' (AOSD 2007); 'Mirror, Mirror, On the Wall: What Are We Teaching Them All?' (USENIX ASE 2018, Hallett, Larson, Rashid); 'Making Sense of the Unknown: How Managers Make Cyber Security Decisions' (ACM TOSEM 2023); 'Building a Privacy Testbed: Use Cases and Design Considerations' (ESORICS 2021 workshops, LNCS 2022); 'SoK: A Taxonomy for Contrasting Industrial Control Systems Asset Discovery Tools' (ARES 2022, Samanis, Gardiner, Rashid); 'Threat Models over Space and Time: A Case Study of E2EE Messaging Applications' (2023, venue unconfirmed beyond arXiv). Note that the well-known ICSE 2008 SPL paper by Figueiredo et al. and the Computers & Security 2016 SCADA risk-assessment review by Cherdantseva et al. do NOT include Rashid as an author and were excluded."
+}
