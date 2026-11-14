@@ -1,5 +1,5 @@
 <title>Zigzag Realms</title>
-<meta name="application-version" content="0.2.9">
+<meta name="application-version" content="0.3">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -55,6 +55,7 @@ header.top .sub{color:var(--faint);font-size:15px;margin:4px 0 0;max-width:62ch}
 .pill{font-family:var(--mono);font-size:12px;border:1px solid var(--rule);border-radius:99px;padding:3px 10px;color:var(--faint);background:var(--sheet);white-space:nowrap}
 .pill b{color:var(--ink);font-weight:500}
 .pill{max-width:100%}
+@media (max-width:720px){.pill{white-space:normal}}
 #sound-toggle{white-space:normal;text-align:left}
 .pill.warn b{color:var(--danger)}
 .pill.clock{display:inline-flex;align-items:center;gap:7px}
@@ -259,6 +260,10 @@ button.pill[aria-pressed="false"] b{color:var(--faint)}
 .inscription p{margin:0;font-family:var(--display);font-size:17px;line-height:1.5;max-width:60ch}
 .codex{margin:0;padding-left:20px;display:grid;gap:8px;font-size:14px}
 .codex b{font-family:var(--display)}
+.map .markstar{fill:var(--amber);font-size:15px;pointer-events:auto}
+.map .notemark{fill:var(--water);pointer-events:auto}
+.note-form{display:grid;gap:4px}
+.note-form .btnrow{flex-wrap:nowrap}.note-form input{flex:1;min-width:0}
 .garden canvas{display:block;width:100%;max-width:100%;aspect-ratio:1/.72;border-radius:6px;background:var(--wash)}
 .chat,.trade{border-top:1px dashed var(--rule);margin-top:6px;padding-top:8px;display:grid;gap:8px}
 .chat ol{list-style:none;margin:0;padding:0;display:grid;gap:5px;max-height:220px;overflow:auto;font-size:14.5px}
@@ -278,6 +283,7 @@ button.pill[aria-pressed="false"] b{color:var(--faint)}
 .panel.collapsed .fold svg{transform:rotate(-90deg)}
 .panel.collapsed{gap:0}
 .panel.collapsed>:not(.sectionhead){display:none!important}
+.panel.collapsed>.sectionhead~.sectionhead{display:none!important}
 /* Drag to rearrange: a grip in each movable panel's header, a line showing where it will land */
 .grip{flex:0 0 auto;min-height:32px;min-width:28px;padding:0;display:inline-grid;place-items:center;border-radius:6px;border-color:transparent;background:transparent;color:var(--faint);cursor:grab;touch-action:none;align-self:center}
 .grip:hover:not(:disabled){border-color:var(--rule);color:var(--accent)}
@@ -312,7 +318,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
 <div class="wrap">
  <header class="top">
   <div>
-   <p class="eyebrow">A map that writes itself · v0.2.9</p>
+   <p class="eyebrow">A map that writes itself · v0.3</p>
    <h1>Zigzag Realms</h1>
    <p class="sub">A river with three towns, a woodland and its magical grove, a mountain with lakes, a waterfall and caves, and a desert are laid out when your journey begins, with townsfolk and creatures living among them. Claude writes everything else one step ahead of you. Every place is kept as a cell in a ZigZag structure, so you can find your way back.</p>
   </div>
@@ -562,17 +568,24 @@ const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(M
 const CLOCK_RATE=4,TICK=30,STEP_MIN=30,REST_MIN=480;
 // By day the clock runs at 4× real time; at night at 30×, so the ten hours of night pass in twenty real minutes.
 const NIGHT_RATE=30;
-function nightOrDayEdge(t){const h=((t%1440)+1440)%1440/60;return(h<6?6-h:h>=20?30-h:20-h)*60}
+/* Seasons: a year of 28 days, seven to each season. Days lengthen in summer and shorten in winter;
+   whatever its length, a night still passes in about twenty real minutes. */
+const YEAR_DAYS=28,SEASONS=["spring","summer","autumn","winter"];
+function seasonOf(t){const d=((Math.floor(t/1440)%YEAR_DAYS)+YEAR_DAYS)%YEAR_DAYS;return SEASONS[Math.floor(d/7)]}
+const DAWN={spring:6,summer:5,autumn:6.5,winter:7.5},DUSK={spring:20,summer:21.5,autumn:19,winter:17.5};
+const dawnH=t=>DAWN[seasonOf(t)],duskH=t=>DUSK[seasonOf(t)];
+const nightRate=t=>(24-duskH(t)+dawnH(t))*60/20;
+function nightOrDayEdge(t){const h=((t%1440)+1440)%1440/60;return(h<dawnH(t)?dawnH(t)-h:h>=duskH(t)?24-h+DAWN[seasonOf(t+(24-h)*60)]:duskH(t)-h)*60}
 function advanceClock(t,ms){
  let left=ms;for(let guard=0;left>0&&guard<4000;guard++){
-  const r=isNight(t)?NIGHT_RATE:CLOCK_RATE,edge=nightOrDayEdge(t),need=edge/r*60000;
+  const r=isNight(t)?nightRate(t):CLOCK_RATE,edge=nightOrDayEdge(t),need=edge/r*60000;
   if(left<need){t+=left/60000*r;left=0}else{t+=edge+1e-6;left-=need}}
  return t;
 }
 function gameNow(){const c=cell("root")?.clock;if(!c)return 8*60;return advanceClock(c.base,Date.now()-c.real)}
-const realMinutesToDawn=t=>isNight(t)?nightOrDayEdge(t)/NIGHT_RATE:0;
+const realMinutesToDawn=t=>isNight(t)?nightOrDayEdge(t)/nightRate(t):0;
 const hourOf=t=>((t%1440)+1440)%1440/60;
-const isNight=t=>{const h=hourOf(t);return h<6||h>=20};
+const isNight=t=>{const h=hourOf(t);return h<dawnH(t)||h>=duskH(t)};
 const dayOf=t=>Math.floor(t/1440)+1;
 function fmtClock(t){const m=Math.floor(((t%1440)+1440)%1440),h=Math.floor(m/60);return `Day ${dayOf(t)} · ${String(h).padStart(2,"0")}:${String(m%60).padStart(2,"0")}`}
 function h32(n){n=(n^61)^(n>>>16);n=n+(n<<3);n=n^(n>>>4);n=Math.imul(n,0x27d4eb2d);n=n^(n>>>15);return(n>>>0)/4294967296}
@@ -587,13 +600,13 @@ const hereId=()=>charId()&&step(charId(),"at","+");
 const foeId=(loc=hereId())=>loc?step(loc,"occupant","+"):null;
 const statCell=name=>rank(charId(),"stat").map(cell).find(c=>c.t===name);
 // A stat's value is its base plus any active boon (boons only touch the six abilities)
-function boonFor(name){const ch=charId()&&cell(charId());if(!ch||!ch.boons)return 0;const t=gameNow();return ch.boons.filter(b=>b.stat===name&&b.until>t).reduce((s,b)=>s+b.amount,0)}
+function boonFor(name){const ch=charId()&&cell(charId());if(!ch)return 0;const hunger=(name==="STR"||name==="CON")&&typeof hungerLevel==="function"&&hungerLevel()>=1?-1:0;if(!ch.boons)return hunger;const t=gameNow();return hunger+ch.boons.filter(b=>b.stat===name&&b.until>t).reduce((s,b)=>s+b.amount,0)}
 const sv=name=>(statCell(name)?.v??0)+(STATS.includes(name)?boonFor(name):0);
 function setStat(name,v){const c=statCell(name);if(c&&c.v!==v){c.v=v;touch(c.id)}}
 const packIds=()=>rank(charId(),"contain");
 const storeIds=loc=>rank(loc,"contain");
 const carried=()=>packIds().reduce((a,id)=>a+(+cell(id).weight||0),0);
-const capacity=()=>sv("STR")*15;
+const capacity=()=>sv("STR")*15+(typeof hasCompanion==="function"&&hasCompanion("pony")?60:0);
 function armourBonus(){return packIds().map(cell).filter(i=>i.worn).reduce((a,i)=>Math.max(a,+i.ac||0),0)}
 function armourClass(){return 10+mod(sv("DEX"))+armourBonus()}
 const hitDie=()=>CLASSES[cell(charId()).cls]?.hd||8;
@@ -603,14 +616,14 @@ const zOf=c=>c.z||0;
 const towns=()=>Object.values(zz.cells).filter(c=>c.k==="loc"&&c.town);
 const npcs=()=>Object.values(zz.cells).filter(c=>c.k==="npc");
 const npcsAt=(x,y)=>npcs().filter(n=>n.x===x&&n.y===y);
-const hasLight=()=>!!charId()&&packIds().some(id=>cell(id).light);
+const hasLight=()=>!!charId()&&(packIds().some(id=>cell(id).light)||(typeof hasCompanion==="function"&&hasCompanion("wisp")));
 /* A lantern carries you only so far into the night: two game hours of travel (four steps), then you
    must rest. The allowance belongs to one night and refills when you rest or the sun comes up. */
 const LANTERN_NIGHT_MIN=120;
-const nightKey=t=>isNight(t)?(hourOf(t)>=20?dayOf(t):dayOf(t)-1):null;
+const nightKey=t=>isNight(t)?(hourOf(t)>=duskH(t)?dayOf(t):dayOf(t)-1):null;
 function nightUsed(t=gameNow()){const ch=charId()&&cell(charId());if(!ch||!ch.nightWalk||!isNight(t))return 0;return ch.nightWalk.key===nightKey(t)?ch.nightWalk.min:0}
 function spendNight(min,t){if(!isNight(t))return;const ch=cell(charId());ch.nightWalk={key:nightKey(t),min:nightUsed(t)+min};touch(ch.id)}
-const nightLeft=(t=gameNow())=>Math.max(0,LANTERN_NIGHT_MIN-nightUsed(t));
+const nightLeft=(t=gameNow())=>Math.max(0,LANTERN_NIGHT_MIN+(typeof hasCompanion==="function"&&hasCompanion("deer")?60:0)-nightUsed(t));
 const isDark=c=>c&&(["cave","dungeon"].includes(c.terrain)||zOf(c)<0);
 const exitOpen=(c,d)=>!c||!c.exits||c.exits[d]!==false;
 function wallText(c,d){if(c&&c.walls&&c.walls[d])return c.walls[d];return d==="up"?"no way up":d==="down"?"no way down":"no way through"}
@@ -622,6 +635,7 @@ function blockedBy(here,dir){
  const id=coord.get(ck(H.x+v.dx,H.y+v.dy,zOf(H)+v.dz)),T=id&&cell(id);
  if(T){
   const rb=riverBlock(id);if(rb)return rb;
+  if(seasonOf(gameNow())==="winter"&&zOf(T)>=1&&T.terrain==="mountain"&&!T.visited)return"Snow has closed the high path. It will open again in spring.";
   if(T.lake)return`${T.t} is deep, cold water. You can walk its shore but not cross it.`;
   if(T.exits&&T.exits[OPP[dir]]===false)return`You cannot get through that way: ${wallText(T,OPP[dir])}.`;
   const fire=fireAt(T.x,T.y,zOf(T));if(fire)return`${T.t} is on fire. Wait for it to burn out or for rain.`;
@@ -653,11 +667,13 @@ function attackOptions(){
 function riverBlock(id,t=gameNow()){
  const c=cell(id);if(!c||!c.river)return null;const cr=c.river.crossing;
  if(c.hole)return`The ${riverName()} falls here into a hole with no bottom. Nothing can go down it, and nothing can cross it.`;
+ if(riverFrozen(t))return null;
  if(!cr)return`The ${riverName()} runs deep and fast here. You need a crossing: a ford, a bridge, or the bridge that comes and goes.`;
  if(cr==="magic"&&!magicPresent(t))return"Only empty air hangs between the carved posts. The magical bridge is not here now; it comes and goes.";
  return null;
 }
-function passXY(x,y,magic){const id=coord.get(ck(x,y,0));if(!id)return true;const c=cell(id);if(c.lake)return false;if(!c.river)return true;const cr=c.river.crossing;return cr==="ford"||cr==="bridge"||(cr==="magic"&&magic)}
+const riverFrozen=(t=gameNow())=>seasonOf(t)==="winter";
+function passXY(x,y,magic,frozen=riverFrozen()){const id=coord.get(ck(x,y,0));if(!id)return true;const c=cell(id);if(c.lake)return false;if(!c.river)return true;if(c.hole)return false;if(frozen)return true;const cr=c.river.crossing;return cr==="ford"||cr==="bridge"||(cr==="magic"&&magic)}
 const riverName=()=>cell("root")?.riverName||"river";
 
 /* ============================================================
@@ -858,7 +874,7 @@ function buildPrompt(fromId,dir,pos){
  "You are the narrator of a fantasy tabletop adventure in the style of classic D&D, with a strange undertone: the world contains anomalies, uncanny entities documented in the dry clinical voice of containment files, inspired by the SCP Foundation.",
  `World theme: ${root.theme}`,
  root.riverName?`The ${root.riverName} flows north to south through this land. It can only be crossed at a ford, a stone bridge, and a magical bridge that appears and vanishes. Three towns stand on its banks: ${towns().map(c=>`${c.t} (${TOWN_SIZES[c.town.size].label})`).join(", ")}. Townsfolk roam the country by day and go home at night.`:"",
- `It is ${fmtClock(t)}, ${isNight(t)?"night: describe darkness, moonlight, lamps and night sounds":"daytime"}. Weather: ${weatherAt(pos.x,pos.y,pos.z,t).label}.`,
+ `It is ${seasonOf(t)}, ${fmtClock(t)}, ${isNight(t)?"night: describe darkness, moonlight, lamps and night sounds":"daytime"}.${riverFrozen(t)?" The river is frozen hard enough to walk on.":""} Weather: ${weatherAt(pos.x,pos.y,pos.z,t).label}.`,
  `The traveller is ${ch.t}, a level ${sv("LVL")} ${ch.cls} with ${sv("HP")} of ${sv("MAXHP")} hit points and armour class ${armourClass()}.`,
  fromId?`They have just ${how} ${describeForPrompt(fromId)}`:"This is the very first location, where the adventure begins. Make it a natural starting point such as a crossroads, a camp or the edge of a village.",
  nearby.length?"Places already mapped next to the new square (stay consistent with them, and mention what can be seen or heard in their direction; if one is the river, this place is on its bank):\n"+nearby.join("\n"):"",
@@ -963,7 +979,7 @@ function batchPrompt(locId,need){
   `World theme: ${root.theme}`,
   root.riverName?`The ${root.riverName} rises at the foot of the mountain in the east, flows south past three towns, and ends by falling into a bottomless hole. It can only be crossed at a ford, a stone bridge and a magical bridge that comes and goes.`:"",
   `Landmarks, relative to where the traveller stands: ${landmarksFrom(L)}.`,
-  `It is ${fmtClock(t)}, ${isNight(t)?"night":"day"}. Weather where they stand: ${weatherAt(L.x,L.y,zOf(L),t).label}. Let the weather colour the glimpses and descriptions. The traveller is ${ch.t}, a level ${sv("LVL")} ${ch.cls}${hasLight()?" carrying a lantern":""}.`,
+  `It is ${seasonOf(t)}, ${fmtClock(t)}, ${isNight(t)?"night":"day"}.${riverFrozen(t)?" The river is frozen.":""} Weather where they stand: ${weatherAt(L.x,L.y,zOf(L),t).label}. Let the weather colour the glimpses and descriptions. The traveller is ${ch.t}, a level ${sv("LVL")} ${ch.cls}${hasLight()?" carrying a lantern":""}.`,
   `They stand at ${describeForPrompt(locId)}`,
   "",
   "Write the places they can see from here, one for each direction below. Keep everything consistent with the landmarks and neighbours: terrain changes gradually, and the mountain, woods, lakes, river and desert are where the landmarks say.",
@@ -1105,6 +1121,8 @@ function buildRiverWorld(plan,w){
   Object.assign(cell(id),{town:{size:t.size,side:t.side},seen:false});
   for(let k=0;k<TOWN_SIZES[t.size].folk;k++){const p=npcList.shift();if(p)appendTo(id,"residents",makeNpc(p,id,t))}
   for(const row of SHOP_STOCK[t.size]){const iid=itemCell(normItem(asItem(row)));cell(iid).forSale=true;appendTo(id,"contain",iid)}
+  // Maps: about one in five is wrong somewhere
+  for(const key of shuffle(Object.keys(MAP_TARGETS)).slice(0,{small:0,medium:2,large:3}[t.size])){const iid=itemCell(normItem({name:`Map of ${MAP_TARGETS[key].label}`,description:"Hand-drawn, a little smudged.",kind:"tool",weight:.1,value:8+rnd(10)}));Object.assign(cell(iid),{forSale:true,mapOf:key,wrong:Math.random()<.2});appendTo(id,"contain",iid)}
  });
 }
 function buildRegion(){
@@ -1144,12 +1162,12 @@ function makeNpc(p,townId,t){
    Townsfolk: simulated in half-hour ticks whenever time passes
    ============================================================ */
 const fieldCache=new Map();const BOUND=25;
-function field(townId,magic){
- const key=townId+"|"+magic;if(fieldCache.has(key))return fieldCache.get(key);
+function field(townId,magic,frozen=riverFrozen()){
+ const key=townId+"|"+magic+"|"+frozen;if(fieldCache.has(key))return fieldCache.get(key);
  const T=cell(townId),dist=new Map([[T.x+","+T.y,0]]),q=[[T.x,T.y]];
  for(let h=0;h<q.length;h++){const [x,y]=q[h],d=dist.get(x+","+y);
   for(const n of FLAT){const v=DIRS[n],nx=x+v.dx,ny=y+v.dy,k=nx+","+ny;
-   if(Math.abs(nx)>BOUND||Math.abs(ny)>BOUND||dist.has(k)||!passXY(nx,ny,magic))continue;dist.set(k,d+1);q.push([nx,ny])}}
+   if(Math.abs(nx)>BOUND||Math.abs(ny)>BOUND||dist.has(k)||!passXY(nx,ny,magic,frozen))continue;dist.set(k,d+1);q.push([nx,ny])}}
  fieldCache.set(key,dist);return dist;
 }
 const homeDist=(n,t)=>field(n.home,magicPresent(t)).get(n.x+","+n.y)??99;
@@ -1266,7 +1284,7 @@ function npcTick(n,t){
   return;
  }
  if(n.hp<n.maxhp*.4){if(!atHome){stepToward(n,t);n.activity=`limping home to ${home.t}`}else{n.hp=Math.min(n.maxhp,n.hp+1);n.activity=`resting in ${home.t}, nursing wounds`}return}
- const ticksLeft=Math.max(0,(20-h)*60/TICK);
+ const ticksLeft=Math.max(0,(duskH(t)-h)*60/TICK);
  if(homeDist(n,t)>=ticksLeft-1){stepToward(n,t);n.activity=`heading home to ${home.t} before dark`;encounterCheck(n,t);return}
  const others=npcsAt(n.x,n.y).filter(o=>o!==n).sort((a,b)=>tie(n,b)-tie(n,a));
  const o=others[0];
@@ -1279,7 +1297,7 @@ function npcTick(n,t){
  }
  wander(n,t);
  n.activity=`foraging near ${placeName(n)}`;
- if(Math.random()<(ROLES[n.role]||ROLES.farmer)[6]){n.food=Math.min(5,n.food+1);if(Math.random()<.3)remember(n,`found good forage near ${placeName(n)}`,t)}
+ if(Math.random()<(ROLES[n.role]||ROLES.farmer)[6]*{spring:1.2,summer:1.4,autumn:1.1,winter:.35}[seasonOf(t)]){n.food=Math.min(5,n.food+1);if(Math.random()<.3)remember(n,`found good forage near ${placeName(n)}`,t)}
  if(Math.random()<.04){n.gold+=rnd(3)}
  encounterCheck(n,t);
 }
@@ -1323,8 +1341,8 @@ function simulate(){
  for(let i=0;i<n;i++){
   const before=isNight(t);t+=TICK;const after=isNight(t);
   if(!before&&after)log(`Dusk on day ${dayOf(t)}. Lamps are lit and the townsfolk head for home.`,"time");
-  if(before&&!after)log(`Dawn on day ${dayOf(t)}. The townsfolk set out for the day.`,"time");
-  weatherTick(t);
+  if(before&&!after){log(`Dawn on day ${dayOf(t)}. The townsfolk set out for the day.`,"time");dawnGifts();if(seasonOf(t)!==seasonOf(t-1440))log(`${seasonOf(t)[0].toUpperCase()+seasonOf(t).slice(1)} has come to the realm.${seasonOf(t)==="winter"?" The river is freezing over, and snow closes the high path.":seasonOf(t)==="spring"?" The ice on the river breaks up.":""}`,"time")}
+  weatherTick(t);hungerTick(t);anomalyTick(t);
   for(const f of npcs()){
    if(!cell(f.id))continue;
    if(f.defeated&&recoverTick(f,t))continue;
@@ -1368,7 +1386,7 @@ function weatherAt(x,y,z,t=gameNow()){
  const w=wxState();if(!w)return null;const d=diurnal(t);
  if(z<0)return{temp:10,rain:0,storm:0,cloud:0,wind:0,label:"still, cool underground air",short:"underground"};
  const dm=Math.hypot(x-MOUNTAIN.x,y-MOUNTAIN.y),dd=Math.hypot(x-DESERT.x,y-DESERT.y),mI=Math.exp(-dm/5),dI=Math.exp(-dd/5);
- const temp=Math.round(12+6*d+dI*(8+14*d)-mI*5-z*4);
+ const temp=Math.round(12+6*d+dI*(8+14*d)-mI*5-z*4+{spring:0,summer:6,autumn:-3,winter:-10}[seasonOf(t)]);
  const hum=Math.max(0,Math.min(1,.45+.4*mI-.6*dI+.1*(1-d)));
  let storm=0;if(w.storm){const s=w.storm,ds=Math.hypot(x-s.x,y-s.y);storm=s.power*Math.exp(-(ds*ds)/(2*s.r*s.r))}
  const cloud=Math.max(0,Math.min(1,hum*.7+storm+mI*w.E*.5-dI*.4));
@@ -1376,7 +1394,7 @@ function weatherAt(x,y,z,t=gameNow()){
  const wind=Math.hypot(w.wind.x,w.wind.y)+mI*.3+storm*.8+Math.max(0,z)*.4;
  const night=isNight(t);
  let short;
- if(storm>.45)short="thunderstorm";else if(rain>.5)short="heavy rain";else if(rain>.15)short="drizzle";
+ if(storm>.45)short=temp<=0?"blizzard":"thunderstorm";else if(rain>.15&&temp<=1)short=rain>.5?"heavy snow":"snow";else if(rain>.5)short="heavy rain";else if(rain>.15)short="drizzle";
  else if(dI>.45&&d>.3)short="scorching heat";else if(temp<2)short="bitter cold";
  else if(night&&hum>.65&&wind<.35)short="mist";else if(wind>1.1)short="gale";else if(cloud>.6)short="overcast";
  else if(cloud>.35)short="cloudy";else short=night?"clear night":"fair";
@@ -1467,7 +1485,7 @@ function createLocation(data,pos){
  for(const it of data.items)appendTo(id,"contain",itemCell(it));
  if(data.monster){
   const m=data.monster;
-  const mid=newCell("monster",{t:m.name,designation:m.designation,objectClass:m.objectClass,desc:m.description,hp:m.hp,maxhp:m.maxhp,ac:m.ac,atk:m.attack,dmg:m.damage,special:m.special});
+  const mid=newCell("monster",Object.assign({t:m.name,designation:m.designation,objectClass:m.objectClass,desc:m.description,hp:m.hp,maxhp:m.maxhp,ac:m.ac,atk:m.attack,dmg:m.damage,special:m.special,born:gameNow()},anomalyBehaviour(m.objectClass)));
   connect(id,"occupant",mid);
   if(m.loot)appendTo(mid,"contain",itemCell(m.loot));
  }
@@ -1493,7 +1511,8 @@ function enter(locId,first){
  const ch=charId(),prev=hereId();if(prev&&prev!==locId){cell(ch).prevAt=prev;touch(ch)}
  connect(ch,"at",locId);const L=cell(locId);lastHazard=null;rounds=[];
  if(!L.visited){L.visited=true;touch(locId);gainXP(L.town?25:10);if(L.town)log(`You reach ${L.t}, a ${TOWN_SIZES[L.town.size].label} on the ${riverName()}.`,"good")}
- markSeen(locId);
+ markSeen(locId);ravenScout(locId);checkRumour(locId);checkMarks(L);
+ if(first&&!L.town)foxFind(locId);
  if(L.town)stockMagic(locId);
  if(first&&L.hazard&&!L.hazardDone){
   const h=L.hazard,m=mod(sv(h.stat)),d=rnd(20),tot=d+m,ok=tot>=h.dc;
@@ -1690,7 +1709,9 @@ function drop(id){const it=cell(id);it.worn=false;it.wielded=false;touch(id);exc
 function useItem(id){
  const it=cell(id);
  if(it.kind==="treasure"){setStat("GP",sv("GP")+(+it.value||0));log(`You add ${it.t} to your purse: ${it.value} gp.`,"good");excise(id,"contain");destroy(id);store.flush();render();return}
+ if(it.mapOf){readMap(id);return}
  if(!it.heal)return;
+ if(it.kind==="food")ate(it.t.toLowerCase());
  const r=roll(it.heal),before=sv("HP"),after=Math.min(sv("MAXHP"),before+r.total);
  setStat("HP",after);(foeId()?say:log)(`You use ${it.t} and recover ${after-before} HP.`,"good",r.text);
  excise(id,"contain");destroy(id);
@@ -1707,21 +1728,25 @@ function wield(id){
  cell(id).wielded=true;touch(id);log(`You take ${cell(id).t} in hand.`);store.flush();render();
 }
 // Make camp anywhere, or take a room at a town inn. At night you sleep until dawn; by day, eight hours.
-function minutesToDawn(t){const h=hourOf(t);return Math.round((h>=20?24-h+6:6-h)*60)}
+function minutesToDawn(t){return Math.round(nightOrDayEdge(t))}
 function rest(){
  if(busy||!charId()||!hereId()||isDowned())return;const ch=cell(charId()),here=hereId(),L=cell(here),t=gameNow();
  if(foeId()){say("You cannot rest with an anomaly at large here.","bad");store.flush();render();return}
  const span=isNight(t)?minutesToDawn(t):REST_MIN,max=sv("MAXHP"),before=sv("HP");let after,msg;
  if(L.town){
-  if(sv("GP")>=2){setStat("GP",sv("GP")-2);after=max;msg=`You take a room at the inn in ${L.t} for 2 gp. The taproom is loud until late, but you sleep well and wake fully healed (+${max-before} HP).`}
+  if(atCottage()){after=max;ate("supper by your own hearth");msg=`You sleep in your own cottage in ${L.t} and wake fully rested (+${max-before} HP).`}
+  else if(sv("GP")>=2){setStat("GP",sv("GP")-2);after=max;ate("supper at the inn");msg=`You take a room at the inn in ${L.t} for 2 gp, supper included. The taproom is loud until late, but you sleep well and wake fully healed (+${max-before} HP).`}
   else{after=Math.min(max,before+Math.ceil(max/2));msg=`You cannot pay for a room, so the innkeeper lets you sleep in the stable (+${after-before} HP).`}
  }else if(L.sanctuary){after=max;msg=`The keepers of ${L.t} tend your wounds without asking who you are. You sleep in deep quiet and wake fully healed (+${max-before} HP).`;
   // A very small chance of a boon: +1 or +2 to one ability, lasting from a week to a month
   if(Math.random()<.04){const stat=pick(STATS),amount=Math.random()<.25?2:1,days=7+rnd(23);ch.boons=(ch.boons||[]).concat([{stat,amount,until:t+span+days*1440,from:L.t}]);
    msg+=` As you leave, the eldest keeper presses a hand to your brow: you feel ${{STR:"stronger",DEX:"quicker",CON:"hardier",INT:"sharper",WIS:"wiser",CHA:"more at ease with people"}[stat]} (+${amount} ${stat} for ${days} days).`}}
  else if(L.grove){after=max;msg=`You make camp beneath the silver trees of ${L.t}. You wake fully healed (+${max-before} HP), with the wisps' humming still in your ears.`}
+ else if(hasCompanion("badger")){after=max;msg=`You make camp at ${L.t}. Your badger keeps watch all night and you sleep deeply (+${max-before} HP).`}
  else{after=Math.min(max,before+Math.ceil(max/2));msg=`You make camp at ${L.t}${isNight(t)?" and sleep until dawn":" for eight hours"} (+${after-before} HP).`}
+ if(hungerLevel()>=1&&!L.town){after=Math.min(after,before+Math.ceil((after-before)/2));msg+=" Hunger keeps you from resting well."}
  setStat("HP",after);ch.windUsed=false;ch.nightWalk=null;touch(ch.id);log(msg,"good");
+ for(const id of packIds())if(cell(id).burnsOut){log(`Your ${cell(id).t.toLowerCase()} has burned down.`);excise(id,"contain");destroy(id)}
  passTime(span);store.flush();render();
 }
 
@@ -1756,6 +1781,7 @@ async function talk(id){
  }
  bump2(n,ch,.08);
  if(tie(n,ch)>=.5&&n.food>1&&Math.random()<.5){n.food--;appendTo(ch.id,"contain",itemCell(normItem({name:"Gift of food",description:`Wrapped up for you by ${n.t}.`,kind:"food",weight:0.5,value:1,heal:"1d4+1"})));line+=` ${n.t} presses some food into your hands.`}
+ if(tie(n,ch)>=.15&&Math.random()<.35+Math.max(0,reputation())*.3){const r=plantRumour(n);if(r)line+=` Then, more quietly: "They say there's ${r}."`}
  talkLines[id]=line;n.chat=(n.chat||[]).concat([{r:"them",s:line}]).slice(-8);log(`${n.t}: ${line}`,"npc");passTime(10);store.flush();render();
 }
 function greet(id){
@@ -1811,7 +1837,7 @@ async function begin(){
  busy=null;
  log(`${cell(ch).t} the ${draft.cls} sets out from ${cell(home).t} carrying ${extras.map(r=>r[0].toLowerCase()).join(", ")}. The ${w.river} rises at the mountain to the east and runs south past ${towns().map(c=>c.t).join(", ")}.`,"good");
  if(!hasLight())log("You have no lantern. You cannot travel at night or go underground without one; the larger towns sell them.","time");
- cell("root").clock={base:8*60,real:Date.now()};cell("root").npcT=8*60;
+ cell("root").clock={base:8*60,real:Date.now()};cell("root").npcT=8*60;cell(ch).lastMeal=8*60;seedRivalry();
  store.flush();render();
 }
 
@@ -2017,6 +2043,7 @@ async function sendChat(id,text){
   const m=(n.memory||[]).slice(-1)[0];
   line=wantsQuest?"Work? Maybe I have something for you.":wantsTrade?`I've ${n.food} rations to spare, if the price is fair.`:/\b(where|way|road|bridge|ford|cross)\b/i.test(text)?`The ${riverName()} can be crossed at the ford, the stone bridge, or the bridge of light when it shows itself.`:m?`I ${m.text}. That's the news from here.`:pick([`"Can't say I know much about that."`,`"Ask me again when I'm not so busy."`,`"You're a curious one."`]);
  }
+ if(/\b(rumou?r|news|heard|secret|treasure)\b/i.test(text)&&tie(n,me())>=.1||tie(n,me())>=.15&&Math.random()<.25){const r=plantRumour(n);if(r)line+=` ${n.t.split(" ")[0]} lowers their voice: "They say there's ${r}."`}
  n.chat=n.chat.concat([{r:"them",s:line}]).slice(-8);n.chatWait=false;bump2(n,me(),.04);
  if(wantsQuest)offerQuest(n);
  if(wantsTrade)openTrade=id;
@@ -2065,7 +2092,7 @@ function offerQuest(n){
 }
 function completeQuest(q,how){
  q.done=true;touch("root");setStat("GP",sv("GP")+q.gold);gainXP(q.xp);
- const g=cell(q.giver);if(g)bump2(g,me(),.25);
+ const g=cell(q.giver);if(g){bump2(g,me(),.25);if(g.home)townHelped(g.home)}
  if(q.magic){const m=MAGIC_ITEMS.find(x=>x.name===q.magic);if(m)appendTo(charId(),"contain",magicItem(m,false))}
  log(`Quest done: ${q.desc}${how?" ("+how+")":""}. ${q.giverName} pays you ${q.gold} gp${q.magic?` and gives you ${q.magic}`:""}.`,"good");
 }
@@ -2243,7 +2270,7 @@ const MAGIC_ITEMS=[
 function magicItem(m,forSale){const id=itemCell(normItem(m));Object.assign(cell(id),{magic:true,minRep:m.minRep,forSale:!!forSale});return id}
 // Town shops stock magic items as your reputation grows; they are never taken away, only withheld
 function stockMagic(townId){
- const T=cell(townId);if(!T||!T.town)return;const r=reputation();
+ const T=cell(townId);if(!T||!T.town)return;const r=(reputation()+townStanding(townId))/2;
  const want=(r>=.5?3:r>=.25?1:0)+(r>=.25&&T.town.size==="large"?1:0);
  T.magicStocked=T.magicStocked||[];
  const pool=MAGIC_ITEMS.filter(m=>m.minRep<=r&&!T.magicStocked.includes(m.name));
@@ -2345,6 +2372,137 @@ function paladinCatch(P){
 }
 
 /* ============================================================
+   v0.3: hunger, rumours, a cottage, companion gifts, maps and notes,
+   town factions, roaming and spreading anomalies, and crafting.
+   (Seasons live with the clock.)
+   ============================================================ */
+
+/* ---------- Hunger: eat once a day. Hungry: −1 STR and CON, slower healing.
+   Starving (two days): lose 1 HP every six hours, never below 1. ---------- */
+function hungerLevel(t=gameNow()){const ch=charId()&&cell(charId());if(!ch||ch.lastMeal==null)return 0;return Math.max(0,Math.floor((t-ch.lastMeal)/1440))}
+function ate(what){const ch=cell(charId());ch.lastMeal=gameNow();ch.starveMark=0;if(ch.hungerSaid){ch.hungerSaid=0;log(`You eat ${what}. The hunger passes.`,"good")}touch(ch.id)}
+function hungerTick(t){
+ const ch=charId()&&cell(charId());if(!ch||ch.lastMeal==null||isDowned())return;const lv=hungerLevel(t);
+ if(lv>=1&&(ch.hungerSaid||0)<1){ch.hungerSaid=1;log("You are hungry. Eat something soon: hunger weakens you (−1 STR, −1 CON) and slows healing.","bad")}
+ if(lv>=2&&(ch.hungerSaid||0)<2){ch.hungerSaid=2;log("You are starving. Without food you will lose strength every few hours.","bad")}
+ if(lv>=2){const mark=Math.floor((t-ch.lastMeal-2880)/360);if(mark>(ch.starveMark||0)){ch.starveMark=mark;if(sv("HP")>1){setStat("HP",sv("HP")-1);log("Hunger gnaws at you: −1 HP.","bad")}}}
+ touch(ch.id);
+}
+
+/* ---------- Rumours that come true: when townsfolk trust you, some of what they say is real ---------- */
+const RUMOUR_KINDS=[
+ {w:5,what:"a cache of old coins, buried by smugglers",make:L=>appendTo(L,"contain",itemCell(normItem({name:"Smugglers' cache",description:"A rotten box of coins, just where the rumour said.",kind:"treasure",weight:1,value:20+rnd(40)})))},
+ {w:2,what:"something that does not belong in any bestiary",make:(L,pos)=>{const a=pick(ANOMALIES.filter(m=>m.tier<=1+Math.floor(pos.dist/5)));const mid=newCell("monster",{t:a.name,designation:a.designation,objectClass:a.objectClass,desc:a.description,hp:a.hp,maxhp:a.hp,ac:a.ac,atk:a.attack,dmg:a.damage,special:a.special,roam:false});connect(L,"occupant",mid);appendTo(mid,"contain",itemCell(normItem({name:"Reward token",description:"The townsfolk would pay to see this thing gone.",kind:"treasure",weight:.1,value:25})))}},
+ {w:2,what:"a spring whose water heals",make:L=>{cell(L).spring=true;appendTo(L,"contain",itemCell(normItem({name:"Spring water",description:"Clear and faintly sweet.",kind:"potion",weight:.5,value:10,heal:"2d6"})))}},
+ {w:1,what:"an old relic, lost long ago",make:L=>{const m=pick(MAGIC_ITEMS.filter(x=>x.minRep<=Math.max(.25,reputation())));appendTo(L,"contain",magicItem(m,false))},rep:.25}
+];
+function rumours(){const r=cell("root");return r?(r.rumours=r.rumours||[]):[]}
+function plantRumour(n){
+ const home=cell(n.home)||n,t=gameNow();if(n.rumourT&&t-n.rumourT<1440)return null;
+ for(let tries=0;tries<60;tries++){
+  const d=4+rnd(6),a=Math.random()*Math.PI*2,x=Math.round(home.x+Math.cos(a)*d),y=Math.round(home.y+Math.sin(a)*d);
+  if(Math.max(Math.abs(x),Math.abs(y))>exploreRange()||coord.get(ck(x,y,0))||!passXY(x,y,true))continue;
+  const kinds=RUMOUR_KINDS.filter(k=>!k.rep||reputation()>=k.rep),total=kinds.reduce((s,k)=>s+k.w,0);let r=Math.random()*total,kind=kinds[0];for(const k of kinds){r-=k.w;if(r<=0){kind=k;break}}
+  const pos={x,y,z:0,dist:Math.abs(x)+Math.abs(y)},data=tableLocation(null,"",pos);data.monster=null;data.hazard=null;data.exits=EX("nsew");data.items=[];
+  const L=createLocation(data,pos);Object.assign(cell(L),{planned:true,written:false,seen:false,rumour:{from:n.t,what:kind.what}});kind.make(L,pos);
+  const dx=x-home.x,dy=y-home.y,dir=[dy?`${Math.abs(dy)} ${dy>0?"north":"south"}`:"",dx?`${Math.abs(dx)} ${dx>0?"east":"west"}`:""].filter(Boolean).join(" and ");
+  const text=`${kind.what}, about ${dir} of ${home.t}`;
+  rumours().push({cell:L,text,from:n.t,found:false});n.rumourT=t;touch("root");touch(n.id);
+  return text;
+ }
+ return null;
+}
+function checkRumour(locId){const R=rumours().find(r=>r.cell===locId&&!r.found);if(!R)return;R.found=true;touch("root");gainXP(20);log(`The rumour was true: ${R.text.split(", about")[0]}. (${R.from} will be glad to hear it.)`,"good");const g=npcs().find(n=>n.t===R.from);if(g)bump2(g,me(),.08)}
+
+/* ---------- A cottage of your own: rent one in a town, with a chest the paladin will not touch ---------- */
+const COTTAGE_RENT=30;
+const cottage=()=>{const r=cell("root");return r&&r.cottage&&cell(r.cottage)};
+function rentCottage(){
+ const L=cell(hereId());if(!L||!L.town||sv("GP")<COTTAGE_RENT)return;const old=cottage();
+ setStat("GP",sv("GP")-COTTAGE_RENT);const id=newCell("cottage",{t:`Your cottage in ${L.t}`,town:L.id});
+ if(old){for(const it of rank(old.id,"contain")){excise(it,"contain");appendTo(id,"contain",it)}destroy(old.id);log("Your belongings are carted over to the new cottage.","good")}
+ cell("root").cottage=id;touch("root");log(`You rent a cottage in ${L.t} for ${COTTAGE_RENT} gp. Its chest is yours: what you keep there is safe from paladins and from falls.`,"good");store.flush();render();
+}
+function deposit(id){const C=cottage();if(!C)return;const it=cell(id);it.worn=false;it.wielded=false;touch(id);excise(id,"contain");appendTo(C.id,"contain",id);log(`You put ${it.t} in your chest.`);store.flush();render()}
+function withdraw(id){const it=cell(id);if(carried()+(+it.weight||0)>capacity()){flash=`${it.t} is too heavy to carry with everything else.`;render();return}excise(id,"contain");appendTo(charId(),"contain",id);log(`You take ${it.t} from your chest.`);store.flush();render()}
+const atCottage=()=>{const C=cottage(),H=hereId();return!!(C&&C.town===H)};
+
+/* ---------- Companion gifts: each creature that follows you brings something ---------- */
+const GIFTS={raven:"scouts ahead: you see three squares around you",pony:"carries 60 lb of your load",otter:"brings you a fish each dawn",heron:"brings you a fish each dawn",wisp:"lights your way like a lantern",badger:"guards your camp: you heal fully when you make camp",deer:"lends you its night sight: an extra hour of lantern travel",fox:"sniffs out coins in new places"};
+function companions(){const ch=charId()&&cell(charId()),H=hereId()&&cell(hereId());if(!ch||!H)return[];return npcs().filter(n=>n.wild&&!n.shunsYou&&!n.defeated&&tie(n,ch)>=.6&&Math.abs(wrapC(n.x-H.x))+Math.abs(wrapC(n.y-H.y))<=2)}
+const hasCompanion=sp=>companions().some(n=>n.species===sp);
+function ravenScout(locId){if(!hasCompanion("raven"))return;const L=cell(locId);for(let dx=-3;dx<=3;dx++)for(let dy=-3;dy<=3;dy++){const id=coord.get(ck(L.x+dx,L.y+dy,zOf(L)));if(id&&cell(id).seen===false){cell(id).seen=true;touch(id)}}}
+function foxFind(locId){if(!hasCompanion("fox")||Math.random()>.2)return;appendTo(locId,"contain",itemCell(normItem({name:"A few coins",description:"Your fox dug them out of the dirt.",kind:"treasure",weight:.1,value:3+rnd(8)})));log("Your fox paws at the ground and turns up a few coins.","good")}
+function dawnGifts(){for(const n of companions())if(n.species==="otter"||n.species==="heron"){appendTo(charId(),"contain",itemCell(normItem({name:"Fresh fish",description:`Brought to you by ${n.t}.`,kind:"food",weight:.5,value:2,heal:"1d4+1"})));log(`${n.t} drops a fresh fish at your feet.`,"good")}}
+
+/* ---------- Maps for sale (some are wrong) and notes on places ---------- */
+const MAP_TARGETS={mountain:{label:"the mountain",test:c=>c.x>=6&&c.y>=0&&c.y<=8},woodland:{label:"the old wood and its grove",test:c=>c.x<=-1&&c.x>=-5&&c.y>=0&&c.y<=4},desert:{label:"the desert",test:c=>c.terrain==="desert"},river:{label:"the river and its crossings",test:c=>!!c.river},monuments:{label:"the carved stones",test:c=>!!c.monument},sanctuaries:{label:"the sanctuaries",test:c=>!!c.sanctuary}};
+function marks(){const r=cell("root");return r?(r.marks=r.marks||[]):[]}
+function readMap(id){
+ const it=cell(id),T=MAP_TARGETS[it.mapOf];if(!T)return;const cells=Object.values(zz.cells).filter(c=>c.k==="loc"&&zOf(c)===0&&T.test(c));
+ let shown=0;for(const c of cells){if(c.monument||c.sanctuary){if(!marks().some(m=>m.x===c.x&&m.y===c.y))marks().push({x:c.x,y:c.y,label:c.t,real:true})}else if(c.seen===false){c.seen=true;touch(c.id)}shown++}
+ if(it.wrong){const c=pick(cells)||{x:rnd(10),y:rnd(10)},ox=pick([-1,1])*(2+rnd(3)),oy=pick([-1,1])*(2+rnd(3));marks().push({x:c.x+ox,y:c.y+oy,label:pick(["The Hidden Shrine","Old Watch Post","Treasure","Second Ford"]),real:false})}
+ touch("root");excise(id,"contain");destroy(id);
+ log(`You study the map of ${T.label} and copy ${shown} places onto your own.${it.wrong?" One mark looks oddly placed.":""}`,"good");store.flush();render();
+}
+function checkMarks(L){for(const m of marks()){if(m.done||wrapC(m.x-L.x)||wrapC(m.y-L.y))continue;m.done=true;touch("root");log(m.real?`You find ${m.label}, just as the map promised.`:`The map marked ${m.label} here. There is nothing. The map was wrong.`,m.real?"good":"bad")}}
+function saveNote(text){const L=cell(hereId());L.note=String(text||"").trim().slice(0,200)||null;touch(L.id);store.flush();render()}
+
+/* ---------- Factions: each town keeps its own opinion of you, and of the other towns ---------- */
+function rivalry(a,b){const r=cell("root");if(!r||!r.rivalry||a===b)return 0;return r.rivalry[[a,b].sort().join("|")]||0}
+function seedRivalry(){const r=cell("root"),T=towns();r.rivalry={};for(let i=0;i<T.length;i++)for(let j=i+1;j<T.length;j++)r.rivalry[[T[i].id,T[j].id].sort().join("|")]=pick([-.5,-.2,.3,.6]);touch("root")}
+function townStanding(townId){const ch=charId()&&cell(charId());const res=rank(townId,"residents").map(cell).filter(Boolean);if(!ch||!res.length)return 0;return res.reduce((s,n)=>s+tie(n,ch),0)/res.length}
+// Helping one town is noticed in the others: rivals sour on you, allies warm to you
+function townHelped(townId){const ch=cell(charId());for(const T of towns()){if(T.id===townId)continue;const rv=rivalry(townId,T.id);if(!rv)continue;for(const n of rank(T.id,"residents").map(cell).filter(Boolean))bump(n,ch,rv>0?-.06*rv:.04*-rv);if(rv>=.3)log(`Word reaches ${T.t} that you have been helping their rivals in ${cell(townId).t}.`,"npc")}}
+const relationName=v=>v>=.5?"bitter rivals":v>0?"rivals":v<=-.4?"close allies":"friendly";
+
+/* ---------- Anomalies that roam and spread ---------- */
+function anomalyBehaviour(oc){const r=Math.random();return{roam:r<(oc==="Safe"?.15:.35),spread:oc==="Keter"&&Math.random()<.5}}
+function anomalyTick(t){
+ const r=cell("root");if(!r)return;r.anomT=r.anomT??t;if(t-r.anomT<360)return;r.anomT=t;touch("root");
+ const H=hereId()&&cell(hereId()),free=c=>c&&c.k==="loc"&&!c.town&&!c.sanctuary&&!c.river&&!c.lake&&!c.hole&&!foeId(c.id)&&c.id!==hereId();
+ for(const L of Object.values(zz.cells).filter(c=>c.k==="loc"&&foeId(c.id))){
+  const f=foeId(L.id),F=cell(f);if(!F)continue;
+  if(F.roam&&Math.random()<.5){const opts=Object.entries(DIRS).filter(([d])=>exitOpen(L,d)).map(([,v])=>coord.get(ck(L.x+v.dx,L.y+v.dy,zOf(L)+v.dz))).map(cell).filter(free);
+   if(opts.length){const T=pick(opts);disconnect(L.id,"occupant","+");connect(T.id,"occupant",f);if(H&&zOf(H)===zOf(T)&&Math.abs(wrapC(T.x-H.x))+Math.abs(wrapC(T.y-H.y))<=3)log(`${F.designation} ${F.t} has moved to ${T.t}.`,"bad")}}
+  if(F.spread&&t-(F.lastSpread||F.born||0)>2*1440&&(r.spawned||0)<6){
+   const near=Object.values(DIRS).map(v=>cell(coord.get(ck(L.x+v.dx,L.y+v.dy,zOf(L)+v.dz)))).filter(free);
+   if(near.length){const T=pick(near),a=pick(ANOMALIES.filter(m=>m.tier===1));const mid=newCell("monster",{t:a.name,designation:a.designation,objectClass:a.objectClass,desc:`${a.description} It seems to have come from ${F.designation}.`,hp:a.hp,maxhp:a.hp,ac:a.ac,atk:a.attack,dmg:a.damage,special:a.special,roam:true,born:t});connect(T.id,"occupant",mid);F.lastSpread=t;touch(f);r.spawned=(r.spawned||0)+1;log(`${F.designation} ${F.t} is spreading: something new has appeared at ${T.t}.`,"bad")}}
+ }
+}
+
+/* ---------- Crafting: combine what you find. Some recipes need a smith at hand. ---------- */
+const ING={herb:/herb|woundwort/i,mushroom:/glowcap|mushroom/i,feather:/feather/i,shiny:/pearl|glass|stone|gem/i,tinder:/tinderbox/i,cloth:/rope|cloak|cloth|line/i,meat:/fish|meat|ration|bread|cheese|apple/i};
+const RECIPES=[
+ {name:"Potion of Healing",needs:["herb","herb"],make:{name:"Potion of Healing",description:"Brewed from herbs you gathered.",kind:"potion",weight:.5,value:30,heal:"2d4+2"}},
+ {name:"Draught of Vigour",needs:["herb","mushroom"],make:{name:"Draught of Vigour",description:"Bitter, glowing faintly.",kind:"potion",weight:.5,value:40,heal:"3d4+2"}},
+ {name:"Charm of Warding",needs:["feather","shiny"],make:{name:"Charm of Warding",description:"A feather bound to a shining stone. Worn, it turns blows a little.",kind:"armor",weight:0,value:25,ac:1}},
+ {name:"Pitch torch",needs:["tinder","cloth"],make:{name:"Pitch torch",description:"Lights your way for one night; it burns down when you rest.",kind:"tool",weight:1,value:2,light:true},after:id=>{cell(id).burnsOut=true}},
+ {name:"Hearty stew",needs:["meat","herb"],make:{name:"Hearty stew",description:"Thick and warming. A proper meal.",kind:"food",weight:1,value:4,heal:"2d6"}},
+ {name:"Smith's lantern",needs:["coins15"],smith:true,make:LANTERN}
+];
+function haveFor(r){
+ const pack=packIds().map(cell).filter(i=>!i.worn&&!i.wielded),used=new Set();
+ if(r.needs[0]==="coins15"){const coins=pack.filter(i=>i.kind==="treasure").sort((a,b)=>b.value-a.value);let s=0;const take=[];for(const c of coins){if(s>=15)break;s+=c.value;take.push(c.id)}return s>=15?take:null}
+ for(const need of r.needs){const it=pack.find(i=>!used.has(i.id)&&ING[need].test(i.t));if(!it)return null;used.add(it.id)}
+ return[...used];
+}
+const smithHere=()=>{const H=cell(hereId());return!!(H&&zOf(H)===0&&npcsAt(H.x,H.y).some(n=>n.role==="smith"&&!n.shunsYou))};
+function craft(i){
+ const r=RECIPES[+i];if(!r||isDowned())return;if(r.smith&&!smithHere()){flash="You need a smith at hand for that.";render();return}
+ const use=haveFor(r);if(!use){flash=`You lack what ${r.name} needs.`;render();return}
+ for(const id of use){excise(id,"contain");destroy(id)}
+ const it=Array.isArray(r.make)?normItem(asItem(r.make)):normItem(r.make),id=itemCell(it);if(r.after)r.after(id);appendTo(charId(),"contain",id);
+ log(r.smith?`The smith melts down your coins and hammers out a lantern for you.`:`You make ${r.name}.`,"good");passTime(30);store.flush();render();
+}
+function renderCraft(){
+ const rows=RECIPES.map((r,i)=>({r,i,ok:!!haveFor(r)&&(!r.smith||smithHere())})).filter(x=>x.ok||!x.r.smith);
+ const can=rows.filter(x=>x.ok);
+ return`<div class="sectionhead"><h3>Craft</h3><span class="mono" style="font-size:12px;color:var(--faint)">${can.length} possible</span></div>`+
+  `<ul class="items">${rows.map(({r,i,ok})=>`<li><span><span class="nm">${esc(r.name)}</span><span class="meta">${r.smith?"15 gp of treasure, with a smith":r.needs.join(" + ")}</span></span><span class="acts"><button class="small" data-act="craft" data-id="${i}" ${ok?"":"disabled"}>Make</button></span></li>`).join("")}</ul>`;
+}
+
+/* ============================================================
    Rendering
    ============================================================ */
 const $=id=>document.getElementById(id);
@@ -2362,7 +2520,7 @@ function linkify(text){
 function renderClock(){
  const t=gameNow(),night=isNight(t),p=$("pill-clock");
  p.dataset.night=String(night);
- $("clock-text").textContent=`${fmtClock(t)} · ${night?`night, dawn in ${Math.max(1,Math.ceil(realMinutesToDawn(t)))} min`:"day"}`;
+ $("clock-text").textContent=`${seasonOf(t)[0].toUpperCase()+seasonOf(t).slice(1)} · ${fmtClock(t)} · ${night?`night, dawn in ${Math.max(1,Math.ceil(realMinutesToDawn(t)))} min`:"day"}`;
  p.title=`The world clock runs at ${CLOCK_RATE}× real time by day and ${NIGHT_RATE}× at night, so night (20:00 to 06:00) lasts about twenty real minutes. Each step takes half an hour.`;
  const H=hereId()&&cell(hereId()),w=H&&weatherAt(H.x,H.y,zOf(H),t);
  $("pill-weather").innerHTML=w?`Weather: <b>${esc(w.label)}</b>`:"Weather: <b>—</b>";
@@ -2414,11 +2572,15 @@ function renderMap(){
   if(exitOpen(c,"up")&&coord.get(ck(c.x,c.y,Z+1)))out+=`<path class="stair" d="M${px+40} ${py+16} l5 -7 l5 7 Z"/>`;
   if(exitOpen(c,"down")&&coord.get(ck(c.x,c.y,Z-1)))out+=`<path class="stair" d="M${px+40} ${py+44} l5 7 l5 -7 Z"/>`;
   if(f)out+=`<path class="threat" d="M${px+14} ${py+9} l5 5 l-5 5 l-5 -5 Z"/>`;
+  if(c.note)out+=`<path class="notemark" d="M${px+44} ${py+52} l8 -8 l3 3 l-8 8 Z"><title>${esc(c.note)}</title></path>`;
   if(Z===0){const folk=npcsAt(c.x,c.y).slice(0,5);folk.forEach((o,k)=>{out+=`<circle class="folk${o.wild?" beast":""}" cx="${px+12+k*7}" cy="${py+48}" r="3.2"/>`})}
   out+=`</g>`;}
  for(const d of FLAT){const v=DIRS[d],id=coord.get(ck(H.x+v.dx,H.y+v.dy,Z));if((id&&visible(cell(id)))||!exitOpen(H,d))continue;const [px,py]=P(v.dx,v.dy);
   out+=`<g data-dir="${d}"><rect class="frontier" x="${px+7}" y="${py+7}" width="46" height="46" rx="5" tabindex="0" role="button" aria-label="Explore ${d}"><title>Explore ${d}</title></rect><text class="q" x="${px+30}" y="${py+36}" text-anchor="middle">${genFor===here?"…":"?"}</text></g>`;}
  const pal=paladin();if(pal&&Z>=0){const dx=wrapC(pal.x-H.x),dy=wrapC(pal.y-H.y);if(Math.abs(dx)<=R&&Math.abs(dy)<=R){const [qx,qy]=P(dx,dy);out+=`<path class="threat" d="M${qx+22} ${qy+10} h16 v8 q0 10 -8 14 q-8 -4 -8 -14 Z"><title>${esc(pal.t)}, a paladin hunting you</title></path>`}}
+ for(const m of marks().filter(m=>!m.done).map(m=>({x:m.x,y:m.y,label:`Map mark: ${m.label}`})).concat(rumours().filter(r=>!r.found&&cell(r.cell)).map(r=>({x:cell(r.cell).x,y:cell(r.cell).y,label:`Rumour: ${r.text}`})))){
+  if(Z!==0)break;const dx=wrapC(m.x-H.x),dy=wrapC(m.y-H.y);if(Math.abs(dx)>R||Math.abs(dy)>R||(!dx&&!dy))continue;const [qx,qy]=P(dx,dy);
+  out+=`<text class="markstar" x="${qx+48}" y="${qy+19}" text-anchor="middle"><title>${esc(m.label)}</title>★</text>`}
  const [hx,hy]=P(0,0);
  out+=`<rect class="here" x="${hx+3}" y="${hy+3}" width="54" height="54" rx="7" pointer-events="none"/><circle class="pawn" cx="${hx+44}" cy="${hy+44}" r="6"/>`;
  if(ws&&ws.storm&&Z>=0){const sx=wrapC(Math.round(ws.storm.x)-H.x),sy=wrapC(Math.round(ws.storm.y)-H.y);const [qx,qy]=P(sx,sy);out+=`<circle class="stormring" cx="${qx+30}" cy="${qy+30}" r="${ws.storm.r*S*.8}"/>`}
@@ -2476,6 +2638,8 @@ function itemRow(id,where){
  if(where==="here")acts=it.forSale?`<button class="small" data-act="take" data-id="${id}" ${busy||sv("GP")<it.value?"disabled":""} title="${sv("GP")<it.value?"You cannot afford it":"Buy it"}">Buy · ${it.value} gp</button>`:`<button class="small" data-act="take" data-id="${id}" ${busy||foeId()?"disabled":""}>Take</button>`;
  else{
   if(it.heal)acts+=`<button class="small" data-act="use" data-id="${id}">${it.kind==="food"?"Eat":"Drink"}</button>`;
+  if(it.mapOf)acts+=`<button class="small" data-act="use" data-id="${id}">Read</button>`;
+  if(atCottage())acts+=`<button class="small" data-act="deposit" data-id="${id}" title="Keep it safe in your chest">Store</button>`;
   if(it.kind==="treasure")acts+=`<button class="small" data-act="use" data-id="${id}">Pocket</button>`;
   if(it.kind==="armor")acts+=`<button class="small" data-act="wear" data-id="${id}">${it.worn?"Take off":"Wear"}</button>`;
   if(it.kind==="weapon"&&!inHand)acts+=`<button class="small" data-act="wield" data-id="${id}">Wield</button>`;
@@ -2493,7 +2657,7 @@ function renderFoe(f){
   <h3>${esc(F.t)}</h3>
   <p class="notes">${esc(F.desc)}</p>
   <div><div class="hprow"><span>Integrity</span><span>${Math.max(0,F.hp)} / ${F.maxhp}</span></div><div class="hpbar"><span style="width:${pct}%"></span></div></div>
-  <p class="stats">AC ${F.ac} · attack +${F.atk} · damage ${esc(F.dmg)}${F.special!=="none"?" · "+esc(SPECIALS[F.special]):""}</p>
+  <p class="stats">AC ${F.ac} · attack +${F.atk} · damage ${esc(F.dmg)}${F.special!=="none"?" · "+esc(SPECIALS[F.special]):""} · ${F.spread?"spreads if left alone":F.roam?"roams":"stays put"}</p>
   <div class="fight">${opts.map((o,i)=>`<button class="${i===0?"primary":""}" data-act="attack" data-id="${i}" ${busy?"disabled":""} title="d20 ${sgn(mod(sv(o.stat)))} ${o.stat} +${prof()} against AC ${F.ac}; damage ${o.dice}${o.addMod?" "+sgn(mod(sv(o.stat))):""}${o.sneak?" + "+o.sneak+"d6 sneak":""}">${esc(o.label)}</button>`).join("")}${wind}</div>
   <p class="note">Each direction is now an attempt to flee: a DEX check against DC ${10+Math.floor(F.atk/2)}. Fail and it strikes. Drinking a potion also gives it a turn.</p>
   ${rounds.length?`<ol class="rounds">${rounds.map(r=>`<li class="${r.kind}">${esc(r.text)}${r.roll?`<span class="roll">${esc(r.roll)}</span>`:""}</li>`).join("")}</ol>`:""}
@@ -2508,7 +2672,7 @@ function renderPeople(L){
   const attackBtns=!canFight(n)||cell(hereId()).sanctuary?"":armedAttack===n.id?`<span class="confirm">Fight ${esc(n.t.split(" ")[0])}? You can only fight them once, and everyone who cares for them will remember. <button class="small" data-act="hit" data-id="${n.id}">${n.fight==="active"?"Strike again":"Fight"}</button><button class="small" data-act="arm" data-id="${n.id}">Leave it</button></span>`:n.fight==="active"?`<button class="small" data-act="hit" data-id="${n.id}">Strike again</button>`:`<button class="small" data-act="arm" data-id="${n.id}" title="Fight them (once only)">Fight</button>`;
   const status=n.defeated?`<span class="meta sharp">recovering at ${esc(n.defeated.place)}</span>`:n.shunsYou?`<span class="meta sharp">beaten by you once; keeps away</span>`:"";
   if(n.wild)return`<li><div class="top"><span><span class="nm">${esc(n.t)}</span> <span class="meta">${esc(n.species)}${trust>=60?" · follows you":""}</span></span><span class="btnrow"><button class="small" data-act="greet" data-id="${n.id}">Greet</button><button class="small" data-act="feed" data-id="${n.id}" ${hasFood?"":"disabled"} title="${hasFood?"Offer some of your food":"You have no food"}">Feed</button>${attackBtns}</span></div>
-   <span class="doing">${esc(n.desc)}, ${esc(n.activity)}</span><span class="meta">trust in you ${trust}% · active by ${n.active}${trust>=60&&!n.shunsYou?" · fights beside you":""}</span>${status}${said?`<p class="said">${esc(said)}</p>`:""}</li>`;
+   <span class="doing">${esc(n.desc)}, ${esc(n.activity)}</span><span class="meta">trust in you ${trust}% · active by ${n.active}${trust>=60&&!n.shunsYou?" · fights beside you · "+esc(GIFTS[n.species]||""):""}</span>${status}${said?`<p class="said">${esc(said)}</p>`:""}</li>`;
   const home=cell(n.home),pct=Math.max(0,n.hp/n.maxhp*100),q=activeQuestFrom(n),deliver=quests().find(x=>!x.done&&x.type==="deliver"&&x.target===n.id);
   let extra="";
   if(openChat===n.id){
@@ -2563,6 +2727,12 @@ function renderPlace(){
  if(L.town)html+=`<p class="note">A room at the inn costs 2 gp and heals you fully. ${cell(here).c["residents+"]?`${rank(here,"residents").length} people call ${esc(L.t)} home.`:""} Goods for sale are listed below.</p>`;
  const P=paladin();if(P){const d=Math.abs(wrapC(P.x-L.x))+Math.abs(wrapC(P.y-L.y));html+=`<p class="flash sharp">${esc(P.t)}, a paladin from ${esc(P.from)}, is hunting you, about ${d} square${d===1?"":"s"} away, moving two squares for each of yours. When they reach you, they will take your magic items.</p>`}
  if(L.monument)html+=renderMonument(L);
+ if(L.town){const C=cottage();
+  if(C&&C.town===L.id){const chest=rank(C.id,"contain");html+=`<div class="sectionhead"><h3>Your cottage</h3><span class="mono" style="font-size:12px;color:var(--faint)">${chest.length} in the chest</span></div><p class="note">Sleep here free. Use <b>Store</b> in your pack to put things in the chest; what is in the chest is safe from paladins and falls.</p>${chest.length?`<ul class="items">${chest.map(id=>{const it=cell(id);return`<li><span><span class="nm">${esc(it.t)}</span><span class="meta">${esc(it.kind)}${it.magic?" · magic":""}</span></span><span class="acts"><button class="small" data-act="withdraw" data-id="${id}">Take out</button></span></li>`}).join("")}</ul>`:""}`}
+  else html+=`<div class="btnrow"><button class="small" data-act="rent" ${sv("GP")<COTTAGE_RENT?"disabled":""}>${C?"Move your cottage here":"Rent a cottage here"} · ${COTTAGE_RENT} gp</button><span class="note">A home with a chest the paladin cannot touch.</span></div>`;
+ }
+ if(L.spring)html+=`<p class="note">A healing spring rises here.</p>`;
+ html+=`<form class="note-form" data-note><label for="note-in">Your note on this place</label><div class="btnrow"><input id="note-in" maxlength="200" value="${esc(L.note||"")}" placeholder="Leave yourself a note…"><button class="small" type="submit">Save note</button></div></form>`;
  if(L.hazard&&L.outcome){const o=L.outcome;html+=`<div class="hazard${o.ok?" passed":""}"><b>${esc(L.hazard.name)}.</b> ${esc(L.hazard.text)} ${o.ok?"You get through unharmed.":`You take ${o.dmg} damage.`}${here===lastHazard?`<span class="roll">${esc(o.roll)}</span>`:""}</div>`}
  if(f)html+=renderFoe(f);
  else if(L.defeated)html+=`<p class="neutral">${esc(L.defeated.designation)} ${esc(L.defeated.name)} was neutralised here${L.defeated.by?` by ${esc(L.defeated.by)}, who left treasure and food behind`:""}.</p>`;
@@ -2611,13 +2781,18 @@ function renderSheet(){
  const restBlocked=busy||foeId()||isDowned();
  el.innerHTML=`<div class="who"><h2>${esc(ch.t)}</h2><span class="mono" style="font-size:13px;color:var(--faint)">Level ${sv("LVL")} ${esc(ch.cls)}</span></div>
  <div><div class="hprow"><span>Hit points</span><span>${hp} / ${max}</span></div><div class="hpbar${pct<=34?" low":""}"><span style="width:${pct}%"></span></div></div>
- <button type="button" class="statfold" data-statfold aria-expanded="${statsOpen}" aria-controls="stat-details"><span class="lbl">Abilities</span><span class="sum mono">${statsOpen?"":`AC ${armourClass()} · XP ${sv("XP")}/${sv("LVL")*100} · ${sv("GP")} gp${STATS.some(k=>boonFor(k))?" · ✦ boon":""}`}</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6 8 10.5 12.5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+ <button type="button" class="statfold" data-statfold aria-expanded="${statsOpen}" aria-controls="stat-details"><span class="lbl">Abilities</span><span class="sum mono">${statsOpen?"":`${hungerLevel()>=2?"starving · ":hungerLevel()>=1?"hungry · ":""}AC ${armourClass()} · XP ${sv("XP")}/${sv("LVL")*100} · ${sv("GP")} gp${STATS.some(k=>boonFor(k))?" · ✦ boon":""}`}</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6 8 10.5 12.5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <div class="statbody" id="stat-details"${statsOpen?"":" hidden"}>
  <div class="abil">${STATS.map(k=>`<div${boonFor(k)?` class="boon" title="Boon: +${boonFor(k)} until ${(ch.boons||[]).filter(b=>b.stat===k).map(b=>fmtClock(b.until)).join(", ")}"`:""}><span class="k">${k}${boonFor(k)?" ✦":""}</span><span class="v">${sv(k)}</span><span class="m">${sgn(mod(sv(k)))}</span></div>`).join("")}</div>
  <dl class="facts"><div><dt>Armour class</dt><dd>${armourClass()}</dd></div><div><dt>Proficiency</dt><dd>+${prof()}</dd></div><div><dt>Weapon</dt><dd>${w?esc(w.dmg||"1d6"):"1d2"}</dd></div><div><dt>Light</dt><dd>${hasLight()?"lantern":"none"}</dd></div><div><dt>XP</dt><dd>${sv("XP")} / ${sv("LVL")*100}</dd></div><div><dt>Gold</dt><dd>${sv("GP")} gp</dd></div></dl>
  <p class="note">${esc(CLASS_NOTES[ch.cls]||"")}</p>
  </div>
  <div class="btnrow"><button id="rest" ${restBlocked?"disabled":""} title="${L&&L.town?"Pay 2 gp for a room and sleep until dawn (or eight hours): full HP.":"Make camp: sleep until dawn at night, or eight hours by day, for half your HP."}">${L&&L.town?"Take a room at the inn · 2 gp":"Make camp"}</button>${foeId()?'<span class="note">Not while it is here.</span>':""}</div>
+ ${hungerLevel()>=1?`<p class="flash${hungerLevel()>=2?" sharp":""}">${hungerLevel()>=2?"Starving: you lose 1 HP every six hours.":"Hungry: −1 STR, −1 CON, and you heal less when you rest."} Eat something.</p>`:""}
+ ${companions().length?`<p class="note">Companions: ${companions().map(n=>`<b>${esc(n.t)}</b> (${esc(GIFTS[n.species]||"keeps you company")})`).join("; ")}.</p>`:""}
+ <dl class="facts">${towns().map(T=>{const v=townStanding(T.id);return`<div><dt>${esc(T.t)}</dt><dd>${repTier(v)} ${v>=0?"+":"−"}${Math.abs(v).toFixed(2)}</dd></div>`}).join("")}</dl>
+ ${(()=>{const T=towns(),rel=[];for(let i=0;i<T.length;i++)for(let j=i+1;j<T.length;j++)rel.push(`${esc(T[i].t)} and ${esc(T[j].t)}: ${relationName(rivalry(T[i].id,T[j].id))}`);return rel.length?`<p class="note">${rel.join(" · ")}. Helping one town is noticed by its rivals.</p>`:""})()}
+ ${rumours().filter(r=>!r.found).length?`<div class="sectionhead"><h3>Rumours</h3><span class="mono" style="font-size:12px;color:var(--faint)">${rumours().filter(r=>!r.found).length} unproven</span></div><ul class="quests">${rumours().filter(r=>!r.found).slice(-6).reverse().map(r=>`<li>${esc(r.from)}: ${esc(r.text)}</li>`).join("")}</ul>`:""}
  <dl class="facts"><div><dt>Reputation</dt><dd>${repTier()} ${reputation()>=0?"+":"−"}${Math.abs(reputation()).toFixed(2)}</dd></div><div><dt>Standing</dt><dd>${Math.round(standingPercentile())}th pct</dd></div><div><dt>Magic offered</dt><dd>${reputation()>=.5?"rare and common":reputation()>=.25?"common":"none"}</dd></div></dl>
  <dl class="facts"><div><dt>Plan</dt><dd>${e.plan==="supporter"?"supporter":"free explorer"}</dd></div><div><dt>Range</dt><dd>${exploreRange()>=WORLD_R?"whole world":exploreRange()+" squares"}</dd></div><div><dt>Resurrections</dt><dd>${e.tokens}</dd></div></dl>
  <div class="btnrow"><button class="small" id="plan-info">Plans and prices</button><button class="small" id="plan-preview" title="For testing only: payments are not connected yet">${e.plan==="supporter"?"Stop supporter preview":"Preview supporter (testing)"}</button></div>
@@ -2626,7 +2801,7 @@ function renderSheet(){
  $("rest").onclick=rest;$("plan-info").onclick=()=>{planInfoOpen=!planInfoOpen;renderSheet()};$("plan-preview").onclick=previewSupporter;
  const ids=packIds();
  pk.innerHTML=`<div class="sectionhead"><h3 id="pack-h">Pack</h3><span class="mono" style="font-size:12px;color:${carried()>capacity()*.9?"var(--danger)":"var(--faint)"}">${fmtW(carried())} / ${capacity()} lb</span></div>`+
-  (ids.length?`<ul class="items">${ids.map(id=>itemRow(id,"pack")).join("")}</ul>`:`<p class="empty">Your pack is empty.</p>`);
+  (ids.length?`<ul class="items">${ids.map(id=>itemRow(id,"pack")).join("")}</ul>`:`<p class="empty">Your pack is empty.</p>`)+renderCraft();
 }
 let planInfoOpen=false;
 
@@ -3036,13 +3211,15 @@ document.addEventListener("click",e=>{
   chat:i=>{openChat=openChat===i?null:i;openTrade=null;armedAttack=null;render();const n=cell(i);if(openChat===i&&!(n.chat||[]).length)talk(i)},
   trade:i=>{openTrade=openTrade===i?null:i;openChat=null;armedAttack=null;render()},
   buyfood:buyFood,sell:v=>{const [n,it]=v.split("|");sellTo(n,it)},quest:i=>{offerQuest(cell(i));passTime(5);store.flush();render()},
-  give:giveFood,arm:i=>{armedAttack=armedAttack===i?null:i;render()},hit:attackAgent})[b.dataset.act](id);return}
+  give:giveFood,arm:i=>{armedAttack=armedAttack===i?null:i;render()},hit:attackAgent,
+  craft,deposit,withdraw,rent:rentCottage})[b.dataset.act](id);return}
  const d=e.target.closest("#compass button[data-dir]");if(d){move(d.dataset.dir);return}
  const g=e.target.closest("#map g");if(g){if(g.dataset.dir)move(g.dataset.dir);else if(g.dataset.loc){const id=g.dataset.loc,H=cell(hereId()),C=cell(id);
   const dir=H&&C?Object.keys(DIRS).find(k=>coord.get(ck(H.x+DIRS[k].dx,H.y+DIRS[k].dy,zOf(H)+DIRS[k].dz))===id):null;
   if(dir)move(dir);else travelTo(id)}}
 });
 document.addEventListener("toggle",e=>{if(e.target.id==="zz-details")zzOpen=e.target.open},true);
+document.addEventListener("submit",e=>{const nf=e.target.closest("form[data-note]");if(nf){e.preventDefault();saveNote(nf.querySelector("input").value);return}});
 document.addEventListener("submit",e=>{const f=e.target.closest("form[data-chat]");if(!f)return;e.preventDefault();const inp=f.querySelector("input");const v=inp.value;inp.value="";sendChat(f.dataset.chat,v)});
 document.addEventListener("keydown",e=>{
  if(e.target.closest("input,textarea,select"))return;
@@ -3095,6 +3272,7 @@ setInterval(()=>{
  const saved=await store.load();
  if(saved){
   zz.cells=saved;for(const c of Object.values(zz.cells))if(c.k==="loc")coord.set(ck(c.x,c.y,zOf(c)),c.id);
+  {const ch=charId()&&cell(charId());if(ch&&ch.lastMeal==null){ch.lastMeal=gameNow();touch(ch.id)}if(!cell("root").rivalry&&towns().length)seedRivalry()}
   const r=cell("root");if(!r.clock){r.clock={base:8*60,real:Date.now()};r.npcT=8*60;r.seed=Math.floor(Math.random()*1e6);touch("root")}
   if(store.mode==="cloud"&&store.from!=="cloud"){for(const id of Object.keys(zz.cells))touch(id)}
   simulate();store.flush();

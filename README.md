@@ -81,3 +81,32 @@ hard to confuse. Run `node tools/realm-script.mjs` to regenerate.
   switched off.
 - **Lantern limit** (v0.2.9): a lantern gives two game hours (four steps) of
   night travel; then you must make camp or take a room. Resting or dawn refills it.
+
+### v0.3
+
+- **Seasons**: a 28-day year of four seven-day seasons. Dawn and dusk move with
+  the season (winter nights are longest), but every night still lasts about
+  twenty real minutes. Winter freezes the river so it can be walked across, and
+  snow closes unexplored high mountain paths. Temperature, snow and foraging
+  follow the season.
+- **Hunger**: after about a day without food you are hungry (−1 STR, −1 CON, half
+  healing when you camp). Later you are starving and lose 1 HP every six hours.
+  Eating, or resting at an inn or your cottage, fixes it.
+- **Rumours that come true**: friendly townsfolk sometimes pass on a rumour (a
+  cache, a lost item, a lurking creature). It is planted in the world and marked
+  ★ on the map until you find it.
+- **Cottage**: rent one in a town for 30 gp. Sleeping there is free and comes
+  with supper. Its chest is safe from paladins and falls.
+- **Companion gifts**: allies who travel with you help. The wisp gives light,
+  the pony carries 60 lb, the raven scouts, the fox finds things, the otter and
+  heron fish at dawn, the badger heals you fully at camp, and the deer adds an
+  hour of night travel.
+- **Maps and notes**: towns sell maps of sanctuaries, springs, caves and
+  monuments. About one in five is wrong and adds a false mark. You can also
+  leave your own note on any place; a pencil mark shows it on the map.
+- **Town factions**: the towns have rivalries. Helping one town raises your
+  standing there and lowers it with its rivals. Standing affects magic stock.
+- **Anomalies**: some stay put, some roam across the land, and some spread
+  (capped at six offspring).
+- **Crafting**: potions, a draught of vigour, a charm of warding, pitch torches,
+  hearty stew, and a smith's lantern, made from what you carry.
