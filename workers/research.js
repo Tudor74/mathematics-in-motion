@@ -3689,12 +3689,20 @@ function text(r) {
 async function summarise(topic, papers) {
   const list = papers.map((p, i) => `[${i + 1}] "${p.title}" (${p.published}, ${p.category})\n${p.abstract.slice(0, 1400)}`).join('\n\n');
   const prompt = `You write for an educational mathematics site. Field: ${topic.field}.
-Below are the six most recent arXiv submissions in this area. Write ONE paragraph of 110–150 words for a curious undergraduate on what these submissions, taken together, suggest about where the field is moving and what impact they could have on it.
-Rules: British English; plain prose, no lists, no headings, no markdown; refer to papers by a short form of their title; these are preprints that have not been peer reviewed, so describe potential impact cautiously and do not invent results, citations or significance beyond the abstracts; if the papers are unrelated, say the batch spans several separate directions and characterise them briefly.
+Below are the six most recent arXiv submissions in this area. Write ONE short paragraph of at most 3 sentences and at most 80 words, for a curious undergraduate, on what these submissions together suggest about where the field is moving and their likely impact. Be concise: name only the two or three most notable papers, and finish with a complete sentence.
+Rules: British English; plain prose, no lists, no headings, no markdown; refer to papers by a short form of their title; these are preprints that have not been peer reviewed, so describe potential impact cautiously and do not invent results, citations or significance beyond the abstracts; if the papers are unrelated, say the batch spans several separate directions in one sentence.
 
 ${list}`;
-  const r = await me.puter.ai.chat(prompt, { model: MODEL, max_tokens: 400, temperature: 0.3 });
-  return text(r).replace(/\s+/g, ' ').trim();
+  const r = await me.puter.ai.chat(prompt, { model: MODEL, max_tokens: 200, temperature: 0.3 });
+  return wholeSentences(text(r).replace(/\s+/g, ' ').trim());
+}
+
+// If a reply was cut off, keep only its complete sentences (and at most ~90 words).
+function wholeSentences(t) {
+  const sentences = t.match(/[^.!?]+[.!?]+["'”’)]*(\s|$)/g) || [];
+  let out = '';
+  for (const s of sentences) { if ((out + s).split(/\s+/).length > 95 && out) break; out += s; }
+  return (out || t).trim();
 }
 
 async function build(id, topic, { maxAge = VISITOR_MAX_AGE, budget = BUDGET, countsMaxAge = 2 * OPEN_TTL } = {}) {
@@ -3713,7 +3721,7 @@ async function build(id, topic, { maxAge = VISITOR_MAX_AGE, budget = BUDGET, cou
   }
 
   // 2 · Impact paragraph, once per distinct set of papers.
-  const sig = papers.list.map(p => p.id).join(',');
+  const sig = 'v2:' + papers.list.map(p => p.id).join(',');  // bump the prefix to rewrite every summary
   let summary = await kv.get(K(id, 'summary'));
   if ((!summary || summary.sig !== sig) && papers.list.length) {
     summary = { sig, at: Date.now(), model: MODEL, text: await summarise(topic, papers.list) };
