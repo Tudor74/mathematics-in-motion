@@ -1,5 +1,5 @@
 <title>Zigzag Realms</title>
-<meta name="application-version" content="0.2.5">
+<meta name="application-version" content="0.2.6">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,6 +31,7 @@
  --t-dungeon:#47413f; --t-village:#6c5434; --t-ruin:#5d5444; --t-swamp:#3f4d33; --t-road:#5f5643; --t-sky:#2d4150; --t-desert:#6b5a36; --t-grove:#3e3563; --t-other:#3b4741;
  color-scheme:dark}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;margin:0}
 .wrap{max-width:1240px;margin:0 auto;padding-block:18px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:16px}
 button,input,select,textarea{font:inherit;color:inherit}
@@ -181,6 +182,12 @@ details.zz summary{cursor:pointer;font-family:var(--mono);font-size:13px;color:v
 .abil .v{font-family:var(--display);font-size:22px;font-weight:700}
 .abil .m{font-family:var(--mono);font-size:12px;color:var(--faint)}
 .abil .boon{border-color:var(--amber);box-shadow:inset 0 0 0 1px var(--amber)}
+.statfold{display:flex;align-items:center;gap:8px;width:100%;min-height:36px;padding:4px 8px;margin:-2px 0;border-radius:6px;border-color:var(--rule);background:transparent;font-weight:600;font-size:14px;text-align:left}
+.statfold .lbl{white-space:nowrap}
+.statfold .sum{margin-left:auto;font-size:12px;font-weight:400;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.statfold svg{width:16px;height:16px;flex:0 0 16px;color:var(--faint);transition:transform .2s}
+.statfold[aria-expanded="false"] svg{transform:rotate(-90deg)}
+.statbody{display:grid;gap:14px}
 .abil .boon .k{color:var(--amber)}
 .facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 12px;margin:0}
 .facts div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dotted var(--rule);padding:3px 0;font-size:14px}
@@ -285,7 +292,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
 <div class="wrap">
  <header class="top">
   <div>
-   <p class="eyebrow">A map that writes itself · v0.2.5</p>
+   <p class="eyebrow">A map that writes itself · v0.2.6</p>
    <h1>Zigzag Realms</h1>
    <p class="sub">A river with three towns, a woodland and its magical grove, a mountain with lakes, a waterfall and caves, and a desert are laid out when your journey begins, with townsfolk and creatures living among them. Claude writes everything else one step ahead of you. Every place is kept as a cell in a ZigZag structure, so you can find your way back.</p>
   </div>
@@ -2552,6 +2559,8 @@ function renderCreate(el){
  $("f-begin").onclick=begin;
 }
 
+// The ability block starts rolled up; the choice is remembered with the other roll-ups
+let statsOpen=false;try{statsOpen=!!JSON.parse(localStorage.getItem("zr-fold")||"{}").statsOpen}catch(e){}
 function renderSheet(){
  const el=$("sheet"),pk=$("pack");
  if(!charId()){el.innerHTML=`<div class="who"><h2>No character yet</h2></div><p class="empty">Roll a character to see their sheet here: abilities, hit points, armour class and level.</p>`;pk.innerHTML=`<div class="sectionhead"><h3 id="pack-h">Pack</h3></div><p class="empty">Your class kit, a healing potion and three random items go here when you set out.</p>`;return}
@@ -2559,9 +2568,12 @@ function renderSheet(){
  const restBlocked=busy||foeId()||isDowned();
  el.innerHTML=`<div class="who"><h2>${esc(ch.t)}</h2><span class="mono" style="font-size:13px;color:var(--faint)">Level ${sv("LVL")} ${esc(ch.cls)}</span></div>
  <div><div class="hprow"><span>Hit points</span><span>${hp} / ${max}</span></div><div class="hpbar${pct<=34?" low":""}"><span style="width:${pct}%"></span></div></div>
+ <button type="button" class="statfold" data-statfold aria-expanded="${statsOpen}" aria-controls="stat-details"><span class="lbl">Abilities</span><span class="sum mono">${statsOpen?"":`AC ${armourClass()} · XP ${sv("XP")}/${sv("LVL")*100} · ${sv("GP")} gp${STATS.some(k=>boonFor(k))?" · ✦ boon":""}`}</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6 8 10.5 12.5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+ <div class="statbody" id="stat-details"${statsOpen?"":" hidden"}>
  <div class="abil">${STATS.map(k=>`<div${boonFor(k)?` class="boon" title="Boon: +${boonFor(k)} until ${(ch.boons||[]).filter(b=>b.stat===k).map(b=>fmtClock(b.until)).join(", ")}"`:""}><span class="k">${k}${boonFor(k)?" ✦":""}</span><span class="v">${sv(k)}</span><span class="m">${sgn(mod(sv(k)))}</span></div>`).join("")}</div>
  <dl class="facts"><div><dt>Armour class</dt><dd>${armourClass()}</dd></div><div><dt>Proficiency</dt><dd>+${prof()}</dd></div><div><dt>Weapon</dt><dd>${w?esc(w.dmg||"1d6"):"1d2"}</dd></div><div><dt>Light</dt><dd>${hasLight()?"lantern":"none"}</dd></div><div><dt>XP</dt><dd>${sv("XP")} / ${sv("LVL")*100}</dd></div><div><dt>Gold</dt><dd>${sv("GP")} gp</dd></div></dl>
  <p class="note">${esc(CLASS_NOTES[ch.cls]||"")}</p>
+ </div>
  <div class="btnrow"><button id="rest" ${restBlocked?"disabled":""} title="${L&&L.town?"Pay 2 gp for a room and sleep until dawn (or eight hours): full HP.":"Make camp: sleep until dawn at night, or eight hours by day, for half your HP."}">${L&&L.town?"Take a room at the inn · 2 gp":"Make camp"}</button>${foeId()?'<span class="note">Not while it is here.</span>':""}</div>
  <dl class="facts"><div><dt>Reputation</dt><dd>${repTier()} ${reputation()>=0?"+":"−"}${Math.abs(reputation()).toFixed(2)}</dd></div><div><dt>Standing</dt><dd>${Math.round(standingPercentile())}th pct</dd></div><div><dt>Magic offered</dt><dd>${reputation()>=.5?"rare and common":reputation()>=.25?"common":"none"}</dd></div></dl>
  <dl class="facts"><div><dt>Plan</dt><dd>${e.plan==="supporter"?"supporter":"free explorer"}</dd></div><div><dt>Range</dt><dd>${exploreRange()>=WORLD_R?"whole world":exploreRange()+" squares"}</dd></div><div><dt>Resurrections</dt><dd>${e.tokens}</dd></div></dl>
@@ -2970,6 +2982,7 @@ function renderSoundButton(){const b=$("sound-toggle");if(!b)return;b.setAttribu
    ============================================================ */
 document.addEventListener("click",e=>{
  const fb=e.target.closest("button.fold");if(fb){toggleFold(fb.dataset.fold);return}
+ if(e.target.closest("button[data-statfold]")){statsOpen=!statsOpen;folds.statsOpen=statsOpen;try{localStorage.setItem("zr-fold",JSON.stringify(folds))}catch(err){}renderSheet();$("sheet").querySelector("button[data-statfold]").focus();return}
  if(e.target.closest("#sound-toggle")){sound.setOn(!sound.on);return}
  if(e.target.closest("#script-toggle")){realm.set(!realm.on);return}
  const g0=e.target.closest("button[data-go]");if(g0){move(g0.dataset.go);return}
