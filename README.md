@@ -110,3 +110,30 @@ hard to confuse. Run `node tools/realm-script.mjs` to regenerate.
   (capped at six offspring).
 - **Crafting**: potions, a draught of vigour, a charm of warding, pitch torches,
   hearty stew, and a smith's lantern, made from what you carry.
+
+### v0.4: the shared realm
+
+- **Multiplayer on Puter**: on puter.site, tick "Join the shared realm" before
+  setting out (you sign in with Puter). The first player to do so founds the
+  realm. Their starting world (the river, towns, region, townsfolk, creatures and
+  monuments) is saved by a Puter Worker (`tools/realms-worker.js`, deployed as
+  zigzag-realms-mp.puter.work). Every later player downloads that same world but
+  keeps their own character, pack, clock and save.
+- **Shared squares**: before the narrator writes a new square, the game asks the
+  realm whether someone has already written it, and uses theirs if so. Each player
+  still rolls their own finds and anomalies there. Squares are stored in 4×4
+  chunks, and the first writer wins.
+- **Other travellers**: everyone online shows on the map with their recent
+  footprints. Players within three squares are listed with their distance and
+  direction, and you can speak to them. Positions update about every six seconds
+  and soon after each move.
+- **Leaving things for others**: "Leave for others" puts an item on the ground
+  for any player to find. Taking one is atomic, so only one player gets it.
+- **A fragment a day**: the first time you come back into the world each day, one
+  sentence of a hidden rule you have not read yet comes to you and is kept in
+  the Codex. Reading the monument still gives you the whole rule.
+- **Capacity**: each player sends about 10 presence calls a minute (each is one
+  KV read and one write, plus a list every 4 seconds shared by everyone).
+  Against Puter's limit of 400 KV operations per 10 seconds, that is roughly
+  80–120 players online at once, fewer while many are exploring new ground.
+  KV use is billed to the worker's owner.

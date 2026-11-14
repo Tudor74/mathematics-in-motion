@@ -1,5 +1,5 @@
 <title>Zigzag Realms</title>
-<meta name="application-version" content="0.3">
+<meta name="application-version" content="0.4">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -262,6 +262,10 @@ button.pill[aria-pressed="false"] b{color:var(--faint)}
 .codex b{font-family:var(--display)}
 .map .markstar{fill:var(--amber);font-size:15px;pointer-events:auto}
 .map .notemark{fill:var(--water);pointer-events:auto}
+.map .traveller circle{fill:var(--magic)}.map .traveller path{fill:none;stroke:var(--magic);stroke-width:2.4;stroke-linecap:round}.map .traveller{pointer-events:auto}
+.map .footprint{fill:var(--magic);opacity:.45;pointer-events:auto}
+label.check{display:flex;gap:8px;align-items:flex-start;font-size:14px}label.check input{margin-top:3px}
+.codex .frag{color:var(--faint)}
 .note-form{display:grid;gap:4px}
 .note-form .btnrow{flex-wrap:nowrap}.note-form input{flex:1;min-width:0}
 .garden canvas{display:block;width:100%;max-width:100%;aspect-ratio:1/.72;border-radius:6px;background:var(--wash)}
@@ -318,7 +322,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
 <div class="wrap">
  <header class="top">
   <div>
-   <p class="eyebrow">A map that writes itself · v0.3</p>
+   <p class="eyebrow">A map that writes itself · v0.4</p>
    <h1>Zigzag Realms</h1>
    <p class="sub">A river with three towns, a woodland and its magical grove, a mountain with lakes, a waterfall and caves, and a desert are laid out when your journey begins, with townsfolk and creatures living among them. Claude writes everything else one step ahead of you. Every place is kept as a cell in a ZigZag structure, so you can find your way back.</p>
   </div>
@@ -1001,18 +1005,24 @@ async function ensureNeighbours(locId){
  const need=missingDirs(locId);if(!need.length)return;
  genFor=locId;renderCompass();
  genPromise=(async()=>{
-  const out=await askClaude(batchPrompt(locId,need));
+  const L=cell(locId),shared=await sharedSquares(need),pub={};
+  for(const n of need){const s=shared[sqk(n.pos)];if(!s)continue;
+   if(n.planned){const P=cell(n.planned);if(s.desc){P.desc=s.desc;P.by="shared"}if(s.glimpse)P.glimpse=s.glimpse;P.written=true;touch(P.id);continue}
+   if(coord.get(ck(n.pos.x,n.pos.y,n.pos.z)))continue;
+   const id=createLocation(squareIn(s,L,n),n.pos);cell(id).seen=true}
+  const fresh=need.filter(n=>!shared[sqk(n.pos)]);
+  const out=fresh.length?await askClaude(batchPrompt(locId,fresh)):null;
   const places=out&&typeof out.places==="object"&&out.places||{};
-  const L=cell(locId);
-  for(const n of need){
+  for(const n of fresh){
    const raw=places[n.dir];
-   if(n.planned){const P=cell(n.planned);if(raw&&typeof raw.description==="string"&&raw.description.trim()){P.desc=raw.description.trim().slice(0,1200);P.by="claude"}if(raw&&typeof raw.glimpse==="string"&&raw.glimpse.trim())P.glimpse=raw.glimpse.trim().slice(0,100);P.written=true;touch(P.id);continue}
+   if(n.planned){const P=cell(n.planned);if(raw&&typeof raw.description==="string"&&raw.description.trim()){P.desc=raw.description.trim().slice(0,1200);P.by="claude";pub[sqk(n.pos)]=squareOut(P.id,true)}if(raw&&typeof raw.glimpse==="string"&&raw.glimpse.trim())P.glimpse=raw.glimpse.trim().slice(0,100);P.written=true;touch(P.id);continue}
    if(coord.get(ck(n.pos.x,n.pos.y,n.pos.z)))continue;
    const data=raw&&raw.name?Object.assign(normLocation(raw,L.terrain,n.pos),{by:"claude"}):Object.assign(tableLocation(L,n.dir,n.pos),{by:"tables"});
    data.exits=normExits(raw&&raw.exits,n.dir);data.walls=normWalls(raw&&raw.walls);
    data.glimpse=raw&&typeof raw.glimpse==="string"&&raw.glimpse.trim()?raw.glimpse.trim().slice(0,100):`${data.name}: ${GLIMPSE[data.terrain]||GLIMPSE.other}`;
-   const id=createLocation(data,n.pos);cell(id).seen=true;
+   const id=createLocation(data,n.pos);cell(id).seen=true;pub[sqk(n.pos)]=squareOut(id);
   }
+  publishSquares(pub);
  })();
  try{await genPromise}finally{genPromise=null;genFor=null}
  store.flush();render();
@@ -1508,6 +1518,7 @@ function gainXP(n){
  }
 }
 function enter(locId,first){
+ if(mp.on())mpSoon();
  const ch=charId(),prev=hereId();if(prev&&prev!==locId){cell(ch).prevAt=prev;touch(ch)}
  connect(ch,"at",locId);const L=cell(locId);lastHazard=null;rounds=[];
  if(!L.visited){L.visited=true;touch(locId);gainXP(L.town?25:10);if(L.town)log(`You reach ${L.t}, a ${TOWN_SIZES[L.town.size].label} on the ${riverName()}.`,"good")}
@@ -1806,12 +1817,7 @@ function feed(id){
 
 /* New world */
 let draft={name:"Wren Ashdown",cls:"Fighter",theme:"A misty borderland of old forests, ruined watchtowers, river villages and the hills where the old kingdom fell. Lately, things have been seen that do not belong in any bestiary.",stats:rollStats()};
-async function begin(){
- if(busy)return;
- const keepEnt=cell("root")&&cell("root").ent||draft.ent;
- const old=Object.keys(zz.cells);for(const id of old)zz.removed.add(id);
- zz.cells={};coord.clear();fieldCache.clear();zz.dirty.clear();rounds=[];flash=null;sound.riverPts=null;
- zz.cells.root={id:"root",k:"root",c:{},seq:0,theme:draft.theme.trim()||"A classic fantasy wilderness.",log:[],home:null,created:Date.now(),seed:Math.floor(Math.random()*1e6),clock:{base:8*60,real:Date.now()},npcT:8*60,ent:keepEnt||null};touch("root");
+function makeCharacter(){
  const ch=newCell("char",{t:draft.name.trim()||"Nameless wanderer",cls:draft.cls,windUsed:false,ties:{}});connect("root","cursor",ch);
  const C=CLASSES[draft.cls],con=mod(draft.stats[2]),hp=Math.max(1,C.hd+con);
  const vals=Object.fromEntries(STATS.map((s,i)=>[s,draft.stats[i]]));Object.assign(vals,{HP:hp,MAXHP:hp,LVL:1,XP:0,GP:10});
@@ -1820,6 +1826,16 @@ async function begin(){
  const kit=C.kit.concat([["Potion of Healing","A red liquid that shimmers when shaken.","potion",0.5,50,"2d4+2"],["Rations (3 days)","Hard bread, cheese and dried apples.","food",6,2,"1d4"]],extras);
  let wielded=false;
  for(const row of kit){const it=normItem(asItem(row)),id=itemCell(it);if(it.kind==="armor"&&!packIds().some(p=>cell(p).worn))cell(id).worn=true;if(it.kind==="weapon"&&!wielded){cell(id).wielded=true;wielded=true}appendTo(ch,"contain",id)}
+ return {ch,extras};
+}
+async function begin(opts={}){
+ if(busy)return;
+ if(draft.shared&&!opts.founding&&canJoinRealm())return beginShared();
+ const keepEnt=cell("root")&&cell("root").ent||draft.ent;
+ const old=Object.keys(zz.cells);for(const id of old)zz.removed.add(id);
+ zz.cells={};coord.clear();fieldCache.clear();zz.dirty.clear();rounds=[];flash=null;sound.riverPts=null;
+ zz.cells.root={id:"root",k:"root",c:{},seq:0,theme:draft.theme.trim()||"A classic fantasy wilderness.",log:[],home:null,created:Date.now(),seed:Math.floor(Math.random()*1e6),clock:{base:8*60,real:Date.now()},npcT:8*60,ent:keepEnt||null};touch("root");
+ const {ch,extras}=makeCharacter();
  busy={dir:"river"};render();
  const riverPlan=planRiver();
  const w=normWorld(await askClaude(worldPrompt(riverPlan)),riverPlan);
@@ -1832,13 +1848,18 @@ async function begin(){
  const data=await narrate(null,"",pos);data.exits=EX("nsew");
  const home=createLocation(Object.assign(data,{hazard:null,monster:null}),pos);cell("root").home=home;
  connect(ch,"at",home);cell(home).visited=true;markSeen(home);
+ if(opts.founding){
+  busy={dir:"founding"};render();
+  try{const meta=await uploadRealm();Object.assign(cell("root"),{shared:meta.id,founder:meta.by});log("You have founded the shared realm. Every traveller who joins from now on walks this world.","good")}
+  catch(e){flash=`The shared realm could not be saved (${e.message}). You are playing in a world of your own.`}
+ }
  busy={dir:"look"};render();
  await ensureNeighbours(home);
  busy=null;
  log(`${cell(ch).t} the ${draft.cls} sets out from ${cell(home).t} carrying ${extras.map(r=>r[0].toLowerCase()).join(", ")}. The ${w.river} rises at the mountain to the east and runs south past ${towns().map(c=>c.t).join(", ")}.`,"good");
  if(!hasLight())log("You have no lantern. You cannot travel at night or go underground without one; the larger towns sell them.","time");
  cell("root").clock={base:8*60,real:Date.now()};cell("root").npcT=8*60;cell(ch).lastMeal=8*60;seedRivalry();
- store.flush();render();
+ dailyFragment(true);store.flush();render();if(mp.on())mpPing();
 }
 
 /* ============================================================
@@ -1909,7 +1930,7 @@ async function puterAfterSignIn(migrate){
  const remote=await store.loadPuter();
  if(remote&&remote.root&&(!zz.cells.root||!migrate)){zz.cells=remote;coord.clear();fieldCache.clear();for(const c of Object.values(zz.cells))if(c.k==="loc")coord.set(ck(c.x,c.y,zOf(c)),c.id)}
  else if(zz.cells.root){for(const id of Object.keys(zz.cells))touch(id)}
- store.flush();render();
+ dailyFragment();store.flush();render();if(mp.on())mpPing();
 }
 
 /* ============================================================
@@ -2503,6 +2524,196 @@ function renderCraft(){
 }
 
 /* ============================================================
+   The shared realm (multiplayer on Puter)
+   One world, written once by the first player to found it and stored by a Puter Worker.
+   Every later player downloads that world, keeps their own character, pack, clock and
+   save, and shares: squares anyone has discovered (first writer wins), where everyone is,
+   what they say, and items left on the ground for others.
+   ============================================================ */
+const MP_URL="https://zigzag-realms-mp.puter.work",MP_PING=6000,MP_NEAR=3,SNAP_PART=300000;
+const mp={players:[],ground:[],groundKey:"",you:null,status:"",heard:{},met:new Set(),busy:false,queued:null,timer:null,sig:"",online:null,
+ on(){const r=cell("root");return !!(r&&r.shared)},
+ async call(path,body){
+  const opts={method:body===undefined?"GET":"POST",headers:{"Content-Type":"application/json"}};
+  if(body!==undefined)opts.body=typeof body==="string"?body:JSON.stringify(body);
+  const ex=window.puter&&puter.workers&&puter.workers.exec;
+  const res=ex?await puter.workers.exec(MP_URL+path,opts):await fetch(MP_URL+path,opts);
+  const text=await res.text();let data;try{data=JSON.parse(text)}catch(e){data=text}
+  if(!res.ok)throw Object.assign(new Error(data&&data.error||("The realm answered "+res.status)),{status:res.status,data});
+  return data;
+ }
+};
+const ordinal=n=>n+(n%100>=11&&n%100<=13?"th":["th","st","nd","rd"][n%10]||"th");
+const sqk=p=>`${p.x},${p.y},${p.z}`;
+const canJoinRealm=()=>!!mp.test||(puterReady&&!window.claude);
+
+// The parts of the world that belong to one player and are left out of the shared copy
+function realmSnapshot(){
+ const ch=charId(),mine=new Set([ch,...rank(ch,"stat"),...rank(ch,"contain")]);
+ const out={};
+ for(const [id,c] of Object.entries(zz.cells)){
+  if(mine.has(id))continue;const o=JSON.parse(JSON.stringify(c));
+  for(const [k,v] of Object.entries(o.c))if(mine.has(v))delete o.c[k];
+  if(o.ties)for(const k of Object.keys(o.ties))if(mine.has(k))delete o.ties[k];
+  out[id]=o;
+ }
+ const r=out.root;for(const k of ["log","codex","ent","clock","fragments","fragDay","rumours","marks","cottage","created"])delete r[k];
+ return out;
+}
+async function uploadRealm(){
+ const text=JSON.stringify(realmSnapshot()),parts=Math.ceil(text.length/SNAP_PART);
+ for(let i=0;i<parts;i++)await mp.call("/realm/part/"+i,text.slice(i*SNAP_PART,(i+1)*SNAP_PART));
+ return (await mp.call("/realm/done",{parts,name:riverName()})).meta;
+}
+async function downloadRealm(meta){
+ let text="";for(let i=0;i<meta.parts;i++){const p=await mp.call("/realm/part/"+i);text+=typeof p==="string"?p:JSON.stringify(p)}
+ return JSON.parse(text);
+}
+async function beginShared(){
+ if(busy)return;
+ if(!mp.test&&!puterUser){try{await puter.auth.signIn();await puterAfterSignIn(true)}catch(e){flash="Sign in with Puter to join the shared realm, or untick it to play in a world of your own.";render();return}}
+ busy={dir:"realm"};flash=null;render();
+ try{
+  let info=await mp.call("/realm");
+  if(!info.ready){
+   const c=await mp.call("/realm/claim",{});
+   if(c.granted){busy=null;await begin({founding:true});return}
+   for(let i=0;i<45&&!info.ready;i++){await new Promise(r=>setTimeout(r,2000));info=await mp.call("/realm")}
+   if(!info.ready)throw new Error("Another player is still founding the shared realm. Try again in a minute.");
+  }
+  const cells=await downloadRealm(info.meta);
+  joinRealm(cells,info.meta);
+ }catch(e){busy=null;flash=`Could not reach the shared realm: ${e.message}`;render();return}
+}
+function joinRealm(cells,meta){
+ const keepEnt=cell("root")&&cell("root").ent||draft.ent;
+ for(const id of Object.keys(zz.cells))zz.removed.add(id);
+ zz.cells=cells;coord.clear();fieldCache.clear();zz.dirty.clear();rounds=[];sound.riverPts=null;
+ for(const c of Object.values(zz.cells)){if(c.k==="loc"){coord.set(ck(c.x,c.y,zOf(c)),c.id);if(c.id!==cells.root.home)c.visited=false}touch(c.id)}
+ const r=cell("root");Object.assign(r,{log:[],created:Date.now(),clock:{base:8*60,real:Date.now()},npcT:8*60,ent:keepEnt||null,shared:meta.id,founder:meta.by});
+ const {ch,extras}=makeCharacter();
+ const home=r.home;connect(ch,"at",home);cell(home).visited=true;markSeen(home);
+ busy=null;
+ log(`${cell(ch).t} the ${draft.cls} arrives in the shared realm, founded by ${meta.by}, carrying ${extras.map(x=>x[0].toLowerCase()).join(", ")}. Other travellers walk these roads too.`,"good");
+ if(!hasLight())log("You have no lantern. You cannot travel at night or go underground without one; the larger towns sell them.","time");
+ cell(ch).lastMeal=8*60;dailyFragment(true);
+ store.flush();render();mpPing();ensureNeighbours(home);
+}
+
+// Squares: ask the realm before writing anything new, and tell it about what we wrote
+async function sharedSquares(need){
+ if(!mp.on()||!need.length)return {};
+ try{return (await mp.call("/squares/get",{keys:need.map(n=>sqk(n.pos))})).squares||{}}catch(e){return {}}
+}
+function squareOut(id,planned){
+ const c=cell(id);const ex=c.exits?Object.entries(c.exits).filter(([,v])=>v).map(([d])=>d==="up"?"u":d==="down"?"d":d[0]).join(""):"";
+ return {name:c.t,desc:c.desc,glimpse:c.glimpse||"",terrain:c.terrain,exits:ex,walls:c.walls||null,hazard:c.hazard||null,planned:!!planned};
+}
+function squareIn(s,L,n){
+ const base=tableLocation(L,n.dir,n.pos);   // local items and anomalies, so each player still finds their own
+ return Object.assign(base,{name:s.name||base.name,desc:s.desc,terrain:TERRAINS.includes(s.terrain)?s.terrain:base.terrain,
+  exits:s.exits?EX(s.exits):normExits(null,n.dir),walls:normWalls(s.walls),glimpse:s.glimpse||`${s.name||base.name}: ${GLIMPSE[s.terrain]||GLIMPSE.other}`,hazard:s.hazard&&s.hazard.name?normLocation({hazard:s.hazard},base.terrain,n.pos).hazard:base.hazard,by:"shared"});
+}
+function publishSquares(sq){
+ if(!mp.on()||!Object.keys(sq).length)return;
+ mp.call("/squares/put",{squares:sq}).then(r=>{
+  let changed=false;
+  for(const [k,s] of Object.entries(r.squares||{})){const id=coord.get(ck(...k.split(",").map(Number)));if(!id)continue;const c=cell(id);
+   if(s.by&&s.by!==mp.you&&s.desc&&s.desc!==c.desc&&!c.visited){c.desc=s.desc;if(!c.town&&!c.landmark&&s.name)c.t=s.name;if(s.glimpse)c.glimpse=s.glimpse;c.by="shared";touch(id);changed=true}}
+  if(changed){store.flush();render()}
+ }).catch(()=>{});
+}
+
+// Presence: where everyone is, and what they said
+function mpSoon(){clearTimeout(mp.soon);mp.soon=setTimeout(()=>mpPing(),1600)}
+async function mpPing(say){
+ if(!mp.on()||!charId()||!hereId())return;
+ if(mp.busy){if(say)mp.queued=say;return}
+ const L=cell(hereId()),ch=cell(charId());mp.busy=true;
+ try{
+  const r=await mp.call("/presence",{x:L.x,y:L.y,z:zOf(L),name:ch.t,cls:ch.cls,lvl:sv("LVL"),say:say||undefined});
+  mp.you=r.you;mp.online=r.players.length;mp.players=r.players.filter(p=>p.u!==r.you);mp.ground=r.ground||[];mp.groundKey=sqk({x:L.x,y:L.y,z:zOf(L)});mp.status="";
+  if(say)log(`You say: “${say}”`,"talk");
+  const here=new Set();
+  for(const p of mp.players){
+   if(p.x===L.x&&p.y===L.y&&p.z===zOf(L)){here.add(p.u);if(!mp.met.has(p.u))log(`${p.name} the ${p.cls||"traveller"} is here.`,"talk")}
+   if(p.say&&p.say.t>(mp.heard[p.u]||0)){mp.heard[p.u]=p.say.t;if(Date.now()-p.say.t<120e3&&mpDist(p.say,L)<=MP_NEAR)log(`${p.name} says: “${p.say.text}”`,"talk")}
+  }
+  mp.met=here;
+ }catch(e){mp.status=e.status===401?"sign in to see others":e.status===429?mp.status:"realm unreachable"}
+ finally{mp.busy=false}
+ const sig=JSON.stringify([mp.players.map(p=>[p.u,p.x,p.y,p.z,p.say&&p.say.t]),mp.ground.map(g=>g.id),mp.status]);
+ if(sig!==mp.sig){mp.sig=sig;store.flush();render()}
+ if(mp.queued){const q=mp.queued;mp.queued=null;setTimeout(()=>mpPing(q),1600)}
+}
+const mpDist=(p,L)=>Math.max(Math.abs(wrapC(p.x-L.x)),Math.abs(wrapC(p.y-L.y)))+Math.abs((p.z||0)-zOf(L));
+function mpNear(){const L=hereId()&&cell(hereId());return L?mp.players.filter(p=>mpDist(p,L)<=MP_NEAR).sort((a,b)=>mpDist(a,L)-mpDist(b,L)):[]}
+function bearing(p,L){const dx=wrapC(p.x-L.x),dy=wrapC(p.y-L.y),dz=(p.z||0)-zOf(L);
+ if(!dx&&!dy)return dz>0?"above you":dz<0?"below you":"here";
+ const ns=dy>0?"north":dy<0?"south":"",ew=dx>0?"east":dx<0?"west":"";return `${Math.max(Math.abs(dx),Math.abs(dy))} ${Math.max(Math.abs(dx),Math.abs(dy))===1?"square":"squares"} ${ns}${ns&&ew?"-":""}${ew}`}
+
+// Items left for other players
+async function leaveForOthers(id){
+ const it=cell(id),L=cell(hereId());if(!it||it.forSale)return;
+ const item={name:it.t,desc:it.desc,kind:it.kind,weight:it.weight,value:it.value,heal:it.heal,ac:it.ac,dmg:it.dmg,finesse:it.finesse,light:it.light,magic:it.magic};
+ try{const r=await mp.call("/ground/drop",{x:L.x,y:L.y,z:zOf(L),item});
+  excise(id,"contain");destroy(id);mp.ground=r.ground||mp.ground;log(`You leave ${it.t} here for another traveller to find.`,"good")}
+ catch(e){flash=e.message}
+ store.flush();render();
+}
+async function takeLeft(gid){
+ const L=cell(hereId());
+ try{const r=await mp.call("/ground/take",{x:L.x,y:L.y,z:zOf(L),id:gid});
+  const g=r.item,nid=itemCell(normItem({name:g.name,description:g.desc,kind:g.kind,weight:g.weight,value:g.value,heal:g.heal,ac:g.ac,damage:g.dmg,finesse:g.finesse,light:g.light}));
+  if(g.magic)cell(nid).magic=true;appendTo(charId(),"contain",nid);mp.ground=r.ground||[];
+  log(`You pick up ${g.name}, left here by ${r.by===mp.you?"you":r.by}.`,"good")}
+ catch(e){flash=e.message;if(e.data&&e.data.ground)mp.ground=e.data.ground}
+ store.flush();render();
+}
+function renderTravellers(L){
+ if(!mp.on())return"";
+ const near=mpNear(),key=sqk({x:L.x,y:L.y,z:zOf(L)}),ground=mp.groundKey===key?mp.ground:[];
+ const said=near.filter(p=>p.say&&Date.now()-p.say.t<300e3).sort((a,b)=>b.say.t-a.say.t).slice(0,4);
+ let h=`<div class="sectionhead"><h3>Other travellers</h3><span class="mono" style="font-size:12px;color:var(--faint)">${mp.status?esc(mp.status):mp.online==null?"connecting…":`${mp.online} in the realm`}</span></div>`;
+ h+=near.length?`<ul class="quests">${near.map(p=>`<li><b>${esc(p.name)}</b> · ${esc(p.cls||"traveller")}, level ${p.lvl||1} · ${esc(bearing(p,L))}</li>`).join("")}</ul>`:`<p class="note">No one else is within ${MP_NEAR} squares. Their footprints show on the map when they pass.</p>`;
+ if(said.length)h+=`<ul class="quests">${said.map(p=>`<li>${esc(p.name)}: “${esc(p.say.text)}”</li>`).join("")}</ul>`;
+ h+=`<form class="note-form" data-say><label for="say-in">Say something to travellers within ${MP_NEAR} squares</label><div class="btnrow"><input id="say-in" maxlength="160" placeholder="Hello, traveller…"><button class="small" type="submit">Say</button></div></form>`;
+ if(ground.length)h+=`<div class="sectionhead"><h3>Left by other travellers</h3></div><ul class="items">${ground.map(g=>`<li><span><span class="nm">${esc(g.item.name)}</span><span class="meta">${esc(g.item.kind)}${g.item.magic?" · magic":""} · left by ${esc(g.by===mp.you?"you":g.by)}</span>${g.item.desc?`<span class="about">${esc(g.item.desc)}</span>`:""}</span><span class="acts"><button class="small" data-act="takeleft" data-id="${esc(g.id)}">Take</button></span></li>`).join("")}</ul>`;
+ return h;
+}
+function mapTravellers(H,R,Z,P){
+ if(!mp.on())return"";let out="";
+ for(const p of mp.players){
+  for(const s of (p.trail||[]).slice(0,-1)){if(s.z!==Z)continue;const dx=wrapC(s.x-H.x),dy=wrapC(s.y-H.y);if(Math.abs(dx)>R||Math.abs(dy)>R)continue;const [qx,qy]=P(dx,dy);out+=`<circle class="footprint" cx="${qx+12}" cy="${qy+48}" r="2.2"><title>${esc(p.name)} passed here</title></circle>`}
+  if(p.z!==Z)continue;const dx=wrapC(p.x-H.x),dy=wrapC(p.y-H.y);if(Math.abs(dx)>R||Math.abs(dy)>R)continue;const [qx,qy]=P(dx,dy);
+  out+=`<g class="traveller"><circle cx="${qx+48}" cy="${qy+46}" r="5"/><path d="M${qx+43} ${qy+56} q5 -7 10 0"/><title>${esc(p.name)}, ${esc(p.cls||"traveller")} (level ${p.lvl||1})</title></g>`;
+ }
+ return out;
+}
+setInterval(()=>{if(mp.on()&&document.visibilityState!=="hidden")mpPing()},MP_PING);
+
+/* ============================================================
+   A fragment of the hidden rules, once a day: the first time you come back into the world
+   each day, one sentence of a rule you have not yet read at a monument comes to you.
+   ============================================================ */
+const FRAGMENTS=RULES.flatMap((r,i)=>r.text.split(/(?<=[.!?])\s+(?=[A-Z])/).map((text,j)=>({rule:i,j,text})));
+function dailyFragment(quiet){
+ const r=cell("root");if(!r||!charId())return;
+ const today=new Date().toDateString();if(r.fragDay===today)return;
+ r.fragDay=today;touch("root");
+ const have=new Set(r.fragments||[]),read=new Set(r.codex||[]);
+ const left=FRAGMENTS.filter(f=>!have.has(f.rule+":"+f.j)&&!read.has(f.rule));if(!left.length)return;
+ const f=pick(left);r.fragments=(r.fragments||[]).concat(f.rule+":"+f.j);
+ log(`A fragment of a hidden rule comes to you, as it does once each day: “${f.text}”`,"good");
+ if(!quiet)flash=`A fragment of a hidden rule comes to you today: “${f.text}” It is kept in your Codex.`;
+}
+function fragmentsByRule(){
+ const r=cell("root"),read=new Set(r&&r.codex||[]),by={};
+ for(const k of (r&&r.fragments)||[]){const [i,j]=k.split(":").map(Number);if(read.has(i))continue;const f=FRAGMENTS.find(f=>f.rule===i&&f.j===j);if(f)(by[i]||=[]).push(f)}
+ for(const v of Object.values(by))v.sort((a,b)=>a.j-b.j);return by;
+}
+
+/* ============================================================
    Rendering
    ============================================================ */
 const $=id=>document.getElementById(id);
@@ -2542,7 +2753,7 @@ function renderSaving(){
 function renderAccount(){
  const el=$("account");if(!el)return;
  const signin=puterReady&&store.mode!=="puter"?`<button class="small" id="puter-signin">Sign in to save and use AI</button>`:"";
- const who=puterUser?`<span class="pill">Signed in: <b>${esc(puterUser)}</b></span>`:"";
+ const who=(puterUser?`<span class="pill">Signed in: <b>${esc(puterUser)}</b></span>`:"")+(mp.on()?`<span class="pill" title="Players seen in the last three minutes">Shared realm: <b>${mp.status?esc(mp.status):mp.online==null?"connecting…":mp.online+" online"}</b></span>`:"");
  el.innerHTML=`${who}${signin}`;
  const b=$("puter-signin");if(b)b.onclick=puterSignIn;
 }
@@ -2581,6 +2792,7 @@ function renderMap(){
  for(const m of marks().filter(m=>!m.done).map(m=>({x:m.x,y:m.y,label:`Map mark: ${m.label}`})).concat(rumours().filter(r=>!r.found&&cell(r.cell)).map(r=>({x:cell(r.cell).x,y:cell(r.cell).y,label:`Rumour: ${r.text}`})))){
   if(Z!==0)break;const dx=wrapC(m.x-H.x),dy=wrapC(m.y-H.y);if(Math.abs(dx)>R||Math.abs(dy)>R||(!dx&&!dy))continue;const [qx,qy]=P(dx,dy);
   out+=`<text class="markstar" x="${qx+48}" y="${qy+19}" text-anchor="middle"><title>${esc(m.label)}</title>★</text>`}
+ out+=mapTravellers(H,R,Z,P);
  const [hx,hy]=P(0,0);
  out+=`<rect class="here" x="${hx+3}" y="${hy+3}" width="54" height="54" rx="7" pointer-events="none"/><circle class="pawn" cx="${hx+44}" cy="${hy+44}" r="6"/>`;
  if(ws&&ws.storm&&Z>=0){const sx=wrapC(Math.round(ws.storm.x)-H.x),sy=wrapC(Math.round(ws.storm.y)-H.y);const [qx,qy]=P(sx,sy);out+=`<circle class="stormring" cx="${qx+30}" cy="${qy+30}" r="${ws.storm.r*S*.8}"/>`}
@@ -2644,6 +2856,7 @@ function itemRow(id,where){
   if(it.kind==="armor")acts+=`<button class="small" data-act="wear" data-id="${id}">${it.worn?"Take off":"Wear"}</button>`;
   if(it.kind==="weapon"&&!inHand)acts+=`<button class="small" data-act="wield" data-id="${id}">Wield</button>`;
   acts+=`<button class="small" data-act="drop" data-id="${id}" ${busy?"disabled":""}>Drop</button>`;
+  if(mp.on())acts+=`<button class="small" data-act="leave" data-id="${id}" ${busy?"disabled":""} title="Leave it on the ground for another player to find">Leave for others</button>`;
  }
  return`<li><span><span class="nm">${esc(it.t)}</span><span class="meta">${esc(bits.join(" · "))}</span>${it.desc?`<span class="about">${esc(it.desc)}</span>`:""}</span><span class="acts">${acts}</span></li>`;
 }
@@ -2731,6 +2944,7 @@ function renderPlace(){
   if(C&&C.town===L.id){const chest=rank(C.id,"contain");html+=`<div class="sectionhead"><h3>Your cottage</h3><span class="mono" style="font-size:12px;color:var(--faint)">${chest.length} in the chest</span></div><p class="note">Sleep here free. Use <b>Store</b> in your pack to put things in the chest; what is in the chest is safe from paladins and falls.</p>${chest.length?`<ul class="items">${chest.map(id=>{const it=cell(id);return`<li><span><span class="nm">${esc(it.t)}</span><span class="meta">${esc(it.kind)}${it.magic?" · magic":""}</span></span><span class="acts"><button class="small" data-act="withdraw" data-id="${id}">Take out</button></span></li>`}).join("")}</ul>`:""}`}
   else html+=`<div class="btnrow"><button class="small" data-act="rent" ${sv("GP")<COTTAGE_RENT?"disabled":""}>${C?"Move your cottage here":"Rent a cottage here"} · ${COTTAGE_RENT} gp</button><span class="note">A home with a chest the paladin cannot touch.</span></div>`;
  }
+ html+=renderTravellers(L);
  if(L.spring)html+=`<p class="note">A healing spring rises here.</p>`;
  html+=`<form class="note-form" data-note><label for="note-in">Your note on this place</label><div class="btnrow"><input id="note-in" maxlength="200" value="${esc(L.note||"")}" placeholder="Leave yourself a note…"><button class="small" type="submit">Save note</button></div></form>`;
  if(L.hazard&&L.outcome){const o=L.outcome;html+=`<div class="hazard${o.ok?" passed":""}"><b>${esc(L.hazard.name)}.</b> ${esc(L.hazard.text)} ${o.ok?"You get through unharmed.":`You take ${o.dmg} damage.`}${here===lastHazard?`<span class="roll">${esc(o.roll)}</span>`:""}</div>`}
@@ -2755,12 +2969,13 @@ let zzOpen=false;
 
 function renderCreate(el){
  const s=draft.stats,C=CLASSES[draft.cls],hp=Math.max(1,C.hd+mod(s[2]));
- const waiting=busy?`<span class="mapping">${busy.dir==="river"?"The narrator is charting the river and its towns":busy.dir==="look"?"The narrator is writing what you can see":"The narrator is writing where your journey begins"}</span>`:"";
+ const waiting=busy?`<span class="mapping">${busy.dir==="realm"?"Finding the shared realm and its travellers":busy.dir==="founding"?"Founding the shared realm for everyone who comes after":busy.dir==="river"?"The narrator is charting the river and its towns":busy.dir==="look"?"The narrator is writing what you can see":"The narrator is writing where your journey begins"}</span>`:"";
  el.innerHTML=`<div class="create"><div class="placehead"><p class="eyebrow">New adventurer</p><h2>Roll a character</h2></div>
  <p class="note">Abilities are rolled the classic way: four six-sided dice, keep the best three. You also carry three random items from home. When you set out, the narrator charts the river and its towns, then writes the place where your journey begins.</p>
  <div class="row"><label for="f-name">Name<input id="f-name" value="${esc(draft.name)}" maxlength="40"></label>
  <label for="f-cls">Class<select id="f-cls">${Object.keys(CLASSES).map(k=>`<option${k===draft.cls?" selected":""}>${k}</option>`).join("")}</select></label></div>
  <label for="f-theme">World theme (the narrator keeps every place in this spirit)<textarea id="f-theme" rows="3" maxlength="400">${esc(draft.theme)}</textarea></label>
+ ${canJoinRealm()?`<label class="check" for="f-shared"><input type="checkbox" id="f-shared" ${draft.shared?"checked":""}> Join the shared realm: one world for every player, where you can see other travellers, talk to them and leave things for them. You keep your own character and save. ${draft.shared?"The realm's founder already chose its theme.":""}</label>`:""}
  <div class="rolled">${STATS.map((k,i)=>`<div><span class="k">${k}</span><span class="v">${s[i]}</span><span class="k">${sgn(mod(s[i]))}</span></div>`).join("")}</div>
  <p class="note mono" style="font-size:13px">Hit die d${C.hd} · starting HP ${hp} · AC ${10+mod(s[1])+(C.kit.find(k=>k[2]==="armor")?.[6]||0)} · carry ${s[0]*15} lb</p>
  <p class="note">${esc(CLASS_NOTES[draft.cls])}</p>
@@ -2769,7 +2984,8 @@ function renderCreate(el){
  $("f-theme").oninput=e=>draft.theme=e.target.value;
  $("f-cls").onchange=e=>{draft.cls=e.target.value;renderPlace()};
  $("f-reroll").onclick=()=>{draft.stats=rollStats();renderPlace()};
- $("f-begin").onclick=begin;
+ $("f-begin").onclick=()=>begin();
+ if($("f-shared"))$("f-shared").onchange=e=>{draft.shared=e.target.checked;renderPlace()};
 }
 
 // The ability block starts rolled up; the choice is remembered with the other roll-ups
@@ -2793,7 +3009,7 @@ function renderSheet(){
  <dl class="facts">${towns().map(T=>{const v=townStanding(T.id);return`<div><dt>${esc(T.t)}</dt><dd>${repTier(v)} ${v>=0?"+":"−"}${Math.abs(v).toFixed(2)}</dd></div>`}).join("")}</dl>
  ${(()=>{const T=towns(),rel=[];for(let i=0;i<T.length;i++)for(let j=i+1;j<T.length;j++)rel.push(`${esc(T[i].t)} and ${esc(T[j].t)}: ${relationName(rivalry(T[i].id,T[j].id))}`);return rel.length?`<p class="note">${rel.join(" · ")}. Helping one town is noticed by its rivals.</p>`:""})()}
  ${rumours().filter(r=>!r.found).length?`<div class="sectionhead"><h3>Rumours</h3><span class="mono" style="font-size:12px;color:var(--faint)">${rumours().filter(r=>!r.found).length} unproven</span></div><ul class="quests">${rumours().filter(r=>!r.found).slice(-6).reverse().map(r=>`<li>${esc(r.from)}: ${esc(r.text)}</li>`).join("")}</ul>`:""}
- <dl class="facts"><div><dt>Reputation</dt><dd>${repTier()} ${reputation()>=0?"+":"−"}${Math.abs(reputation()).toFixed(2)}</dd></div><div><dt>Standing</dt><dd>${Math.round(standingPercentile())}th pct</dd></div><div><dt>Magic offered</dt><dd>${reputation()>=.5?"rare and common":reputation()>=.25?"common":"none"}</dd></div></dl>
+ <dl class="facts"><div><dt>Reputation</dt><dd>${repTier()} ${reputation()>=0?"+":"−"}${Math.abs(reputation()).toFixed(2)}</dd></div><div><dt>Standing</dt><dd>${ordinal(Math.round(standingPercentile()))} pct</dd></div><div><dt>Magic offered</dt><dd>${reputation()>=.5?"rare and common":reputation()>=.25?"common":"none"}</dd></div></dl>
  <dl class="facts"><div><dt>Plan</dt><dd>${e.plan==="supporter"?"supporter":"free explorer"}</dd></div><div><dt>Range</dt><dd>${exploreRange()>=WORLD_R?"whole world":exploreRange()+" squares"}</dd></div><div><dt>Resurrections</dt><dd>${e.tokens}</dd></div></dl>
  <div class="btnrow"><button class="small" id="plan-info">Plans and prices</button><button class="small" id="plan-preview" title="For testing only: payments are not connected yet">${e.plan==="supporter"?"Stop supporter preview":"Preview supporter (testing)"}</button></div>
  ${quests().length?`<div class="sectionhead"><h3>Quests</h3><span class="mono" style="font-size:12px;color:var(--faint)">${quests().filter(q=>!q.done).length} open</span></div><ul class="quests">${quests().slice(-8).reverse().map(q=>`<li class="${q.done?(q.failed?"failed":"done"):""}">${q.done?(q.failed?"Failed: ":"Done: "):""}${esc(q.giverName)} asked you to ${esc(q.desc)} · ${q.gold} gp</li>`).join("")}</ul>`:""}
@@ -2831,8 +3047,10 @@ function renderSocial(){
 }
 function renderCodex(){
  const el=$("codex");if(!el)return;const found=(cell("root")&&cell("root").codex)||[];
- $("codex-count").textContent=`${found.length} of ${RULES.length}`;
- el.innerHTML=found.length?found.map(i=>`<li><b>${esc(RULES[i].title)}.</b> ${esc(RULES[i].text)}</li>`).join(""):`<li class="empty">Carved arches, standing stones and small temples are scattered across the world. Each holds one of the hidden rules the world is built on.</li>`;
+ const frags=fragmentsByRule(),nf=Object.values(frags).reduce((a,v)=>a+v.length,0);
+ $("codex-count").textContent=`${found.length} of ${RULES.length}${nf?` · ${nf} ${nf===1?"fragment":"fragments"}`:""}`;
+ const fragHtml=Object.entries(frags).map(([i,fs])=>`<li class="frag"><b>${esc(RULES[i].title)}</b> (a fragment; find its monument to read it whole): ${fs.map(f=>`“${esc(f.text)}”`).join(" … ")}</li>`).join("");
+ el.innerHTML=found.length||nf?found.map(i=>`<li><b>${esc(RULES[i].title)}.</b> ${esc(RULES[i].text)}</li>`).join("")+fragHtml:`<li class="empty">Carved arches, standing stones and small temples are scattered across the world. Each holds one of the hidden rules the world is built on.</li>`;
 }
 
 function renderLog(){
@@ -3212,13 +3430,14 @@ document.addEventListener("click",e=>{
   trade:i=>{openTrade=openTrade===i?null:i;openChat=null;armedAttack=null;render()},
   buyfood:buyFood,sell:v=>{const [n,it]=v.split("|");sellTo(n,it)},quest:i=>{offerQuest(cell(i));passTime(5);store.flush();render()},
   give:giveFood,arm:i=>{armedAttack=armedAttack===i?null:i;render()},hit:attackAgent,
-  craft,deposit,withdraw,rent:rentCottage})[b.dataset.act](id);return}
+  craft,deposit,withdraw,rent:rentCottage,leave:leaveForOthers,takeleft:takeLeft})[b.dataset.act](id);return}
  const d=e.target.closest("#compass button[data-dir]");if(d){move(d.dataset.dir);return}
  const g=e.target.closest("#map g");if(g){if(g.dataset.dir)move(g.dataset.dir);else if(g.dataset.loc){const id=g.dataset.loc,H=cell(hereId()),C=cell(id);
   const dir=H&&C?Object.keys(DIRS).find(k=>coord.get(ck(H.x+DIRS[k].dx,H.y+DIRS[k].dy,zOf(H)+DIRS[k].dz))===id):null;
   if(dir)move(dir);else travelTo(id)}}
 });
 document.addEventListener("toggle",e=>{if(e.target.id==="zz-details")zzOpen=e.target.open},true);
+document.addEventListener("submit",e=>{const sf=e.target.closest("form[data-say]");if(sf){e.preventDefault();const t=sf.querySelector("input").value.trim();if(t){sf.querySelector("input").value="";mpPing(t.slice(0,160))}}});
 document.addEventListener("submit",e=>{const nf=e.target.closest("form[data-note]");if(nf){e.preventDefault();saveNote(nf.querySelector("input").value);return}});
 document.addEventListener("submit",e=>{const f=e.target.closest("form[data-chat]");if(!f)return;e.preventDefault();const inp=f.querySelector("input");const v=inp.value;inp.value="";sendChat(f.dataset.chat,v)});
 document.addEventListener("keydown",e=>{
@@ -3275,7 +3494,7 @@ setInterval(()=>{
   {const ch=charId()&&cell(charId());if(ch&&ch.lastMeal==null){ch.lastMeal=gameNow();touch(ch.id)}if(!cell("root").rivalry&&towns().length)seedRivalry()}
   const r=cell("root");if(!r.clock){r.clock={base:8*60,real:Date.now()};r.npcT=8*60;r.seed=Math.floor(Math.random()*1e6);touch("root")}
   if(store.mode==="cloud"&&store.from!=="cloud"){for(const id of Object.keys(zz.cells))touch(id)}
-  simulate();store.flush();
+  simulate();dailyFragment();store.flush();
  }
  render();
  sample=await samplePromise;
