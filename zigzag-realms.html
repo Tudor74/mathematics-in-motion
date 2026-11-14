@@ -1569,11 +1569,12 @@ function resurrect(){
 /* Billing. These are the game-side rules; payments themselves are not connected yet, so entitlements
    live with the saved world. For real players they must come from a server that has seen the payment. */
 const BILLING={freeRange:12,supporterRange:WORLD_R,supporterTokens:3,prices:{supporter:"Supporter: £3 a month, explore the whole world, 3 resurrection tokens a month",token:"Resurrection tokens: £0.99 each, or 5 for £3.99"}};
-function entitlement(){const r=cell("root");return Object.assign({plan:"free",tokens:0},r&&r.ent||{})}
+// Only a confirmed payment (e.paid, set by a payment server that is not connected yet) grants a plan or tokens.
+// This also undoes anything granted by the old testing preview.
+function entitlement(){const r=cell("root"),e=Object.assign({plan:"free",tokens:0},r&&r.ent||{});if(!e.paid){e.plan="free";e.tokens=0}return e}
 function saveEntitlement(e){const r=cell("root");if(!r)return;r.ent=e;touch("root")}
 const plan=()=>entitlement().plan;
 const exploreRange=()=>plan()==="supporter"?BILLING.supporterRange:BILLING.freeRange;
-function previewSupporter(){const e=entitlement();if(e.plan==="supporter"){e.plan="free"}else{e.plan="supporter";e.tokens+=BILLING.supporterTokens}saveEntitlement(e);flash=null;store.flush();render()}
 
 /* Combat */
 function monsterTurn(){
@@ -3011,10 +3012,10 @@ function renderSheet(){
  ${rumours().filter(r=>!r.found).length?`<div class="sectionhead"><h3>Rumours</h3><span class="mono" style="font-size:12px;color:var(--faint)">${rumours().filter(r=>!r.found).length} unproven</span></div><ul class="quests">${rumours().filter(r=>!r.found).slice(-6).reverse().map(r=>`<li>${esc(r.from)}: ${esc(r.text)}</li>`).join("")}</ul>`:""}
  <dl class="facts"><div><dt>Reputation</dt><dd>${repTier()} ${reputation()>=0?"+":"−"}${Math.abs(reputation()).toFixed(2)}</dd></div><div><dt>Standing</dt><dd>${ordinal(Math.round(standingPercentile()))} pct</dd></div><div><dt>Magic offered</dt><dd>${reputation()>=.5?"rare and common":reputation()>=.25?"common":"none"}</dd></div></dl>
  <dl class="facts"><div><dt>Plan</dt><dd>${e.plan==="supporter"?"supporter":"free explorer"}</dd></div><div><dt>Range</dt><dd>${exploreRange()>=WORLD_R?"whole world":exploreRange()+" squares"}</dd></div><div><dt>Resurrections</dt><dd>${e.tokens}</dd></div></dl>
- <div class="btnrow"><button class="small" id="plan-info">Plans and prices</button><button class="small" id="plan-preview" title="For testing only: payments are not connected yet">${e.plan==="supporter"?"Stop supporter preview":"Preview supporter (testing)"}</button></div>
+ <div class="btnrow"><button class="small" id="plan-info">Plans and prices</button></div>
  ${quests().length?`<div class="sectionhead"><h3>Quests</h3><span class="mono" style="font-size:12px;color:var(--faint)">${quests().filter(q=>!q.done).length} open</span></div><ul class="quests">${quests().slice(-8).reverse().map(q=>`<li class="${q.done?(q.failed?"failed":"done"):""}">${q.done?(q.failed?"Failed: ":"Done: "):""}${esc(q.giverName)} asked you to ${esc(q.desc)} · ${q.gold} gp</li>`).join("")}</ul>`:""}
  ${planInfoOpen?`<p class="note">${esc(BILLING.prices.supporter)}. ${esc(BILLING.prices.token)}. Free explorers can travel ${BILLING.freeRange} squares from the start. Payments are not connected yet.</p>`:""}`;
- $("rest").onclick=rest;$("plan-info").onclick=()=>{planInfoOpen=!planInfoOpen;renderSheet()};$("plan-preview").onclick=previewSupporter;
+ $("rest").onclick=rest;$("plan-info").onclick=()=>{planInfoOpen=!planInfoOpen;renderSheet()};
  const ids=packIds();
  pk.innerHTML=`<div class="sectionhead"><h3 id="pack-h">Pack</h3><span class="mono" style="font-size:12px;color:${carried()>capacity()*.9?"var(--danger)":"var(--faint)"}">${fmtW(carried())} / ${capacity()} lb</span></div>`+
   (ids.length?`<ul class="items">${ids.map(id=>itemRow(id,"pack")).join("")}</ul>`:`<p class="empty">Your pack is empty.</p>`)+renderCraft();
