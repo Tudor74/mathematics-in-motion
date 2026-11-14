@@ -44,3 +44,9 @@ flag and the curated card shows it for about four months.
 owner's account that calls the worker's `/refresh-next` every 15 minutes. Each call refreshes
 the lesson with the oldest cached data. Visitors are served the cache while it is under
 26 hours old, so pages never wait for arXiv or the AI. `/refresh-status` shows cache ages.
+
+## Browser history (v0.19)
+
+Each lesson change adds a history entry (`#lessonId`), so the browser's Back and Forward
+move between lessons and return to the topic you were on. Topic changes within a lesson do
+not add entries. `index.html#quantum` opens a lesson directly.

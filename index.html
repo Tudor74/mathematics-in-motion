@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light">
-<title>Mathematics In Motion — v0.17</title>
-<meta name="application-version" content="0.17">
+<title>Mathematics In Motion — v0.19</title>
+<meta name="application-version" content="0.19">
 <style>
 :root{--ink:#192c37;--muted:#546873;--blue:#1772b7;--pale:#e8f2f8;--line:#c7d8e3;--paper:#fff;--bg:#f3f6f7;--warm:#ad472a;--thumb:46px;--zero:17%;--rewind:#f3e7e1}
 *{box-sizing:border-box}html{background:var(--bg);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}body{margin:0;padding:22px}button,select,input{font:inherit}button,select{min-height:44px}button{background:white;border:1px solid #aec3cf;border-radius:10px;padding:10px 17px;cursor:pointer;color:var(--ink);font-weight:600}button:hover{background:#edf5fa}button:active{background:#dfedf5}button:disabled{cursor:default;opacity:.5}button.primary{background:var(--blue);border-color:var(--blue);color:#fff;min-width:112px}button.primary:hover{background:#115c95}button:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid #a44289;outline-offset:4px}
@@ -2385,8 +2385,27 @@ function renderNavigator(s){
  $('map-current').innerHTML='<small>You are here</small><b>'+esc(s.name)+'</b>';renderLessonNavigation();
 }
 function savePlace(){bookmarks[branchKey]={time:t,thread:activeThread}}
+// Browser history: each lesson change adds an entry (#lessonId), so Back returns to the
+// previous lesson. Topic changes inside a lesson do not, so playback never floods history.
+let restoringHistory=false;
+const lessonFromHash=()=>{const k=decodeURIComponent(location.hash.slice(1));return branches[k]?k:null};
+function recordLesson(key){
+ if(restoringHistory)return;
+ try{history.pushState({lesson:key},'','#'+encodeURIComponent(key))}catch(e){}
+}
+function restoreLesson(key){
+ if(!branches[key]||key===branchKey)return;
+ pauseForWord();savePlace();const saved=bookmarks[key];activeThread=saved?saved.thread:null;
+ restoringHistory=true;try{activateBranch(key,saved?saved.time:0)}finally{restoringHistory=false}
+}
+function installHistory(){
+ const start=lessonFromHash();
+ if(start&&start!==branchKey){restoringHistory=true;try{activateBranch(start,0)}finally{restoringHistory=false}}
+ try{history.replaceState({lesson:branchKey},'',location.hash?'#'+encodeURIComponent(branchKey):location.pathname+location.search)}catch(e){}
+ window.addEventListener('popstate',e=>restoreLesson((e.state&&e.state.lesson)||lessonFromHash()||branchOrder[0]));
+}
 function activateBranch(key,time,continuationRate=0){
- if(!branches[key])return;resetViewMode();branchKey=key;scenes=branches[key].ids.map(id=>nodes[id]);COUNT=scenes.length;TOTAL=COUNT*DURATION;t=clamp(time,0,TOTAL);speed=continuationRate;sceneIndex=-1;lastFrame=performance.now();measuredTextWidth=-1;
+ if(!branches[key])return;if(key!==branchKey)recordLesson(key);resetViewMode();branchKey=key;scenes=branches[key].ids.map(id=>nodes[id]);COUNT=scenes.length;TOTAL=COUNT*DURATION;t=clamp(time,0,TOTAL);speed=continuationRate;sceneIndex=-1;lastFrame=performance.now();measuredTextWidth=-1;
  render();measure();updateControls();
 }
 function navigateTo(id,remember=true){if(!nodes[id])return;pauseForWord();savePlace();if(remember)trail.push({branch:branchKey,time:t,thread:activeThread});if(trail.length>80)trail.shift();const n=nodes[id];activateBranch(n.branch,branches[n.branch].ids.indexOf(id)*DURATION)}
@@ -2579,7 +2598,7 @@ function updateControls(){
  $('play').setAttribute('aria-label',isPlaying?'Pause playback':atRouteEnd()?'Play the route again':`Play at ${fmt(lastForward||1)} times normal speed`);
  $('play').title=$('play').getAttribute('aria-label');
  updateDestinations();
- $('status').textContent=`v0.17 · Offline`;
+ $('status').textContent=`v0.19 · Offline`;
 }
 function atRouteEnd(){return branchKey===branchOrder.at(-1)&&t>=TOTAL}
 function advance(now){
@@ -2950,6 +2969,7 @@ try{
  installWordHelp();
  installResearch();
  installMapAnd3D();
+ installHistory();
  // Scrolling longer descriptions should not advance to a new topic mid-read.
  for(const region of [document.querySelector('.copy'),$('phase'),$('three-caption')]){
   region.addEventListener('wheel',()=>{if(region.scrollHeight>region.clientHeight&&speed!==0)setRate(0)},{passive:true});
