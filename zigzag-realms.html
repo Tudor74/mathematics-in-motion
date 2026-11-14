@@ -265,6 +265,9 @@ button.pill[aria-pressed="false"] b{color:var(--faint)}
 .map .markstar{fill:var(--amber);font-size:15px;pointer-events:auto}
 .map .notemark{fill:var(--water);pointer-events:auto}
 .map .traveller circle{fill:var(--magic)}.map .traveller path{fill:none;stroke:var(--magic);stroke-width:2.4;stroke-linecap:round}.map .traveller{pointer-events:auto}
+.realmevent{border:1px solid var(--magic);border-left-width:4px;border-radius:6px;padding:8px 12px;background:var(--wash);display:grid;gap:2px}
+.realmevent p{margin:0;font-size:15px}.realmevent .eyebrow{color:var(--magic)}
+.map .evmark{fill:var(--magic);font-size:18px;pointer-events:auto}
 .map .footprint{fill:var(--magic);opacity:.45;pointer-events:auto}
 label.check{display:flex;gap:8px;align-items:flex-start;font-size:14px}label.check input{margin-top:3px}
 .codex .frag{color:var(--faint)}
@@ -1620,7 +1623,7 @@ function monsterTurn(){
  if(sv("HP")<=0)fall(hereId());
 }
 function attack(index){
- const f=foeId();if(busy||!f||isDowned())return;const F=cell(f),opt=attackOptions()[index||0];if(!opt)return;
+ const f=foeId();if(busy||!f||isDowned())return;const F=cell(f),opt=attackOptions()[index||0];if(!opt)return;const h0=F.hp;
  const m=mod(sv(opt.stat)),p=prof(),d=rnd(20),tot=d+m+p;
  let txt=`d20 → ${d} ${sgn(m)} ${opt.stat} +${p} proficiency = ${tot} against AC ${F.ac}`;
  if(d===1||(d!==20&&tot<F.ac))say(`${opt.label}: you miss.`,"",txt);
@@ -1632,8 +1635,10 @@ function attack(index){
   say(`${opt.label}: ${crit?"a critical hit for":"you hit for"} ${dmg} damage.`,"good",txt);
  }
  if(F.hp>0)alliesStrike(f);
+ if(F.evSlot)eventHit(F,h0-Math.max(0,F.hp));
  if(F.hp<=0){
-  const xp=Math.round(F.maxhp*2+F.ac*2+F.atk*5);checkQuests("slay",hereId());neutraliseAt(hereId(),null);say(`${F.designation} ${F.t} is neutralised.`,"good");gainXP(xp);log(`You gain ${xp} XP.`,"good");
+  // The great foe's reward is shared out by the server among everyone who fought it, not given to the last blow
+  const xp=F.evSlot?0:Math.round(F.maxhp*2+F.ac*2+F.atk*5);checkQuests("slay",hereId());neutraliseAt(hereId(),null);say(`${F.designation} ${F.t} is neutralised.`,"good");if(xp){gainXP(xp);log(`You gain ${xp} XP.`,"good")}
   const H=cell(hereId()),you=cell(charId());if(zOf(H)===0){const saw=npcs().filter(o=>Math.abs(o.x-H.x)+Math.abs(o.y-H.y)<=1);for(const o of saw)bump(o,you,.15);
    if(saw.length)log(`${saw.slice(0,3).map(o=>o.t).join(", ")}${saw.length>3?` and ${saw.length-3} more`:""} saw you do it, and think better of you.`,"npc")}
   store.flush();render();return}
@@ -1851,6 +1856,7 @@ function rest(){
 async function talk(id){
  const n=cell(id);if(!n||talkLines[id]==="…"||isDowned())return;
  talkLines[id]="…";render();
+ const memo=memoryPrompt(n),knew=n.knows&&n.knows.met;metAgain(n);
  const t=gameNow(),home=cell(n.home),ch=cell(charId());
  const near=Object.values(zz.cells).filter(c=>c.k==="loc"&&foeId(c.id)&&zOf(c)===0&&Math.abs(c.x-n.x)+Math.abs(c.y-n.y)<=8).slice(0,3).map(c=>`${cell(foeId(c.id)).designation} ${cell(foeId(c.id)).t} at ${c.t}`);
  const crossings=Object.values(zz.cells).filter(c=>c.river&&c.river.crossing).map(c=>`${CROSSINGS[c.river.crossing]} at ${c.t}`);
@@ -1861,6 +1867,7 @@ async function talk(id){
   const out=await askClaude([
    "You are voicing a townsperson in a fantasy tabletop adventure with uncanny anomalies at its edges. Reply with only a JSON object {\"line\": \"...\"}: what they say aloud to the traveller, 1 to 3 sentences, in character, no stage directions.",
    `They are ${n.t}, a ${n.role} from ${home.t} (${TOWN_SIZES[home.town.size].label} on the ${riverName()}). Trait: ${n.trait}.`,
+   memo,
    `Right now they are ${n.activity}. It is ${fmtClock(t)}, ${isNight(t)?"night":"day"}. They have ${n.hp} of ${n.maxhp} hit points and carry ${n.food} rations and ${n.gold} gold.`,
    `How they feel about the traveller: ${tie(n,ch).toFixed(2)} on a scale from -1 (hostile) to 1 (fond).`,
    liked.length?`They are close to ${liked.join(" and ")}.`:"",disliked.length?`They do not get on with ${disliked[0]}.`:"",
@@ -1874,7 +1881,8 @@ async function talk(id){
  if(!line){
   const m=(n.memory||[]).slice(-1)[0];
   const openers=[`"Fair ${isNight(t)?"evening":"day"} to you."`,`"You're not from ${home.t}, are you?"`,`"Mind the river, traveller. It ends in a hole with no bottom."`];
-  line=m?`"I ${m.text}. Keep your wits about you out there."`:near.length?`"Folk say there's something wrong out at ${near[0].split(" at ").pop()}. I'd keep clear."`:liked.length?`"Have you met ${liked[0]}? Good sort."`:pick(openers);
+  const kn=n.knows&&n.knows.notes.slice().reverse().find(x=>!x.s.includes('"'));
+  line=knew&&kn?`"${ch.t}! Back again. I've not forgotten: ${kn.s}."`:knew?`"Back again, ${ch.t}? Good to see you."`:m?`"I ${m.text}. Keep your wits about you out there."`:near.length?`"Folk say there's something wrong out at ${near[0].split(" at ").pop()}. I'd keep clear."`:liked.length?`"Have you met ${liked[0]}? Good sort."`:pick(openers);
  }
  bump2(n,ch,.08);
  if(tie(n,ch)>=.5&&n.food>1&&Math.random()<.5){n.food--;appendTo(ch.id,"contain",itemCell(normItem({name:"Gift of food",description:`Wrapped up for you by ${n.t}.`,kind:"food",weight:0.5,value:1,heal:"1d4+1"})));line+=` ${n.t} presses some food into your hands.`}
@@ -2132,6 +2140,7 @@ function personContext(n){
   (n.memory||[]).length?`Recent memories: ${(n.memory||[]).map(m=>m.text).join("; ")}.`:"",
   near.length?`Anomalies they know of nearby: ${near.join("; ")}.`:"",
   q?`They have already asked the traveller to: ${q.desc}`:"",
+  memoryPrompt(n),
   `The traveller is ${ch.t}, a level ${sv("LVL")} ${ch.cls}.`
  ].filter(Boolean).join("\n");
 }
@@ -2143,10 +2152,13 @@ async function sendChat(id,text){
   const out=await askClaude([personContext(n),"",
    "The conversation so far:",(n.chat||[]).map(m=>`${m.r==="you"?"Traveller":n.t}: ${m.s}`).join("\n"),"",
    `Reply as ${n.t}, 1 to 3 sentences, in character, spoken aloud, no stage directions. If the traveller asks for work and ${n.t} would trust them with it, set offerQuest true. If they ask to trade, set openTrade true.`,
-   'Reply with only a JSON object: {"line":"...","offerQuest":false,"openTrade":false}'].join("\n"));
+   `In "remember", put one short phrase, in ${n.t}'s own words to the traveller, of anything worth remembering about them from what they just said (for example "you asked me about the ford" or "you told me you lost your brother"), or "" if nothing.`,
+   'Reply with only a JSON object: {"line":"...","offerQuest":false,"openTrade":false,"remember":""}'].join("\n"));
+  if(out&&typeof out.remember==="string"&&out.remember.trim())noteOf(n,out.remember.trim());
   if(out&&typeof out.line==="string"){line=out.line.slice(0,500);wantsQuest=wantsQuest&&out.offerQuest!==false||out.offerQuest===true;wantsTrade=wantsTrade||out.openTrade===true}
  }
  if(!line){
+  if(text.length>12)noteOf(n,`you said "${text.slice(0,60)}${text.length>60?"…":""}"`);
   const m=(n.memory||[]).slice(-1)[0];
   line=wantsQuest?"Work? Maybe I have something for you.":wantsTrade?`I've ${n.food} rations to spare, if the price is fair.`:/\b(where|way|road|bridge|ford|cross)\b/i.test(text)?`The ${riverName()} can be crossed at the ford, the stone bridge, or the bridge of light when it shows itself.`:m?`I ${m.text}. That's the news from here.`:pick([`"Can't say I know much about that."`,`"Ask me again when I'm not so busy."`,`"You're a curious one."`]);
  }
@@ -2163,14 +2175,14 @@ function buyFood(id){
  if(sv("GP")<price){flash=`${n.t} wants ${price} gp for a ration; you have ${sv("GP")} gp.`;render();return}
  setStat("GP",sv("GP")-price);n.food--;n.gold+=price;touch(n.id);
  appendTo(charId(),"contain",itemCell(normItem({name:"Ration",description:`Bought from ${n.t}.`,kind:"food",weight:1,value:2,heal:"1d4"})));
- bump2(n,me(),.03);log(`You buy a ration from ${n.t} for ${price} gp.`,"npc");store.flush();render();
+ bump2(n,me(),.03);noteOf(n,"you bought a ration from me");log(`You buy a ration from ${n.t} for ${price} gp.`,"npc");store.flush();render();
 }
 function sellTo(npcId,itemId){
  const n=cell(npcId),it=cell(itemId);if(!n||!it)return;const price=sellPrice(it,n);
  if(n.gold<price){flash=`${n.t} cannot afford ${it.t} (${price} gp).`;render();return}
  if(it.kind==="food")n.food=Math.min(9,n.food+1);
  n.gold-=price;setStat("GP",sv("GP")+price);excise(itemId,"contain");destroy(itemId);touch(n.id);
- bump2(n,me(),.05);log(`You sell ${it.t} to ${n.t} for ${price} gp.`,"npc");store.flush();render();
+ bump2(n,me(),.05);noteOf(n,`you sold me ${it.t.toLowerCase()}`);log(`You sell ${it.t} to ${n.t} for ${price} gp.`,"npc");store.flush();render();
 }
 
 /* Quests */
@@ -2195,11 +2207,11 @@ function offerQuest(n){
  if(!q){log(`${n.t} has nothing for you just now.`,"npc");return}
  const mult=1+Math.max(0,rp)*3+(q.hard?.5:0),magic=rp>=.5||(rp>=.25&&q.hard)?pick(MAGIC_ITEMS.filter(m=>m.minRep<=Math.max(.25,rp))):null;
  Object.assign(q,{id:"q"+Date.now().toString(36),giver:n.id,giverName:n.t,done:false,gold:Math.round((10+rnd(20))*mult),xp:Math.round((40+rnd(40))*mult),magic:magic&&magic.name});
- quests().push(q);touch("root");log(`${n.t} asks you to ${q.desc}. Reward: ${q.gold} gp${q.magic?` and ${q.magic}`:""}.`,"good");
+ quests().push(q);touch("root");noteOf(n,`I asked you to ${q.desc}`);log(`${n.t} asks you to ${q.desc}. Reward: ${q.gold} gp${q.magic?` and ${q.magic}`:""}.`,"good");
 }
 function completeQuest(q,how){
  q.done=true;touch("root");setStat("GP",sv("GP")+q.gold);gainXP(q.xp);
- const g=cell(q.giver);if(g){bump2(g,me(),.25);if(g.home)townHelped(g.home)}
+ const g=cell(q.giver);if(g){bump2(g,me(),.25);noteOf(g,`you did what I asked: ${q.desc}`);if(g.home)townHelped(g.home)}
  if(q.magic){const m=MAGIC_ITEMS.find(x=>x.name===q.magic);if(m)appendTo(charId(),"contain",magicItem(m,false))}
  log(`Quest done: ${q.desc}${how?" ("+how+")":""}. ${q.giverName} pays you ${q.gold} gp${q.magic?` and gives you ${q.magic}`:""}.`,"good");
 }
@@ -2211,7 +2223,7 @@ function checkQuests(event,data){
 }
 function giveFood(id){
  const n=cell(id),food=packIds().find(i=>cell(i).kind==="food");if(!n||!food)return;
- excise(food,"contain");destroy(food);n.food++;touch(n.id);bump2(n,me(),.12);
+ excise(food,"contain");destroy(food);n.food++;touch(n.id);bump2(n,me(),.12);noteOf(n,"you brought me food when I needed it");
  const q=quests().find(q=>!q.done&&q.type==="deliver"&&q.target===id);
  log(`You give food to ${n.t}.`,"npc");if(q)completeQuest(q,`${n.t} is grateful`);
  store.flush();render();
@@ -2222,7 +2234,7 @@ const canFight=n=>!n.defeated&&!n.shunsYou&&n.fight!=="over";
 function attackAgent(id){
  const n=cell(id),ch=me();if(!n||isDowned()||busy||!canFight(n))return;armedAttack=null;
  const H=cell(hereId());if(H&&H.sanctuary){flash="Nobody may fight within a sanctuary's walls.";render();return}
- const first=n.fight!=="active";n.fight="active";
+ const first=n.fight!=="active";n.fight="active";if(first)noteOf(n,"you attacked me");
  const w=weapon(),stat=w&&w.finesse&&sv("DEX")>sv("STR")?"DEX":"STR",m=mod(sv(stat)),d=rnd(20),tot=d+m+prof();
  let txt=`d20 → ${d} ${sgn(m)} ${stat} +${prof()} = ${tot} against AC ${n.ac}`;
  if(first){
@@ -2718,7 +2730,7 @@ async function mpPing(say){
  const L=cell(hereId()),ch=cell(charId());mp.busy=true;
  try{
   const r=await mp.call("/presence",{x:L.x,y:L.y,z:zOf(L),name:ch.t,cls:ch.cls,lvl:sv("LVL"),say:say||undefined});
-  mp.you=r.you;mp.online=r.players.length;mp.players=r.players.filter(p=>p.u!==r.you);mp.ground=r.ground||[];mp.groundKey=sqk({x:L.x,y:L.y,z:zOf(L)});mp.status="";
+  mp.you=r.you;mp.online=r.players.length;mp.players=r.players.filter(p=>p.u!==r.you);mp.ground=r.ground||[];mp.ev=r.ev||null;evTick();mp.groundKey=sqk({x:L.x,y:L.y,z:zOf(L)});mp.status="";
   if(say)log(`You say: “${say}”`,"talk");
   const here=new Set();
   for(const p of mp.players){
@@ -2728,7 +2740,7 @@ async function mpPing(say){
   mp.met=here;
  }catch(e){mp.status=e.status===401?"sign in to see others":e.status===429?mp.status:"realm unreachable"}
  finally{mp.busy=false}
- const sig=JSON.stringify([mp.players.map(p=>[p.u,p.x,p.y,p.z,p.say&&p.say.t]),mp.ground.map(g=>g.id),mp.status]);
+ const sig=JSON.stringify([mp.players.map(p=>[p.u,p.x,p.y,p.z,p.say&&p.say.t]),mp.ground.map(g=>g.id),mp.status,mp.ev]);
  if(sig!==mp.sig){mp.sig=sig;store.flush();render()}
  if(mp.queued){const q=mp.queued;mp.queued=null;setTimeout(()=>mpPing(q),1600)}
 }
@@ -2798,6 +2810,123 @@ function fragmentsByRule(){
  for(const k of (r&&r.fragments)||[]){const [i,j]=k.split(":").map(Number);if(read.has(i))continue;const f=FRAGMENTS.find(f=>f.rule===i&&f.j===j);if(f)(by[i]||=[]).push(f)}
  for(const v of Object.values(by))v.sort((a,b)=>a.j-b.j);return by;
 }
+
+/* ============================================================
+   Realm events (shared realm only). Every two real hours a new event begins, the same for every
+   player because it is worked out from the clock, in a fixed rotation:
+     storm   a great storm crosses the realm from the mountain toward the desert
+     market  travelling merchants come to one town, with rare goods at a quarter off
+     foe     a great anomaly appears at a fixed place; its wounds are shared on the server,
+             so every traveller's blows count, and everyone who fought it shares the reward
+   ============================================================ */
+const EV_SLOT=2*3600e3,EV_HP=150,EV_KINDS=["storm","market","foe"];
+const EV_FOES=[
+ {name:"The Hollow King",d:"A crowned figure of bark and bone, taller than a barn door. Where it walks the grass turns grey."},
+ {name:"The Lantern Eater",d:"A long, low shape that drinks light. Lamps gutter when it turns its blind head toward them."},
+ {name:"The Many-Handed Mother",d:"A tall shrouded woman with far too many pale hands, each holding something it has taken."},
+ {name:"The Grey Procession",d:"A line of hooded figures that walks in step and never ends, though you can count only seven."},
+ {name:"The Weeping Bell",d:"A great cracked bronze bell that hangs from nothing and tolls whenever someone nearby lies."}];
+function realmEvent(now=Date.now()){const slot=Math.floor(now/EV_SLOT);return{slot,kind:EV_KINDS[((slot%3)+3)%3],p:(now-slot*EV_SLOT)/EV_SLOT,ends:(slot+1)*EV_SLOT}}
+const evHash=(slot,k)=>h32(slot*7919+k*104729);
+function evPlace(ev){
+ if(ev.kind==="market"){const T=towns().slice().sort((a,b)=>a.t<b.t?-1:1);return T.length?T[Math.floor(evHash(ev.slot,1)*T.length)]:null}
+ if(ev.kind==="foe"){
+  // A fixed place from the region every world shares, so every traveller finds it in the same square
+  const spots=REGION.filter(r=>!r.z&&!r.p).map(r=>coord.get(ck(r.x,r.y,0))).filter(Boolean).map(cell).filter(c=>!c.town&&!c.river&&!c.lake);
+  if(!spots.length)return null;const i=Math.floor(evHash(ev.slot,2)*spots.length);
+  for(let k=0;k<spots.length;k++){const c=spots[(i+k)%spots.length],f=foeId(c.id);if(!f||cell(f).evSlot)return c}return null}
+ // The storm's eye moves in a straight line from beside the mountain to beside the desert
+ const a=evHash(ev.slot,3)*Math.PI*2,x0=MOUNTAIN.x+Math.cos(a)*3,y0=MOUNTAIN.y+Math.sin(a)*3,x1=DESERT.x-Math.cos(a)*3,y1=DESERT.y-Math.sin(a)*3;
+ return{x:x0+(x1-x0)*ev.p,y:y0+(y1-y0)*ev.p,z:0};
+}
+const evFoe=()=>Object.values(zz.cells).find(c=>c.k==="monster"&&c.evSlot);
+function evTick(){
+ if(!mp.on()||!charId()||!cell("root"))return;
+ const ev=realmEvent(),r=cell("root"),w=wxState(),st=mp.ev&&mp.ev.slot===ev.slot?mp.ev:null;let changed=false;
+ // The storm
+ if(ev.kind==="storm"){const p=evPlace(ev);w.storm={x:p.x,y:p.y,r:3.2,power:.95,life:6,realm:ev.slot}}
+ else if(w.storm&&w.storm.realm){delete w.storm;changed=true}
+ // Market goods leave when the market does
+ for(const it of Object.values(zz.cells))if(it.k==="item"&&it.evSlot&&it.forSale&&(it.evSlot!==ev.slot||ev.kind!=="market")){excise(it.id,"contain");destroy(it.id);changed=true}
+ if(ev.kind==="market"&&r.evStocked!==ev.slot){const T=evPlace(ev);if(T){r.evStocked=ev.slot;touch("root");
+  const m=MAGIC_ITEMS[Math.floor(evHash(ev.slot,4)*MAGIC_ITEMS.length)],mid=magicItem(m,true);
+  const goods=[mid];const pool=Object.values(LOOT).flat();
+  for(let k=0;k<3;k++){const row=pool[Math.floor(evHash(ev.slot,5+k)*pool.length)];const id=itemCell(normItem(asItem(row)));cell(id).forSale=true;goods.push(id)}
+  for(const id of goods){const it=cell(id);it.value=Math.max(1,Math.round((+it.value||4)*.75));it.evSlot=ev.slot;it.desc=(it.desc||"")+" From the travelling market.";appendTo(T.id,"contain",id)}
+  changed=true}}
+ // The great foe
+ let F=evFoe();
+ if(F&&(F.evSlot!==ev.slot||ev.kind!=="foe"||(st&&st.dmg>=EV_HP))){
+  const L=step(F.id,"occupant","-");if(st&&st.dmg>=EV_HP&&F.evSlot===ev.slot&&L)log(`${F.t} has fallen at ${cell(L).t}, brought down by ${st.n} ${st.n===1?"traveller":"travellers"} together.`,"good");
+  destroy(F.id);F=null;changed=true}
+ if(ev.kind==="foe"&&!F&&r.evFoeDone!==ev.slot&&!(st&&st.dmg>=EV_HP)){const L=evPlace(ev);if(L){const e=EV_FOES[Math.floor(evHash(ev.slot,6)*EV_FOES.length)];
+  const mid=newCell("monster",{t:e.name,designation:`R-${String(ev.slot%1000).padStart(3,"0")}`,objectClass:"Keter",desc:e.d+" Every traveller in the realm can wound it, and every wound counts.",hp:EV_HP-(st?st.dmg:0),maxhp:EV_HP,ac:14,atk:6,dmg:"2d6",special:"none",born:gameNow(),evSlot:ev.slot,roam:false,spread:false});
+  connect(L.id,"occupant",mid);if(L.defeated){L.defeated=null;touch(L.id)}changed=true}}
+ if(F&&st){const hp=Math.max(1,EV_HP-st.dmg);if(F.hp>hp){F.hp=hp;touch(F.id);changed=true}}
+ // A share of the reward for everyone who fought it
+ if(mp.ev&&mp.ev.kind==="foe"&&mp.ev.dmg>=EV_HP&&mp.ev.mine>0&&r.evClaimed!==mp.ev.slot){r.evClaimed=mp.ev.slot;touch("root");claimEvent(mp.ev.slot)}
+ if(r.evSeen!==ev.slot){r.evSeen=ev.slot;touch("root");log(evAnnounce(ev),"good");changed=true}
+ return changed;
+}
+function evAnnounce(ev){
+ const p=evPlace(ev);
+ if(ev.kind==="storm")return"Realm event: a great storm is rising over the mountain. Over the next two hours it will cross the whole realm toward the desert. Every traveller sees the same storm.";
+ if(ev.kind==="market")return`Realm event: market day in ${p?p.t:"a town"}. Travelling merchants have come with rare goods at a quarter off, for two hours.`;
+ const F=evFoe();return`Realm event: ${F?F.t:"a great anomaly"} has appeared${p?` at ${p.t}`:""}. Its wounds are shared: every traveller's blows count, and all who fight it share the reward.`;
+}
+async function eventHit(F,dmg){
+ if(!mp.on()||!F||dmg<=0)return;const slot=F.evSlot;
+ if(F.hp<=0){cell("root").evFoeDone=slot;touch("root")}
+ try{mp.ev=await mp.call("/event/hit",{slot,dmg:Math.min(30,Math.round(dmg))});evTick();store.flush();render()}catch(e){}
+}
+async function claimEvent(slot){
+ try{const r=await mp.call("/event/claim",{slot});
+  const gold=Math.round(40+160*r.share),xp=Math.round(100+300*r.share);
+  setStat("GP",sv("GP")+gold);gainXP(xp);
+  let gift="";if(r.share>=.2||Math.random()<.35){const m=pick(MAGIC_ITEMS);appendTo(charId(),"contain",magicItem(m,false));gift=` and ${m.name}`}
+  log(`Your part in bringing it down (${Math.round(r.share*100)}% of its wounds, one of ${r.fighters} ${r.fighters===1?"traveller":"travellers"}) earns you ${gold} gp, ${xp} XP${gift}.`,"good");
+  store.flush();render();
+ }catch(e){}
+}
+function renderRealmEvent(L){
+ if(!mp.on())return"";const ev=realmEvent(),p=evPlace(ev),left=Math.max(1,Math.round((ev.ends-Date.now())/60000));
+ const where=p?(p.t?`${esc(p.t)}, `:"")+esc(bearing({x:Math.round(p.x),y:Math.round(p.y),z:p.z||0},L)):"";
+ const time=left>=60?`${Math.floor(left/60)} h ${left%60} min`:`${left} min`;
+ let body="";
+ if(ev.kind==="storm")body=`<b>The great storm</b> is crossing the realm from the mountain toward the desert. Its eye is ${where}. It blows itself out in ${time}.`;
+ else if(ev.kind==="market")body=`<b>Market day</b> at ${where}: rare goods at a quarter off for ${time}.`;
+ else{const F=evFoe(),st=mp.ev&&mp.ev.slot===ev.slot?mp.ev:null,hp=st?Math.max(0,EV_HP-st.dmg):F?F.hp:EV_HP;
+  body=st&&st.dmg>=EV_HP?`<b>The great foe has fallen.</b> ${st.mine?"You fought it, and have had your share.":"Travellers brought it down together."} A new event begins in ${time}.`
+   :`<b>${esc(F?F.t:"A great anomaly")}</b> stands at ${where}. Its wounds are shared by every traveller: ${hp} of ${EV_HP} left${st?`, ${st.n} ${st.n===1?"traveller has":"travellers have"} fought it${st.mine?`, ${st.mine} of the wounds yours`:""}`:""}. It is gone in ${time}.<span class="hpbar thin" style="display:block;margin-top:6px"><span style="width:${hp/EV_HP*100}%;background:var(--danger)"></span></span>`}
+ return`<div class="realmevent"><span class="eyebrow">Realm event</span><p>${body}</p></div>`;
+}
+function mapRealmEvent(H,R,Z,P){
+ if(!mp.on()||Z!==0)return"";const ev=realmEvent(),p=evPlace(ev);if(!p)return"";
+ const dx=wrapC(Math.round(p.x)-H.x),dy=wrapC(Math.round(p.y)-H.y);if(Math.abs(dx)>R||Math.abs(dy)>R)return"";const [qx,qy]=P(dx,dy);
+ return`<text class="evmark" x="${qx+30}" y="${qy+38}" text-anchor="middle"><title>Realm event: ${ev.kind==="storm"?"the great storm":ev.kind==="market"?"market day":"the great foe"}</title>✦</text>`;
+}
+setInterval(()=>{if(mp.on()&&charId()&&!busy&&evTick()){store.flush();render()}},5000);
+
+/* ============================================================
+   Townsfolk remember you. Each keeps a short record of meeting you: how often, when last,
+   and a few things you did or said (in their words). The narrator is given it, so they
+   greet you by name, bring up the past and notice a long absence.
+   ============================================================ */
+function knows(n){return n.knows||(n.knows={met:0,notes:[]})}
+function noteOf(n,text){if(!n||n.wild)return;const k=knows(n),s=String(text).slice(0,140),last=k.notes[k.notes.length-1],t=Math.round(gameNow());
+ if(last&&last.s===s)last.t=t;else k.notes=k.notes.concat([{s,t}]).slice(-8);touch(n.id)}
+function metAgain(n){const k=knows(n),t=gameNow();if(k.last==null||t-k.last>60){k.prevLast=k.last;k.met++}if(k.first==null)k.first=t;k.last=t;touch(n.id)}
+const fmtGap=m=>m<60?"less than an hour":m<1440?`${Math.round(m/60)} hours`:`${Math.round(m/1440)} ${Math.round(m/1440)===1?"day":"days"}`;
+function memoryPrompt(n){
+ const k=n.knows,ch=me();
+ if(!k||!k.met)return`They have never met the traveller before and do not know their name.`;
+ const since=k.prevLast!=null?gameNow()-k.prevLast:k.last!=null?gameNow()-k.last:null;
+ return[`They have met ${ch.t} ${k.met} ${k.met===1?"time":"times"} before, first on day ${Math.floor(k.first/1440)+1}${since!=null&&since>60?`, and it has been ${fmtGap(since)} since they last spoke`:""}. They know the traveller's name.`,
+  k.notes.length?`What they remember about the traveller, in their own words: ${k.notes.map(x=>x.s).join("; ")}.`:"",
+  "Let this colour what they say: greet the traveller by name, bring up something they remember when it fits, and remark on a long absence."].filter(Boolean).join(" ");
+}
+function memoryLine(n){const k=n.knows;if(!k||!k.met)return"";const last=k.notes[k.notes.length-1];
+ return`<span class="meta">Remembers you · met ${k.met} ${k.met===1?"time":"times"}${last?` · “${esc(last.s)}”`:""}</span>`}
 
 /* ============================================================
    Rendering
@@ -2891,7 +3020,7 @@ function renderMap(){
  for(const m of marks().filter(m=>!m.done).map(m=>({x:m.x,y:m.y,label:`Map mark: ${m.label}`})).concat(rumours().filter(r=>!r.found&&cell(r.cell)).map(r=>({x:cell(r.cell).x,y:cell(r.cell).y,label:`Rumour: ${r.text}`})))){
   if(Z!==0)break;const dx=wrapC(m.x-H.x),dy=wrapC(m.y-H.y);if(Math.abs(dx)>R||Math.abs(dy)>R||(!dx&&!dy))continue;const [qx,qy]=P(dx,dy);
   out+=`<text class="markstar" x="${qx+48}" y="${qy+19}" text-anchor="middle"><title>${esc(m.label)}</title>★</text>`}
- out+=mapTravellers(H,R,Z,P);
+ out+=mapTravellers(H,R,Z,P)+mapRealmEvent(H,R,Z,P);
  const [hx,hy]=P(0,0);
  out+=`<rect class="here" x="${hx+3}" y="${hy+3}" width="54" height="54" rx="7" pointer-events="none"/><circle class="pawn" cx="${hx+44}" cy="${hy+44}" r="6"/>`;
  if(ws&&ws.storm&&Z>=0){const sx=wrapC(Math.round(ws.storm.x)-H.x),sy=wrapC(Math.round(ws.storm.y)-H.y);const [qx,qy]=P(sx,sy);out+=`<circle class="stormring" cx="${qx+30}" cy="${qy+30}" r="${ws.storm.r*S*.8}"/>`}
@@ -3012,6 +3141,7 @@ function renderPeople(L){
   return`<li><div class="top"><span><span class="nm">${esc(n.t)}</span> <span class="meta">${esc(n.role)} of ${esc(home?home.t:"nowhere")}</span></span>
    <span class="btnrow"><button class="small" data-act="chat" data-id="${n.id}" aria-expanded="${openChat===n.id}">Talk</button><button class="small" data-act="trade" data-id="${n.id}" aria-expanded="${openTrade===n.id}">Trade</button><button class="small" data-act="quest" data-id="${n.id}" ${q?"disabled":""} title="${q?"They have already asked you to "+esc(q.desc):"Ask if they need help"}">Ask for work</button>${deliver&&hasFood?`<button class="small primary" data-act="give" data-id="${n.id}">Give food</button>`:""}${attackBtns}</span></div>
   <span class="doing">${esc(n.activity)} · ${esc(n.trait)}</span>
+  ${memoryLine(n)}
   <span class="meta">HP ${n.hp}/${n.maxhp} · AC ${n.ac} · nerve ${Math.round(n.courage*100)}% · ${n.food} food · ${n.gold} gp · likes you ${trust}%${tie(n,ch)>.4&&n.courage>.35&&!n.shunsYou?" · fights beside you":""}</span>${status}
   <div class="hpbar thin${pct<=40?" low":""}"><span style="width:${pct}%"></span></div>
   ${q?`<span class="meta">Asked you to ${esc(q.desc)} · ${q.gold} gp</span>`:""}
@@ -3040,6 +3170,7 @@ function renderPlace(){
  if(L.town)chips.push(`<span class="chip">${esc(L.town.side)} bank of the ${esc(riverName())}</span>`);
  chips.push(`<span class="chip">${L.dist?L.dist+" steps from the start":"starting point"}</span>`,`<span class="chip">written by ${L.by==="claude"?esc(ai.kind==="puter"?"AI":"Claude"):"built-in tables"}</span>`);
  let html=`<div class="placehead"><p class="eyebrow">You are at</p><h2>${esc(L.t)}</h2><div class="chips">${chips.join("")}</div></div>`;
+ html+=renderRealmEvent(L);
  if(busy)html+=`<p class="mapping">${busy.dir==="look"?"The narrator is writing what you can see from here":busy.dir==="up"?"The narrator is mapping what lies above":busy.dir==="down"?"The narrator is mapping what lies below":"The narrator is mapping the way "+busy.dir}</p>`;
  if(narratorNote&&!busy)html+=`<p class="note">${esc(narratorNote)}</p>`;
  if(flash)html+=`<p class="flash">${esc(flash)}</p>`;

@@ -137,3 +137,25 @@ hard to confuse. Run `node tools/realm-script.mjs` to regenerate.
   Against Puter's limit of 400 KV operations per 10 seconds, that is roughly
   80–120 players online at once, fewer while many are exploring new ground.
   KV use is billed to the worker's owner.
+
+### v0.5: diagonals, limited approaches, sound, realm events, townsfolk memory
+
+- **Diagonal moves**: north-east, north-west, south-east and south-west, from the
+  compass, Y U B N (or 7 9 1 3), "What you can see", or a click on the map. A
+  diagonal step only works if one of the two routes round the corner is open, and it
+  takes 45 minutes.
+- **Limited approaches**: each newly written place is open on four sides (50%),
+  three (25%), two (15%) or one (10%). The side you came from always stays open.
+- **Sound**: the volume breathes and each background sound drifts on its own. The
+  river gurgles. Caves and the heights echo. Footsteps match the ground. A woodcutter
+  saws in the woods. Creatures call, each species in its own voice. Groups of
+  townsfolk chatter, placed left or right.
+- **Realm events** (shared realm): every two real hours a new event begins, the same
+  for everyone: a great storm crossing from the mountain to the desert, a market day
+  with rare goods at a quarter off, or a great foe at a fixed place. The foe's wounds
+  are shared through the server (150 HP; each blow is capped at 30), and everyone who
+  fought it claims a share of gold, XP and perhaps a magic item.
+- **Townsfolk remember you**: each townsperson keeps a record of how often they have
+  met you, when they last did, and up to eight things you did or said, in their own
+  words. The narrator greets you by name, brings the past up, and notices long
+  absences. Their card shows "Remembers you".

@@ -7,7 +7,19 @@ const CHUNK = 4;                 // squares are stored in 4×4 chunks, one KV ke
 const ONLINE_TTL = 180e3;        // a player counts as online for 3 minutes after their last ping
 const LIST_EVERY = 4e3;          // the online list is rebuilt from player keys at most every 4 s
 const SNAP_PART = 300e3;         // bytes per snapshot part (KV values are capped near 400 KB)
-const who = new Map();           // auth token -> username, cached per worker instance
+const who = new Map();
+// Realm events: one every two real hours, the same for everyone, in a fixed rotation.
+// Only the foe needs the server: its wounds are shared, counted with atomic increments.
+const EV_SLOT = 2 * 3600e3, EV_HP = 150, EV_KINDS = ["storm", "market", "foe"];
+const evSlot = (t = Date.now()) => Math.floor(t / EV_SLOT);
+const evKind = slot => EV_KINDS[((slot % 3) + 3) % 3];
+async function evState(slot, u) {
+  if (evKind(slot) !== "foe") return { slot, kind: evKind(slot) };
+  const dmg = (await me.puter.kv.get(P + "ev:" + slot + ":dmg")) || 0;
+  const n = (await me.puter.kv.get(P + "ev:" + slot + ":n")) || 0;
+  const mine = u ? (await me.puter.kv.get(P + "ev:" + slot + ":u:" + u)) || 0 : 0;
+  return { slot, kind: "foe", hp: EV_HP, dmg, n, mine };
+}           // auth token -> username, cached per worker instance
 
 const json = (o, status = 200) => new Response(JSON.stringify(o), { status, headers: { "Content-Type": "application/json" } });
 const bad = (msg, status = 400) => json({ error: msg }, status);
@@ -139,7 +151,8 @@ router.post("/presence", async ({ request, user }) => {
   }
   online.players[u] = me_;
   const ground = await me.puter.kv.get(P + "gi:" + sqKey(x, y, z)) || [];
-  return { you: u, now, players: Object.values(online.players).filter(p => now - p.t < ONLINE_TTL), ground };
+  const ev = await evState(evSlot(now), u);
+  return { you: u, now, players: Object.values(online.players).filter(p => now - p.t < ONLINE_TTL), ground, ev };
 });
 
 // ---------- items left on the ground for other players ----------
@@ -177,6 +190,32 @@ router.post("/ground/take", async ({ request, user }) => {
   await me.puter.kv.set(k, fresh);
   try { await me.puter.kv.expire(P + "tk:" + id, 86400) } catch (e) {}
   return { ok: true, item: g.item, by: g.by, ground: fresh };
+});
+
+// ---------- realm events: wounds on the shared foe, and the reward for those who fought it ----------
+router.post("/event/hit", async ({ request, user }) => {
+  const [u, err] = await guard(request, user); if (err) return err;
+  const b = await body(request), slot = evSlot();
+  if ((b.slot | 0) !== slot || evKind(slot) !== "foe") return bad("That foe is gone.", 409);
+  const dmg = num(b.dmg, 0, 30) | 0;
+  if (!dmg) return await evState(slot, u);
+  const cur = (await me.puter.kv.get(P + "ev:" + slot + ":dmg")) || 0;
+  if (cur >= EV_HP) return await evState(slot, u);
+  const mine = await me.puter.kv.incr(P + "ev:" + slot + ":u:" + u, dmg);
+  if (mine === dmg) await me.puter.kv.incr(P + "ev:" + slot + ":n");     // a new fighter
+  await me.puter.kv.incr(P + "ev:" + slot + ":dmg", dmg);
+  return await evState(slot, u);
+});
+router.post("/event/claim", async ({ request, user }) => {
+  const [u, err] = await guard(request, user); if (err) return err;
+  const b = await body(request), slot = b.slot | 0, now = evSlot();
+  if (slot !== now && slot !== now - 1) return bad("That was too long ago.", 409);
+  const st = await evState(slot, u);
+  if (st.kind !== "foe" || st.dmg < EV_HP) return json({ ok: false, error: "It still stands." }, 409);
+  if (!st.mine) return json({ ok: false, error: "You did not fight it." }, 403);
+  const first = await me.puter.kv.incr(P + "ev:" + slot + ":claimed:" + u);
+  if (first !== 1) return json({ ok: false, error: "Already claimed." }, 409);
+  return { ok: true, share: st.mine / st.dmg, fighters: st.n, mine: st.mine };
 });
 
 router.get("/health", async () => ({ ok: true, at: Date.now() }));
