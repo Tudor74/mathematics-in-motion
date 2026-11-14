@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light">
 <title>In Motion — visual courses you can play, pause and try</title>
-<meta name="description" content="In Motion is a family of offline, animated courses: Mathematics, Computer Science, Human–Computer Interaction, Therapies, Philosophy and Electronic Music. One idea per scene, played like a film and handed to you to try.">
+<meta name="description" content="In Motion is a family of offline, animated courses: Mathematics, Computer Science, Human–Computer Interaction, Therapies, Philosophy, Electronic Music, Awais Rashid’s research and The Future. One idea per scene, played like a film and handed to you to try.">
 <style>
 :root{--ink:#192c37;--muted:#546873;--blue:#1772b7;--pale:#e8f2f8;--line:#c7d8e3;--paper:#fff;--bg:#f3f6f7;--coral:#c45238;--green:#2c776c;--purple:#7156a6;--amber:#9a6200;--focus:#a44289}
 *{box-sizing:border-box}
@@ -40,7 +40,7 @@ h2{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute
 .open svg{width:18px;height:18px}
 .secondary{display:inline-flex;align-items:center;min-height:44px;padding:9px 14px;border-radius:9px;border:1px solid #aec3cf;color:var(--ink);text-decoration:none;font-weight:600}
 .secondary:hover{background:#edf5fa}
-.math{--accent:#1772b7}.cs{--accent:#2c776c}.hci{--accent:#7156a6}.therapy{--accent:#ad472a}.philosophy{--accent:#9a6200}.music{--accent:#b3367a}
+.math{--accent:#1772b7}.cs{--accent:#2c776c}.hci{--accent:#7156a6}.therapy{--accent:#ad472a}.philosophy{--accent:#9a6200}.music{--accent:#b3367a}.rashid{--accent:#3f6f8f}.future{--accent:#0f7c8c}
 
 .ideas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 24px;padding:0;list-style:none}
 .ideas li{background:#f6f9fb;border-radius:10px;padding:12px 14px}
@@ -57,6 +57,7 @@ footer p{margin:0 0 4px}
 @keyframes hitpulse{0%,50%{opacity:0}60%{opacity:.9}100%{opacity:0}}
 @keyframes breathe{0%,100%{transform:scale(.82)}50%{transform:scale(1)}}
 @keyframes walk{0%,8%{transform:translateX(0)}92%,100%{transform:translateX(475px)}}
+@keyframes grow{0%,10%{stroke-dashoffset:520}70%,100%{stroke-dashoffset:0}}
 @keyframes step16{from{transform:translateX(0)}to{transform:translateX(260px)}}
 .wave{animation:slide 6s linear infinite}
 .music .wave{animation:slide 3s linear infinite}
@@ -66,7 +67,8 @@ footer p{margin:0 0 4px}
 .radar{animation:breathe 7s ease-in-out infinite;transform-origin:300px 110px;transform-box:view-box}
 .thinker{animation:walk 9s ease-in-out infinite alternate}
 .playhead{animation:step16 2.4s steps(16) infinite}
-@media(prefers-reduced-motion:reduce){.wave,.bit,.cursor,.pulse,.radar,.thinker,.playhead{animation:none}}
+.proj{stroke-dasharray:8 6;animation:grow 6s ease-out infinite}
+@media(prefers-reduced-motion:reduce){.wave,.bit,.cursor,.pulse,.radar,.thinker,.playhead,.proj{animation:none}}
 
 @media(max-width:760px){
  body{padding:6px}
@@ -231,6 +233,40 @@ footer p{margin:0 0 4px}
     <div class="links"><a class="open" href="https://electronic-music-in-motion.puter.site/">Open Electronic Music <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12H20M13 5L20 12L13 19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
    </div>
   </li>
+  <li class="course rashid">
+   <svg class="motif" viewBox="0 0 600 220" role="img" aria-label="Coloured bands showing strands of research from 2000 to 2026">
+    <rect width="600" height="220" fill="#f3f7fa"/>
+    <g><rect x="60" y="34" width="110" height="14" rx="5" fill="#1772b7"/><rect x="100" y="56" width="110" height="14" rx="5" fill="#2c776c"/><rect x="230" y="78" width="60" height="14" rx="5" fill="#7156a6"/><rect x="300" y="100" width="70" height="14" rx="5" fill="#ad472a"/><rect x="380" y="122" width="180" height="14" rx="5" fill="#3f6f8f"/><rect x="360" y="144" width="90" height="14" rx="5" fill="#9a6200"/><rect x="420" y="166" width="130" height="14" rx="5" fill="#b3367a"/><rect x="410" y="188" width="140" height="14" rx="5" fill="#c45238"/></g>
+    <g fill="#546873" font-size="12"><text x="60" y="214">2000</text><text x="540" y="214">2026</text></g>
+   </svg>
+   <div class="body">
+    <h3>Awais Rashid In Motion</h3>
+    <p class="tag">A deep dive through one researcher’s papers, 2000 to today</p>
+    <p class="desc">An unofficial walk through Professor Awais Rashid’s published research, one paper per scene: databases that evolve, aspects that cut across code, software product lines, cybercrime forensics, industrial control systems, the Cyber Security Body of Knowledge, developer-centred security and online harms. Each paper has a diagram and a Try it, and links to its source.</p>
+    <ul class="facts" aria-label="Course size"><li>30 papers</li><li>2000–2026</li><li>Sources linked</li></ul>
+    <div class="links"><a class="open" href="https://awais-rashid-in-motion.puter.site/">Open Awais Rashid <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12H20M13 5L20 12L13 19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
+   </div>
+  </li>
+
+  <li class="course future">
+   <svg class="motif" viewBox="0 0 600 220" role="img" aria-label="Solid data points rising to today, then a dashed projection out to 2040">
+    <rect width="600" height="220" fill="#f3f7fa"/>
+    <rect x="360" y="20" width="200" height="160" fill="#e3f1f2"/>
+    <line x1="40" y1="180" x2="560" y2="180" stroke="#192c37"/>
+    <path d="M60 172 L120 165 L180 152 L240 132 L300 104 L360 78" fill="none" stroke="#1772b7" stroke-width="3.5"/>
+    <g fill="#1772b7"><circle cx="60" cy="172" r="5"/><circle cx="120" cy="165" r="5"/><circle cx="180" cy="152" r="5"/><circle cx="240" cy="132" r="5"/><circle cx="300" cy="104" r="5"/><circle cx="360" cy="78" r="5"/></g>
+    <path class="proj" d="M360 78 Q440 40 550 30" fill="none" stroke="#0f7c8c" stroke-width="3.5"/>
+    <circle cx="550" cy="30" r="8" fill="#0f7c8c"/>
+    <g font-size="13" fill="#546873" text-anchor="middle"><text x="60" y="202">2010</text><text x="360" y="202">today</text><text x="550" y="202">2040</text></g>
+   </svg>
+   <div class="body">
+    <h3>The Future In Motion</h3>
+    <p class="tag">24 technologies, and a playful guess at 2040</p>
+    <p class="desc">AI agents, humanoid robots, chips, solar, batteries, fission and fusion, EVs and robotaxis, air taxis, rockets, the Moon and Mars, brain–computer interfaces, gene editing, cultivated meat, carbon removal and more. Real, sourced data up to today; a projection you control; and a 2040 story for each, labelled likely, plausible or wildcard.</p>
+    <ul class="facts" aria-label="Course size"><li>7 themes</li><li>24 technologies</li><li>Sourced data</li></ul>
+    <div class="links"><a class="open" href="https://the-future-in-motion.puter.site/">Open The Future <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12H20M13 5L20 12L13 19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
+   </div>
+  </li>
  </ul>
 
  <h2 id="ideas-heading">What “in motion” means</h2>
@@ -243,12 +279,12 @@ footer p{margin:0 0 4px}
   <li><b>One page each</b><span>Each course is a single web page that runs in your browser, with nothing to install and no account to make.</span></li>
  </ul>
 
- <p class="order"><b>Where to start?</b> Each course stands on its own. If you want an order, Mathematics gives the language, Computer Science shows how machines use it, HCI shows how people meet those machines, Philosophy asks what all of it means, Therapies turns to how people help one another, and Electronic Music is where the maths becomes something you can dance to.</p>
+ <p class="order"><b>Where to start?</b> Each course stands on its own. If you want an order, Mathematics gives the language, Computer Science shows how machines use it, HCI shows how people meet those machines, Philosophy asks what all of it means, Therapies turns to how people help one another, Electronic Music is where the maths becomes something you can dance to, Awais Rashid In Motion follows one researcher across a quarter-century, and The Future looks ahead to 2040.</p>
 </main>
 
 <footer>
  <p>The courses share one visual language: large touch targets, keyboard controls, a caption under every diagram, respect for reduced motion, and en-GB spelling.</p>
- <p>Sources: <a href="https://github.com/Tudor74/mathematics-in-motion">Mathematics In Motion</a> (branches hold Therapies, Philosophy and Electronic Music In Motion) · <a href="https://github.com/Tudor74/computer-science-in-motion">Computer Science In Motion</a> (the <code>hci</code> branch holds HCI In Motion)</p>
+ <p>Sources: <a href="https://github.com/Tudor74/mathematics-in-motion">Mathematics In Motion</a> (branches hold Therapies, Philosophy, Electronic Music, Awais Rashid and The Future In Motion) · <a href="https://github.com/Tudor74/computer-science-in-motion">Computer Science In Motion</a> (the <code>hci</code> branch holds HCI In Motion)</p>
 </footer>
 </div>
 </body>
