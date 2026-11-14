@@ -7,27 +7,27 @@
 /* Layout: a surveyor's field journal in three columns: map and compass | the place you stand | your character sheet. One column on phones. */
 :root{
  --paper:#edf0e8; --sheet:#f8faf4; --ink:#1e2925; --faint:#5a6862; --rule:#c6d0c4; --wash:#e2e8dd;
- --accent:#8b4c1f; --accent-ink:#fff8f0; --water:#2e6487; --danger:#a2322a; --good:#2d6a3e; --amber:#9a6a00;
- --file:#f3f1e6; --file-rule:#bdb8a0;
+ --accent:#8b4c1f; --accent-ink:#fff8f0; --water:#2e6487; --danger:#a2322a; --good:#2d6a3e; --amber:#9a6a00; --magic:#6a4bbd;
+ --file:#f3f1e6; --file-rule:#bdb8a0; --veil:#0c1a2b;
  --t-forest:#a9c59d; --t-plains:#d9dca8; --t-water:#a3c4d6; --t-mountain:#c3bcb0; --t-cave:#b1aab8;
- --t-dungeon:#a9a3a0; --t-village:#e0c39c; --t-ruin:#cdbfa8; --t-swamp:#a8b994; --t-road:#d8cdb4; --t-sky:#cfe0ea; --t-other:#c9d0c4;
+ --t-dungeon:#a9a3a0; --t-village:#e0c39c; --t-ruin:#cdbfa8; --t-swamp:#a8b994; --t-road:#d8cdb4; --t-sky:#cfe0ea; --t-desert:#e8d6a6; --t-grove:#cfc6ee; --t-other:#c9d0c4;
  --display:"Alegreya SC",Georgia,"Times New Roman",serif;
  --body:"Alegreya Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
  --paper:#111916; --sheet:#17211d; --ink:#e2e9e1; --faint:#98a8a0; --rule:#2d3c36; --wash:#1d2924;
- --accent:#d79a5f; --accent-ink:#1b120a; --water:#76add0; --danger:#e57a68; --good:#82c594; --amber:#e0b552;
- --file:#1f241d; --file-rule:#454a38;
+ --accent:#d79a5f; --accent-ink:#1b120a; --water:#76add0; --danger:#e57a68; --good:#82c594; --amber:#e0b552; --magic:#b7a0ff;
+ --file:#1f241d; --file-rule:#454a38; --veil:#000000;
  --t-forest:#355a3a; --t-plains:#5c5d34; --t-water:#2c5269; --t-mountain:#55504a; --t-cave:#4a4456;
- --t-dungeon:#47413f; --t-village:#6c5434; --t-ruin:#5d5444; --t-swamp:#3f4d33; --t-road:#5f5643; --t-sky:#2d4150; --t-other:#3b4741;
+ --t-dungeon:#47413f; --t-village:#6c5434; --t-ruin:#5d5444; --t-swamp:#3f4d33; --t-road:#5f5643; --t-sky:#2d4150; --t-desert:#6b5a36; --t-grove:#3e3563; --t-other:#3b4741;
  color-scheme:dark}}
 :root[data-theme="dark"]{
  --paper:#111916; --sheet:#17211d; --ink:#e2e9e1; --faint:#98a8a0; --rule:#2d3c36; --wash:#1d2924;
- --accent:#d79a5f; --accent-ink:#1b120a; --water:#76add0; --danger:#e57a68; --good:#82c594; --amber:#e0b552;
- --file:#1f241d; --file-rule:#454a38;
+ --accent:#d79a5f; --accent-ink:#1b120a; --water:#76add0; --danger:#e57a68; --good:#82c594; --amber:#e0b552; --magic:#b7a0ff;
+ --file:#1f241d; --file-rule:#454a38; --veil:#000000;
  --t-forest:#355a3a; --t-plains:#5c5d34; --t-water:#2c5269; --t-mountain:#55504a; --t-cave:#4a4456;
- --t-dungeon:#47413f; --t-village:#6c5434; --t-ruin:#5d5444; --t-swamp:#3f4d33; --t-road:#5f5643; --t-sky:#2d4150; --t-other:#3b4741;
+ --t-dungeon:#47413f; --t-village:#6c5434; --t-ruin:#5d5444; --t-swamp:#3f4d33; --t-road:#5f5643; --t-sky:#2d4150; --t-desert:#6b5a36; --t-grove:#3e3563; --t-other:#3b4741;
  color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;margin:0}
@@ -48,11 +48,14 @@ h1,h2,h3{font-family:var(--display);font-weight:700;margin:0;text-wrap:balance;l
 
 header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px 20px;border-bottom:2px solid var(--ink);padding-bottom:10px}
 header.top h1{font-size:clamp(28px,4vw,40px);line-height:1}
-header.top .sub{color:var(--faint);font-size:15px;margin:4px 0 0;max-width:60ch}
+header.top .sub{color:var(--faint);font-size:15px;margin:4px 0 0;max-width:62ch}
 .pills{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .pill{font-family:var(--mono);font-size:12px;border:1px solid var(--rule);border-radius:99px;padding:3px 10px;color:var(--faint);background:var(--sheet);white-space:nowrap}
 .pill b{color:var(--ink);font-weight:500}
 .pill.warn b{color:var(--danger)}
+.pill.clock{display:inline-flex;align-items:center;gap:7px}
+.orb{width:11px;height:11px;border-radius:50%;background:var(--amber);flex:0 0 11px}
+.pill.clock[data-night="true"] .orb{background:transparent;box-shadow:inset -4px -1px 0 0 var(--water)}
 
 .grid{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr) minmax(0,330px);gap:16px;align-items:start}
 .panel{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:16px;min-width:0;display:grid;gap:14px;align-content:start}
@@ -65,18 +68,25 @@ header.top .sub{color:var(--faint);font-size:15px;margin:4px 0 0;max-width:60ch}
 .map .tile{stroke:var(--ink);stroke-opacity:.35;stroke-width:1;cursor:pointer}
 .map .tile:hover{stroke-opacity:1;stroke-width:2}
 .map .glyph{fill:none;stroke:var(--ink);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;opacity:.7;pointer-events:none}
+.map .cross{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;pointer-events:none}
+.map .magicarc{fill:none;stroke:var(--magic);stroke-width:2.6;stroke-dasharray:3 3;stroke-linecap:round;pointer-events:none}
+.map .magicarc.gone{opacity:.25}
 .map .here{fill:none;stroke:var(--accent);stroke-width:3.5}
 .map .pawn{fill:var(--accent);stroke:var(--sheet);stroke-width:2;pointer-events:none}
+.map .folk{fill:var(--water);stroke:var(--sheet);stroke-width:1.2;pointer-events:none}
 .map .frontier{fill:transparent;stroke:var(--faint);stroke-dasharray:4 4;stroke-width:1.4;cursor:pointer}
 .map .frontier:hover{stroke:var(--accent)}
 .map .q{fill:var(--faint);font-family:var(--mono);font-size:15px;pointer-events:none}
 .map .axis{fill:var(--faint);font-family:var(--mono);font-size:10px}
 .map .stair{fill:var(--ink);opacity:.75;pointer-events:none}
 .map .threat{fill:var(--danger);stroke:var(--sheet);stroke-width:1.5;pointer-events:none}
-.t-forest{fill:var(--t-forest)}.t-plains{fill:var(--t-plains)}.t-water{fill:var(--t-water)}.t-mountain{fill:var(--t-mountain)}.t-cave{fill:var(--t-cave)}.t-dungeon{fill:var(--t-dungeon)}.t-village{fill:var(--t-village)}.t-ruin{fill:var(--t-ruin)}.t-swamp{fill:var(--t-swamp)}.t-road{fill:var(--t-road)}.t-sky{fill:var(--t-sky)}.t-other{fill:var(--t-other)}
+.map .veil{fill:var(--veil);opacity:.28;pointer-events:none}
+.t-forest{fill:var(--t-forest)}.t-plains{fill:var(--t-plains)}.t-water{fill:var(--t-water)}.t-mountain{fill:var(--t-mountain)}.t-cave{fill:var(--t-cave)}.t-dungeon{fill:var(--t-dungeon)}.t-village{fill:var(--t-village)}.t-ruin{fill:var(--t-ruin)}.t-swamp{fill:var(--t-swamp)}.t-road{fill:var(--t-road)}.t-sky{fill:var(--t-sky)}.t-desert{fill:var(--t-desert)}.t-grove{fill:var(--t-grove)}.t-other{fill:var(--t-other)}
+.map .unvisited{opacity:.55}
+.map .folk.beast{fill:var(--good)}
 .mapnote{font-size:13px;color:var(--faint);margin:0}
 .legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--faint);margin:0}
-.legend span b{color:var(--danger)}
+.legend .r{color:var(--danger)}.legend .p{color:var(--water)}.legend .m{color:var(--magic)}
 
 .compass{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-areas:". n u" "w c e" ". s d";gap:6px}
 .compass button{display:grid;gap:0;padding:6px 6px;min-height:58px;text-align:center;line-height:1.2}
@@ -93,8 +103,11 @@ header.top .sub{color:var(--faint);font-size:15px;margin:4px 0 0;max-width:60ch}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{font-family:var(--mono);font-size:12px;padding:2px 8px;border-radius:4px;background:var(--wash);color:var(--faint)}
 .chip.terrain{color:var(--ink)}
+.chip.magic{color:var(--magic)}
 .desc{font-size:18px;line-height:1.6;max-width:62ch;margin:0;white-space:pre-line}
 .desc.busy{opacity:.45}
+button.dirlink{display:inline;appearance:none;min-height:0;padding:0 1px;margin:0;border:0;border-radius:2px;background:none;font:inherit;color:var(--water);font-weight:500;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:.18em;cursor:pointer}
+button.dirlink:hover:not(:disabled){color:var(--accent);text-decoration-style:solid}
 .mapping{font-family:var(--mono);font-size:13px;color:var(--accent);margin:0}
 .mapping::after{content:"";display:inline-block;width:1.4em;text-align:left;animation:dots 1.2s steps(4) infinite}
 @keyframes dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
@@ -102,8 +115,9 @@ header.top .sub{color:var(--faint);font-size:15px;margin:4px 0 0;max-width:60ch}
 .hazard.passed{border-left-color:var(--good)}
 .hazard b{font-family:var(--display)}
 .hazard .roll{font-family:var(--mono);font-size:12.5px;color:var(--faint);display:block;margin-top:2px}
+.flash{font-size:15px;margin:0;padding:6px 12px;border-radius:6px;background:var(--wash)}
 
-/* Anomaly file: a containment record clipped into the journal */
+/* Anomaly file */
 .foe{background:var(--file);border:1px solid var(--file-rule);border-radius:4px;padding:14px 16px 14px;display:grid;gap:10px;position:relative}
 .foe::before{content:"";position:absolute;inset:0 auto 0 0;width:5px;background:var(--oc,var(--amber))}
 .foe[data-class="safe"]{--oc:var(--good)}.foe[data-class="euclid"]{--oc:var(--amber)}.foe[data-class="keter"]{--oc:var(--danger)}
@@ -111,7 +125,6 @@ header.top .sub{color:var(--faint);font-size:15px;margin:4px 0 0;max-width:60ch}
 .filehead .oc{color:var(--oc,var(--amber));font-weight:500}
 .foe h3{font-size:24px;line-height:1.1}
 .foe .notes{margin:0;font-size:15.5px;line-height:1.55;max-width:62ch}
-.foe .notes::first-line{font-weight:500}
 .foe .stats{font-family:var(--mono);font-size:12.5px;color:var(--faint);margin:0}
 .foe .hpbar span{background:var(--oc,var(--amber))}
 .rounds{list-style:none;margin:0;padding:8px 0 0;border-top:1px dashed var(--file-rule);display:grid;gap:4px;font-size:14px}
@@ -120,6 +133,15 @@ header.top .sub{color:var(--faint);font-size:15px;margin:4px 0 0;max-width:60ch}
 .fight{display:flex;flex-wrap:wrap;gap:8px}
 .fight button.primary{min-width:150px}
 .neutral{font-size:14px;color:var(--faint);border-left:3px solid var(--rule);padding:2px 10px;margin:0}
+
+/* People */
+.people{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.people li{border:1px solid var(--rule);border-radius:8px;padding:9px 11px;display:grid;gap:4px}
+.people .top{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap}
+.people .nm{font-weight:700}
+.people .meta{font-family:var(--mono);font-size:11.5px;color:var(--faint)}
+.people .doing{font-size:14px;color:var(--faint)}
+.people .said{font-size:15px;font-style:italic;margin:2px 0 0;border-left:2px solid var(--water);padding-left:9px}
 
 .items{list-style:none;margin:0;padding:0;display:grid;gap:0}
 .items li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:9px 0;border-top:1px solid var(--rule)}
@@ -146,6 +168,7 @@ details.zz summary{cursor:pointer;font-family:var(--mono);font-size:13px;color:v
 .who{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
 .who h2{font-size:26px}
 .hpbar{height:12px;border-radius:99px;background:var(--wash);border:1px solid var(--rule);overflow:hidden}
+.hpbar.thin{height:6px}
 .hpbar span{display:block;height:100%;background:var(--good);transition:width .3s}
 .hpbar.low span{background:var(--danger)}
 .hprow{display:flex;justify-content:space-between;font-family:var(--mono);font-size:13px}
@@ -159,9 +182,9 @@ details.zz summary{cursor:pointer;font-family:var(--mono);font-size:13px;color:v
 .facts dt{color:var(--faint)}.facts dd{margin:0;font-family:var(--mono);font-size:13px}
 
 /* Log */
-.log ol{list-style:none;margin:0;padding:0;display:grid;gap:4px;max-height:260px;overflow:auto;font-size:14px}
+.log ol{list-style:none;margin:0;padding:0;display:grid;gap:4px;max-height:280px;overflow:auto;font-size:14px}
 .log li{padding-left:12px;border-left:2px solid var(--rule)}
-.log li.bad{border-left-color:var(--danger)}.log li.good{border-left-color:var(--good)}
+.log li.bad{border-left-color:var(--danger)}.log li.good{border-left-color:var(--good)}.log li.npc{border-left-color:var(--water)}.log li.time{border-left-color:var(--amber)}
 .log .roll{font-family:var(--mono);font-size:12px;color:var(--faint)}
 
 /* Creation */
@@ -175,6 +198,37 @@ details.zz summary{cursor:pointer;font-family:var(--mono);font-size:13px;color:v
 .note{font-size:14px;color:var(--faint);margin:0;max-width:65ch}
 .confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:14px}
 
+/* What you can see */
+.sees{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.sees li{display:grid;grid-template-columns:4.6em minmax(0,1fr);gap:10px;align-items:baseline;font-size:15px}
+.sees .dname{font-family:var(--display);font-weight:700;text-transform:capitalize}
+.sees .dname button.dirlink{font-family:var(--display);font-weight:700;text-transform:capitalize}
+.sees .why{display:block;font-size:12.5px;color:var(--faint)}
+.sees li.shut{color:var(--faint)}
+/* Social graph */
+.social svg{display:block;width:100%;height:auto;max-width:100%;aspect-ratio:1/1}
+.social .edge{fill:none;stroke-linecap:round}
+.social .edge.pos{stroke:var(--water)}.social .edge.neg{stroke:var(--danger)}
+.social .node{stroke:var(--sheet);stroke-width:1.5}
+.social .node.human{fill:var(--accent)}.social .node.beast{fill:var(--good)}.social .node.you{fill:var(--magic)}
+.social text{font-family:var(--mono);font-size:8.5px;fill:var(--faint)}
+.social text.you{fill:var(--magic);font-weight:500}
+.ties{list-style:none;margin:0;padding:0;font-size:13px;display:grid;gap:3px}
+.ties li{display:flex;justify-content:space-between;gap:8px}
+.ties .w{font-family:var(--mono);font-size:12px}
+.ties .w.pos{color:var(--water)}.ties .w.neg{color:var(--danger)}
+.sharp{color:var(--danger)}
+button.pill{min-height:0;cursor:pointer;font-weight:400}
+button.pill[aria-pressed="false"] b{color:var(--faint)}
+.map .rune{fill:none;stroke:var(--amber);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.map .rainmark{fill:none;stroke:var(--water);stroke-width:1.4;stroke-linecap:round;pointer-events:none}
+.map .flame{fill:var(--danger);stroke:var(--amber);stroke-width:1.5;pointer-events:none}
+.map .stormring{fill:var(--veil);fill-opacity:.12;stroke:var(--magic);stroke-width:1.5;stroke-dasharray:6 5;pointer-events:none}
+.inscription{border:1px solid var(--amber);border-radius:4px;padding:12px 14px;background:var(--file);display:grid;gap:6px}
+.inscription p{margin:0;font-family:var(--display);font-size:17px;line-height:1.5;max-width:60ch}
+.codex{margin:0;padding-left:20px;display:grid;gap:8px;font-size:14px}
+.codex b{font-family:var(--display)}
+
 @media (max-width:1040px){.grid{grid-template-columns:minmax(0,300px) minmax(0,1fr)}.col.right{grid-column:1 / -1;grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:720px){.grid{grid-template-columns:minmax(0,1fr)}.col.right{grid-template-columns:minmax(0,1fr)}.place{order:-1}.create .row{grid-template-columns:1fr}.rolled{grid-template-columns:repeat(3,minmax(0,1fr))}.desc{font-size:17px}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -185,10 +239,14 @@ details.zz summary{cursor:pointer;font-family:var(--mono);font-size:13px;color:v
   <div>
    <p class="eyebrow">A map that writes itself</p>
    <h1>Zigzag Realms</h1>
-   <p class="sub">Walk north, south, east or west, climb up or go down. Claude writes each unexplored step from the place you just left, including any anomaly lurking there. Each place is kept as a cell in a ZigZag structure, so you can walk back to it.</p>
+   <p class="sub">A river with three towns, a woodland and its magical grove, a mountain with lakes, a waterfall and caves, and a desert are laid out when your journey begins, with townsfolk and creatures living among them. Claude writes everything else one step ahead of you. Every place is kept as a cell in a ZigZag structure, so you can find your way back.</p>
   </div>
   <div class="pills">
+   <span class="pill clock" id="pill-clock" data-night="false"><span class="orb" aria-hidden="true"></span><span id="clock-text">Day 1 · 08:00</span></span>
+   <span class="pill" id="pill-weather">Weather: <b>—</b></span>
+   <button class="pill" id="sound-toggle" aria-pressed="true" type="button">Sound: <b>on</b></button>
    <span class="pill" id="pill-ai">Narrator: <b>connecting…</b></span>
+   <span id="account" class="pills"></span>
    <span class="pill" id="pill-save">World: <b>loading…</b></span>
    <span class="pill" id="pill-cells">Cells: <b>0</b></span>
   </div>
@@ -199,8 +257,8 @@ details.zz summary{cursor:pointer;font-family:var(--mono);font-size:13px;color:v
    <section class="panel map" aria-labelledby="map-h">
     <div class="sectionhead"><h3 id="map-h">Survey map</h3><span class="mono" id="coords" style="font-size:12px;color:var(--faint)"></span></div>
     <svg id="map" viewBox="0 0 420 420" role="img" aria-label="Map of explored places on your current level"></svg>
-    <p class="legend"><span>▲ way up</span><span>▼ way down</span><span><b>◆</b> anomaly at large</span></p>
-    <p class="mapnote">The map shows the level you are on. Click a dashed square to explore it, or any mapped square to walk back there.</p>
+    <p class="legend"><span>▲ way up</span><span>▼ way down</span><span class="r">◆ anomaly</span><span class="p">● townsfolk</span><span style="color:var(--good)">● creatures</span><span class="m">┅ magical bridge</span></p>
+    <p class="mapnote">The map shows the level you are on. Faded squares are places you can see but have not visited. Click one next to you to go there, or any mapped square to walk back there. Lines show the ways that are open.</p>
    </section>
    <section class="panel" aria-label="Movement">
     <div class="compass" id="compass">
@@ -212,7 +270,14 @@ details.zz summary{cursor:pointer;font-family:var(--mono);font-size:13px;color:v
      <button class="s" id="go-south" data-dir="south"><span class="dir">South</span><span class="to"></span></button>
      <button class="d vert" id="go-down" data-dir="down"><span class="dir">Down</span><span class="to"></span></button>
     </div>
-    <p class="keys">Keys: arrows or W A S D to walk, E or Page Up to climb, Q or Page Down to descend, F to attack, R to rest.</p>
+    <p class="keys">Keys: arrows or W A S D to walk, E or Page Up to climb, Q or Page Down to descend, F to attack, R to make camp or take a room. Each step takes half an hour. Without a lantern you cannot travel at night or go underground.</p>
+   </section>
+   <section class="panel social" aria-labelledby="soc-h">
+    <div class="sectionhead"><h3 id="soc-h">Who knows whom</h3><span class="mono" id="soc-count" style="font-size:12px;color:var(--faint)"></span></div>
+    <svg id="social" viewBox="0 0 340 340" role="img" aria-label="Social graph of townsfolk, creatures and you"></svg>
+    <p class="legend"><span style="color:var(--accent)">● townsfolk</span><span style="color:var(--good)">● creatures</span><span class="m">● you</span><span class="p">— friendly</span><span class="r">— wary</span></p>
+    <ol class="ties" id="ties"></ol>
+    <p class="mapnote">Ties grow when people and creatures spend time together, share food or face danger side by side, and fade when they are apart. Friends of friends drift closer. People and creatures move toward those they like and away from those they distrust.</p>
    </section>
   </div>
 
@@ -221,6 +286,10 @@ details.zz summary{cursor:pointer;font-family:var(--mono);font-size:13px;color:v
   <div class="col right">
    <section class="panel" id="sheet" aria-label="Character sheet"></section>
    <section class="panel" id="pack" aria-label="Your pack"></section>
+   <section class="panel" aria-labelledby="codex-h">
+    <div class="sectionhead"><h3 id="codex-h">Codex of hidden rules</h3><span class="mono" id="codex-count" style="font-size:12px;color:var(--faint)"></span></div>
+    <ol class="codex" id="codex"></ol>
+   </section>
    <section class="panel log" aria-labelledby="log-h">
     <div class="sectionhead"><h3 id="log-h">Journal</h3><span id="reset-area"></span></div>
     <ol id="log"></ol>
@@ -235,18 +304,22 @@ details.zz summary{cursor:pointer;font-family:var(--mono);font-size:13px;color:v
    ZigZag core. Every thing in the game is a cell. Cells link to
    one another along named dimensions; each cell has at most one
    neighbour in each direction (+ posward, - negward) of a dimension.
-     d.x        east (+) / west (-)
-     d.y        north (+) / south (-)
-     d.z        up (+) / down (-)
-     d.contain  a store: container, then its items, as one rank
-     d.stat     a character, then its stat cells, as one rank
-     d.occupant a location (+) -> the anomaly that lurks there
-     d.at       character (+) -> the location it stands in
-     d.cursor   the root cell (+) -> the character
+     d.x         east (+) / west (-)
+     d.y         north (+) / south (-)
+     d.z         up (+) / down (-)
+     d.river     river segment (+) -> the next segment downstream
+     d.residents town (+) -> its townsfolk, as one rank
+     d.contain   a store: container, then its items, as one rank
+     d.stat      a character, then its stat cells, as one rank
+     d.occupant  a location (+) -> the anomaly that lurks there
+     d.at        character (+) -> the location it stands in
+     d.cursor    the root cell (+) -> the character
    ============================================================ */
 const zz={cells:{},dirty:new Set(),removed:new Set()};
 const coord=new Map();                    // "x,y,z" -> location cell id (index, rebuilt on load)
-const ck=(x,y,z)=>x+","+y+","+(z||0);
+const WORLD_R=32;                         // the world is 65 squares across and wraps round at the veil of golden mist
+const wrapC=v=>{const n=2*WORLD_R+1;return((v+WORLD_R)%n+n)%n-WORLD_R};
+const ck=(x,y,z)=>wrapC(x)+","+wrapC(y)+","+(z||0);
 const cell=id=>zz.cells[id];
 const touch=id=>{zz.dirty.add(id)};
 const flip=s=>s==="+"?"-":"+";
@@ -278,23 +351,101 @@ const DIRS={
 };
 const FLAT=["north","south","east","west"];
 const STATS=["STR","DEX","CON","INT","WIS","CHA"];
-const TERRAINS=["forest","plains","water","mountain","cave","dungeon","village","ruin","swamp","road","sky"];
+const TERRAINS=["forest","plains","water","mountain","cave","dungeon","village","ruin","swamp","road","sky","desert","grove"];
+const OPP={north:"south",south:"north",east:"west",west:"east",up:"down",down:"up"};
 const KINDS=["weapon","armor","potion","treasure","tool","food","junk"];
 const SPECIALS={none:"",regenerate:"knits itself back together each round",phasing:"one blow in four passes straight through it",frenzy:"strikes twice each round"};
 const OBJECT_CLASSES=["Safe","Euclid","Keter"];
-// Kit rows: name, description, kind, weight (lb), value (gp), heal, ac, damage, finesse
+const TOWN_SIZES={small:{label:"small hamlet",folk:4},medium:{label:"village",folk:7},large:{label:"market town",folk:9}};
+const CROSSINGS={ford:"ford",bridge:"stone bridge",magic:"magical bridge"};
 const CLASSES={
  Fighter:{hd:10,kit:[["Longsword","A plain, well-kept blade.","weapon",3,15,null,0,"1d8",false],["Chain shirt","Rings of steel over a padded jerkin.","armor",20,50,null,3]]},
  Rogue:{hd:8,kit:[["Shortsword","Light and quick.","weapon",2,10,null,0,"1d6",true],["Thieves' tools","Picks, a file and a tiny mirror.","tool",1,25],["Leather armour","Supple boiled leather.","armor",10,10,null,1]]},
  Wizard:{hd:6,kit:[["Spellbook","Your notes, cramped and precious.","tool",3,50],["Dagger","Mostly for cutting herbs.","weapon",1,2,null,0,"1d4",true]]},
  Cleric:{hd:8,kit:[["Mace","Iron-headed, simple.","weapon",4,5,null,0,"1d6",false],["Holy symbol","A silver sun on a cord.","tool",1,5],["Scale mail","Heavy overlapping plates.","armor",45,50,null,4]]}};
 const CLASS_NOTES={Fighter:"Second Wind: once per rest, heal 1d10 + level.",Rogue:"Sneak Attack: hits with a finesse weapon deal extra d6s.",Wizard:"Fire Bolt: an INT spell attack for 1d10, at will.",Cleric:"Sacred Flame: a WIS spell attack for 1d8, at will."};
+// Townsfolk roles: attack bonus, armour bonus, extra hp, courage, how far they roam, damage, forage chance per half hour
+const ROLES={guard:[2,4,4,.85,4,"1d8",.04],hunter:[2,1,2,.65,7,"1d6",.22],herbalist:[0,0,0,.25,5,"1d4",.3],merchant:[0,0,1,.2,3,"1d4",.05],
+ smith:[1,1,4,.6,3,"1d6",.05],farmer:[0,0,2,.4,4,"1d4",.2],fisher:[0,0,1,.4,5,"1d4",.28],priest:[1,1,2,.55,4,"1d6",.1],scout:[1,2,1,.5,9,"1d6",.15],miller:[0,0,2,.3,3,"1d4",.1]};
 const GLYPH={forest:"M17 32 L23 17 L29 32 Z M25 33 L31 15 L37 33 Z",mountain:"M11 33 L21 16 L27 25 L32 18 L41 33",
  water:"M12 21 q3.5 -4 7 0 t7 0 t7 0 t7 0 M12 29 q3.5 -4 7 0 t7 0 t7 0 t7 0",village:"M18 33 V23 L26 15 L34 23 V33 Z M23 33 V27 H29 V33",
  ruin:"M15 33 H37 M19 33 V17 H24 M30 33 V22 L34 20 V33",cave:"M13 33 Q13 14 26 14 Q39 14 39 33 M20 33 Q20 23 26 23 Q32 23 32 33",
  dungeon:"M16 33 V16 H36 V33 M21 33 V23 H31 V33 M16 20 H36",swamp:"M13 31 H39 M18 31 V21 M22 31 V17 M30 31 V22 M34 31 V18",
  plains:"M14 26 q3 -3 6 0 M25 21 q3 -3 6 0 M30 30 q3 -3 6 0 M17 33 q3 -3 6 0",road:"M14 35 L23 14 M38 35 L29 14 M26 31 V28 M26 24 V21",
- sky:"M14 30 q-1 -7 6 -7 q2 -7 9 -5 q6 0 7 6 q5 1 3 6 Z",other:"M20 25 H32 M26 19 V31"};
+ sky:"M14 30 q-1 -7 6 -7 q2 -7 9 -5 q6 0 7 6 q5 1 3 6 Z",other:"M20 25 H32 M26 19 V31",
+ town_small:"M18 33 V23 L26 15 L34 23 V33 Z M23 33 V27 H29 V33",
+ town_medium:"M10 33 V25 L17 18 L24 25 V33 Z M27 33 V23 L34 16 L41 23 V33 Z",
+ town_large:"M8 34 H46 M10 34 V25 L15 20 L20 25 V34 M20 34 V21 L27 13 L34 21 V34 M34 34 V26 L39 21 L44 26 V34"};
+const CROSS_GLYPH={bridge:"M8 31 Q26 13 44 31 M12 27 V37 M40 27 V37",ford:"M12 24 h5 M21 30 h5 M30 24 h5 M38 30 h4",magic:"M8 31 Q26 11 44 31"};
+Object.assign(GLYPH,{desert:"M10 31 q8 -9 16 0 q8 -7 16 0 M18 21 h2 M32 17 h2",
+ grove:"M26 35 V20 M26 23 L19 15 M26 25 L33 17 M18 31 h1 M34 29 h1 M22 14 h1",
+ falls:"M14 13 H38 M18 13 V35 M24 13 V35 M30 13 V35 M36 13 V35"});
+const GLIMPSE={forest:"a stretch of woodland",plains:"open grassland",water:"water glinting",mountain:"rocky high ground",cave:"a dark opening",dungeon:"worked stone in shadow",village:"rooftops and smoke",ruin:"broken walls",swamp:"wet, reedy ground",road:"a rutted track",sky:"open sky",desert:"pale, barren sand",grove:"a ring of silver-barked trees",other:"something you cannot make out"};
+const EX=s=>({north:s.includes("n"),south:s.includes("s"),east:s.includes("e"),west:s.includes("w"),up:s.includes("u"),down:s.includes("d")});
+/* The prepopulated region. Woodland and grove west of the start, the mountain east of the river with its path,
+   streams, lakes, waterfall and caves, and the desert far to the south-west. e lists open exits (n s e w u d). */
+const REGION=[
+ {x:-1,y:1,n:"Hazel Eaves",t:"forest",e:"nsew",g:"the edge of a hazel wood",d:"Hazel and young oak crowd the edge of the wood. Light falls green through the leaves, and the open country and the river lie south and east."},
+ {x:-2,y:1,n:"Bluebell Ride",t:"forest",e:"nsew",g:"a wide ride carpeted in bluebells",d:"A broad grassy ride runs between the trees, blue with flowers. Deer tracks cross it in the soft earth."},
+ {x:-3,y:1,n:"Coppice Hollow",t:"forest",e:"nsew",g:"a hollow of cut and regrown hazel",d:"Hazel stools, cut and regrown many times, ring a damp hollow. Someone has stacked poles here to dry."},
+ {x:-1,y:2,n:"Woodbine Way",t:"forest",e:"nsew",g:"a path tangled with honeysuckle",d:"A narrow path winds under honeysuckle and old ash. The air is sweet and full of bees."},
+ {x:-2,y:2,n:"The Old Oak",t:"forest",e:"nsew",g:"a vast oak in a clearing",d:"A single enormous oak fills a clearing, its lowest branches resting on the ground like elbows. Offerings of ribbon hang from its twigs."},
+ {x:-3,y:2,n:"Owl Wood",t:"forest",e:"nsew",g:"dark, close-set trees",d:"The trees grow close and dark here. Pellets and white feathers lie beneath a hollow beech."},
+ {x:-1,y:3,n:"Fern Bank",t:"forest",e:"nsew",g:"a slope deep in bracken",d:"Bracken stands waist-high on a slope that runs down toward a brook. Something has flattened a path through it."},
+ {x:-2,y:3,n:"Deep Wood",t:"forest",e:"nsew",g:"the heart of the wood, very still",d:"No birdsong reaches the heart of the wood. Moss covers everything, even the stones that may once have been a wall."},
+ {x:-3,y:3,n:"Thornwall",t:"forest",e:"sew",g:"a wall of blackthorn",d:"A hedge of blackthorn as high as a house closes off the north. Its thorns are long as fingers."},
+ {x:-4,y:2,n:"The Moonlit Grove",t:"grove",e:"nse",g:"silver trees and a faint humming",d:"Seven silver-barked trees stand in a ring around a pool that reflects stars even at noon. The air hums softly, and wounds feel lighter here.",p:{grove:true,landmark:true}},
+ {x:-6,y:-4,n:"Edge of the Waste",t:"desert",e:"nsew",g:"grass giving way to cracked earth",d:"The last tough grass gives out and the ground cracks into plates. Ahead the land is white and empty under a hard sky."},
+ {x:-7,y:-4,n:"Bleached Flats",t:"desert",e:"nsew",g:"a white, empty plain",d:"Flat white earth stretches in every direction. Heat shimmers make distant rocks float above the ground."},
+ {x:-6,y:-5,n:"Bone Dunes",t:"desert",e:"nsew",g:"dunes with huge bones in them",d:"Pale dunes rise around the ribs of some enormous beast, half-buried, arching overhead like a hall."},
+ {x:-7,y:-5,n:"The Salt Pan",t:"desert",e:"nsew",g:"a dazzling salt pan",d:"A crust of salt crunches underfoot and dazzles the eye. Nothing lives here but a few black beetles."},
+ {x:-8,y:-5,n:"Glass Waste",t:"desert",e:"nsew",g:"sand fused into green glass",d:"The sand here has been melted into sheets of green glass by some old, terrible heat. It rings faintly when the wind blows."},
+ {x:-7,y:-6,n:"The Dry Well",t:"desert",e:"nsew",g:"a stone well-head in the sand",d:"A ring of carved stone marks a well that has been dry for a century. Old prayers are scratched into its lip.",p:{landmark:true}},
+ {x:6,y:2,n:"Foothill Track",t:"plains",e:"nsew",g:"a track climbing into the foothills",d:"A track leaves the river country and climbs between gorse and grey boulders. The mountain rises ahead, its peak lost in cloud."},
+ {x:7,y:2,n:"Goat Path",t:"mountain",e:"wne",g:"a narrow goat path up the slope",d:"A goat path zigzags up the slope. To the south the hillside drops away in a crag; a brook chatters to the east."},
+ {x:7,y:3,n:"The Switchbacks",t:"mountain",e:"snwu",g:"the path turning back on itself up the mountain",d:"The path turns back and forth up a steep face. A cairn marks where it climbs on toward the high shoulder above; a stream comes down from the north, and an old mine lies west."},
+ {x:6,y:3,n:"Old Mine Mouth",t:"mountain",e:"nsewd",g:"a timbered hole in the hillside",d:"Rotting timbers frame a tunnel into the mountain. Cold air breathes out of it, and a rusted rail runs down into the dark.",p:{landmark:true}},
+ {x:7,y:4,n:"Tumbling Beck",t:"water",e:"ns",g:"a stream leaping down the rocks",d:"A mountain stream leaps from pool to pool between mossy rocks. You hop across on stepping stones, spray on your face."},
+ {x:7,y:5,n:"The Falls",t:"water",e:"nsd",g:"a waterfall roaring down a cliff",d:"The stream pours off a cliff in a white curtain and thunders into a deep pool. Behind the falling water you glimpse a dark gap in the rock.",p:{falls:true,landmark:true}},
+ {x:7,y:6,n:"Highmere Shore",t:"plains",e:"nsew",g:"a stony lakeshore",d:"Grey stones edge a cold mountain lake. The water is so still it holds the whole mountain upside down."},
+ {x:7,y:7,n:"Highmere",t:"water",e:"",g:"Highmere, a deep mountain lake",d:"A deep, cold lake fed by the mountain streams.",p:{lake:true,landmark:true}},
+ {x:8,y:7,n:"Highmere",t:"water",e:"",g:"Highmere, a deep mountain lake",d:"A deep, cold lake fed by the mountain streams.",p:{lake:true}},
+ {x:8,y:2,n:"Southrun Brook",t:"water",e:"wse",g:"a brook running south off the mountain",d:"A quick brook runs south off the mountain over clean gravel. Watercress grows thick at its edges."},
+ {x:8,y:1,n:"Southmere Shore",t:"plains",e:"nsew",g:"a reedy lakeshore",d:"Reeds and yellow iris fringe a broad lake where the brook spills in. Otter slides mark the mud."},
+ {x:8,y:0,n:"Southmere",t:"water",e:"",g:"Southmere, a wide reedy lake",d:"A wide lake fed by the southern brook.",p:{lake:true,landmark:true}},
+ {x:9,y:0,n:"Southmere",t:"water",e:"",g:"Southmere, a wide reedy lake",d:"A wide lake fed by the southern brook.",p:{lake:true}},
+ {x:7,y:3,z:1,n:"The High Shoulder",t:"mountain",e:"de",g:"a windswept shoulder of the mountain",d:"You stand on a bare shoulder of rock high above the river country. The path runs east along a knife-edge toward a saddle."},
+ {x:8,y:3,z:1,n:"The Saddle",t:"mountain",e:"wu",g:"a saddle between two crags",d:"A grassy saddle sits between two crags. From here a last steep scramble leads up to the summit."},
+ {x:8,y:3,z:2,n:"The Peak",t:"mountain",e:"d",g:"the summit",d:"The summit is a crown of shattered rock. The whole land lies below: the river and its towns, two lakes like dropped coins, the dark wood in the west and, far to the south-west, the white glare of the desert.",p:{landmark:true}},
+ {x:7,y:5,z:-1,n:"Behind the Falls",t:"cave",e:"us",g:"a cave behind a curtain of water",d:"The roar of the falls fills a wet cave behind the water. Light comes through the curtain in shifting green. A passage leads south into the mountain."},
+ {x:7,y:4,z:-1,n:"Dripping Gallery",t:"cave",e:"nse",g:"a long gallery hung with dripstone",d:"Stalactites drip into still pools along a high gallery. The passage branches east and runs on south."},
+ {x:7,y:3,z:-1,n:"The Great Cavern",t:"cave",e:"nwde",g:"a vast echoing cavern",d:"Your light cannot find the roof of this cavern. A shaft drops away into blackness, and you can hear water far below."},
+ {x:8,y:4,z:-1,n:"Crystal Grotto",t:"cave",e:"ws",g:"a glitter of crystals",d:"Crystals as long as spears jut from every wall, catching your light and throwing it back in a thousand colours."},
+ {x:8,y:3,z:-1,n:"The Bone Chamber",t:"cave",e:"nw",g:"a low chamber full of bones",d:"Small bones carpet the floor of a low chamber, gnawed and sorted into neat piles by something that likes order."},
+ {x:6,y:3,z:-1,n:"Collapsed Adit",t:"dungeon",e:"eu",g:"an old mine tunnel, half fallen",d:"Old miners' props sag under the weight of the mountain. Rails lead up toward daylight and east into natural caves."},
+ {x:7,y:3,z:-2,n:"The Underlake",t:"cave",e:"u",g:"black water under the mountain",d:"A lake lies under the mountain, black and perfectly still. Pale, eyeless fish turn slowly in your light.",p:{landmark:true}}
+];
+const CREATURES=[
+ {name:"Old Bramble",species:"badger",at:[-2,2],r:3,active:"night",wary:.5,desc:"a grizzled badger with a torn ear",doing:"snuffling for grubs"},
+ {name:"The White Hart",species:"deer",at:[-3,2],r:4,active:"day",wary:.8,desc:"a white stag with silver-tipped antlers",doing:"grazing"},
+ {name:"Slip",species:"otter",at:[7,1],r:3,active:"day",wary:.25,desc:"a sleek, inquisitive otter",doing:"playing in the shallows"},
+ {name:"Tumble",species:"otter",at:[8,1],r:3,active:"day",wary:.3,desc:"a young otter that never stops moving",doing:"rolling in the reeds"},
+ {name:"Grey Wing",species:"heron",at:[7,6],r:3,active:"day",wary:.6,desc:"a tall grey heron with a patient eye",doing:"fishing, motionless"},
+ {name:"Corvin",species:"raven",at:[6,2],r:8,active:"day",wary:.15,desc:"a raven who repeats words he has overheard",doing:"watching everything"},
+ {name:"Pip",species:"pony",at:[6,1],r:4,active:"day",wary:.35,desc:"a shaggy hill pony",doing:"cropping the turf"},
+ {name:"Lume",species:"wisp",at:[-4,2],r:2,active:"night",wary:.4,desc:"a drifting mote of blue light that hums",doing:"drifting between the trees"},
+ {name:"Glimmer",species:"wisp",at:[-4,2],r:2,active:"night",wary:.4,desc:"a wisp of pale gold light",doing:"circling the pool"},
+ {name:"Dune",species:"fox",at:[-7,-5],r:4,active:"night",wary:.6,desc:"a big-eared sand fox",doing:"hunting beetles"}
+];
+// Rows: name, description, kind, weight, value, heal, ac, damage, finesse, light
+const LANTERN=["Hooded lantern","Brass and horn. With it lit you can travel by night and go underground.","tool",2,10,null,0,null,false,true];
+const START_POOL=[LANTERN,["Tinderbox","Flint, steel and dry tinder.","tool",1,1],["Coil of rope","Fifty feet of hemp.","tool",10,1],["Tin whistle","Shrill enough to carry across a valley.","junk",0,1],
+ ["Woollen cloak","Thick, oiled against the rain.","junk",3,2],["Potion of Healing","A red liquid that shimmers when shaken.","potion",0.5,50,"2d4+2"],["Bundle of herbs","Feverfew and woundwort.","potion",0.5,5,"1d4+1"],
+ ["Pouch of coins","An inheritance, of sorts.","treasure",0.3,15],["Dagger","Plain and sharp.","weapon",1,2,null,0,"1d4",true],["Bag of apples","Crisp and sweet; creatures like them too.","food",1,1,"1d4"],
+ ["Fishing line","Hooks, line and a cork float.","tool",0.2,1],["Scrap of a map","Shows a mountain, a lake, and a mark that might be a cave.","junk",0,1]];
+const SHOP_STOCK={small:[["Smoked fish","Wrapped in dock leaves.","food",0.5,2,"1d4+1"],["Bundle of herbs","Feverfew and woundwort.","potion",0.5,5,"1d4+1"],["Fishing line","Hooks, line and a cork float.","tool",0.2,1]],
+ medium:[LANTERN.slice(0,4).concat([12],LANTERN.slice(5)),["Rations (3 days)","Hard bread, cheese and dried apples.","food",6,2,"1d4"],["Potion of Healing","A red liquid that shimmers when shaken.","potion",0.5,50,"2d4+2"],["Coil of rope","Fifty feet of hemp.","tool",10,1]],
+ large:[LANTERN,["Potion of Healing","A red liquid that shimmers when shaken.","potion",0.5,45,"2d4+2"],["Shortsword","Light and quick.","weapon",2,10,null,0,"1d6",true],["Round shield","Lime-wood faced with hide.","armor",6,8,null,2],["Rations (3 days)","Hard bread, cheese and dried apples.","food",6,2,"1d4"]]};
 
 /* Dice */
 const rnd=n=>1+Math.floor(Math.random()*n);
@@ -308,7 +459,24 @@ function roll(expr,timesDice=1){
  const total=Math.max(0,rolls.reduce((a,c)=>a+c,0)+b);
  return{total,text:`${n}d${s}${b?(b>0?"+"+b:b):""} → [${rolls.join(", ")}]${b?(b>0?" + "+b:" − "+(-b)):""} = ${total}`};
 }
+const d6x3=()=>rnd(6)+rnd(6)+rnd(6);
 function rollStats(){return STATS.map(()=>{const r=[rnd(6),rnd(6),rnd(6),rnd(6)].sort((a,b)=>a-b);return r[1]+r[2]+r[3]})}
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+
+/* ============================================================
+   World clock: runs at four times real speed. Actions also
+   spend time: half an hour a step, eight hours a rest.
+   ============================================================ */
+const CLOCK_RATE=4,TICK=30,STEP_MIN=30,REST_MIN=480;
+function gameNow(){const c=cell("root")?.clock;if(!c)return 8*60;return c.base+(Date.now()-c.real)/60000*CLOCK_RATE}
+const hourOf=t=>((t%1440)+1440)%1440/60;
+const isNight=t=>{const h=hourOf(t);return h<6||h>=20};
+const dayOf=t=>Math.floor(t/1440)+1;
+function fmtClock(t){const m=Math.floor(((t%1440)+1440)%1440),h=Math.floor(m/60);return `Day ${dayOf(t)} · ${String(h).padStart(2,"0")}:${String(m%60).padStart(2,"0")}`}
+function h32(n){n=(n^61)^(n>>>16);n=n+(n<<3);n=n^(n>>>4);n=Math.imul(n,0x27d4eb2d);n=n^(n>>>15);return(n>>>0)/4294967296}
+// The magical bridge exists during some hours and not others, decided by the world's seed and the hour
+function magicPresent(t=gameNow()){const r=cell("root");if(!r)return false;return h32((r.seed||7)+Math.floor(t/60)*7919)<.3}
 
 /* ============================================================
    Character helpers (all reads go through the ZigZag cells)
@@ -329,8 +497,33 @@ const hitDie=()=>CLASSES[cell(charId()).cls]?.hd||8;
 const prof=()=>2+Math.floor((sv("LVL")-1)/4);
 function weapon(){const ws=packIds().map(cell).filter(i=>i.kind==="weapon");return ws.find(i=>i.wielded)||ws[0]||null}
 const zOf=c=>c.z||0;
+const towns=()=>Object.values(zz.cells).filter(c=>c.k==="loc"&&c.town);
+const npcs=()=>Object.values(zz.cells).filter(c=>c.k==="npc");
+const npcsAt=(x,y)=>npcs().filter(n=>n.x===x&&n.y===y);
+const hasLight=()=>!!charId()&&packIds().some(id=>cell(id).light);
+const isDark=c=>c&&(["cave","dungeon"].includes(c.terrain)||zOf(c)<0);
+const exitOpen=(c,d)=>!c||!c.exits||c.exits[d]!==false;
+function wallText(c,d){if(c&&c.walls&&c.walls[d])return c.walls[d];return d==="up"?"no way up":d==="down"?"no way down":"no way through"}
+// Why you cannot go a given way right now, or null if you can
+function blockedBy(here,dir){
+ const v=DIRS[dir],H=cell(here);
+ if(H.exits&&H.exits[dir]===false)return`There is ${wallText(H,dir)} to the ${dir==="up"?"above":dir==="down"?"below":dir}.`.replace("to the above","above").replace("to the below","below");
+ if(!H.exits&&H.river&&v.dz)return"There is nothing to climb or dig into in the middle of a river.";
+ const id=coord.get(ck(H.x+v.dx,H.y+v.dy,zOf(H)+v.dz)),T=id&&cell(id);
+ if(T){
+  const rb=riverBlock(id);if(rb)return rb;
+  if(T.lake)return`${T.t} is deep, cold water. You can walk its shore but not cross it.`;
+  if(T.exits&&T.exits[OPP[dir]]===false)return`You cannot get through that way: ${wallText(T,OPP[dir])}.`;
+  const fire=fireAt(T.x,T.y,zOf(T));if(fire)return`${T.t} is on fire. Wait for it to burn out or for rain.`;
+ }
+ if(!hasLight()){
+  const targetDark=T?isDark(T):zOf(H)+v.dz<0;
+  if(targetDark&&!(T&&T.visited&&isDark(H)))return"It is pitch dark that way. You need a lantern to go underground.";
+  if(isNight(gameNow())&&!(T&&T.town)&&!isDark(H))return"It is too dark to travel at night without a lantern. Make camp until dawn, or take a room at an inn in a town.";
+ }
+ return null;
+}
 
-/* Attack options for this character, worked out from class, stats and the weapon in hand */
 function attackOptions(){
  const ch=cell(charId()),lvl=sv("LVL"),opts=[],w=weapon();
  if(w){const finesse=!!w.finesse,stat=finesse&&sv("DEX")>sv("STR")?"DEX":"STR";
@@ -338,17 +531,32 @@ function attackOptions(){
  else opts.push({key:"unarmed",label:"Punch",stat:"STR",dice:"1d2",addMod:true,sneak:0});
  if(ch.cls==="Wizard")opts.push({key:"spell",label:"Cast Fire Bolt",stat:"INT",dice:lvl>=5?"2d10":"1d10",addMod:false,sneak:0});
  if(ch.cls==="Cleric")opts.push({key:"spell",label:"Call Sacred Flame",stat:"WIS",dice:lvl>=5?"2d8":"1d8",addMod:false,sneak:0});
- // Spellcasters lead with their spell when it is the stronger choice
  if(opts.length>1&&mod(sv(opts[1].stat))>=mod(sv(opts[0].stat)))opts.reverse();
  return opts;
 }
 
 /* ============================================================
+   River rules
+   ============================================================ */
+function riverBlock(id,t=gameNow()){
+ const c=cell(id);if(!c||!c.river)return null;const cr=c.river.crossing;
+ if(c.hole)return`The ${riverName()} falls here into a hole with no bottom. Nothing can go down it, and nothing can cross it.`;
+ if(!cr)return`The ${riverName()} runs deep and fast here. You need a crossing: a ford, a bridge, or the bridge that comes and goes.`;
+ if(cr==="magic"&&!magicPresent(t))return"Only empty air hangs between the carved posts. The magical bridge is not here now; it comes and goes.";
+ return null;
+}
+function passXY(x,y,magic){const id=coord.get(ck(x,y,0));if(!id)return true;const c=cell(id);if(c.lake)return false;if(!c.river)return true;const cr=c.river.crossing;return cr==="ford"||cr==="bridge"||(cr==="magic"&&magic)}
+const riverName=()=>cell("root")?.riverName||"river";
+
+/* ============================================================
    Storage: the viewer's private subtree in the artifact db when
-   available, this browser's localStorage otherwise.
+   available, this browser's localStorage otherwise. Townsfolk
+   cells move every half hour, so they are saved together in one
+   record; every other cell is its own record.
    ============================================================ */
 const LS_KEY="zigzag-realms-v1";
-const store={mode:"none",db:null,uid:null,from:null,chain:Promise.resolve(),error:null,
+const PACKED="npc";
+const store={mode:"none",db:null,uid:null,from:null,chain:Promise.resolve(),error:null,timer:null,
  col(){return this.db.doc(`data/users/${this.uid}/world`).collection("cells")},
  async connect(){
   try{
@@ -363,9 +571,10 @@ const store={mode:"none",db:null,uid:null,from:null,chain:Promise.resolve(),erro
   if(this.mode==="cloud"){
    try{
     const snap=await Promise.race([this.col().get(),new Promise((_,rej)=>setTimeout(()=>rej({code:"timeout"}),10000))]);
-    const cells={};for(const d of snap.docs){if(d.exists)cells[d.id]=JSON.parse(JSON.stringify(d.data()))}
+    const cells={};
+    for(const d of snap.docs){if(!d.exists)continue;const body=JSON.parse(JSON.stringify(d.data()));if(d.id==="npc-pack")Object.assign(cells,body.cells||{});else cells[d.id]=body}
     if(cells.root){this.from="cloud";return cells}
-    return this.loadLocal(); // nothing in the cloud yet: adopt any browser copy
+    return this.loadLocal();
    }catch(e){this.mode="local";this.error="Could not reach your saved world, so this session saves in this browser."}
   }
   return this.loadLocal();
@@ -374,11 +583,43 @@ const store={mode:"none",db:null,uid:null,from:null,chain:Promise.resolve(),erro
  saveLocal(){try{localStorage.setItem(LS_KEY,JSON.stringify(zz.cells))}catch(e){}},
  flush(){
   this.saveLocal();
-  if(this.mode!=="cloud"){zz.dirty.clear();zz.removed.clear();renderSaving();return}
-  const writes=[...zz.dirty].map(id=>[id,cell(id)?JSON.parse(JSON.stringify(cell(id))):null]);
-  for(const id of zz.removed)if(!cell(id))writes.push([id,null]);
+  if(this.mode!=="cloud"&&this.mode!=="puter"){zz.dirty.clear();zz.removed.clear();renderSaving();return}
+  if(!this.timer){this.timer=setTimeout(()=>this.send(),1200);renderSaving()}
+ },
+ async loadPuter(){
+  try{
+   const cells={};let cursor;
+   do{const page=await puter.kv.list({pattern:"zz:",returnValues:true,limit:1000,cursor});
+    for(const it of page.items||[]){const id=it.key.slice(3);if(id==="npc-pack")Object.assign(cells,it.value.cells||{});else cells[id]=it.value}
+    cursor=page.cursor}while(cursor);
+   return cells.root?cells:null;
+  }catch(e){this.error="Could not read your saved world from Puter.";return null}
+ },
+ sendPuter(){
+  const items=[],dels=[];let pack=false;
+  for(const id of zz.dirty){const c=cell(id);if(c&&c.k===PACKED){pack=true;continue}if(c)items.push({key:"zz:"+id,value:c});else dels.push(id)}
+  for(const id of zz.removed)if(!cell(id))dels.push(id);
+  if([...zz.removed].some(id=>!cell(id)))pack=true;
+  if(pack){const cells={};for(const n of npcs())cells[n.id]=n;items.push({key:"zz:npc-pack",value:{cells}})}
   zz.dirty.clear();zz.removed.clear();
-  if(!writes.length)return;
+  if(!items.length&&!dels.length){renderSaving();return}
+  pending++;renderSaving();
+  this.chain=this.chain.then(async()=>{
+   try{for(let i=0;i<items.length;i+=500)await puter.kv.set(JSON.parse(JSON.stringify(items.slice(i,i+500))));
+    for(const id of new Set(dels))await puter.kv.del("zz:"+id)}
+   catch(e){this.error="Some changes could not be saved to Puter; they are kept in this browser."}
+  }).finally(()=>{pending--;renderSaving()});
+ },
+ send(){
+  clearTimeout(this.timer);this.timer=null;
+  if(this.mode==="puter")return this.sendPuter();
+  const writes=[];let pack=false;
+  for(const id of zz.dirty){const c=cell(id);if(c&&c.k===PACKED){pack=true;continue}writes.push([id,c?JSON.parse(JSON.stringify(c)):null])}
+  for(const id of zz.removed){if(cell(id))continue;if(/^c\d+$/.test(id))writes.push([id,null])}
+  if([...zz.removed].some(id=>!cell(id)))pack=true;
+  if(pack){const cells={};for(const n of npcs())cells[n.id]=n;writes.push(["npc-pack",JSON.parse(JSON.stringify({cells}))])}
+  zz.dirty.clear();zz.removed.clear();
+  if(!writes.length){renderSaving();return}
   pending++;renderSaving();
   this.chain=this.chain.then(async()=>{
    for(const [id,body] of writes){
@@ -393,6 +634,7 @@ const store={mode:"none",db:null,uid:null,from:null,chain:Promise.resolve(),erro
  }
 };
 let pending=0;
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden"&&store.timer)store.send()});
 
 /* ============================================================
    The narrator: Claude through the sample capability, or the
@@ -402,11 +644,11 @@ let sample=null,narratorNote="";
 const TABLES={
  forest:{names:["Thornwood Edge","Elder Grove","Mossbank Hollow","Owl's Reach","Fernmere Wood"],lines:["Old oaks lean together overhead, their roots knuckled through the leaf litter.","Grey light falls between the pines and the air smells of resin and wet bark.","A deer path winds between birches; somewhere a woodpecker knocks and stops."]},
  plains:{names:["Windmeet Downs","Barrow Field","The Long Grass","Kestrel Heath"],lines:["Grass runs to the horizon in long silver waves under a wide sky.","A lone standing stone leans in the middle of the heath, furred with lichen.","Larks rise from the turf; the wind has nothing to stop it here."]},
- water:{names:["Saltreed Ford","Heron Pool","The Narrow Water","Millrace Bend"],lines:["Brown water slides past, quick and cold, over a bed of round stones.","Reeds crowd a still pool where a heron stands as if carved.","Stepping stones cross the stream, green with weed and slick."]},
+ water:{names:["Heron Pool","The Narrow Water","Millrace Bend"],lines:["Brown water slides past, quick and cold, over a bed of round stones.","Reeds crowd a still pool where a heron stands as if carved.","A spring bubbles up through white sand into a clear, shallow pool."]},
  mountain:{names:["Raven Scar","The Grey Shoulder","Cairn Pass","Hollowpeak"],lines:["The path climbs between boulders; below, the land falls away into haze.","Wind whistles through a notch in the ridge marked by a crooked cairn.","Scree rattles underfoot and the air is thin and bitter."]},
  cave:{names:["The Dripping Mouth","Glowworm Hollow","Bat Gallery","Rootfall Cellar"],lines:["Water ticks somewhere in the dark and the air is cold as a well.","Pale fungus lights the tunnel walls a faint, sickly green.","Roots hang through the ceiling like the fingers of something listening."]},
  dungeon:{names:["The Sunken Vault","Warden's Cells","Hall of Broken Shields","Ossuary Stair"],lines:["Worked stone, a corridor of iron sconces long since cold.","A collapsed portcullis half-blocks a hall lined with empty niches.","Chains hang from the walls of a low, damp cell block."]},
- village:{names:["Hobb's Crossing","Little Marrow","Fennick Green"],lines:["A cluster of thatched cottages, a well, and a dog that will not stop barking.","Smoke rises from a smithy; a few villagers watch you over a fence.","A market cross stands at the heart of a muddy green."]},
+ village:{names:["Shepherd's Fold","Tollhouse Corner","Crofters' Row"],lines:["A few crofts huddle together behind a dry-stone wall.","A tollhouse stands empty at a bend in the track, its gate left open.","Washing flaps on a line between two cottages; nobody is in sight."]},
  ruin:{names:["The Old Watchtower","Fallen Chapel","Broken Wall","Bell Loft"],lines:["A tower stands roofless, one wall fallen outward in a fan of stone.","Ivy holds together what is left of a chapel; its windows are empty arches.","Toppled pillars lie in the grass like the bones of something huge."]},
  swamp:{names:["Bitter Fen","Mirewatch","Black Sedge"],lines:["The ground gives under every step; pools of black water steam faintly.","Dead trees stand in the fen, white as bone, draped in moss.","Frogs fall silent as you pass, and something large slips into the water."]},
  road:{names:["King's Road","Drovers' Way","Milestone Bend"],lines:["A rutted road runs on, marked by a weathered milestone.","Cart tracks and hoofprints, both fresh, press into the mud.","The road dips between hedges thick with bramble."]},
@@ -418,7 +660,6 @@ const LOOT={forest:[["Bundle of herbs","Feverfew and woundwort, tied with twine.
  ruin:[["Potion of Healing","A red liquid that shimmers when shaken.","potion",0.5,50,"2d4+2"],["Warhammer","Heavy, with a spiked back.","weapon",2,15,null,0,"1d8",false]],swamp:[["Bog-iron dagger","Pitted and black.","weapon",1,2,null,0,"1d4",true]],road:[["Lost purse","A few coins inside.","treasure",0.2,8]],
  sky:[["Eagle feather","Long as your forearm, barred gold and brown.","junk",0,5]]};
 const HAZARDS={mountain:["Loose scree","DEX","1d6"],water:["Slick stepping stones","DEX","1d4"],swamp:["Sucking mire","STR","1d6"],dungeon:["Dart trap","DEX","1d8"],cave:["Low, jagged ceiling","DEX","1d4"],ruin:["Crumbling masonry","DEX","1d6"],forest:["Nettle thicket","CON","1d4"],sky:["Sudden gust","STR","1d6"]};
-// Original anomalies, written as containment files. tier 1 near the start, tier 3 far out or deep down.
 const ANOMALIES=[
  {designation:"AE-0390",name:"Lantern-Without-Keeper",objectClass:"Safe",tier:1,hp:8,ac:12,attack:2,damage:"1d6",special:"none",description:"A brass storm lantern on four jointed stilts. Shadows cast by its light do not stay attached to the people who cast them. It is currently circling you, slowly, keeping the light on your back."},
  {designation:"AE-0233",name:"Mother of Keys",objectClass:"Safe",tier:1,hp:9,ac:14,attack:3,damage:"1d6",special:"none",description:"A rusted iron ring holding thirty-one keys. Anything it touches comes unlocked, including joints. It hangs in the air at chest height, jingling, and turns toward you."},
@@ -429,30 +670,32 @@ const ANOMALIES=[
  {designation:"AE-0721",name:"The Measured Man",objectClass:"Keter",tier:3,hp:28,ac:14,attack:5,damage:"1d10+2",special:"phasing",description:"A tall, featureless figure in a grey coat that always stands exactly three metres from the nearest witness, until it does not. It is three metres away. Now it is two."},
  {designation:"AE-1290",name:"The Understair",objectClass:"Keter",tier:3,hp:26,ac:13,attack:5,damage:"2d6",special:"regenerate",description:"Something that lives beneath every staircase at once. Only its hands have been recorded. There are more of them than there should be, and they are coming up the steps."}
 ];
-const pick=a=>a[Math.floor(Math.random()*a.length)];
+TABLES.desert={names:["Cracked Flats","Scorched Reach","The Pale Waste"],lines:["Cracked earth stretches away under a white sky; nothing grows here.","Dunes of pale sand shift in a hot wind that tastes of salt.","A dead thorn tree stands alone, polished silver by the wind."]};
+TABLES.grove=TABLES.forest;
+LOOT.desert=[["Sun-bleached skull","Smooth as porcelain.","junk",1,2],["Desert glass","A lump of green glass fused by some old heat.","treasure",0.3,15]];
+HAZARDS.desert=["Blistering heat","CON","1d6"];
 function tableLocation(from,dir,pos){
  const dz=DIRS[dir]?.dz||0;
  let terrain;
  if(pos.z<0)terrain=pick(["cave","dungeon","cave","water"]);
  else if(pos.z>=2)terrain=pick(["sky","mountain","sky"]);
  else if(pos.z===1)terrain=pick(["ruin","mountain","forest","sky"]);
- else terrain=from&&Math.random()<.55&&!["cave","dungeon","sky"].includes(from.terrain)?from.terrain:pick(TERRAINS.filter(t=>!["cave","dungeon","sky"].includes(t)));
+ else{const ok=TERRAINS.filter(t=>!["cave","dungeon","sky","village","grove","desert"].includes(t));terrain=from&&Math.random()<.55&&ok.includes(from.terrain)?from.terrain:pick(ok)}
  const T=TABLES[terrain]||TABLES.plains;
  const lead=!from?"":dz>0?`You climb up from ${from.t}. `:dz<0?`You go down from ${from.t}. `:`You go ${dir} from ${from.t}. `;
- const lines=T.lines.slice().sort(()=>Math.random()-.5),text=lines[0]+(Math.random()<.6?" "+lines[1]:"");
+ const lines=shuffle(T.lines),text=lines[0]+(Math.random()<.6?" "+lines[1]:"");
  const items=[];if(LOOT[terrain]&&Math.random()<.6)items.push(pick(LOOT[terrain]));
  const hz=HAZARDS[terrain]&&from&&Math.random()<.25?HAZARDS[terrain]:null;
  let monster=null;
- if(from&&Math.random()<(pos.z<0?.45:.3)){
+ if(from&&pos.dist>2&&Math.random()<(pos.z<0?.45:.3)){
   const tier=1+Math.floor((pos.dist+Math.max(0,-pos.z)*2)/4);
   const a=pick(ANOMALIES.filter(m=>m.tier<=Math.min(3,tier)));
   monster=Object.assign({},a,{loot:Math.random()<.5?asItem(pick(LOOT.ruin.concat(LOOT.dungeon))):null});
  }
- return normLocation({name:pick(T.names),terrain,description:lead+text,
-  items:items.map(asItem),
+ return normLocation({name:pick(T.names),terrain,description:lead+text,items:items.map(asItem),
   hazard:hz?{name:hz[0],text:"The way here is treacherous.",stat:hz[1],dc:10+Math.min(5,Math.floor(pos.dist/3)),damage:hz[2]}:null,monster},terrain,pos);
 }
-const asItem=([name,description,kind,weight,value,heal,ac,damage,finesse])=>({name,description,kind,weight,value,heal,ac,damage,finesse});
+const asItem=([name,description,kind,weight,value,heal,ac,damage,finesse,light])=>({name,description,kind,weight,value,heal,ac,damage,finesse,light});
 function normItem(i){
  i=i&&typeof i==="object"?i:{};
  const kind=KINDS.includes(i.kind)?i.kind:"junk";
@@ -461,7 +704,7 @@ function normItem(i){
  let dmg=null,finesse=false;
  if(kind==="weapon"){const m=DICE.exec(cleanDice(i.damage));dmg=m?`${Math.min(2,+m[1])}d${Math.min(12,Math.max(2,+m[2]))}${m[3]&&+m[3]>0?"+"+Math.min(3,+m[3]):""}`:"1d6";finesse=!!i.finesse}
  return{name:String(i.name||"Odd trinket").slice(0,60),desc:String(i.description||"").slice(0,200),kind,
-  weight:Math.max(0,Math.min(60,+i.weight||0)),value:Math.max(0,Math.min(1000,Math.round(+i.value||0))),heal,ac,dmg,finesse};
+  weight:Math.max(0,Math.min(60,+i.weight||0)),value:Math.max(0,Math.min(1000,Math.round(+i.value||0))),heal,ac,dmg,finesse,light:!!i.light};
 }
 function normMonster(m,pos){
  if(!m||typeof m!=="object"||!m.name)return null;
@@ -479,68 +722,632 @@ function normMonster(m,pos){
 }
 function normLocation(o,fallbackTerrain,pos){
  o=o&&typeof o==="object"?o:{};
- const terrain=TERRAINS.includes(o.terrain)?o.terrain:(fallbackTerrain||"plains");
+ let terrain=TERRAINS.includes(o.terrain)?o.terrain:(fallbackTerrain||"plains");
  let hazard=null;const h=o.hazard;
  if(h&&typeof h==="object"&&h.name&&STATS.includes(h.stat)&&DICE.test(cleanDice(h.damage))){
   hazard={name:String(h.name).slice(0,60),text:String(h.text||"").slice(0,240),stat:h.stat,dc:Math.max(8,Math.min(18,Math.round(+h.dc||12))),damage:cleanDice(h.damage)};
  }
  return{name:String(o.name||"Nameless place").slice(0,60),desc:String(o.description||"").slice(0,1200),terrain,
-  items:(Array.isArray(o.items)?o.items:[]).slice(0,4).map(normItem),hazard,monster:pos.dist?normMonster(o.monster,pos):null};
+  items:(Array.isArray(o.items)?o.items:[]).slice(0,4).map(normItem),hazard,monster:pos.dist>2?normMonster(o.monster,pos):null};
 }
-function describeForPrompt(id){const c=cell(id),f=foeId(id);return`"${c.t}" (${c.terrain}, depth ${zOf(c)}): ${c.desc}${f?` An anomaly, ${cell(f).designation} "${cell(f).t}", is still at large there.`:""}`}
+function describeForPrompt(id){
+ const c=cell(id),f=foeId(id);
+ let extra="";
+ if(c.river)extra=c.river.crossing?` This is the ${CROSSINGS[c.river.crossing]} over the ${riverName()}.`:` This is the ${riverName()} itself, impassable here.`;
+ if(c.town)extra=` This is the ${TOWN_SIZES[c.town.size].label} of ${c.t}.`;
+ return`"${c.t}" (${c.terrain}, depth ${zOf(c)}): ${c.desc}${extra}${f?` An anomaly, ${cell(f).designation} "${cell(f).t}", is still at large there.`:""}`;
+}
 function buildPrompt(fromId,dir,pos){
- const root=cell("root"),ch=cell(charId());
+ const root=cell("root"),ch=cell(charId()),t=gameNow();
  const nearby=[];
  for(const [d,v] of Object.entries(DIRS)){const nb=coord.get(ck(pos.x+v.dx,pos.y+v.dy,pos.z+v.dz));if(nb&&nb!==fromId)nearby.push(`- ${d==="up"?"Above":d==="down"?"Below":"To the "+d}: ${describeForPrompt(nb)}`)}
  const how=dir==="up"?"climbed up (by stair, ladder, rope, roots or rock) out of":dir==="down"?"gone down (by stair, shaft, sinkhole, well or tunnel) out of":`walked ${dir} out of`;
  return [
  "You are the narrator of a fantasy tabletop adventure in the style of classic D&D, with a strange undertone: the world contains anomalies, uncanny entities documented in the dry clinical voice of containment files, inspired by the SCP Foundation.",
  `World theme: ${root.theme}`,
+ root.riverName?`The ${root.riverName} flows north to south through this land. It can only be crossed at a ford, a stone bridge, and a magical bridge that appears and vanishes. Three towns stand on its banks: ${towns().map(c=>`${c.t} (${TOWN_SIZES[c.town.size].label})`).join(", ")}. Townsfolk roam the country by day and go home at night.`:"",
+ `It is ${fmtClock(t)}, ${isNight(t)?"night: describe darkness, moonlight, lamps and night sounds":"daytime"}. Weather: ${weatherAt(pos.x,pos.y,pos.z,t).label}.`,
  `The traveller is ${ch.t}, a level ${sv("LVL")} ${ch.cls} with ${sv("HP")} of ${sv("MAXHP")} hit points and armour class ${armourClass()}.`,
  fromId?`They have just ${how} ${describeForPrompt(fromId)}`:"This is the very first location, where the adventure begins. Make it a natural starting point such as a crossroads, a camp or the edge of a village.",
- nearby.length?"Places already mapped next to the new square (stay consistent with them, and mention what can be seen or heard in their direction):\n"+nearby.join("\n"):"",
+ nearby.length?"Places already mapped next to the new square (stay consistent with them, and mention what can be seen or heard in their direction; if one is the river, this place is on its bank):\n"+nearby.join("\n"):"",
  `The new square is at depth ${pos.z}: 0 is ground level; below zero is underground (cellars, caves, tunnels, vaults, growing stranger the deeper it goes); above zero is high up (tower floors, cliff ledges, treetops, rooftops, and from depth 2 upward, open sky and floating places). It is ${pos.dist} steps from the start. Danger and rewards grow slowly with distance and depth.`,
  "",
- "Write the new location. It must follow on naturally from the place they left: terrain changes gradually, and something seen from the previous place can be found here. If they went up or down, say how they got here.",
- "description: 2 to 4 sentences, second person, present tense, concrete and sensory. Hint at what lies in one or two other directions, including above or below where it makes sense.",
+ "Write the new location. It must follow on naturally from the place they left: terrain changes gradually, and something seen from the previous place can be found here. If they went up or down, say how they got here. Do not make it a town or a river crossing.",
+ "description: 2 to 4 sentences, second person, present tense, concrete and sensory. Hint at what lies in one or two other directions using the words north, south, east, west, above or below.",
  "items: 0 to 3 things lying here that can be picked up. Weights in pounds, values in gold pieces. Potions and food may heal with a dice expression such as \"2d4+2\". Armour and shields give an ac bonus of 1 to 5. Weapons have damage such as \"1d8\" and finesse true for light blades. Treasure is rare near the start.",
  "hazard: in about one location in four, a hazard the traveller makes a saving throw against when they first arrive. Otherwise null.",
- `monster: in about one location in three (more often underground, never at the start), an anomaly is here and will fight. Invent an original one; never use real SCP numbers, names or characters. Give it a designation of the form AE-#### and an object class: Safe (weak), Euclid (moderate) or Keter (dangerous; only far from the start or deep underground). Its description is 2 to 3 sentences in the clinical voice of a containment file, ending with what it is doing right now, as the traveller sees it. For this level ${sv("LVL")} traveller: hp about ${6+4*sv("LVL")+pos.dist}, ac 10 to 16, attack +2 to +${3+sv("LVL")}, damage of one or two dice. special is one of: none, regenerate, phasing, frenzy. loot is an item it leaves behind when destroyed, or null. Otherwise monster is null.`,
+ `monster: in about one location in three (more often underground and at night, never at the start), an anomaly is here and will fight. Invent an original one; never use real SCP numbers, names or characters. Give it a designation of the form AE-#### and an object class: Safe (weak), Euclid (moderate) or Keter (dangerous; only far from the start or deep underground). Its description is 2 to 3 sentences in the clinical voice of a containment file, ending with what it is doing right now. For this level ${sv("LVL")} traveller: hp about ${6+4*sv("LVL")+pos.dist}, ac 10 to 16, attack +2 to +${3+sv("LVL")}, damage of one or two dice. special is one of: none, regenerate, phasing, frenzy. loot is an item it leaves behind when destroyed, or null. Otherwise monster is null.`,
  "",
  "Reply with only a JSON object in exactly this shape:",
- '{"name":"Saltreed Ford","terrain":"water","description":"...","items":[{"name":"Potion of Healing","description":"A small vial of red liquid.","kind":"potion","weight":0.5,"value":50,"heal":"2d4+2","ac":0,"damage":null,"finesse":false}],"hazard":{"name":"Slick stepping stones","text":"The stones are green with weed and the current is strong.","stat":"DEX","dc":12,"damage":"1d6"},"monster":{"designation":"AE-0417","name":"The Patient Ferryman","objectClass":"Euclid","description":"...","hp":14,"ac":12,"attack":4,"damage":"1d8","special":"none","loot":null}}',
- `terrain is one of: ${TERRAINS.join(", ")}. kind is one of: ${KINDS.join(", ")}. stat is one of: ${STATS.join(", ")}. hazard and monster may each be null; rarely have both.`
+ '{"name":"Saltreed Meadow","terrain":"plains","description":"...","items":[{"name":"Potion of Healing","description":"A small vial of red liquid.","kind":"potion","weight":0.5,"value":50,"heal":"2d4+2","ac":0,"damage":null,"finesse":false}],"hazard":{"name":"Hidden ditch","text":"Long grass hides a deep drainage ditch.","stat":"DEX","dc":12,"damage":"1d6"},"monster":{"designation":"AE-0417","name":"The Patient Ferryman","objectClass":"Euclid","description":"...","hp":14,"ac":12,"attack":4,"damage":"1d8","special":"none","loot":null}}',
+ `terrain is one of: ${TERRAINS.filter(t=>t!=="village"&&t!=="grove").join(", ")}. kind is one of: ${KINDS.join(", ")}. stat is one of: ${STATS.join(", ")}. hazard and monster may each be null; rarely have both.`
  ].filter(Boolean).join("\n");
+}
+/* The narrator has two possible voices: Claude (inside a Claude artifact, on the viewer's own Claude
+   account) or a model reached through Puter (on puter.site, billed to the player's own Puter account).
+   PUTER_MODEL is the cheapest model that reliably returns the JSON this game needs. */
+const PUTER_MODEL="gpt-5.4-nano";
+const ai={kind:null,
+ ready(){return!!this.kind},
+ label(){return this.kind==="claude"?"Claude":this.kind==="puter"?`${PUTER_MODEL} via Puter`:"built-in tables"},
+ async json(prompt){
+  if(this.kind==="claude")return await sample.json(prompt,{modelTier:"quick",cache:false});
+  if(this.kind==="puter"){
+   const r=await puter.ai.chat(prompt+"\n\nReply with the JSON only, no code fence, no commentary.",{model:PUTER_MODEL,normalize:true});
+   const text=typeof r==="string"?r:typeof r?.message?.content==="string"?r.message.content:Array.isArray(r?.message?.content)?r.message.content.map(b=>b.text||"").join(""):String(r);
+   return parseLooseJSON(text);
+  }
+  return null;
+ }
+};
+function parseLooseJSON(text){
+ const s=String(text||"").replace(/^```(?:json)?/m,"").replace(/```\s*$/m,"");
+ try{return JSON.parse(s)}catch(e){}
+ const a=s.indexOf("{"),b=s.lastIndexOf("}");if(a>=0&&b>a){try{return JSON.parse(s.slice(a,b+1))}catch(e){}}
+ throw{code:"invalid_json"};
+}
+async function askClaude(prompt){
+ if(!ai.ready())return null;
+ try{const out=await ai.json(prompt);narratorNote="";return out}
+ catch(e){
+  const code=e&&e.code;
+  if(["not_granted","sampling_disabled","not_declared","capability_disabled","capability_removed"].includes(code)){ai.kind=null;narratorNote="The AI narrator is not available here, so the built-in tables write new places."}
+  else if(code==="rate_limited")narratorNote="The narrator is busy right now, so the built-in tables wrote this. It will write the next place if it can.";
+  else if(code==="insufficient_funds"||/funds|credit|balance/i.test(String(e&&(e.message||e.error||e))))narratorNote="Your Puter account has run out of AI credit, so the built-in tables wrote this.";
+  else narratorNote="The narrator's answer did not arrive, so the built-in tables wrote this.";
+  renderPills();return null;
+ }
 }
 async function narrate(fromId,dir,pos){
  const from=fromId?cell(fromId):null;
- if(sample){
-  try{
-   const out=await sample.json(buildPrompt(fromId,dir,pos),{modelTier:"quick",cache:false});
-   narratorNote="";
-   return Object.assign(normLocation(out,from&&from.terrain,pos),{by:"claude"});
-  }catch(e){
-   const code=e&&e.code;
-   if(["not_granted","sampling_disabled","not_declared","capability_disabled","capability_removed"].includes(code)){sample=null;narratorNote="Claude is not available here, so the built-in tables write new places."}
-   else if(code==="rate_limited")narratorNote="Claude is busy right now, so the built-in tables wrote this place. Claude will write the next one if it can.";
-   else narratorNote="Claude's answer did not arrive, so the built-in tables wrote this place.";
-   renderPills();
-  }
- }
+ const out=await askClaude(buildPrompt(fromId,dir,pos));
+ if(out)return Object.assign(normLocation(out,from&&from.terrain,pos),{by:"claude"});
  return Object.assign(tableLocation(from,dir,pos),{by:"tables"});
+}
+
+/* Routes are written one step ahead: when you arrive somewhere, every open way out that leads to an
+   unwritten square is written in one batch, so you can see what lies there before you choose. */
+let genPromise=null,genFor=null;
+function normExits(raw,fromDir){
+ const e={north:true,south:true,east:true,west:true,up:false,down:false};
+ if(raw&&typeof raw==="object")for(const d of Object.keys(e))if(typeof raw[d]==="boolean")e[d]=raw[d];
+ if(fromDir)e[OPP[fromDir]]=true;
+ return e;
+}
+function normWalls(raw){const w={};if(raw&&typeof raw==="object")for(const d of Object.keys(DIRS))if(typeof raw[d]==="string"&&raw[d].trim())w[d]=raw[d].trim().slice(0,80);return w}
+function missingDirs(locId){
+ const L=cell(locId),out=[];
+ for(const [d,v] of Object.entries(DIRS)){
+  if(L.exits?L.exits[d]===false:!!v.dz)continue;
+  if(L.river&&!L.river.crossing||L.lake||L.hole)continue;
+  const pos={x:wrapC(L.x+v.dx),y:wrapC(L.y+v.dy),z:zOf(L)+v.dz};pos.dist=Math.abs(pos.x)+Math.abs(pos.y)+Math.abs(pos.z);
+  if(Math.max(Math.abs(pos.x),Math.abs(pos.y))>exploreRange())continue;
+  const id=coord.get(ck(pos.x,pos.y,pos.z));
+  if(!id)out.push({dir:d,pos});
+  else if(cell(id).planned&&!cell(id).written&&ai.ready()&&!cell(id).lake)out.push({dir:d,pos,planned:id});
+ }
+ return out;
+}
+function landmarksFrom(L){
+ const marks=Object.values(zz.cells).filter(c=>c.k==="loc"&&(c.landmark||c.town||(c.river&&(c.river.crossing||c.river.index===0||c.hole))));
+ const seen=new Set();
+ return marks.filter(c=>{if(seen.has(c.t))return false;seen.add(c.t);return true}).map(c=>{
+  const dx=wrapC(c.x-L.x),dy=wrapC(c.y-L.y),dz=zOf(c)-zOf(L);
+  const where=[dy?`${Math.abs(dy)} ${dy>0?"north":"south"}`:"",dx?`${Math.abs(dx)} ${dx>0?"east":"west"}`:"",dz?`${Math.abs(dz)} level${Math.abs(dz)>1?"s":""} ${dz>0?"up":"down"}`:""].filter(Boolean).join(", ")||"here";
+  const what=c.town?TOWN_SIZES[c.town.size].label:c.hole?"where the river falls into a bottomless hole":c.river?(c.river.crossing?CROSSINGS[c.river.crossing]:"source of the river"):c.lake?"lake":c.terrain;
+  return`${c.t} (${what}): ${where}`;
+ }).join("; ");
+}
+function batchPrompt(locId,need){
+ const root=cell("root"),ch=cell(charId()),t=gameNow(),L=cell(locId);
+ const items=need.map(n=>{
+  const around=[];for(const [d,v] of Object.entries(DIRS)){const nb=coord.get(ck(n.pos.x+v.dx,n.pos.y+v.dy,n.pos.z+v.dz));if(nb&&nb!==locId&&visible(cell(nb)))around.push(`${d}: "${cell(nb).t}" (${cell(nb).terrain})`)}
+  const where=`square ${n.pos.x},${n.pos.y} at depth ${n.pos.z}`;
+  if(n.planned){const P=cell(n.planned);return`- ${n.dir}: PLANNED "${P.t}" (${P.terrain}, ${where}). Keep the name and terrain. Notes: ${P.desc}${P.exits?` Open ways from it: ${Object.keys(P.exits).filter(k=>P.exits[k]).join(", ")||"none"}.`:""} Write glimpse and description only.`}
+  return`- ${n.dir}: NEW (${where}).${around.length?` Mapped neighbours: ${around.join("; ")}.`:""}${Math.max(Math.abs(n.pos.x),Math.abs(n.pos.y))>=WORLD_R-1?" It lies at the edge of the world, where a veil of golden mist hangs in the air; beyond it the world wraps round to its far side.":""}`;
+ });
+ return [
+  "You are the narrator of a fantasy tabletop adventure in the style of classic D&D, with a strange undertone: anomalies, uncanny entities documented in the dry voice of containment files, inspired by the SCP Foundation.",
+  `World theme: ${root.theme}`,
+  root.riverName?`The ${root.riverName} rises at the foot of the mountain in the east, flows south past three towns, and ends by falling into a bottomless hole. It can only be crossed at a ford, a stone bridge and a magical bridge that comes and goes.`:"",
+  `Landmarks, relative to where the traveller stands: ${landmarksFrom(L)}.`,
+  `It is ${fmtClock(t)}, ${isNight(t)?"night":"day"}. Weather where they stand: ${weatherAt(L.x,L.y,zOf(L),t).label}. Let the weather colour the glimpses and descriptions. The traveller is ${ch.t}, a level ${sv("LVL")} ${ch.cls}${hasLight()?" carrying a lantern":""}.`,
+  `They stand at ${describeForPrompt(locId)}`,
+  "",
+  "Write the places they can see from here, one for each direction below. Keep everything consistent with the landmarks and neighbours: terrain changes gradually, and the mountain, woods, lakes, river and desert are where the landmarks say.",
+  items.join("\n"),
+  "",
+  "For a NEW place give: name; terrain; glimpse (what the traveller can see of it from where they stand, under 12 words, as seen by day or by night as fits the time); description (2 to 3 sentences, second person, present tense, as experienced on arrival; mention what can be seen in other directions using the words north, south, east, west, above or below); exits (true or false for north, south, east, west, up, down: open ground usually has all four horizontal ways open; cliffs, deep water, thorn walls or rock close some; up and down only for real features such as stairs, a tree to climb, a cave mouth, a well or a ledge; underground passages usually have one to three ways; the way back toward the traveller must be open); walls (for each closed horizontal way, a short phrase of what blocks it); items (0 to 3, as below); hazard (about one in four, else null); monster (about one in three underground or at night, one in five otherwise, else null).",
+  `Items: objects lying there. kind is one of ${KINDS.join(", ")}. weight in pounds, value in gold. Potions and food may heal with a dice expression such as "2d4+2"; armour gives ac 1 to 5; weapons have damage such as "1d8" and finesse true for light blades.`,
+  `Hazards: {"name","text","stat" (one of ${STATS.join(", ")}),"dc" 10 to 16,"damage" such as "1d6"}.`,
+  `Monsters are original anomalies (never real SCP numbers or names): {"designation":"AE-####","name","objectClass":"Safe|Euclid|Keter","description" (clinical, 2 to 3 sentences, ending with what it is doing now),"hp" about ${6+4*sv("LVL")},"ac" 10 to 16,"attack" 2 to ${3+sv("LVL")},"damage" one or two dice,"special":"none|regenerate|phasing|frenzy","loot" an item or null}. Keter only far from the start or deep underground.`,
+  `terrain is one of: ${TERRAINS.filter(x=>x!=="village"&&x!=="grove").join(", ")}.`,
+  "",
+  "Reply with only a JSON object of this shape, with one entry per direction listed above:",
+  '{"places":{"north":{"name":"...","terrain":"forest","glimpse":"...","description":"...","exits":{"north":true,"south":true,"east":true,"west":false,"up":false,"down":false},"walls":{"west":"a wall of brambles"},"items":[],"hazard":null,"monster":null},"east":{"glimpse":"...","description":"..."}}}'
+ ].filter(Boolean).join("\n");
+}
+async function ensureNeighbours(locId){
+ while(genPromise)await genPromise;
+ if(!cell(locId))return;
+ const need=missingDirs(locId);if(!need.length)return;
+ genFor=locId;renderCompass();
+ genPromise=(async()=>{
+  const out=await askClaude(batchPrompt(locId,need));
+  const places=out&&typeof out.places==="object"&&out.places||{};
+  const L=cell(locId);
+  for(const n of need){
+   const raw=places[n.dir];
+   if(n.planned){const P=cell(n.planned);if(raw&&typeof raw.description==="string"&&raw.description.trim()){P.desc=raw.description.trim().slice(0,1200);P.by="claude"}if(raw&&typeof raw.glimpse==="string"&&raw.glimpse.trim())P.glimpse=raw.glimpse.trim().slice(0,100);P.written=true;touch(P.id);continue}
+   if(coord.get(ck(n.pos.x,n.pos.y,n.pos.z)))continue;
+   const data=raw&&raw.name?Object.assign(normLocation(raw,L.terrain,n.pos),{by:"claude"}):Object.assign(tableLocation(L,n.dir,n.pos),{by:"tables"});
+   data.exits=normExits(raw&&raw.exits,n.dir);data.walls=normWalls(raw&&raw.walls);
+   data.glimpse=raw&&typeof raw.glimpse==="string"&&raw.glimpse.trim()?raw.glimpse.trim().slice(0,100):`${data.name}: ${GLIMPSE[data.terrain]||GLIMPSE.other}`;
+   const id=createLocation(data,n.pos);cell(id).seen=true;
+  }
+ })();
+ try{await genPromise}finally{genPromise=null;genFor=null}
+ store.flush();render();
+}
+
+/* ============================================================
+   The river, its towns and crossings, laid out once per world
+   ============================================================ */
+function planRiver(){
+ // The river rises at the foot of the mountain beside Highmere, runs west to the lowland, then meanders south.
+ const cells=[[6,7],[5,7],[4,7]];let x=4,y=7,side=0;
+ while(cells.length<20){
+  if(side||Math.random()<.62){y--;side=0}
+  else{let s=Math.random()<.5?-1:1;if(x+s<1||x+s>4)s=-s;x+=s;side=s}
+  cells.push([x,y]);
+ }
+ const isRiver=(a,b)=>cells.some(([cx,cy])=>cx===a&&cy===b);
+ const regionAt=new Set(REGION.filter(r=>!r.z).map(r=>r.x+","+r.y));
+ const straight=i=>i>0&&i<19&&(cells[i-1][0]===cells[i][0]&&cells[i+1][0]===cells[i][0]||cells[i-1][1]===cells[i][1]&&cells[i+1][1]===cells[i][1]);
+ // Crossings: one in each of three stretches, preferring a straight run. The last cell is the hole.
+ const crossings={},types=shuffle(["ford","bridge","magic"]);
+ [[5,8],[11,13],[15,17]].forEach(([a,b],k)=>{
+  const opts=[];for(let i=a;i<=b;i++)opts.push(i);
+  crossings[pick(opts.filter(straight).length?opts.filter(straight):opts)]=types[k];
+ });
+ // Towns: one in each of three stretches, on a bank, sizes in random order
+ const sizes=shuffle(["small","medium","large"]),townList=[],taken=new Set(["0,0"]);
+ const SIDES=[[1,0,"east"],[-1,0,"west"],[0,1,"north"],[0,-1,"south"]];
+ [[2,5],[8,11],[13,16]].forEach(([a,b],k)=>{
+  const tries=shuffle(Array.from({length:b-a+1},(_,j)=>a+j));
+  for(const i of tries){
+   if(crossings[i])continue;
+   const [cx,cy]=cells[i];let placed=false;
+   for(const [sx,sy,side] of shuffle(SIDES)){const bx=cx+sx,by=cy+sy,key=bx+","+by;
+    if(isRiver(bx,by)||taken.has(key)||regionAt.has(key)||townList.some(t=>Math.abs(t.x-bx)+Math.abs(t.y-by)<3))continue;
+    townList.push({seg:i,x:bx,y:by,size:sizes[k],side});taken.add(key);placed=true;break}
+   if(placed)break;
+  }
+ });
+ return{cells,crossings,towns:townList};
+}
+const NPC_NAMES=["Joss Fairweather","Maud Penhallow","Tobin Reed","Ysolde Carrow","Hal Brennock","Pell Underhay","Agnes Thorley","Wat Marlow","Bryony Gale","Osric Tanner","Nell Hobbes","Corin Ashby","Edith Vane","Ralf Cobbold","Tamsin Rook","Gideon Pike","Mabel Fenn","Ansel Ward","Lettice Crane","Hob Miller","Sorrel Dunn","Piers Lacey","Wenna Holt","Dunstan Grey","Ida Moss"];
+function tableWorld(plan){
+ const river=pick(["Wend","Silverrun","Marrowbourne","Ashwater","Lissom"]);
+ const LINES=["Brown water runs fast between undercut banks, far too deep to wade.","Willows trail their branches in a slow, dark pool that hides a strong current.","The river narrows and roars over a ledge of black rock.","Reeds crowd the shallows, but the middle of the channel is deep and quick.","A kingfisher flashes blue over the water and is gone.","The river bends wide around a shingle bar, cold and quick.","Mist hangs on the water; an old eel trap lies broken on the bank.","Otter slides mark the mud; the far bank is a wall of alder."];
+ const FEATURES=["Springs","Willow Pool","Black Ledge","Reed Bed","Kingfisher Reach","Shingle Bend","Mist Water","Alder Run","Mill Race","Deep Water"];
+ const segments=plan.cells.map((_,i)=>({name:`${river} ${i<4?"Headwaters":pick(FEATURES)}`,description:pick(LINES)}));
+ const TN={small:["Reedholt","Coldharbour","Wickstead"],medium:["Fennick Green","Ashby Ferry","Little Marrow"],large:["Kingsford","Westerbridge","Harrowgate"]};
+ const TD={small:"A handful of cottages with turf roofs cluster on the bank. Nets dry on poles and a single lamp burns in the window of the alehouse.",
+  medium:"A village of thatch and timber gathers around a green that runs down to the water. There is a mill, a smithy and an inn with a painted sign.",
+  large:"A walled market town crowds the bank, its streets loud with carts and criers. Barges tie up at a stone quay below the gate."};
+ const roles=Object.keys(ROLES),names=shuffle(NPC_NAMES);
+ return{river,segments,towns:plan.towns.map(t=>({name:pick(TN[t.size]),description:TD[t.size]})),
+  crossings:{ford:"A ford of flat stones and gravel, knee-deep and bitterly cold. Cart ruts run down into the water on both banks.",
+   bridge:"A humped stone bridge of three arches, its parapet worn smooth by hands. Moss grows in the joints.",
+   magicPresent:"A bridge of pale, singing light spans the river, solid underfoot and faintly warm.",
+   magicAbsent:"Two carved posts face each other across the water with nothing between them but air and a low hum."},
+  npcs:Array.from({length:20},(_,i)=>({name:names[i],role:roles[i%roles.length],trait:pick(["keeps to themselves","talks too much","never without a pipe","sings while walking","owes everyone money","sharp-eyed and quiet","quick to laugh","superstitious about the river"])})),by:"tables"};
+}
+function worldPrompt(plan){
+ const notes=plan.cells.map((_,i)=>{const n=[];const cr=plan.crossings[i];if(cr)n.push(`the ${CROSSINGS[cr]} crosses here; name the segment after it`);for(const t of plan.towns)if(t.seg===i)n.push(`town ${"ABC"[plan.towns.indexOf(t)]}, a ${TOWN_SIZES[t.size].label}, stands on the ${t.side} bank`);return`${i+1}${i===0?" (source: rises from the outflow of Highmere, a lake at the foot of the mountain)":i===19?" (end: the river plunges into a bottomless hole; nothing can go down it or cross here)":""}: ${n.join("; ")||"open river"}`});
+ const homes=plan.towns.map((t,i)=>`town ${"ABC"[i]} (${TOWN_SIZES[t.size].label}, ${TOWN_SIZES[t.size].folk} people)`);
+ return [
+  "You are setting up the world for a fantasy tabletop adventure in the style of classic D&D, with uncanny anomalies at its edges.",
+  `World theme: ${cell("root").theme}`,
+  "A river flows north to south through the land in 20 consecutive segments. It is too deep and fast to cross except at three crossings. Here are the segments in order from source to lowest:",
+  notes.join("\n"),
+  "",
+  "Write the river, its three towns, its crossings and twenty townsfolk.",
+  "segments: exactly 20, in order. Each has a short name and a 1 to 2 sentence description, second person, present tense, that makes clear the water cannot be crossed here (except at crossings, which describe the crossing).",
+  "towns: exactly 3, in the order A, B, C. Each has a name and a 2 to 3 sentence description that fits its size and mentions the river.",
+  "crossings: one or two sentences each for the ford, the stone bridge, the magical bridge when it is present, and the same spot when the magical bridge is absent.",
+  `npcs: exactly 20. The first ${TOWN_SIZES[plan.towns[0].size].folk} live in ${homes[0]}, the next ${TOWN_SIZES[plan.towns[1].size].folk} in ${homes[1]}, the last ${TOWN_SIZES[plan.towns[2].size].folk} in ${homes[2]}. Each has a full name, a role from: ${Object.keys(ROLES).join(", ")}, and a short trait. Larger towns have more guards and merchants; small ones have fishers and farmers.`,
+  "",
+  "Reply with only a JSON object in exactly this shape:",
+  '{"river":"Wend","segments":[{"name":"Wend Springs","description":"..."}],"towns":[{"name":"Reedholt","description":"..."}],"crossings":{"ford":"...","bridge":"...","magicPresent":"...","magicAbsent":"..."},"npcs":[{"name":"Maud Penhallow","role":"herbalist","trait":"talks to her plants"}]}',
+  "river is the river's name without \"the\" or \"River\"."
+ ].join("\n");
+}
+function normWorld(o,plan){
+ const fb=tableWorld(plan);if(!o||typeof o!=="object")return fb;
+ const str=(v,n,d)=>typeof v==="string"&&v.trim()?v.trim().slice(0,n):d;
+ const segs=Array.isArray(o.segments)?o.segments:[],tw=Array.isArray(o.towns)?o.towns:[],np=Array.isArray(o.npcs)?o.npcs:[],cr=o.crossings||{};
+ return{river:str(o.river,30,fb.river).replace(/^the\s+/i,"").replace(/\s+river$/i,""),
+  segments:fb.segments.map((s,i)=>({name:str(segs[i]&&segs[i].name,60,s.name),description:str(segs[i]&&segs[i].description,500,s.description)})),
+  towns:fb.towns.map((t,i)=>({name:str(tw[i]&&tw[i].name,40,t.name),description:str(tw[i]&&tw[i].description,600,t.description)})),
+  crossings:{ford:str(cr.ford,400,fb.crossings.ford),bridge:str(cr.bridge,400,fb.crossings.bridge),magicPresent:str(cr.magicPresent,400,fb.crossings.magicPresent),magicAbsent:str(cr.magicAbsent,400,fb.crossings.magicAbsent)},
+  npcs:fb.npcs.map((n,i)=>{const a=np[i]||{};return{name:str(a.name,40,n.name),role:ROLES[String(a.role).toLowerCase()]?String(a.role).toLowerCase():n.role,trait:str(a.trait,80,n.trait)}}),by:"claude"};
+}
+function buildRiverWorld(plan,w){
+ const root=cell("root");root.riverName=w.river;
+ const segIds=plan.cells.map(([x,y],i)=>{
+  const cr=plan.crossings[i]||null;
+  let desc=w.segments[i].description;
+  if(cr==="ford")desc+=" "+w.crossings.ford;if(cr==="bridge")desc+=" "+w.crossings.bridge;
+  const id=createLocation({name:w.segments[i].name,desc:cr==="magic"?desc+" "+w.crossings.magicAbsent:desc,terrain:"water",items:[],hazard:null,monster:null,by:w.by},{x,y,z:0,dist:Math.abs(x)+Math.abs(y)});
+  Object.assign(cell(id),{river:{index:i,crossing:cr},seen:false,descPresent:cr==="magic"?desc+" "+w.crossings.magicPresent:null,exits:cr?EX("nsew"):EX("")});
+  if(i===0)Object.assign(cell(id),{landmark:true,desc:cell(id).desc+" Here the river begins, spilling out of Highmere at the foot of the mountain."});
+  if(i===plan.cells.length-1)Object.assign(cell(id),{hole:true,landmark:true,terrain:"cave",desc:cell(id).desc+" The whole river pours over a ragged lip into a hole so deep that no sound comes back up. Spray hangs over it, and nothing that goes in returns."});
+  return id;
+ });
+ for(let i=0;i<segIds.length-1;i++)connect(segIds[i],"river",segIds[i+1]);
+ const npcList=w.npcs.slice();
+ plan.towns.forEach((t,i)=>{
+  const id=createLocation({name:w.towns[i].name,desc:w.towns[i].description,terrain:"village",items:[],hazard:null,monster:null,by:w.by},{x:t.x,y:t.y,z:0,dist:Math.abs(t.x)+Math.abs(t.y)});
+  Object.assign(cell(id),{town:{size:t.size,side:t.side},seen:false});
+  for(let k=0;k<TOWN_SIZES[t.size].folk;k++){const p=npcList.shift();if(p)appendTo(id,"residents",makeNpc(p,id,t))}
+  for(const row of SHOP_STOCK[t.size]){const iid=itemCell(normItem(asItem(row)));cell(iid).forSale=true;appendTo(id,"contain",iid)}
+ });
+}
+function buildRegion(){
+ for(const r of REGION){
+  const z=r.z||0;if(coord.get(ck(r.x,r.y,z)))continue;
+  const id=createLocation({name:r.n,desc:r.d,terrain:r.t,items:[],hazard:r.t==="desert"&&Math.random()<.5?{name:"Blistering heat",text:"The sun beats down without mercy.",stat:"CON",dc:11,damage:"1d4"}:null,monster:null,by:"tables",exits:EX(r.e),glimpse:r.g},{x:r.x,y:r.y,z,dist:Math.abs(r.x)+Math.abs(r.y)+Math.abs(z)});
+  Object.assign(cell(id),{planned:true,written:false,seen:false},r.p||{});
+ }
+ // A few anomalies and finds wait in the caves
+ const cave=[[7,3,-1,"AE-0866"],[8,3,-1,"AE-1004"],[7,3,-2,"AE-0721"]];
+ for(const [x,y,z,des] of cave){const id=coord.get(ck(x,y,z)),a=ANOMALIES.find(m=>m.designation===des);if(!id||!a)continue;
+  const mid=newCell("monster",{t:a.name,designation:a.designation,objectClass:a.objectClass,desc:a.description,hp:a.hp,maxhp:a.hp,ac:a.ac,atk:a.attack,dmg:a.damage,special:a.special});connect(id,"occupant",mid);
+  appendTo(mid,"contain",itemCell(normItem({name:"Uncut gemstone",description:"Heavy and cloudy, but it catches the light.",kind:"treasure",weight:0.2,value:40})))}
+ const grotto=coord.get(ck(8,4,-1));if(grotto)appendTo(grotto,"contain",itemCell(normItem({name:"Spear of crystal",description:"Snapped from the grotto wall, keen and light.",kind:"weapon",weight:2,value:30,damage:"1d8"})));
+ const peak=coord.get(ck(8,3,2));if(peak)appendTo(peak,"contain",itemCell(normItem({name:"Eagle's-eye stone",description:"A smooth stone left on the summit cairn by some earlier climber.",kind:"treasure",weight:0.2,value:25})));
+ for(const c of CREATURES){
+  newCell("npc",{t:c.name,wild:true,species:c.species,desc:c.desc,doing:c.doing,den:{x:c.at[0],y:c.at[1]},radius:c.r,active:c.active,wary:c.wary,
+   x:c.at[0],y:c.at[1],hp:6,maxhp:6,ac:12,atk:0,courage:.1,food:0,gold:0,activity:c.doing,memory:[],fear:null,ties:{}});
+ }
+ seedTies();
+}
+function seedTies(){
+ const all=npcs();
+ for(const a of all)for(const b of all){if(a===b)continue;
+  if(!a.wild&&!b.wild&&a.home===b.home)a.ties[b.id]=+(.15+Math.random()*.3).toFixed(3);
+  if(a.wild&&b.wild&&a.species===b.species)a.ties[b.id]=.5;}
+}
+function makeNpc(p,townId,t){
+ const R=ROLES[p.role]||ROLES.farmer,str=d6x3(),dex=d6x3(),con=d6x3(),wis=d6x3();
+ const hp=Math.max(4,6+mod(con)*2+R[2]);
+ return newCell("npc",{t:p.name,role:p.role,trait:p.trait,home:townId,x:t.x,y:t.y,str,dex,con,wis,hp,maxhp:hp,
+  atk:Math.max(mod(str),mod(dex))+R[0]+1,ac:10+mod(dex)+R[1],courage:Math.max(.05,Math.min(.95,R[3]+mod(wis)*.05+(Math.random()-.5)*.2)),
+  food:1,gold:rnd(6),activity:"at home",memory:[],fear:null,ties:{}});
+}
+
+/* ============================================================
+   Townsfolk: simulated in half-hour ticks whenever time passes
+   ============================================================ */
+const fieldCache=new Map();const BOUND=25;
+function field(townId,magic){
+ const key=townId+"|"+magic;if(fieldCache.has(key))return fieldCache.get(key);
+ const T=cell(townId),dist=new Map([[T.x+","+T.y,0]]),q=[[T.x,T.y]];
+ for(let h=0;h<q.length;h++){const [x,y]=q[h],d=dist.get(x+","+y);
+  for(const n of FLAT){const v=DIRS[n],nx=x+v.dx,ny=y+v.dy,k=nx+","+ny;
+   if(Math.abs(nx)>BOUND||Math.abs(ny)>BOUND||dist.has(k)||!passXY(nx,ny,magic))continue;dist.set(k,d+1);q.push([nx,ny])}}
+ fieldCache.set(key,dist);return dist;
+}
+const homeDist=(n,t)=>field(n.home,magicPresent(t)).get(n.x+","+n.y)??99;
+function remember(n,text,t){n.memory=(n.memory||[]).concat([{text,t:Math.round(t)}]).slice(-4)}
+function news(n,text,kind,always){
+ const H=hereId()&&cell(hereId());
+ if(always||(H&&zOf(H)===0&&Math.abs(H.x-n.x)+Math.abs(H.y-n.y)<=3))log(text,kind||"npc");
+}
+function stepToward(n,t){
+ const f=field(n.home,magicPresent(t)),cur=f.get(n.x+","+n.y);if(cur===0)return true;
+ let best=null,bd=cur??999;
+ for(const d of FLAT){const v=DIRS[d],k=(n.x+v.dx)+","+(n.y+v.dy),dd=f.get(k);if(dd!==undefined&&dd<bd){bd=dd;best=v}}
+ if(best){n.x+=best.dx;n.y+=best.dy}
+ return f.get(n.x+","+n.y)===0;
+}
+/* ---------- Social graph: a small dynamical model ----------
+   Every person and creature keeps a tie weight w in [-1, 1] to the others it has met.
+   Each half hour, for every pair in contact (same square c = 1, next square c = 0.4):
+     w_ij <- w_ij + 0.08 c (h_ij - w_ij) + 0.04 c * mean_k(w_ik w_kj)
+   h_ij is their natural affinity: people from the same town, in compatible trades and of similar
+   nerve like each other (homophily); animals of one species flock or herd together; wary animals
+   distrust people, hunters and deer are at odds, herbalists and wisps get on. The second term is
+   triadic closure: friends of friends drift closer. Pairs out of contact forget: w <- 0.997 w.
+   Events add kicks: sharing food (+0.2), fighting off a threat in view (+0.1 to the fighter),
+   fleeing together (+0.05), talking (+0.08), feeding a creature (+0.25).
+   Ties steer behaviour: everyone weighs each possible step by the ties of whoever is there, and
+   chats with whoever they like most. A creature that trusts you to 0.6 follows you. */
+const COMPAT=[["guard","smith"],["hunter","scout"],["herbalist","priest"],["farmer","miller"],["fisher","merchant"],["hunter","fisher"],["merchant","smith"]];
+const clamp1=v=>Math.max(-1,Math.min(1,v));
+const tie=(a,b)=>((a.ties||{})[b.id])||0;
+function bump(a,b,dw){if(!a||!b||a===b)return;a.ties=a.ties||{};a.ties[b.id]=+clamp1(tie(a,b)+dw).toFixed(3);touch(a.id)}
+function bump2(a,b,dw){bump(a,b,dw);bump(b,a,dw)}
+function affinity(a,b){
+ if(a.k==="char"||b.k==="char"){const o=a.k==="char"?b:a;return o.wild?.35-o.wary*.5:.25}
+ if(!a.wild&&!b.wild){let h=.1;if(a.home===b.home)h+=.35;if(COMPAT.some(([p,q])=>(a.role===p&&b.role===q)||(a.role===q&&b.role===p)))h+=.2;if(a.role===b.role)h+=.1;return h-Math.abs(a.courage-b.courage)*.3}
+ if(a.wild&&b.wild){if(a.species===b.species)return .75;if(a.species==="raven"||b.species==="raven")return .2;if([a.species,b.species].sort().join()==="fox,otter")return -.3;return .05}
+ const h=a.wild?b:a,c=a.wild?a:b;let v=.15-c.wary*.4;
+ if(h.role==="hunter"&&(c.species==="deer"||c.species==="fox"))v-=.4;
+ if((h.role==="herbalist"||h.role==="priest")&&(c.species==="wisp"||c.species==="deer"))v+=.4;
+ if(h.role==="fisher")v+=c.species==="otter"?.2:c.species==="heron"?-.2:0;
+ if(h.role==="farmer"&&c.species==="pony")v+=.3;
+ if(c.species==="raven")v+=.15;
+ return v;
+}
+function agentsNow(){
+ const out=npcs().slice(),H=hereId()&&cell(hereId());
+ if(H&&zOf(H)===0){const ch=cell(charId());ch.x=H.x;ch.y=H.y;out.push(ch)}
+ return out;
+}
+function socialStep(){
+ const agents=agentsNow(),byPos=new Map();
+ for(const a of agents){const k=a.x+","+a.y;if(!byPos.has(k))byPos.set(k,[]);byPos.get(k).push(a)}
+ const met=new Set();
+ const contact=(a,b,c)=>{
+  const shared=Object.keys(a.ties||{}).filter(id=>id!==b.id&&(b.ties||{})[id]!==undefined);
+  const tri=shared.length?shared.reduce((s,id)=>s+a.ties[id]*b.ties[id],0)/shared.length:0;
+  const w=tie(a,b);a.ties=a.ties||{};a.ties[b.id]=+clamp1(w+.08*c*(affinity(a,b)-w)+.04*c*tri).toFixed(3);met.add(a.id+"|"+b.id);
+ };
+ for(const a of agents){
+  for(const b of byPos.get(a.x+","+a.y)||[])if(b!==a)contact(a,b,1);
+  for(const d of FLAT){for(const b of byPos.get((a.x+DIRS[d].dx)+","+(a.y+DIRS[d].dy))||[])contact(a,b,.4)}
+ }
+ for(const a of agents){if(!a.ties)continue;for(const id of Object.keys(a.ties)){if(met.has(a.id+"|"+id))continue;const w=a.ties[id]*.997;if(Math.abs(w)<.02)delete a.ties[id];else a.ties[id]=+w.toFixed(3)}}
+ const ch=charId()&&cell(charId());if(ch&&ch.ties)touch(ch.id);
+}
+// Pick a step for an agent: each option is weighted by the ties of whoever is there or next to it
+function socialPick(n,opts){
+ const agents=agentsNow();
+ const weights=opts.map(p=>{let s=1;for(const o of agents){if(o===n)continue;const d=Math.abs(o.x-p.x)+Math.abs(o.y-p.y);if(d<=1)s+=tie(n,o)*(d===0?1.2:.5)}return Math.max(.05,s)});
+ let r=Math.random()*weights.reduce((a,b)=>a+b,0);for(let i=0;i<opts.length;i++){r-=weights[i];if(r<=0)return opts[i]}return opts[0];
+}
+function wander(n,t){
+ const R=ROLES[n.role]||ROLES.farmer,magic=magicPresent(t),f=field(n.home,magic);
+ const opts=[{x:n.x,y:n.y}].concat(FLAT.map(d=>DIRS[d]).map(v=>({x:n.x+v.dx,y:n.y+v.dy}))).filter(p=>{
+  const dd=f.get(p.x+","+p.y);if(dd===undefined||dd>R[4])return false;
+  const loc=coord.get(ck(p.x,p.y,0));if(n.fear&&n.fear.loc===loc&&n.fear.until>t)return false;return true});
+ if(!opts.length)return;
+ let choice=socialPick(n,opts);
+ if(n.role==="fisher"){const bank=opts.filter(p=>FLAT.some(d=>{const id=coord.get(ck(p.x+DIRS[d].dx,p.y+DIRS[d].dy,0));return id&&(cell(id).river||cell(id).lake)}));if(bank.length&&Math.random()<.6)choice=pick(bank)}
+ n.x=choice.x;n.y=choice.y;
+}
+function greedyStep(n,tx,ty,t){
+ const magic=magicPresent(t),cur=Math.abs(n.x-tx)+Math.abs(n.y-ty);
+ const opts=FLAT.map(d=>DIRS[d]).map(v=>({x:n.x+v.dx,y:n.y+v.dy})).filter(p=>passXY(p.x,p.y,magic)&&Math.abs(p.x)<=BOUND&&Math.abs(p.y)<=BOUND);
+ const closer=opts.filter(p=>Math.abs(p.x-tx)+Math.abs(p.y-ty)<cur);
+ const p=closer.length?pick(closer):opts.length&&Math.random()<.5?pick(opts):null;if(p){n.x=p.x;n.y=p.y}
+}
+function creatureTick(n,t){
+ const awake=n.active==="night"?isNight(t):!isNight(t),ch=charId()&&cell(charId()),H=hereId()&&cell(hereId());
+ const loc=coord.get(ck(n.x,n.y,0));
+ if(loc&&foeId(loc)){const F=cell(foeId(loc));greedyStep(n,n.den.x,n.den.y,t);n.activity=`bolting away from ${F.t}`;remember(n,`fled from ${F.t}`,t);
+  for(const o of npcsAt(n.x,n.y))if(o!==n)bump2(n,o,.05);return}
+ if(ch&&tie(n,ch)>=.6&&H&&zOf(H)===0&&awake){
+  if(n.x!==H.x||n.y!==H.y)greedyStep(n,H.x,H.y,t);n.activity="following you";return}
+ if(!awake){
+  if(n.x!==n.den.x||n.y!==n.den.y){greedyStep(n,n.den.x,n.den.y,t);n.activity="heading back to its den"}
+  else n.activity=n.species==="wisp"?"faded to a faint glow":"asleep in its den";return}
+ const opts=[{x:n.x,y:n.y}].concat(FLAT.map(d=>DIRS[d]).map(v=>({x:n.x+v.dx,y:n.y+v.dy}))).filter(p=>passXY(p.x,p.y,magicPresent(t))&&Math.abs(p.x-n.den.x)+Math.abs(p.y-n.den.y)<=n.radius);
+ if(opts.length){const p=socialPick(n,opts);n.x=p.x;n.y=p.y}
+ const near=npcsAt(n.x,n.y).filter(o=>o!==n);
+ const friend=near.sort((a,b)=>tie(n,b)-tie(n,a))[0];
+ n.activity=friend&&tie(n,friend)>.3?`${n.doing} beside ${friend.t}`:`${n.doing} near ${placeName(n)}`;
+}
+function placeName(n){const id=coord.get(ck(n.x,n.y,0));return id?cell(id).t:"open country"}
+function npcTick(n,t){
+ const home=cell(n.home);if(!home)return;
+ const h=hourOf(t),atHome=n.x===home.x&&n.y===home.y;
+ if(!isNight(t)&&weatherAt(n.x,n.y,0,t).storm>.3){
+  if(atHome)n.activity=`sheltering from the storm in ${home.t}`;else{stepToward(n,t);n.activity=`hurrying home to ${home.t} out of the storm`}return;
+ }
+ if(isNight(t)){
+  if(atHome){n.activity=`asleep in ${home.t}`;n.hp=Math.min(n.maxhp,n.hp+1)}
+  else{const arrived=stepToward(n,t);n.activity=arrived?`back in ${home.t} for the night`:`hurrying home to ${home.t} in the dark`}
+  return;
+ }
+ if(n.hp<n.maxhp*.4){if(!atHome){stepToward(n,t);n.activity=`limping home to ${home.t}`}else{n.hp=Math.min(n.maxhp,n.hp+1);n.activity=`resting in ${home.t}, nursing wounds`}return}
+ const ticksLeft=Math.max(0,(20-h)*60/TICK);
+ if(homeDist(n,t)>=ticksLeft-1){stepToward(n,t);n.activity=`heading home to ${home.t} before dark`;encounterCheck(n,t);return}
+ const others=npcsAt(n.x,n.y).filter(o=>o!==n).sort((a,b)=>tie(n,b)-tie(n,a));
+ const o=others[0];
+ if(o&&Math.random()<.15+.5*Math.max(0,tie(n,o))){
+  if(o.wild){n.activity=tie(n,o)<0?`shooing away ${o.t}`:`watching ${o.t}, ${o.desc}`;if(tie(n,o)>.2&&n.food>1&&Math.random()<.2){n.food--;bump2(n,o,.15)}return}
+  n.activity=`chatting with ${o.t} at ${placeName(n)}`;
+  if(o.food===0&&n.food>1){n.food--;o.food++;remember(n,`shared food with ${o.t}`,t);remember(o,`was given food by ${n.t}`,t);bump2(n,o,.2)}
+  else if(Math.random()<.25){const m=(o.memory||[]).slice(-1)[0];if(m){remember(n,`heard from ${o.t} that they ${m.text}`,t);bump2(n,o,.05)}}
+  return;
+ }
+ wander(n,t);
+ n.activity=`foraging near ${placeName(n)}`;
+ if(Math.random()<(ROLES[n.role]||ROLES.farmer)[6]){n.food=Math.min(5,n.food+1);if(Math.random()<.3)remember(n,`found good forage near ${placeName(n)}`,t)}
+ if(Math.random()<.04){n.gold+=rnd(3)}
+ encounterCheck(n,t);
+}
+function encounterCheck(n,t){
+ const loc=coord.get(ck(n.x,n.y,0));if(!loc||!foeId(loc))return;
+ const f=foeId(loc),F=cell(f),L=cell(loc);
+ const threat=F.atk*1.5+F.hp/2+(F.objectClass==="Keter"?5:F.objectClass==="Euclid"?2:0);
+ const nerve=n.atk*1.5+n.hp/2+n.courage*8+rnd(6);
+ if(nerve<threat){
+  remember(n,`ran from ${F.designation} ${F.t} at ${L.t}`,t);n.fear={loc,until:t+480};
+  for(const o of npcsAt(n.x,n.y))if(o!==n&&!o.wild)bump2(n,o,.05);
+  stepToward(n,t);n.activity=`fleeing from ${F.t}`;news(n,`${n.t} the ${n.role} sees ${F.designation} ${F.t} at ${L.t} and runs.`);return;
+ }
+ const R=ROLES[n.role]||ROLES.farmer;
+ for(let r=0;r<12;r++){
+  if(rnd(20)+n.atk>=F.ac&&!(F.special==="phasing"&&Math.random()<.25))F.hp-=Math.max(1,roll(R[5]).total+Math.max(0,mod(n.str)));
+  if(F.hp<=0)break;
+  for(let s=0;s<(F.special==="frenzy"?2:1);s++)if(rnd(20)+F.atk>=n.ac)n.hp-=roll(F.dmg).total;
+  if(F.special==="regenerate")F.hp=Math.min(F.maxhp,F.hp+rnd(4));
+  if(n.hp<=n.maxhp*.3)break;
+ }
+ n.hp=Math.max(1,n.hp);touch(f);
+ if(F.hp<=0){
+  const coins=newCell("item",{t:pick(["Salvaged coins","A pouch of old silver","Silver containment tag"]),desc:`Left by ${n.t} after neutralising ${F.designation}.`,kind:"treasure",weight:0.2,value:5+rnd(20),heal:null,ac:0,dmg:null,finesse:false,worn:false,wielded:false});
+  const food=newCell("item",{t:pick(["Trail bread","Smoked fish","Wedge of hard cheese","Bag of hazelnuts"]),desc:`${n.t} left this behind for whoever comes next.`,kind:"food",weight:0.5,value:1,heal:"1d4+1",ac:0,dmg:null,finesse:false,worn:false,wielded:false});
+  appendTo(loc,"contain",coins);appendTo(loc,"contain",food);
+  if(n.food>0)n.food--;
+  neutraliseAt(loc,n);
+  for(const o of agentsNow())if(o!==n&&Math.abs(o.x-n.x)+Math.abs(o.y-n.y)<=1)bump(o,n,.1);
+  remember(n,`neutralised ${F.designation} ${F.t} at ${L.t}`,t);n.activity=`standing over the remains of ${F.t}`;
+  news(n,`${n.t} the ${n.role} neutralised ${F.designation} ${F.t} at ${L.t}, and left treasure and food there.`,"good",true);
+ }else{
+  remember(n,`fought ${F.designation} ${F.t} at ${L.t} and was driven off`,t);n.fear={loc,until:t+480};
+  stepToward(n,t);n.activity=`retreating, wounded, from ${F.t}`;news(n,`${n.t} the ${n.role} fought ${F.designation} ${F.t} at ${L.t} and was driven off, wounded.`,"bad");
+ }
+}
+function simulate(){
+ const r=cell("root");if(!r)return;
+ const end=gameNow();let t=r.npcT??end;let n=Math.floor((end-t)/TICK);if(n<=0)return;
+ if(n>96){t=end-96*TICK;n=96}
+ for(let i=0;i<n;i++){
+  const before=isNight(t);t+=TICK;const after=isNight(t);
+  if(!before&&after)log(`Dusk on day ${dayOf(t)}. Lamps are lit and the townsfolk head for home.`,"time");
+  if(before&&!after)log(`Dawn on day ${dayOf(t)}. The townsfolk set out for the day.`,"time");
+  weatherTick(t);
+  for(const f of npcs()){
+   if(!cell(f.id))continue;
+   const fire=fireNear(f.x,f.y);
+   if(fire){fleeFrom(f,fire.x,fire.y,t);f.activity="running from the fire";for(const o of npcsAt(f.x,f.y))if(o!==f)bump2(f,o,.05);continue}
+   f.wild?creatureTick(f,t):npcTick(f,t);
+  }
+  socialStep();
+ }
+ for(const f of npcs())touch(f.id);
+ r.npcT=t;touch("root");
+}
+function passTime(min){const r=cell("root");if(!r)return;r.clock={base:gameNow()+min,real:Date.now()};touch("root");simulate()}
+
+/* ============================================================
+   Weather: a small dynamical system with two engines.
+   - The desert is a heat engine. Its heat follows the sun, h(t) = sin(2π(hour−9)/24),
+     peaking mid-afternoon: hot, dry, low pressure by day; cold and high at night.
+   - The mountain is a storm engine. Its storm energy E grows with afternoon heating
+     over the lakes and rains out over time:  E ← E + 0.06·max(0,h) − 0.03·E − 0.04·[storm]
+     When E passes 0.65 a thunderstorm forms over the peak and E halves.
+   - Wind relaxes toward the pressure gradient between the two:  g = P_mountain − P_desert,
+     W ← W + 0.2·(0.8·g·û − W) + noise, with û pointing from the mountain to the desert.
+     By day the hot desert draws mountain air south-west across the map; at night it reverses weakly.
+   - A storm drifts with the wind, weakens with age and quickly dies over the desert heat.
+   Each square's weather is read from the two engines by distance (influence e^(−d/5)),
+   height and the time of day. Lightning is rare: each half hour in the open the chance of a
+   strike is 0.4%·s² (s = local storm strength, tripled on the peak). Strikes can kill people,
+   creatures and you, and can set mapped woodland alight. Fire spreads downwind through
+   woodland, burns out after a few hours, and rain puts it out.
+   ============================================================ */
+const MOUNTAIN={x:8,y:4},DESERT={x:-7,y:-5};
+const diurnal=t=>Math.sin((hourOf(t)-9)/24*2*Math.PI);
+function wxState(){const r=cell("root");if(!r)return null;if(!r.wx)r.wx={E:.25,wind:{x:0,y:0},storm:null,fires:{}};return r.wx}
+const fireAt=(x,y,z)=>{const w=wxState();return!!(w&&!z&&w.fires[x+","+y])};
+const DIR8=["east","north-east","north","north-west","west","south-west","south","south-east"];
+function windFrom(w){if(Math.hypot(w.x,w.y)<.08)return"still air";const a=Math.atan2(-w.y,-w.x);return`wind from the ${DIR8[((Math.round(a/(Math.PI/4))%8)+8)%8]}`}
+function weatherAt(x,y,z,t=gameNow()){
+ const w=wxState();if(!w)return null;const d=diurnal(t);
+ if(z<0)return{temp:10,rain:0,storm:0,cloud:0,wind:0,label:"still, cool underground air",short:"underground"};
+ const dm=Math.hypot(x-MOUNTAIN.x,y-MOUNTAIN.y),dd=Math.hypot(x-DESERT.x,y-DESERT.y),mI=Math.exp(-dm/5),dI=Math.exp(-dd/5);
+ const temp=Math.round(12+6*d+dI*(8+14*d)-mI*5-z*4);
+ const hum=Math.max(0,Math.min(1,.45+.4*mI-.6*dI+.1*(1-d)));
+ let storm=0;if(w.storm){const s=w.storm,ds=Math.hypot(x-s.x,y-s.y);storm=s.power*Math.exp(-(ds*ds)/(2*s.r*s.r))}
+ const cloud=Math.max(0,Math.min(1,hum*.7+storm+mI*w.E*.5-dI*.4));
+ const rain=Math.max(0,Math.min(1,(cloud-.6)*2+storm));
+ const wind=Math.hypot(w.wind.x,w.wind.y)+mI*.3+storm*.8+Math.max(0,z)*.4;
+ const night=isNight(t);
+ let short;
+ if(storm>.45)short="thunderstorm";else if(rain>.5)short="heavy rain";else if(rain>.15)short="drizzle";
+ else if(dI>.45&&d>.3)short="scorching heat";else if(temp<2)short="bitter cold";
+ else if(night&&hum>.65&&wind<.35)short="mist";else if(wind>1.1)short="gale";else if(cloud>.6)short="overcast";
+ else if(cloud>.35)short="cloudy";else short=night?"clear night":"fair";
+ return{temp,hum,cloud,rain,storm,wind,short,label:`${short}, ${temp}°C, ${windFrom(w.wind)}`};
+}
+function weatherTick(t){
+ const w=wxState();if(!w)return;const d=diurnal(t);
+ const Pd=-d,Pm=.4-.6*Math.max(0,d)+.3*w.E,g=Pm-Pd;
+ const ux=DESERT.x-MOUNTAIN.x,uy=DESERT.y-MOUNTAIN.y,len=Math.hypot(ux,uy);
+ w.wind.x+=.2*(.8*g*ux/len-w.wind.x)+(Math.random()-.5)*.05;
+ w.wind.y+=.2*(.8*g*uy/len-w.wind.y)+(Math.random()-.5)*.05;
+ w.E=Math.max(0,Math.min(1,w.E+.06*Math.max(0,d)-.03*w.E-(w.storm?.04:0)+(Math.random()-.5)*.02));
+ if(!w.storm&&w.E>.65&&Math.random()<.3){w.storm={x:MOUNTAIN.x,y:MOUNTAIN.y,r:2.6,power:Math.min(1,.5+w.E*.6),life:10+rnd(12)};w.E*=.5;log("Thunderheads are building over the mountain.","time")}
+ if(w.storm){
+  const s=w.storm;s.x+=w.wind.x*.9+(Math.random()-.5)*.4;s.y+=w.wind.y*.9+(Math.random()-.5)*.4;s.life--;
+  s.power-=.02+(Math.hypot(s.x-DESERT.x,s.y-DESERT.y)<5?.15:0);
+  if(s.life<=0||s.power<=.12||Math.abs(s.x)>BOUND||Math.abs(s.y)>BOUND){w.storm=null;log("The storm blows itself out.","time")}
+ }
+ lightning(t);fireTick(t);
+}
+const sheltered=(x,y)=>{const id=coord.get(ck(x,y,0));return!!(id&&cell(id).town)};
+function strikeChance(x,y,z,t){if(z<0||sheltered(x,y))return 0;const s=weatherAt(x,y,z,t).storm;return .004*s*s*(z>=2?3:1)}
+function lightning(t){
+ const w=wxState();if(!w.storm)return;
+ for(const n of npcs()){
+  if(Math.random()>=strikeChance(n.x,n.y,0,t))continue;
+  const r=roll("3d10");n.hp-=r.total;
+  if(n.hp<=0)removeAgent(n,`${n.t}${n.wild?", "+n.desc+",":" the "+n.role} was struck and killed by lightning at ${placeName(n)}.`);
+  else{log(`Lightning strikes near ${n.t} at ${placeName(n)}. They survive, badly burned.`,"bad");touch(n.id)}
+ }
+ const H=hereId()&&cell(hereId());
+ if(H&&!isDowned()&&Math.random()<strikeChance(H.x,H.y,zOf(H),t)){
+  const r=roll("3d10");setStat("HP",sv("HP")-r.total);log(`Lightning strikes you at ${H.t}: ${r.total} damage.`,"bad",r.text);
+  if(sv("HP")<=0)fall(H.id);
+ }
+ // Strikes on woodland
+ for(const c of Object.values(zz.cells)){
+  if(c.k!=="loc"||zOf(c)!==0||!(c.terrain==="forest"||c.terrain==="grove")||c.burnt||w.fires[c.x+","+c.y])continue;
+  const wa=weatherAt(c.x,c.y,0,t);if(wa.storm>.35&&wa.rain<.8&&Math.random()<.015*wa.storm){w.fires[c.x+","+c.y]={left:4+rnd(4)};log(`Lightning sets ${c.t} on fire.`,"bad")}
+ }
+}
+function fireTick(t){
+ const w=wxState(),keys=Object.keys(w.fires);
+ for(const k of keys){
+  const f=w.fires[k],[x,y]=k.split(",").map(Number),rain=weatherAt(x,y,0,t).rain;
+  if(Math.random()<rain*.6){delete w.fires[k];const id=coord.get(ck(x,y,0));if(id)log(`Rain puts out the fire at ${cell(id).t}.`,"time");continue}
+  for(const d of FLAT){
+   const v=DIRS[d],id=coord.get(ck(x+v.dx,y+v.dy,0));if(!id)continue;const c=cell(id);
+   if(!(c.terrain==="forest"||c.terrain==="grove")||c.burnt||w.fires[c.x+","+c.y])continue;
+   const along=(v.dx*w.wind.x+v.dy*w.wind.y)/(Math.hypot(w.wind.x,w.wind.y)||1);
+   if(Math.random()<.25*(1-rain)*(1+Math.max(0,along))){w.fires[c.x+","+c.y]={left:4+rnd(4)};log(`The fire spreads to ${c.t}.`,"bad")}
+  }
+  if(--f.left<=0){delete w.fires[k];const id=coord.get(ck(x,y,0));if(id){const c=cell(id);c.burnt=true;c.desc+=" Fire has passed through here: the trees stand black and the ground is ash.";touch(id);log(`The fire at ${c.t} burns itself out.`,"time")}}
+ }
+ // Anyone caught in the flames is burned
+ for(const n of npcs())if(w.fires[n.x+","+n.y]){const r=roll("1d6");n.hp-=r.total;if(n.hp<=0)removeAgent(n,`${n.t} was caught by the fire at ${placeName(n)} and did not escape.`);else touch(n.id)}
+ const H=hereId()&&cell(hereId());
+ if(H&&!isDowned()&&fireAt(H.x,H.y,zOf(H))){const r=roll("1d6");setStat("HP",sv("HP")-r.total);log(`The fire reaches you at ${H.t}: ${r.total} damage. Get out!`,"bad",r.text);if(sv("HP")<=0)fall(H.id)}
+}
+const fireNear=(x,y)=>{const w=wxState();if(!w)return null;for(const k of Object.keys(w.fires)){const [fx,fy]=k.split(",").map(Number);if(Math.abs(fx-x)+Math.abs(fy-y)<=2)return{x:fx,y:fy}}return null};
+function fleeFrom(n,fx,fy,t){
+ const magic=magicPresent(t);let best=null,bd=Math.abs(n.x-fx)+Math.abs(n.y-fy);
+ for(const d of FLAT){const v=DIRS[d],x=n.x+v.dx,y=n.y+v.dy;if(!passXY(x,y,magic)||fireAt(x,y,0))continue;const dd=Math.abs(x-fx)+Math.abs(y-fy);if(dd>bd){bd=dd;best={x,y}}}
+ if(best){n.x=best.x;n.y=best.y}
+}
+function removeAgent(n,msg){
+ log(msg,"bad");
+ if(n.home)excise(n.id,"residents");
+ for(const o of npcs())if(o.ties&&o.ties[n.id]!==undefined){delete o.ties[n.id];touch(o.id)}
+ const ch=charId()&&cell(charId());if(ch&&ch.ties)delete ch.ties[n.id];
+ destroy(n.id);
 }
 
 /* ============================================================
    Game actions
    ============================================================ */
-let busy=null,lastHazard=null,deleteArmed=false,rounds=[];
-function log(text,kind,rolltext){const r=cell("root");r.log=(r.log||[]).concat([{text,kind:kind||"",roll:rolltext||"",t:Date.now()}]).slice(-50);touch("root")}
+let busy=null,lastHazard=null,deleteArmed=false,rounds=[],flash=null;
+const talkLines={};
+function log(text,kind,rolltext){const r=cell("root");if(!r)return;r.log=(r.log||[]).concat([{text,kind:kind||"",roll:rolltext||"",t:Date.now()}]).slice(-60);touch("root")}
 function say(text,kind,rolltext){rounds.push({text,kind:kind||"",roll:rolltext||""});rounds=rounds.slice(-6);log(text,kind,rolltext)}
-function itemCell(it){return newCell("item",{t:it.name,desc:it.desc,kind:it.kind,weight:it.weight,value:it.value,heal:it.heal,ac:it.ac,dmg:it.dmg,finesse:it.finesse,worn:false,wielded:false})}
+function itemCell(it){return newCell("item",{t:it.name,desc:it.desc,kind:it.kind,weight:it.weight,value:it.value,heal:it.heal,ac:it.ac,dmg:it.dmg,finesse:it.finesse,light:!!it.light,worn:false,wielded:false})}
 
 function createLocation(data,pos){
  const {x,y,z,dist}=pos;
- const id=newCell("loc",{t:data.name,desc:data.desc,terrain:data.terrain,x,y,z,dist,hazard:data.hazard,hazardDone:false,outcome:null,visited:false,by:data.by||"tables",defeated:null});
+ const id=newCell("loc",{t:data.name,desc:data.desc,terrain:data.terrain,x,y,z,dist,hazard:data.hazard,hazardDone:false,outcome:null,visited:false,by:data.by||"tables",defeated:null,
+  exits:data.exits||null,walls:data.walls||null,glimpse:data.glimpse||null});
  coord.set(ck(x,y,z),id);
  for(const it of data.items)appendTo(id,"contain",itemCell(it));
  if(data.monster){
@@ -552,6 +1359,13 @@ function createLocation(data,pos){
  for(const v of Object.values(DIRS)){const nb=coord.get(ck(x+v.dx,y+v.dy,z+v.dz));if(!nb)continue;if(v.sign==="+")connect(id,v.dim,nb);else connect(nb,v.dim,id)}
  return id;
 }
+function markSeen(locId){
+ const L=cell(locId),Z=zOf(L);
+ for(let dx=-2;dx<=2;dx++)for(let dy=-2;dy<=2;dy++){const id=coord.get(ck(L.x+dx,L.y+dy,Z));if(!id)continue;const c=cell(id);
+  const near=Math.abs(dx)<=1&&Math.abs(dy)<=1;if(c.seen===false&&(near||c.town||c.landmark)){c.seen=true;touch(id)}}
+ for(const d of ["up","down"]){const id=coord.get(ck(L.x,L.y,Z+DIRS[d].dz));if(id&&cell(id).seen===false&&exitOpen(L,d)){cell(id).seen=true;touch(id)}}
+}
+const visible=c=>c.seen!==false||c.visited;
 function gainXP(n){
  setStat("XP",sv("XP")+n);
  while(sv("XP")>=sv("LVL")*100){
@@ -561,8 +1375,10 @@ function gainXP(n){
  }
 }
 function enter(locId,first){
- const ch=charId();connect(ch,"at",locId);const L=cell(locId);lastHazard=null;rounds=[];
- if(!L.visited){L.visited=true;touch(locId);gainXP(10)}
+ const ch=charId(),prev=hereId();if(prev&&prev!==locId){cell(ch).prevAt=prev;touch(ch)}
+ connect(ch,"at",locId);const L=cell(locId);lastHazard=null;rounds=[];
+ if(!L.visited){L.visited=true;touch(locId);gainXP(L.town?25:10);if(L.town)log(`You reach ${L.t}, a ${TOWN_SIZES[L.town.size].label} on the ${riverName()}.`,"good")}
+ markSeen(locId);
  if(first&&L.hazard&&!L.hazardDone){
   const h=L.hazard,m=mod(sv(h.stat)),d=rnd(20),tot=d+m,ok=tot>=h.dc;
   let txt=`${h.stat} save: d20 → ${d} ${sgn(m)} = ${tot} against DC ${h.dc}`;
@@ -580,14 +1396,38 @@ function enter(locId,first){
   else say(`You see ${F.designation} ${F.t} before it moves.`,"good",txt);
  }
 }
+/* Death, waking and resurrection */
+const isDowned=()=>!!(charId()&&cell(charId()).downed);
 function fall(locId){
- const L=cell(locId);let n=0;
- for(const id of packIds()){excise(id,"contain");Object.assign(cell(id),{worn:false,wielded:false});appendTo(locId,"contain",id);n++}
+ const ch=cell(charId());ch.downed=locId;touch(ch.id);
  const f=foeId(locId);if(f){cell(f).hp=cell(f).maxhp;touch(f)}
- setStat("HP",1);rounds=[];
- log(`You collapse at ${L.t}${n?" and your pack spills there":""}. You wake back at ${cell(cell("root").home).t} with 1 HP.`,"bad");
- connect(charId(),"at",cell("root").home);
+ setStat("HP",0);rounds=[];
+ log(`You fall at ${cell(locId).t}.`,"bad");
 }
+function wakeAtHome(){
+ const ch=cell(charId()),locId=ch.downed;if(!locId)return;let n=0;
+ for(const id of packIds()){excise(id,"contain");Object.assign(cell(id),{worn:false,wielded:false});touch(id);appendTo(locId,"contain",id);n++}
+ ch.downed=null;touch(ch.id);setStat("HP",1);connect(ch.id,"at",cell("root").home);markSeen(cell("root").home);
+ log(`You wake back at ${cell(cell("root").home).t} with 1 HP.${n?` Your pack lies where you fell, at ${cell(locId).t}.`:""}`,"bad");
+ passTime(REST_MIN);store.flush();render();
+}
+function resurrect(){
+ const ch=cell(charId());if(!ch.downed)return;const ent=entitlement();
+ if(ent.tokens<1){flash=`You have no resurrection tokens. ${BILLING.prices.token}.`;render();return}
+ ent.tokens--;saveEntitlement(ent);
+ const back=ch.prevAt&&!foeId(ch.prevAt)&&cell(ch.prevAt)?ch.prevAt:cell("root").home;
+ ch.downed=null;touch(ch.id);setStat("HP",Math.ceil(sv("MAXHP")/2));connect(ch.id,"at",back);
+ log(`A resurrection token burns away. You open your eyes at ${cell(back).t}, pack and all, with half your HP.`,"good");
+ store.flush();render();
+}
+/* Billing. These are the game-side rules; payments themselves are not connected yet, so entitlements
+   live with the saved world. For real players they must come from a server that has seen the payment. */
+const BILLING={freeRange:12,supporterRange:WORLD_R,supporterTokens:3,prices:{supporter:"Supporter: £3 a month, explore the whole world, 3 resurrection tokens a month",token:"Resurrection tokens: £0.99 each, or 5 for £3.99"}};
+function entitlement(){const r=cell("root");return Object.assign({plan:"free",tokens:0},r&&r.ent||{})}
+function saveEntitlement(e){const r=cell("root");if(!r)return;r.ent=e;touch("root")}
+const plan=()=>entitlement().plan;
+const exploreRange=()=>plan()==="supporter"?BILLING.supporterRange:BILLING.freeRange;
+function previewSupporter(){const e=entitlement();if(e.plan==="supporter"){e.plan="free"}else{e.plan="supporter";e.tokens+=BILLING.supporterTokens}saveEntitlement(e);flash=null;store.flush();render()}
 
 /* Combat */
 function monsterTurn(){
@@ -602,7 +1442,7 @@ function monsterTurn(){
  if(sv("HP")<=0)fall(hereId());
 }
 function attack(index){
- const f=foeId();if(busy||!f)return;const F=cell(f),opt=attackOptions()[index||0];if(!opt)return;
+ const f=foeId();if(busy||!f||isDowned())return;const F=cell(f),opt=attackOptions()[index||0];if(!opt)return;
  const m=mod(sv(opt.stat)),p=prof(),d=rnd(20),tot=d+m+p;
  let txt=`d20 → ${d} ${sgn(m)} ${opt.stat} +${p} proficiency = ${tot} against AC ${F.ac}`;
  if(d===1||(d!==20&&tot<F.ac))say(`${opt.label}: you miss.`,"",txt);
@@ -613,16 +1453,17 @@ function attack(index){
   dmg=Math.max(1,dmg);F.hp-=dmg;touch(f);
   say(`${opt.label}: ${crit?"a critical hit for":"you hit for"} ${dmg} damage.`,"good",txt);
  }
- if(F.hp<=0){neutralise(f);store.flush();render();return}
+ if(F.hp<=0){
+  const xp=Math.round(F.maxhp*2+F.ac*2+F.atk*5);neutraliseAt(hereId(),null);say(`${F.designation} ${F.t} is neutralised.`,"good");gainXP(xp);log(`You gain ${xp} XP.`,"good");
+  const H=cell(hereId()),me=cell(charId());if(zOf(H)===0)for(const o of npcs())if(Math.abs(o.x-H.x)+Math.abs(o.y-H.y)<=1){bump(o,me,.15);log(`${o.t} saw you do it.`,"npc")}
+  store.flush();render();return}
  monsterTurn();store.flush();render();
 }
-function neutralise(f){
- const F=cell(f),here=hereId(),L=cell(here);
- for(const id of rank(f,"contain")){excise(id,"contain");appendTo(here,"contain",id)}
- const xp=Math.round(F.maxhp*2+F.ac*2+F.atk*5);
- L.defeated={designation:F.designation,name:F.t};touch(here);
+function neutraliseAt(locId,by){
+ const f=foeId(locId),F=cell(f),L=cell(locId);
+ for(const id of rank(f,"contain")){excise(id,"contain");appendTo(locId,"contain",id)}
+ L.defeated={designation:F.designation,name:F.t,by:by?by.t:null};touch(locId);
  destroy(f);
- say(`${F.designation} ${F.t} is neutralised.`,"good");gainXP(xp);log(`You gain ${xp} XP.`,"good");
 }
 function secondWind(){
  const ch=cell(charId());if(busy||ch.cls!=="Fighter"||ch.windUsed)return;
@@ -631,44 +1472,98 @@ function secondWind(){
 }
 
 /* Movement */
+// Exploration range: free explorers can go a set number of squares from the start; supporters further (see BILLING)
+function rangeBlock(H,v){
+ const x=wrapC(H.x+v.dx),y=wrapC(H.y+v.dy),lim=exploreRange();
+ if(Math.max(Math.abs(x),Math.abs(y))<=lim||coord.get(ck(x,y,zOf(H)+v.dz)))return null;
+ return plan()==="free"?`A grey mist closes in beyond here. Free explorers can travel ${lim} squares from the start; supporters can roam the whole world.`:`A grey mist closes in beyond here. The world ends ${lim} squares from the start, for now.`;
+}
 async function move(dir){
- if(busy||!charId()||!hereId())return;
+ if(busy||!charId()||!hereId()||isDowned())return;
  const here=hereId(),v=DIRS[dir],H=cell(here);
+ const block=blockedBy(here,dir)||rangeBlock(H,v);
+ if(block){flash=block;render();return}
+ flash=null;
  const f=foeId();
  if(f){
   const F=cell(f),dc=10+Math.floor(F.atk/2),d=rnd(20),m=mod(sv("DEX")),tot=d+m,txt=`DEX check: d20 → ${d} ${sgn(m)} = ${tot} against DC ${dc}`;
   if(tot<dc){say(`You try to get away ${dir}, but ${F.t} cuts you off.`,"bad",txt);monsterTurn();store.flush();render();return}
   log(`You escape ${F.designation} ${F.t}, heading ${dir}.`,"good",txt);
  }
- let next=step(here,v.dim,v.sign);
- if(next){enter(next,false);log(`You ${dir==="up"?"climb up":dir==="down"?"go down":"walk "+dir} to ${cell(next).t}.`);store.flush();render();return}
- const pos={x:H.x+v.dx,y:H.y+v.dy,z:zOf(H)+v.dz};pos.dist=Math.abs(pos.x)+Math.abs(pos.y)+Math.abs(pos.z);
- busy={dir};render();
- const data=await narrate(here,dir,pos);
- next=coord.get(ck(pos.x,pos.y,pos.z))||createLocation(data,pos);
- busy=null;
- log(`You ${dir==="up"?"climb up":dir==="down"?"go down":"walk "+dir} into somewhere new: ${cell(next).t}.`);
- enter(next,true);
+ const verb=dir==="up"?"climb up":dir==="down"?"go down":"walk "+dir;
+ const key=ck(H.x+v.dx,H.y+v.dy,zOf(H)+v.dz);
+ if(!coord.get(key)){
+  busy={dir};render();
+  await ensureNeighbours(here);
+  if(!coord.get(key)){
+   const pos={x:wrapC(H.x+v.dx),y:wrapC(H.y+v.dy),z:zOf(H)+v.dz};pos.dist=Math.abs(pos.x)+Math.abs(pos.y)+Math.abs(pos.z);
+   const data=await narrate(here,dir,pos);data.exits=normExits(null,dir);
+   if(!coord.get(key))createLocation(data,pos);
+  }
+  busy=null;
+  const b2=blockedBy(here,dir);if(b2){flash=b2;store.flush();render();return}
+ }
+ const next=coord.get(key),N=cell(next),firstTime=!N.visited;
+ if(wrapC(H.x+v.dx)!==H.x+v.dx||wrapC(H.y+v.dy)!==H.y+v.dy)log("You walk into the veil of golden mist. For a long moment there is nothing but warm, bright haze, and then it thins, and you are on the far side of the world.","time");
+ log(`You ${verb} ${firstTime?"into somewhere new: ":"to "}${N.t}.`);
+ if(N.river&&N.river.crossing==="ford")fordCheck();
+ enter(next,firstTime);
+ if(!isDowned())passTime(STEP_MIN);
  store.flush();render();
+ if(!isDowned())ensureNeighbours(hereId());
+}
+function fordCheck(){
+ const d=rnd(20),m=mod(sv("STR")),tot=d+m,txt=`STR check: d20 → ${d} ${sgn(m)} = ${tot} against DC 10`;
+ if(tot>=10)log("You wade the ford, gasping at the cold.","good",txt);
+ else{const r=roll("1d4");setStat("HP",Math.max(1,sv("HP")-r.total));log(`The current knocks you off your feet at the ford: ${r.total} damage.`,"bad",txt+"; "+r.text)}
 }
 function pathTo(target){
  const start=hereId(),prev={[start]:null},q=[start];
- while(q.length){const id=q.shift();if(id===target)break;
-  for(const v of Object.values(DIRS)){const n=step(id,v.dim,v.sign);if(n&&!(n in prev)&&(n===target||!foeId(n))){prev[n]=id;q.push(n)}}}
+ for(let h=0;h<q.length;h++){const id=q[h];if(id===target)break;const c0=cell(id);
+  for(const [d,v] of Object.entries(DIRS)){
+   const n=coord.get(ck(c0.x+v.dx,c0.y+v.dy,zOf(c0)+v.dz));if(!n||n in prev)continue;const c=cell(n);
+   if(!visible(c)||!exitOpen(c0,d)||!exitOpen(c,OPP[d])||riverBlock(n)||c.lake||(n!==target&&foeId(n)))continue;
+   if(!hasLight()&&isDark(c))continue;
+   prev[n]=id;q.push(n)}}
  if(!(target in prev))return null;const p=[];for(let c=target;c!==start;c=prev[c])p.unshift(c);return p;
 }
 function travelTo(target){
- if(busy||target===hereId())return;
+ if(busy||target===hereId()||isDowned())return;
  if(foeId()){say(`${cell(foeId()).t} stands between you and the way back. Fight, or use a direction to try to flee.`,"bad");store.flush();render();return}
- const p=pathTo(target);if(!p){log(`No safe known route to ${cell(target).t}: an anomaly blocks the way.`,"bad");store.flush();render();return}
- enter(target,false);log(`You retrace your steps to ${cell(target).t} (${p.length} ${p.length===1?"step":"steps"}).`);store.flush();render();
+ const T=cell(target);
+ if(T.lake){flash=`${T.t} is deep water. You can walk its shore but not cross it.`;render();return}
+ const rb=riverBlock(target);if(rb){flash=rb;render();return}
+ const p=pathTo(target);if(!p){flash=`You know no open route to ${T.t} right now.`;render();return}
+ if(!hasLight()&&isNight(gameNow())&&!(T.town&&p.length===1)){flash="It is too dark to travel at night without a lantern. Make camp until dawn, or take a room at an inn in a town.";render();return}
+ flash=null;
+ log(`You make your way to ${T.t} (${p.length} ${p.length===1?"step":"steps"}).`);
+ enter(target,!T.visited);if(!isDowned())passTime(STEP_MIN*p.length);store.flush();render();
+ if(!isDowned())ensureNeighbours(hereId());
+}
+function sweptAway(){
+ const here=hereId();if(!here||isDowned())return;const L=cell(here);if(!(L.river&&L.river.crossing==="magic")||magicPresent())return;
+ const r=roll("1d4");setStat("HP",Math.max(1,sv("HP")-r.total));
+ let dest=cell(charId()).prevAt;
+ if(!dest||riverBlock(dest)){dest=null;for(const d of FLAT){const v=DIRS[d],id=coord.get(ck(L.x+v.dx,L.y+v.dy,0));if(id&&!riverBlock(id)){dest=id;break}}}
+ if(!dest){const pos={x:L.x-1,y:L.y,z:0};pos.dist=Math.abs(pos.x)+Math.abs(pos.y);dest=coord.get(ck(pos.x,pos.y,0))||createLocation(tableLocation(L,"west",pos),pos)}
+ connect(charId(),"at",dest);cell(dest).visited=true;markSeen(dest);
+ log(`The magical bridge fades beneath your feet. The river drags you to the bank at ${cell(dest).t}: ${r.total} damage.`,"bad",r.text);
+ store.flush();render();
 }
 
 /* Items */
 function take(id){
- if(foeId())return;
- const it=cell(id);if(carried()+(+it.weight||0)>capacity()){log(`${it.t} is too heavy: you carry ${fmtW(carried())} of ${capacity()} lb.`,"bad");store.flush();render();return}
+ if(foeId()||isDowned())return;
+ const it=cell(id);if(it.forSale){buy(id);return}
+ if(carried()+(+it.weight||0)>capacity()){log(`${it.t} is too heavy: you carry ${fmtW(carried())} of ${capacity()} lb.`,"bad");store.flush();render();return}
  excise(id,"contain");appendTo(charId(),"contain",id);log(`You pick up ${it.t}.`);store.flush();render();
+}
+function buy(id){
+ const it=cell(id),price=+it.value||0;
+ if(sv("GP")<price){flash=`${it.t} costs ${price} gp and you have ${sv("GP")} gp.`;render();return}
+ if(carried()+(+it.weight||0)>capacity()){flash=`${it.t} is too heavy to carry with everything else.`;render();return}
+ setStat("GP",sv("GP")-price);it.forSale=false;touch(id);excise(id,"contain");appendTo(charId(),"contain",id);
+ log(`You buy ${it.t} for ${price} gp.`,"good");flash=null;store.flush();render();
 }
 function drop(id){const it=cell(id);it.worn=false;it.wielded=false;touch(id);excise(id,"contain");appendTo(hereId(),"contain",id);log(`You put down ${it.t} at ${cell(hereId()).t}.`);store.flush();render()}
 function useItem(id){
@@ -690,34 +1585,177 @@ function wield(id){
  for(const o of packIds().map(cell))if(o.wielded){o.wielded=false;touch(o.id)}
  cell(id).wielded=true;touch(id);log(`You take ${cell(id).t} in hand.`);store.flush();render();
 }
+// Make camp anywhere, or take a room at a town inn. At night you sleep until dawn; by day, eight hours.
+function minutesToDawn(t){const h=hourOf(t);return Math.round((h>=20?24-h+6:6-h)*60)}
 function rest(){
- if(busy||!charId()||!hereId())return;const ch=cell(charId()),here=hereId();
+ if(busy||!charId()||!hereId()||isDowned())return;const ch=cell(charId()),here=hereId(),L=cell(here),t=gameNow();
  if(foeId()){say("You cannot rest with an anomaly at large here.","bad");store.flush();render();return}
- if(ch.restedAt===here){log("You have already rested here. Explore further before resting again.");store.flush();render();return}
- const before=sv("HP"),gain=Math.ceil(sv("MAXHP")/2),after=Math.min(sv("MAXHP"),before+gain);
- setStat("HP",after);ch.restedAt=here;ch.windUsed=false;touch(ch.id);log(`You rest at ${cell(here).t} and recover ${after-before} HP.`,"good");store.flush();render();
+ const span=isNight(t)?minutesToDawn(t):REST_MIN,max=sv("MAXHP"),before=sv("HP");let after,msg;
+ if(L.town){
+  if(sv("GP")>=2){setStat("GP",sv("GP")-2);after=max;msg=`You take a room at the inn in ${L.t} for 2 gp. The taproom is loud until late, but you sleep well and wake fully healed (+${max-before} HP).`}
+  else{after=Math.min(max,before+Math.ceil(max/2));msg=`You cannot pay for a room, so the innkeeper lets you sleep in the stable (+${after-before} HP).`}
+ }else if(L.grove){after=max;msg=`You make camp beneath the silver trees of ${L.t}. You wake fully healed (+${max-before} HP), with the wisps' humming still in your ears.`}
+ else{after=Math.min(max,before+Math.ceil(max/2));msg=`You make camp at ${L.t}${isNight(t)?" and sleep until dawn":" for eight hours"} (+${after-before} HP).`}
+ setStat("HP",after);ch.windUsed=false;touch(ch.id);log(msg,"good");
+ passTime(span);store.flush();render();
+}
+
+/* Talking to townsfolk, greeting and feeding creatures */
+async function talk(id){
+ const n=cell(id);if(!n||talkLines[id]==="…"||isDowned())return;
+ talkLines[id]="…";render();
+ const t=gameNow(),home=cell(n.home),ch=cell(charId());
+ const near=Object.values(zz.cells).filter(c=>c.k==="loc"&&foeId(c.id)&&zOf(c)===0&&Math.abs(c.x-n.x)+Math.abs(c.y-n.y)<=8).slice(0,3).map(c=>`${cell(foeId(c.id)).designation} ${cell(foeId(c.id)).t} at ${c.t}`);
+ const crossings=Object.values(zz.cells).filter(c=>c.river&&c.river.crossing).map(c=>`${CROSSINGS[c.river.crossing]} at ${c.t}`);
+ const friends=Object.entries(n.ties||{}).filter(([k])=>cell(k)&&k!==ch.id).sort((a,b)=>b[1]-a[1]);
+ const liked=friends.slice(0,2).filter(([,w])=>w>.3).map(([k])=>cell(k).t),disliked=friends.filter(([,w])=>w<-.2).slice(-1).map(([k])=>cell(k).t);
+ let line=null;
+ if(ai.ready()){
+  const out=await askClaude([
+   "You are voicing a townsperson in a fantasy tabletop adventure with uncanny anomalies at its edges. Reply with only a JSON object {\"line\": \"...\"}: what they say aloud to the traveller, 1 to 3 sentences, in character, no stage directions.",
+   `They are ${n.t}, a ${n.role} from ${home.t} (${TOWN_SIZES[home.town.size].label} on the ${riverName()}). Trait: ${n.trait}.`,
+   `Right now they are ${n.activity}. It is ${fmtClock(t)}, ${isNight(t)?"night":"day"}. They have ${n.hp} of ${n.maxhp} hit points and carry ${n.food} rations and ${n.gold} gold.`,
+   `How they feel about the traveller: ${tie(n,ch).toFixed(2)} on a scale from -1 (hostile) to 1 (fond).`,
+   liked.length?`They are close to ${liked.join(" and ")}.`:"",disliked.length?`They do not get on with ${disliked[0]}.`:"",
+   (n.memory||[]).length?`Recent memories: ${(n.memory||[]).map(m=>m.text).join("; ")}.`:"",
+   near.length?`Anomalies they have heard about nearby: ${near.join("; ")}.`:"",
+   `River crossings: ${crossings.join("; ")}. The magical bridge comes and goes. The river rises at the mountain and ends in a bottomless hole.`,
+   `The traveller is ${ch.t}, a level ${sv("LVL")} ${ch.cls}. Share a rumour, a warning or a bit of local colour that fits.`
+  ].filter(Boolean).join("\n"));
+  if(out&&typeof out.line==="string")line=out.line.slice(0,400);
+ }
+ if(!line){
+  const m=(n.memory||[]).slice(-1)[0];
+  const openers=[`"Fair ${isNight(t)?"evening":"day"} to you."`,`"You're not from ${home.t}, are you?"`,`"Mind the river, traveller. It ends in a hole with no bottom."`];
+  line=m?`"I ${m.text}. Keep your wits about you out there."`:near.length?`"Folk say there's something wrong out at ${near[0].split(" at ").pop()}. I'd keep clear."`:liked.length?`"Have you met ${liked[0]}? Good sort."`:pick(openers);
+ }
+ bump2(n,ch,.08);
+ if(tie(n,ch)>=.5&&n.food>1&&Math.random()<.5){n.food--;appendTo(ch.id,"contain",itemCell(normItem({name:"Gift of food",description:`Wrapped up for you by ${n.t}.`,kind:"food",weight:0.5,value:1,heal:"1d4+1"})));line+=` ${n.t} presses some food into your hands.`}
+ talkLines[id]=line;log(`${n.t}: ${line}`,"npc");passTime(10);store.flush();render();
+}
+function greet(id){
+ const n=cell(id),ch=cell(charId());if(!n||isDowned())return;
+ if(tie(n,ch)<.15&&Math.random()<n.wary*.6){
+  bump(n,ch,.03);const H=cell(hereId());const opts=FLAT.map(d=>DIRS[d]).filter(v=>passXY(H.x+v.dx,H.y+v.dy,magicPresent()));
+  if(opts.length){const v=pick(opts);n.x+=v.dx;n.y+=v.dy}
+  talkLines[id]=`${n.t} startles and bolts. Perhaps food would help.`;log(`${n.t} startles and bolts away.`,"npc");
+ }else{bump2(n,ch,.06);talkLines[id]=`${n.t} ${pick(["watches you calmly","comes a little closer","tilts its head at you","lets you approach"])}.`}
+ passTime(5);store.flush();render();
+}
+function feed(id){
+ const n=cell(id),ch=cell(charId());if(!n||isDowned())return;
+ const food=packIds().find(i=>cell(i).kind==="food");if(!food){flash="You have no food to offer.";render();return}
+ const name=cell(food).t;excise(food,"contain");destroy(food);
+ const before=tie(n,ch);bump2(n,ch,.25);
+ talkLines[id]=`${n.t} takes the ${name.toLowerCase()} from your hand.`;
+ log(`You feed ${name} to ${n.t}.`,"npc");
+ if(before<.6&&tie(n,ch)>=.6)log(`${n.t} has decided to follow you.`,"good");
+ passTime(5);store.flush();render();
 }
 
 /* New world */
 let draft={name:"Wren Ashdown",cls:"Fighter",theme:"A misty borderland of old forests, ruined watchtowers, river villages and the hills where the old kingdom fell. Lately, things have been seen that do not belong in any bestiary.",stats:rollStats()};
 async function begin(){
  if(busy)return;
+ const keepEnt=cell("root")&&cell("root").ent||draft.ent;
  const old=Object.keys(zz.cells);for(const id of old)zz.removed.add(id);
- zz.cells={};coord.clear();zz.dirty.clear();rounds=[];
- zz.cells.root={id:"root",k:"root",c:{},seq:0,theme:draft.theme.trim()||"A classic fantasy wilderness.",log:[],home:null,created:Date.now()};touch("root");
- const ch=newCell("char",{t:draft.name.trim()||"Nameless wanderer",cls:draft.cls,restedAt:null,windUsed:false});connect("root","cursor",ch);
+ zz.cells={};coord.clear();fieldCache.clear();zz.dirty.clear();rounds=[];flash=null;
+ zz.cells.root={id:"root",k:"root",c:{},seq:0,theme:draft.theme.trim()||"A classic fantasy wilderness.",log:[],home:null,created:Date.now(),seed:Math.floor(Math.random()*1e6),clock:{base:8*60,real:Date.now()},npcT:8*60,ent:keepEnt||null};touch("root");
+ const ch=newCell("char",{t:draft.name.trim()||"Nameless wanderer",cls:draft.cls,windUsed:false,ties:{}});connect("root","cursor",ch);
  const C=CLASSES[draft.cls],con=mod(draft.stats[2]),hp=Math.max(1,C.hd+con);
  const vals=Object.fromEntries(STATS.map((s,i)=>[s,draft.stats[i]]));Object.assign(vals,{HP:hp,MAXHP:hp,LVL:1,XP:0,GP:10});
  for(const [k,v] of Object.entries(vals)){const s=newCell("stat",{t:k,v});appendTo(ch,"stat",s)}
- const kit=C.kit.concat([["Potion of Healing","A red liquid that shimmers when shaken.","potion",0.5,50,"2d4+2"],["Potion of Healing","A red liquid that shimmers when shaken.","potion",0.5,50,"2d4+2"],["Rations (3 days)","Hard bread, cheese and dried apples.","food",6,2,"1d4"]]);
+ const extras=shuffle(START_POOL).slice(0,3);
+ const kit=C.kit.concat([["Potion of Healing","A red liquid that shimmers when shaken.","potion",0.5,50,"2d4+2"],["Rations (3 days)","Hard bread, cheese and dried apples.","food",6,2,"1d4"]],extras);
  let wielded=false;
- for(const row of kit){const it=normItem(asItem(row)),id=itemCell(it);if(it.kind==="armor")cell(id).worn=true;if(it.kind==="weapon"&&!wielded){cell(id).wielded=true;wielded=true}appendTo(ch,"contain",id)}
+ for(const row of kit){const it=normItem(asItem(row)),id=itemCell(it);if(it.kind==="armor"&&!packIds().some(p=>cell(p).worn))cell(id).worn=true;if(it.kind==="weapon"&&!wielded){cell(id).wielded=true;wielded=true}appendTo(ch,"contain",id)}
+ busy={dir:"river"};render();
+ const riverPlan=planRiver();
+ const w=normWorld(await askClaude(worldPrompt(riverPlan)),riverPlan);
+ buildRiverWorld(riverPlan,w);
+ buildRegion();
+ placeMonuments();
  busy={dir:"start"};render();
  const pos={x:0,y:0,z:0,dist:0};
- const data=await narrate(null,"",pos);
+ const data=await narrate(null,"",pos);data.exits=EX("nsew");
  const home=createLocation(Object.assign(data,{hazard:null,monster:null}),pos);cell("root").home=home;
- busy=null;connect(ch,"at",home);cell(home).visited=true;
- log(`${cell(ch).t} the ${draft.cls} sets out from ${cell(home).t}.`,"good");
+ connect(ch,"at",home);cell(home).visited=true;markSeen(home);
+ busy={dir:"look"};render();
+ await ensureNeighbours(home);
+ busy=null;
+ log(`${cell(ch).t} the ${draft.cls} sets out from ${cell(home).t} carrying ${extras.map(r=>r[0].toLowerCase()).join(", ")}. The ${w.river} rises at the mountain to the east and runs south past ${towns().map(c=>c.t).join(", ")}.`,"good");
+ if(!hasLight())log("You have no lantern. You cannot travel at night or go underground without one; the larger towns sell them.","time");
+ cell("root").clock={base:8*60,real:Date.now()};cell("root").npcT=8*60;
+ store.flush();render();
+}
+
+/* ============================================================
+   Monuments: carved arches, standing stones and small temples. Each holds one of the
+   rules this world is really built on, quoted from the code that runs it.
+   ============================================================ */
+const MONUMENT_KIND={arch:"carved arch",stones:"standing stones",temple:"small temple"};
+const MONUMENT_ACT={arch:"Read the carving",stones:"Lay a hand on the stones",temple:"Kneel at the altar"};
+const RULES=[
+ {title:"The ZigZag",text:"Every place, person, item and anomaly is a cell. Each cell has at most one neighbour in each direction of each dimension: east and west, north and south, up and down, and the hidden ones, the river's flow, a town's people, a store's contents. Walking is following a link."},
+ {title:"The round world",text:`The world is ${2*WORLD_R+1} squares across and closes on itself. Walk ${WORLD_R+1} squares in any direction and you pass through the veil of golden mist to the far side. Its shape is a torus.`},
+ {title:"Nothing before sight",text:"No place exists until you can see it. Each time you arrive, the squares you can see are written one step ahead of you, from where you stand, and are never written again."},
+ {title:"Four times faster",text:`Time here runs ${CLOCK_RATE} times faster than yours. A step costs half an hour and night lasts ten hours. The magical bridge stands during about three hours in ten, chosen by the world's seed and the hour, not by chance at the moment.`},
+ {title:"Two hearts of weather",text:"The mountain stores storm energy each afternoon, E ← E + 0.06·sun − 0.03·E, and the desert breathes with the sun. Wind runs from the high to the low between them, and storms are born on the peak and die over the sand."},
+ {title:"The lightning tithe",text:"Every half hour in the open, lightning takes one chance in two hundred and fifty, times the square of the storm's strength. On the peak it takes three times as many."},
+ {title:"The law of affection",text:"Each half hour together, a tie moves w ← w + 0.08·(h − w) + 0.04·(friends in common). Apart, it fades: w ← 0.997·w. Like seeks like, and friends of friends drift closer."},
+ {title:"Distance is danger",text:"An anomaly's strength is capped by your level and by how far from the start, and how deep, it is found. The world grows harder the further you go from where you began."},
+ {title:"The river's account",text:"The river rises from Highmere at the mountain's foot, runs for twenty cells, and ends in a hole with no bottom. It can be crossed in only three places."},
+ {title:"The twenty-sided die",text:"Every attack, save and escape is one roll of a twenty-sided die plus (score − 10) ÷ 2, rounded down, against a target number. Twenty always hits; one always misses."},
+ {title:"The hearth's pull",text:"Each half hour the townsfolk step down a distance field toward home, and they set out in time to arrive by dark. Storms send them home early."},
+ {title:"You are a node",text:"You are in the graph too. Talking, feeding and fighting beside the people and creatures here changes how they weigh you, and a creature whose trust reaches 0.6 will follow you."}
+];
+const MONUMENT_NAMES={arch:["The Carved Arch","Arch of Counted Steps","The Lintel Stone","Gate of the Long Road"],stones:["The Whispering Stones","Ring of Nine","The Leaning Sisters","The Stone Circle"],temple:["Shrine of the Hour","The Small Temple","Chapel of the Veil","House of the Measure"]};
+const MONUMENT_DESC={arch:"A lone arch of carved stone stands in the open, leading nowhere. Every inch is cut with lines of tiny letters and diagrams.",
+ stones:"A ring of grey standing stones leans inward. Their faces are carved with spirals that seem to move when you look away.",
+ temple:"A temple no bigger than a woodshed, with four pillars and a stone altar. A single inscription runs around the altar's rim."};
+function placeMonuments(){
+ const kinds=["arch","stones","temple"],order=shuffle(RULES.map((_,i)=>i));let placed=0,tries=0;
+ while(placed<RULES.length&&tries<5000){
+  tries++;const near=placed<4,r=near?4+rnd(BILLING.freeRange-4):BILLING.freeRange+rnd(WORLD_R-BILLING.freeRange-1);
+  const x=wrapC(pick([-1,1])*rnd(r)),y=wrapC(pick([-1,1])*r);const [px,py]=Math.random()<.5?[x,y]:[y,x];
+  let clear=true;for(let dx=-1;dx<=1&&clear;dx++)for(let dy=-1;dy<=1;dy++)if(coord.get(ck(px+dx,py+dy,0))){clear=false;break}
+  if(!clear||(Math.abs(px)<3&&Math.abs(py)<3))continue;
+  const kind=kinds[placed%3],rule=order[placed];
+  const id=createLocation({name:pick(MONUMENT_NAMES[kind]),desc:MONUMENT_DESC[kind],terrain:kind==="stones"?"plains":"ruin",items:[],hazard:null,monster:null,by:"tables",exits:EX("nsew"),glimpse:`${MONUMENT_KIND[kind]} on the skyline`},{x:px,y:py,z:0,dist:Math.abs(px)+Math.abs(py)});
+  Object.assign(cell(id),{planned:true,written:false,seen:false,landmark:true,monument:kind,rule});placed++;
+ }
+}
+function renderMonument(L){
+ const found=(cell("root").codex||[]).includes(L.rule),R=RULES[L.rule];
+ return found?`<div class="inscription"><span class="eyebrow">Inscription · ${esc(R.title)}</span><p>${esc(R.text)}</p></div>`:`<div class="btnrow"><button class="primary" data-act="monument" data-id="${L.id}">${MONUMENT_ACT[L.monument]}</button><span class="note">Something is written here that the world does not say out loud.</span></div>`;
+}
+function readMonument(id){
+ const L=cell(id),r=cell("root");if(!L||!L.monument||isDowned())return;
+ r.codex=r.codex||[];if(!r.codex.includes(L.rule)){r.codex.push(L.rule);gainXP(50);log(`At ${L.t} you learn a hidden rule of the world: ${RULES[L.rule].title}.`,"good")}
+ touch("root");passTime(10);store.flush();render();
+}
+
+/* ============================================================
+   Puter: when this page is served from puter.site, players sign in with Puter (which offers
+   Google among its sign-in options). The narrator then runs on their own Puter account and
+   their world is saved in Puter's key-value store, one key per cell.
+   ============================================================ */
+let puterReady=false,puterUser=null;
+const onPuterHost=()=>/(^|\.)puter\.(site|com)$/.test(location.hostname)||/[?&]puter\b/.test(location.search);
+function loadPuter(){
+ return new Promise(res=>{if(window.puter)return res(true);if(window.claude||!onPuterHost())return res(false);
+  const s=document.createElement("script");s.src="https://js.puter.com/v2/";s.onload=()=>res(true);s.onerror=()=>res(false);document.head.appendChild(s)});
+}
+async function puterSignIn(){
+ try{await puter.auth.signIn()}catch(e){flash="Sign-in was cancelled. You can keep playing; your world is saved in this browser.";render();return}
+ await puterAfterSignIn(true);
+}
+async function puterAfterSignIn(migrate){
+ try{const u=await puter.auth.getUser();puterUser=u&&u.username||"signed in"}catch(e){}
+ ai.kind="puter";store.mode="puter";
+ const remote=await store.loadPuter();
+ if(remote&&remote.root&&(!zz.cells.root||!migrate)){zz.cells=remote;coord.clear();fieldCache.clear();for(const c of Object.values(zz.cells))if(c.k==="loc")coord.set(ck(c.x,c.y,zOf(c)),c.id)}
+ else if(zz.cells.root){for(const id of Object.keys(zz.cells))touch(id)}
  store.flush();render();
 }
 
@@ -729,68 +1767,124 @@ const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const fmtW=w=>(Math.round(w*10)/10).toString();
 const zname=id=>id?`${id}${cell(id)?" · "+cell(id).k+(cell(id).t!==undefined?" “"+cell(id).t+"”":""):""}`:"—";
 const depthName=z=>z===0?"ground level":z<0?`${-z} below ground`:`${z} above ground`;
+// Direction words in descriptions become links that move you that way
+const DIR_WORDS={north:"north",northward:"north",northern:"north",south:"south",southward:"south",southern:"south",east:"east",eastward:"east",eastern:"east",west:"west",westward:"west",western:"west",above:"up",overhead:"up",upstairs:"up",upward:"up",upwards:"up",below:"down",beneath:"down",downstairs:"down",downward:"down",downwards:"down"};
+function linkify(text){
+ return esc(text).replace(/\b(north(?:ward|ern)?|south(?:ward|ern)?|east(?:ward|ern)?|west(?:ward|ern)?|above|overhead|upstairs|upwards?|below|beneath|downstairs|downwards?)\b/gi,w=>{
+  const d=DIR_WORDS[w.toLowerCase()];return`<button class="dirlink" data-go="${d}" ${busy?"disabled":""} title="Go ${d}">${w}</button>`});
+}
 
+function renderClock(){
+ const t=gameNow(),night=isNight(t),p=$("pill-clock");
+ p.dataset.night=String(night);
+ $("clock-text").textContent=`${fmtClock(t)} · ${night?"night":"day"}`;
+ p.title=`The world clock runs at ${CLOCK_RATE}× real time. Each step takes half an hour. Night runs from 20:00 to 06:00.`;
+ const H=hereId()&&cell(hereId()),w=H&&weatherAt(H.x,H.y,zOf(H),t);
+ $("pill-weather").innerHTML=w?`Weather: <b>${esc(w.label)}</b>`:"Weather: <b>—</b>";
+}
 function renderPills(){
- $("pill-ai").innerHTML=sample?"Narrator: <b>Claude</b>":"Narrator: <b>built-in tables</b>";
- $("pill-ai").title=sample?"New places are written by Claude from the place you just left.":"Claude is not available in this view, so new places come from built-in tables.";
+ $("pill-ai").innerHTML=`Narrator: <b>${esc(ai.label())}</b>`;
+ $("pill-ai").title=ai.kind==="claude"?"New places are written by Claude on your own Claude account.":ai.kind==="puter"?"New places are written by an AI model through Puter, on your own Puter account.":"No AI narrator is available here, so new places come from built-in tables.";
  $("pill-cells").innerHTML=`Cells: <b>${Object.keys(zz.cells).length}</b>`;
- renderSaving();
+ renderSaving();renderClock();renderSoundButton();renderAccount();
 }
 function renderSaving(){
  const p=$("pill-save");
  if(store.mode==="none"){p.innerHTML="World: <b>loading…</b>";return}
  p.classList.toggle("warn",!!store.error);
- const where=store.mode==="cloud"?"your Claude account":"this browser";
- p.innerHTML=store.error?"World: <b>save problem</b>":pending?`World: <b>saving…</b>`:`World: <b>saved in ${where}</b>`;
- p.title=store.error||`Each place, item, anomaly and stat is stored as a ZigZag cell in ${where}.`;
+ const where=store.mode==="cloud"?"your Claude account":store.mode==="puter"?"your Puter account":"this browser";
+ p.innerHTML=store.error?"World: <b>save problem</b>":(pending||store.timer)?`World: <b>saving…</b>`:`World: <b>saved in ${where}</b>`;
+ p.title=store.error||`Each place, item, anomaly, townsperson and stat is stored as a ZigZag cell in ${where}.`;
+}
+function renderAccount(){
+ const el=$("account");if(!el)return;
+ const signin=puterReady&&store.mode!=="puter"?`<button class="small" id="puter-signin">Sign in to save and use AI</button>`:"";
+ const who=puterUser?`<span class="pill">Signed in: <b>${esc(puterUser)}</b></span>`:"";
+ el.innerHTML=`${who}${signin}`;
+ const b=$("puter-signin");if(b)b.onclick=puterSignIn;
 }
 
+const GLYPH_MON={arch:"M16 35 V21 Q26 6 36 21 V35 M20 35 V22 Q26 12 32 22 V35",stones:"M13 35 V21 M21 35 V15 M29 35 V17 M37 35 V22 M11 35 H41",temple:"M11 20 L26 11 L41 20 Z M14 20 V32 M21 20 V32 M31 20 V32 M38 20 V32 M11 33 H41"};
 function renderMap(){
  const svg=$("map"),here=hereId();
  if(!here){svg.innerHTML=`<text x="210" y="215" text-anchor="middle" class="axis">The map starts when your character sets out.</text>`;$("coords").textContent="";return}
- const H=cell(here),Z=zOf(H),R=3,S=60;
- const pos=(x,y)=>[(x-H.x+R)*S,(R-(y-H.y))*S];
+ const H=cell(here),Z=zOf(H),R=3,S=60,magic=magicPresent(),t=gameNow(),ws=wxState();
+ const P=(dx,dy)=>[(dx+R)*S,(R-dy)*S];
  let out="";
  for(let i=0;i<=7;i++){out+=`<line class="gridline" x1="${i*S}" y1="0" x2="${i*S}" y2="420"/><line class="gridline" x1="0" y1="${i*S}" x2="420" y2="${i*S}"/>`}
- const vis=[];for(let dx=-R;dx<=R;dx++)for(let dy=-R;dy<=R;dy++){const id=coord.get(ck(H.x+dx,H.y+dy,Z));if(id)vis.push(id)}
- for(const id of vis){const c=cell(id),[px,py]=pos(c.x,c.y);
-  const e=step(id,"x","+"),n=step(id,"y","+");
-  if(e&&vis.includes(e))out+=`<line class="link" x1="${px+30}" y1="${py+30}" x2="${px+90}" y2="${py+30}"/>`;
-  if(n&&vis.includes(n))out+=`<line class="link" x1="${px+30}" y1="${py+30}" x2="${px+30}" y2="${py-30}"/>`;}
- for(const id of vis){const c=cell(id),[px,py]=pos(c.x,c.y),t=TERRAINS.includes(c.terrain)?c.terrain:"other",f=foeId(id);
-  out+=`<g data-loc="${id}"><rect class="tile t-${t}" x="${px+5}" y="${py+5}" width="50" height="50" rx="5" tabindex="0" role="button" aria-label="${esc(c.t)}${id===here?" (you are here)":", walk back here"}${f?", anomaly at large":""}"><title>${esc(c.t)} · ${t}${f?" · "+esc(cell(f).designation)+" at large":""}</title></rect><path class="glyph" transform="translate(${px+4} ${py+4})" d="${GLYPH[t]||GLYPH.other}"/>`;
-  if(step(id,"z","+"))out+=`<path class="stair" d="M${px+44} ${py+16} l5 -7 l5 7 Z" transform="translate(-4 0)"/>`;
-  if(step(id,"z","-"))out+=`<path class="stair" d="M${px+40} ${py+44} l5 7 l5 -7 Z"/>`;
+ const vis=new Map();for(let dx=-R;dx<=R;dx++)for(let dy=-R;dy<=R;dy++){const id=coord.get(ck(H.x+dx,H.y+dy,Z));if(id&&visible(cell(id)))vis.set(id,[dx,dy])}
+ const walkable=a=>{const c=cell(a);return!(c.river&&!c.river.crossing)&&!c.lake};
+ for(const [id,[dx,dy]] of vis){const c=cell(id),[px,py]=P(dx,dy);
+  const e=coord.get(ck(c.x+1,c.y,Z)),n=coord.get(ck(c.x,c.y+1,Z));
+  if(e&&vis.has(e)&&walkable(id)&&walkable(e)&&exitOpen(c,"east")&&exitOpen(cell(e),"west"))out+=`<line class="link" x1="${px+30}" y1="${py+30}" x2="${px+90}" y2="${py+30}"/>`;
+  if(n&&vis.has(n)&&walkable(id)&&walkable(n)&&exitOpen(c,"north")&&exitOpen(cell(n),"south"))out+=`<line class="link" x1="${px+30}" y1="${py+30}" x2="${px+30}" y2="${py-30}"/>`;}
+ for(const [id,[dx,dy]] of vis){const c=cell(id),[px,py]=P(dx,dy),tr=TERRAINS.includes(c.terrain)?c.terrain:"other",f=foeId(id);
+  const glyph=c.monument?GLYPH_MON[c.monument]:c.town?GLYPH["town_"+c.town.size]:c.falls?GLYPH.falls:GLYPH[tr]||GLYPH.other;
+  const label=c.town?`${c.t}, ${TOWN_SIZES[c.town.size].label}`:c.hole?`${c.t}, where the river falls into the hole`:c.river?(c.river.crossing?`${c.t}, ${CROSSINGS[c.river.crossing]}${c.river.crossing==="magic"&&!magic?" (absent now)":""}`:`${c.t}, the river`):c.lake?`${c.t}, a lake`:c.t;
+  const wa=Z>=0?weatherAt(c.x,c.y,Z,t):null,fire=fireAt(c.x,c.y,Z);
+  out+=`<g data-loc="${id}"${c.visited?"":' class="unvisited"'}><rect class="tile t-${c.hole?"cave":tr}" x="${px+5}" y="${py+5}" width="50" height="50" rx="5" tabindex="0" role="button" aria-label="${esc(label)}${id===here?" (you are here)":""}${f?", anomaly at large":""}${fire?", on fire":""}"><title>${esc(label)}${f?" · "+esc(cell(f).designation)+" at large":""}${wa?" · "+esc(wa.short):""}${fire?" · burning":""}</title></rect><path class="${c.monument?"rune":"glyph"}" transform="translate(${px+4} ${py+4})" d="${c.hole?"M16 25 a10 8 0 1 0 20 0 a10 8 0 1 0 -20 0 M21 25 a5 4 0 1 0 10 0 a5 4 0 1 0 -10 0":glyph}"/>`;
+  if(c.river&&c.river.crossing){const cr=c.river.crossing;out+=`<path class="${cr==="magic"?"magicarc"+(magic?"":" gone"):"cross"}" transform="translate(${px+4} ${py+4})" d="${CROSS_GLYPH[cr]}"/>`}
+  if(wa&&wa.rain>.2)out+=`<path class="rainmark" d="M${px+40} ${py+12} l-4 8 M${px+46} ${py+12} l-4 8 M${px+52} ${py+12} l-4 8" style="opacity:${Math.min(1,.3+wa.rain)}"/>`;
+  if(fire)out+=`<path class="flame" d="M${px+30} ${py+16} q10 12 0 24 q-10 -12 0 -24 Z"/>`;
+  if(exitOpen(c,"up")&&coord.get(ck(c.x,c.y,Z+1)))out+=`<path class="stair" d="M${px+40} ${py+16} l5 -7 l5 7 Z"/>`;
+  if(exitOpen(c,"down")&&coord.get(ck(c.x,c.y,Z-1)))out+=`<path class="stair" d="M${px+40} ${py+44} l5 7 l5 -7 Z"/>`;
   if(f)out+=`<path class="threat" d="M${px+14} ${py+9} l5 5 l-5 5 l-5 -5 Z"/>`;
+  if(Z===0){const folk=npcsAt(c.x,c.y).slice(0,5);folk.forEach((o,k)=>{out+=`<circle class="folk${o.wild?" beast":""}" cx="${px+12+k*7}" cy="${py+48}" r="3.2"/>`})}
   out+=`</g>`;}
- for(const d of FLAT){const v=DIRS[d],x=H.x+v.dx,y=H.y+v.dy;if(coord.get(ck(x,y,Z)))continue;const [px,py]=pos(x,y);
-  out+=`<g data-dir="${d}"><rect class="frontier" x="${px+7}" y="${py+7}" width="46" height="46" rx="5" tabindex="0" role="button" aria-label="Explore ${d}"><title>Explore ${d}</title></rect><text class="q" x="${px+30}" y="${py+36}" text-anchor="middle">?</text></g>`;}
- const [hx,hy]=pos(H.x,H.y);
+ for(const d of FLAT){const v=DIRS[d],id=coord.get(ck(H.x+v.dx,H.y+v.dy,Z));if((id&&visible(cell(id)))||!exitOpen(H,d))continue;const [px,py]=P(v.dx,v.dy);
+  out+=`<g data-dir="${d}"><rect class="frontier" x="${px+7}" y="${py+7}" width="46" height="46" rx="5" tabindex="0" role="button" aria-label="Explore ${d}"><title>Explore ${d}</title></rect><text class="q" x="${px+30}" y="${py+36}" text-anchor="middle">${genFor===here?"…":"?"}</text></g>`;}
+ const [hx,hy]=P(0,0);
  out+=`<rect class="here" x="${hx+3}" y="${hy+3}" width="54" height="54" rx="7" pointer-events="none"/><circle class="pawn" cx="${hx+44}" cy="${hy+44}" r="6"/>`;
+ if(ws&&ws.storm&&Z>=0){const sx=wrapC(Math.round(ws.storm.x)-H.x),sy=wrapC(Math.round(ws.storm.y)-H.y);const [qx,qy]=P(sx,sy);out+=`<circle class="stormring" cx="${qx+30}" cy="${qy+30}" r="${ws.storm.r*S*.8}"/>`}
+ if(isNight(t)&&Z>=0)out+=`<rect class="veil" x="0" y="0" width="420" height="420"/>`;
  out+=`<text class="axis" x="414" y="14" text-anchor="end">N ↑</text>`;
  svg.innerHTML=out;
  const ew=H.x===0?"0":Math.abs(H.x)+(H.x>0?" E":" W"),ns=H.y===0?"0":Math.abs(H.y)+(H.y>0?" N":" S");
  $("coords").textContent=`${ew}, ${ns} · level ${Z>0?"+"+Z:Z===0?"0":"−"+(-Z)}`;
 }
 
+// What lies each way: the glimpse of the next place, or what blocks the way
+function viewToward(here,d){
+ const H=cell(here),v=DIRS[d];
+ if(H.exits?H.exits[d]===false:!!v.dz)return v.dz?null:{text:wallText(H,d),open:false};
+ const id=coord.get(ck(H.x+v.dx,H.y+v.dy,zOf(H)+v.dz)),T=id&&cell(id);
+ const block=blockedBy(here,d)||rangeBlock(H,v);
+ let text;
+ if(T)text=T.glimpse?`${T.glimpse}${T.glimpse.includes(T.t)?"":` (${T.t})`}`:T.t;
+ else if(genFor===here)text="looking…";
+ else if(Math.max(Math.abs(wrapC(H.x+v.dx)),Math.abs(wrapC(H.y+v.dy)))!==Math.max(Math.abs(H.x+v.dx),Math.abs(H.y+v.dy)))text="the veil of golden mist";
+ else text="unexplored";
+ const wa=T&&zOf(T)>=0?weatherAt(T.x,T.y,zOf(T)):null;
+ return{text,open:!block,why:block,weather:wa&&wa.short,id};
+}
 function renderCompass(){
  const here=hereId(),fighting=!!foeId();
  for(const [d,v] of Object.entries(DIRS)){
   const b=$("go-"+d),to=b.querySelector(".to");
-  if(!here){b.disabled=true;to.textContent="";continue}
-  const n=step(here,v.dim,v.sign);b.disabled=!!busy;
-  to.textContent=fighting?"Try to flee":n?cell(n).t:"Unexplored";
-  const verb=d==="up"?"Climb up":d==="down"?"Go down":"Walk "+d;
-  b.title=fighting?`Try to flee ${d}: a DEX check, and it strikes if you fail`:n?`${verb} to ${cell(n).t}`:`${verb}: Claude writes what you find`;
+  if(!here||isDowned()){b.disabled=true;to.textContent="";continue}
+  const view=viewToward(here,d);
+  if(!view){b.disabled=true;b.hidden=false;to.textContent="no way";b.title=d==="up"?"There is no way up from here.":"There is no way down from here.";continue}
+  b.disabled=!!busy||!view.open;
+  to.textContent=fighting&&view.open?"Try to flee":view.text;
+  b.title=view.why||(fighting?`Try to flee ${d}: a DEX check, and it strikes if you fail`:`You can see ${view.text}`);
  }
  $("compass-c").innerHTML=here?`${coord.size} places<br>${esc(depthName(zOf(cell(here))))}`:"—";
+}
+function renderSees(here){
+ const rows=[];
+ for(const d of Object.keys(DIRS)){
+  const view=viewToward(here,d);if(!view)continue;
+  const name=view.open&&!busy?`<button class="dirlink" data-go="${d}">${d}</button>`:d;
+  rows.push(`<li class="${view.open?"":"shut"}"><span class="dname">${name}</span><span>${esc(view.text)}${view.weather&&view.weather!=="fair"&&view.weather!=="clear night"?` · ${esc(view.weather)}`:""}${view.why?`<span class="why">${esc(view.why)}</span>`:""}</span></li>`);
+ }
+ return`<div class="sectionhead"><h3>What you can see</h3></div><ul class="sees">${rows.join("")}</ul>`;
 }
 
 function itemRow(id,where){
  const it=cell(id),inHand=where==="pack"&&it.kind==="weapon"&&weapon()===it;
- const bits=[it.kind,`${fmtW(+it.weight||0)} lb`];if(it.value)bits.push(`${it.value} gp`);if(it.heal)bits.push(`heals ${it.heal}`);if(it.ac)bits.push(`AC +${it.ac}`);if(it.dmg)bits.push(`${it.dmg}${it.finesse?" finesse":""}`);if(it.worn)bits.push("worn");if(inHand)bits.push("in hand");
+ const bits=[it.kind,`${fmtW(+it.weight||0)} lb`];if(it.value&&!it.forSale)bits.push(`${it.value} gp`);if(it.heal)bits.push(`heals ${it.heal}`);if(it.ac)bits.push(`AC +${it.ac}`);if(it.dmg)bits.push(`${it.dmg}${it.finesse?" finesse":""}`);if(it.light)bits.push("light");if(it.worn)bits.push("worn");if(inHand)bits.push("in hand");
  let acts="";
- if(where==="here")acts=`<button class="small" data-act="take" data-id="${id}" ${busy||foeId()?"disabled":""}>Take</button>`;
+ if(where==="here")acts=it.forSale?`<button class="small" data-act="take" data-id="${id}" ${busy||sv("GP")<it.value?"disabled":""} title="${sv("GP")<it.value?"You cannot afford it":"Buy it"}">Buy · ${it.value} gp</button>`:`<button class="small" data-act="take" data-id="${id}" ${busy||foeId()?"disabled":""}>Take</button>`;
  else{
   if(it.heal)acts+=`<button class="small" data-act="use" data-id="${id}">${it.kind==="food"?"Eat":"Drink"}</button>`;
   if(it.kind==="treasure")acts+=`<button class="small" data-act="use" data-id="${id}">Pocket</button>`;
@@ -816,43 +1910,80 @@ function renderFoe(f){
   ${rounds.length?`<ol class="rounds">${rounds.map(r=>`<li class="${r.kind}">${esc(r.text)}${r.roll?`<span class="roll">${esc(r.roll)}</span>`:""}</li>`).join("")}</ol>`:""}
  </article>`;
 }
+function renderPeople(L){
+ if(zOf(L)!==0)return"";
+ const folk=npcsAt(L.x,L.y);if(!folk.length)return"";
+ const me=cell(charId()),hasFood=packIds().some(i=>cell(i).kind==="food");
+ return`<div class="sectionhead"><h3>Who is here</h3><span class="mono" style="font-size:12px;color:var(--faint)">${folk.length}</span></div><ul class="people">${folk.map(n=>{
+  const said=talkLines[n.id],trust=Math.round(tie(n,me)*100);
+  if(n.wild)return`<li><div class="top"><span><span class="nm">${esc(n.t)}</span> <span class="meta">${esc(n.species)}${trust>=60?" · follows you":""}</span></span><span class="btnrow"><button class="small" data-act="greet" data-id="${n.id}">Greet</button><button class="small" data-act="feed" data-id="${n.id}" ${hasFood?"":"disabled"} title="${hasFood?"Offer some of your food":"You have no food"}">Feed</button></span></div>
+   <span class="doing">${esc(n.desc)}, ${esc(n.activity)}</span><span class="meta">trust in you ${trust}% · active by ${n.active}</span>${said?`<p class="said">${esc(said)}</p>`:""}</li>`;
+  const home=cell(n.home),pct=Math.max(0,n.hp/n.maxhp*100);
+  return`<li><div class="top"><span><span class="nm">${esc(n.t)}</span> <span class="meta">${esc(n.role)} of ${esc(home?home.t:"nowhere")}</span></span><button class="small" data-act="talk" data-id="${n.id}" ${said==="…"?"disabled":""}>Talk</button></div>
+  <span class="doing">${esc(n.activity)} · ${esc(n.trait)}</span>
+  <span class="meta">HP ${n.hp}/${n.maxhp} · AC ${n.ac} · nerve ${Math.round(n.courage*100)}% · ${n.food} food · ${n.gold} gp · likes you ${trust}%</span>
+  <div class="hpbar thin${pct<=40?" low":""}"><span style="width:${pct}%"></span></div>
+  ${said?`<p class="said">${said==="…"?"…":esc(said)}</p>`:""}</li>`}).join("")}</ul>`;
+}
+function renderDowned(){
+ const ch=cell(charId()),L=cell(ch.downed),e=entitlement(),home=cell(cell("root").home);
+ return`<div class="placehead"><p class="eyebrow">You have fallen</p><h2>Darkness at ${esc(L.t)}</h2></div>
+ <p class="desc">Your hit points are gone. Choose how your story goes on.</p>
+ <div class="btnrow"><button id="wake">Wake at ${esc(home.t)}</button><button class="primary" id="resurrect" ${e.tokens<1?"disabled":""}>Resurrect with your pack (${e.tokens} token${e.tokens===1?"":"s"})</button></div>
+ <p class="note">Waking at the start is free, but your pack stays where you fell. A resurrection token brings you back one step from where you fell, with your pack and half your HP. ${esc(BILLING.prices.token)}.</p>
+ ${flash?`<p class="flash">${esc(flash)}</p>`:""}`;
+}
 
 function renderPlace(){
  const el=$("place");
  if(!charId()||!hereId()){renderCreate(el);return}
- const here=hereId(),L=cell(here),f=foeId(here);
- const t=TERRAINS.includes(L.terrain)?L.terrain:"other";
- let html=`<div class="placehead"><p class="eyebrow">You are at</p><h2>${esc(L.t)}</h2><div class="chips"><span class="chip terrain">${t}</span><span class="chip">${esc(depthName(zOf(L)))}</span><span class="chip">${L.dist?L.dist+" steps from the start":"starting point"}</span><span class="chip">written by ${L.by==="claude"?"Claude":"built-in tables"}</span></div></div>`;
- if(busy)html+=`<p class="mapping">${busy.dir==="start"?"The narrator is writing where your journey begins":busy.dir==="up"?"The narrator is mapping what lies above":busy.dir==="down"?"The narrator is mapping what lies below":"The narrator is mapping the way "+busy.dir}</p>`;
+ if(isDowned()){el.innerHTML=renderDowned();$("wake").onclick=wakeAtHome;$("resurrect").onclick=resurrect;return}
+ const here=hereId(),L=cell(here),f=foeId(here),magic=magicPresent(),t=gameNow(),wa=weatherAt(L.x,L.y,zOf(L),t);
+ const tr=TERRAINS.includes(L.terrain)?L.terrain:"other";
+ const chips=[`<span class="chip terrain">${L.monument?esc(MONUMENT_KIND[L.monument]):L.town?esc(TOWN_SIZES[L.town.size].label):L.river?(L.river.crossing?esc(CROSSINGS[L.river.crossing]):"river"):tr}</span>`,`<span class="chip">${esc(depthName(zOf(L)))}</span>`];
+ if(wa)chips.push(`<span class="chip">${esc(wa.label)}</span>`);
+ if(L.river&&L.river.crossing==="magic")chips.push(`<span class="chip magic">${magic?"bridge present":"bridge absent"}</span>`);
+ if(L.town)chips.push(`<span class="chip">${esc(L.town.side)} bank of the ${esc(riverName())}</span>`);
+ chips.push(`<span class="chip">${L.dist?L.dist+" steps from the start":"starting point"}</span>`,`<span class="chip">written by ${L.by==="claude"?esc(ai.kind==="puter"?"AI":"Claude"):"built-in tables"}</span>`);
+ let html=`<div class="placehead"><p class="eyebrow">You are at</p><h2>${esc(L.t)}</h2><div class="chips">${chips.join("")}</div></div>`;
+ if(busy)html+=`<p class="mapping">${busy.dir==="look"?"The narrator is writing what you can see from here":busy.dir==="up"?"The narrator is mapping what lies above":busy.dir==="down"?"The narrator is mapping what lies below":"The narrator is mapping the way "+busy.dir}</p>`;
  if(narratorNote&&!busy)html+=`<p class="note">${esc(narratorNote)}</p>`;
- html+=`<p class="desc${busy?" busy":""}">${esc(L.desc)}</p>`;
+ if(flash)html+=`<p class="flash">${esc(flash)}</p>`;
+ html+=`<p class="desc${busy?" busy":""}">${linkify(L.river&&L.river.crossing==="magic"&&magic&&L.descPresent?L.descPresent:L.desc)}</p>`;
+ if(fireAt(L.x,L.y,zOf(L)))html+=`<p class="flash sharp">This place is burning. Get out before the fire takes you.</p>`;
+ else if(fireNear(L.x,L.y)&&zOf(L)===0)html+=`<p class="flash">Smoke drifts across your path: there is a fire close by.</p>`;
+ if(isNight(t)&&!hasLight()&&!L.town&&zOf(L)>=0)html+=`<p class="note">It is dark and you have no lantern. Make camp here until dawn, or reach a town and take a room at the inn.</p>`;
+ if(L.town)html+=`<p class="note">A room at the inn costs 2 gp and heals you fully. ${cell(here).c["residents+"]?`${rank(here,"residents").length} people call ${esc(L.t)} home.`:""} Goods for sale are listed below.</p>`;
+ if(L.monument)html+=renderMonument(L);
  if(L.hazard&&L.outcome){const o=L.outcome;html+=`<div class="hazard${o.ok?" passed":""}"><b>${esc(L.hazard.name)}.</b> ${esc(L.hazard.text)} ${o.ok?"You get through unharmed.":`You take ${o.dmg} damage.`}${here===lastHazard?`<span class="roll">${esc(o.roll)}</span>`:""}</div>`}
  if(f)html+=renderFoe(f);
- else if(L.defeated)html+=`<p class="neutral">${esc(L.defeated.designation)} ${esc(L.defeated.name)} was neutralised here.${rounds.length?" "+esc(rounds[rounds.length-1].roll):""}</p>`;
+ else if(L.defeated)html+=`<p class="neutral">${esc(L.defeated.designation)} ${esc(L.defeated.name)} was neutralised here${L.defeated.by?` by ${esc(L.defeated.by)}, who left treasure and food behind`:""}.</p>`;
+ html+=renderSees(here);
+ html+=renderPeople(L);
  const items=storeIds(here);
- html+=`<div class="sectionhead"><h3>Lying here</h3><span class="mono" style="font-size:12px;color:var(--faint)">${items.length} ${items.length===1?"item":"items"}</span></div>`;
+ html+=`<div class="sectionhead"><h3>${L.town?"Lying here and for sale":"Lying here"}</h3><span class="mono" style="font-size:12px;color:var(--faint)">${items.length} ${items.length===1?"item":"items"}</span></div>`;
  if(f&&items.length)html+=`<p class="note">You cannot pick anything up while ${esc(cell(f).t)} is here.</p>`;
  html+=items.length?`<ul class="items">${items.map(id=>itemRow(id,"here")).join("")}</ul>`:`<p class="empty">Nothing here to pick up. Anything you put down stays here for when you return.</p>`;
- // ZigZag inspector
- const dims=[["d.x","x"],["d.y","y"],["d.z","z"],["d.occupant","occupant"],["d.at","at"],["d.contain","contain"]];
+ const dims=[["d.x","x"],["d.y","y"],["d.z","z"],["d.river","river"],["d.residents","residents"],["d.occupant","occupant"],["d.at","at"],["d.contain","contain"]];
  const rows=dims.map(([label,dim])=>`<tr><th>${label}</th><td>${esc(zname(step(here,dim,"-")))}</td><td class="mid">${esc(here)}</td><td>${esc(zname(step(here,dim,"+")))}</td></tr>`).join("");
  html+=`<details class="zz" id="zz-details"${zzOpen?" open":""}><summary>ZigZag view of this place (cell ${esc(here)})</summary><div class="zztable"><table><thead><tr><th>Dimension</th><th>− negward</th><th>this cell</th><th>+ posward</th></tr></thead><tbody>${rows}</tbody></table></div>
- <p class="zzhelp">Each place is one cell. Walking east follows <span class="mono">d.x+</span>, north <span class="mono">d.y+</span>, and climbing up <span class="mono">d.z+</span>. An anomaly hangs off its place along <span class="mono">d.occupant</span>, and anything it carries sits on its own <span class="mono">d.contain</span> rank until it is neutralised. The store here is a rank along <span class="mono">d.contain</span>: <span class="mono">${esc([here].concat(items).join(" → "))}</span>.</p></details>`;
+ <p class="zzhelp">Each place is one cell. Walking east follows <span class="mono">d.x+</span>, north <span class="mono">d.y+</span>, and climbing up <span class="mono">d.z+</span>. The river is twenty cells chained along <span class="mono">d.river</span>, from source to hole. Each town heads a rank of its townsfolk along <span class="mono">d.residents</span>. An anomaly hangs off its place along <span class="mono">d.occupant</span>. The store here is a rank along <span class="mono">d.contain</span>: <span class="mono">${esc([here].concat(items).join(" → "))}</span>.</p></details>`;
  el.innerHTML=html;
 }
 let zzOpen=false;
 
 function renderCreate(el){
  const s=draft.stats,C=CLASSES[draft.cls],hp=Math.max(1,C.hd+mod(s[2]));
+ const waiting=busy?`<span class="mapping">${busy.dir==="river"?"The narrator is charting the river and its towns":busy.dir==="look"?"The narrator is writing what you can see":"The narrator is writing where your journey begins"}</span>`:"";
  el.innerHTML=`<div class="create"><div class="placehead"><p class="eyebrow">New adventurer</p><h2>Roll a character</h2></div>
- <p class="note">Abilities are rolled the classic way: four six-sided dice, keep the best three. Your class sets your hit die, starting kit and combat trick. When you set out, Claude writes the place where your journey begins.</p>
+ <p class="note">Abilities are rolled the classic way: four six-sided dice, keep the best three. You also carry three random items from home. When you set out, the narrator charts the river and its towns, then writes the place where your journey begins.</p>
  <div class="row"><label for="f-name">Name<input id="f-name" value="${esc(draft.name)}" maxlength="40"></label>
  <label for="f-cls">Class<select id="f-cls">${Object.keys(CLASSES).map(k=>`<option${k===draft.cls?" selected":""}>${k}</option>`).join("")}</select></label></div>
- <label for="f-theme">World theme (Claude keeps every place in this spirit)<textarea id="f-theme" rows="3" maxlength="400">${esc(draft.theme)}</textarea></label>
+ <label for="f-theme">World theme (the narrator keeps every place in this spirit)<textarea id="f-theme" rows="3" maxlength="400">${esc(draft.theme)}</textarea></label>
  <div class="rolled">${STATS.map((k,i)=>`<div><span class="k">${k}</span><span class="v">${s[i]}</span><span class="k">${sgn(mod(s[i]))}</span></div>`).join("")}</div>
  <p class="note mono" style="font-size:13px">Hit die d${C.hd} · starting HP ${hp} · AC ${10+mod(s[1])+(C.kit.find(k=>k[2]==="armor")?.[6]||0)} · carry ${s[0]*15} lb</p>
  <p class="note">${esc(CLASS_NOTES[draft.cls])}</p>
- <div class="btnrow"><button id="f-reroll">Reroll abilities</button><button class="primary" id="f-begin" ${busy?"disabled":""}>Set out</button>${busy?'<span class="mapping">The narrator is writing where your journey begins</span>':""}</div></div>`;
+ <div class="btnrow"><button id="f-reroll" ${busy?"disabled":""}>Reroll abilities</button><button class="primary" id="f-begin" ${busy?"disabled":""}>Set out</button>${waiting}</div></div>`;
  $("f-name").oninput=e=>draft.name=e.target.value;
  $("f-theme").oninput=e=>draft.theme=e.target.value;
  $("f-cls").onchange=e=>{draft.cls=e.target.value;renderPlace()};
@@ -862,40 +1993,188 @@ function renderCreate(el){
 
 function renderSheet(){
  const el=$("sheet"),pk=$("pack");
- if(!charId()){el.innerHTML=`<div class="who"><h2>No character yet</h2></div><p class="empty">Roll a character to see their sheet here: abilities, hit points, armour class and level.</p>`;pk.innerHTML=`<h3>Pack</h3><p class="empty">Your class kit and two healing potions go here when you set out.</p>`;return}
- const ch=cell(charId()),hp=sv("HP"),max=sv("MAXHP"),pct=Math.max(0,Math.min(100,hp/max*100)),w=weapon();
+ if(!charId()){el.innerHTML=`<div class="who"><h2>No character yet</h2></div><p class="empty">Roll a character to see their sheet here: abilities, hit points, armour class and level.</p>`;pk.innerHTML=`<h3>Pack</h3><p class="empty">Your class kit, a healing potion and three random items go here when you set out.</p>`;return}
+ const ch=cell(charId()),hp=sv("HP"),max=sv("MAXHP"),pct=Math.max(0,Math.min(100,hp/max*100)),w=weapon(),L=hereId()&&cell(hereId()),e=entitlement();
+ const restBlocked=busy||foeId()||isDowned();
  el.innerHTML=`<div class="who"><h2>${esc(ch.t)}</h2><span class="mono" style="font-size:13px;color:var(--faint)">Level ${sv("LVL")} ${esc(ch.cls)}</span></div>
  <div><div class="hprow"><span>Hit points</span><span>${hp} / ${max}</span></div><div class="hpbar${pct<=34?" low":""}"><span style="width:${pct}%"></span></div></div>
  <div class="abil">${STATS.map(k=>`<div><span class="k">${k}</span><span class="v">${sv(k)}</span><span class="m">${sgn(mod(sv(k)))}</span></div>`).join("")}</div>
- <dl class="facts"><div><dt>Armour class</dt><dd>${armourClass()}</dd></div><div><dt>Proficiency</dt><dd>+${prof()}</dd></div><div><dt>Weapon</dt><dd>${w?esc(w.dmg||"1d6"):"1d2"}</dd></div><div><dt>Hit die</dt><dd>d${hitDie()}</dd></div><div><dt>XP</dt><dd>${sv("XP")} / ${sv("LVL")*100}</dd></div><div><dt>Gold</dt><dd>${sv("GP")} gp</dd></div></dl>
+ <dl class="facts"><div><dt>Armour class</dt><dd>${armourClass()}</dd></div><div><dt>Proficiency</dt><dd>+${prof()}</dd></div><div><dt>Weapon</dt><dd>${w?esc(w.dmg||"1d6"):"1d2"}</dd></div><div><dt>Light</dt><dd>${hasLight()?"lantern":"none"}</dd></div><div><dt>XP</dt><dd>${sv("XP")} / ${sv("LVL")*100}</dd></div><div><dt>Gold</dt><dd>${sv("GP")} gp</dd></div></dl>
  <p class="note">${esc(CLASS_NOTES[ch.cls]||"")}</p>
- <div class="btnrow"><button id="rest" ${busy||foeId()||ch.restedAt===hereId()?"disabled":""} title="Recover half your maximum HP. Once per place, never with an anomaly present.">Rest here</button>${ch.restedAt===hereId()?'<span class="note">Rested here already.</span>':foeId()?'<span class="note">Not while it is here.</span>':""}</div>`;
- $("rest").onclick=rest;
+ <div class="btnrow"><button id="rest" ${restBlocked?"disabled":""} title="${L&&L.town?"Pay 2 gp for a room and sleep until dawn (or eight hours): full HP.":"Make camp: sleep until dawn at night, or eight hours by day, for half your HP."}">${L&&L.town?"Take a room at the inn · 2 gp":"Make camp"}</button>${foeId()?'<span class="note">Not while it is here.</span>':""}</div>
+ <dl class="facts"><div><dt>Plan</dt><dd>${e.plan==="supporter"?"supporter":"free explorer"}</dd></div><div><dt>Range</dt><dd>${exploreRange()>=WORLD_R?"whole world":exploreRange()+" squares"}</dd></div><div><dt>Resurrections</dt><dd>${e.tokens}</dd></div></dl>
+ <div class="btnrow"><button class="small" id="plan-info">Plans and prices</button><button class="small" id="plan-preview" title="For testing only: payments are not connected yet">${e.plan==="supporter"?"Stop supporter preview":"Preview supporter (testing)"}</button></div>
+ ${planInfoOpen?`<p class="note">${esc(BILLING.prices.supporter)}. ${esc(BILLING.prices.token)}. Free explorers can travel ${BILLING.freeRange} squares from the start. Payments are not connected yet.</p>`:""}`;
+ $("rest").onclick=rest;$("plan-info").onclick=()=>{planInfoOpen=!planInfoOpen;renderSheet()};$("plan-preview").onclick=previewSupporter;
  const ids=packIds();
  pk.innerHTML=`<div class="sectionhead"><h3>Pack</h3><span class="mono" style="font-size:12px;color:${carried()>capacity()*.9?"var(--danger)":"var(--faint)"}">${fmtW(carried())} / ${capacity()} lb</span></div>`+
   (ids.length?`<ul class="items">${ids.map(id=>itemRow(id,"pack")).join("")}</ul>`:`<p class="empty">Your pack is empty.</p>`);
 }
+let planInfoOpen=false;
+
+function renderSocial(){
+ const svg=$("social");if(!svg)return;
+ const folk=npcs().slice().sort((a,b)=>(a.wild?1:0)-(b.wild?1:0)||String(a.home||a.species).localeCompare(String(b.home||b.species)));
+ const me=charId()&&cell(charId());
+ const nodes=me?folk.concat([me]):folk;
+ if(!nodes.length){svg.innerHTML=`<text x="170" y="170" text-anchor="middle">Nobody yet</text>`;$("ties").innerHTML="";$("soc-count").textContent="";return}
+ const C=170,R=112,pos=new Map();
+ nodes.forEach((n,i)=>{const a=i/nodes.length*2*Math.PI-Math.PI/2;pos.set(n.id,{x:C+R*Math.cos(a),y:C+R*Math.sin(a),a})});
+ let out="";const pairs=[];
+ for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
+  const a=nodes[i],b=nodes[j],w=(tie(a,b)+tie(b,a))/2;if(Math.abs(w)<.2)continue;pairs.push([a,b,w]);
+  const p=pos.get(a.id),q=pos.get(b.id);
+  out+=`<path class="edge ${w>0?"pos":"neg"}" d="M${p.x.toFixed(1)} ${p.y.toFixed(1)} Q${C} ${C} ${q.x.toFixed(1)} ${q.y.toFixed(1)}" stroke-width="${(.5+2.5*Math.abs(w)).toFixed(2)}" stroke-opacity="${(.25+.6*Math.abs(w)).toFixed(2)}"/>`;
+ }
+ for(const n of nodes){const p=pos.get(n.id),deg=p.a*180/Math.PI,flip=Math.cos(p.a)<0;
+  out+=`<circle class="node ${n.k==="char"?"you":n.wild?"beast":"human"}" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${n.k==="char"?6:4.5}"><title>${esc(n.t)}${n.wild?" · "+esc(n.species):n.role?" · "+esc(n.role):""}</title></circle>`;
+  const lx=C+(R+9)*Math.cos(p.a),ly=C+(R+9)*Math.sin(p.a);
+  out+=`<text class="${n.k==="char"?"you":""}" x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" transform="rotate(${flip?deg+180:deg} ${lx.toFixed(1)} ${ly.toFixed(1)})" text-anchor="${flip?"end":"start"}" dominant-baseline="middle">${esc(n.k==="char"?"you":n.t.split(" ")[0])}</text>`;}
+ svg.innerHTML=out;
+ pairs.sort((a,b)=>Math.abs(b[2])-Math.abs(a[2]));
+ const nm=n=>n.k==="char"?"you":n.t;
+ $("ties").innerHTML=pairs.slice(0,6).map(([a,b,w])=>`<li><span>${esc(nm(a))} ↔ ${esc(nm(b))}</span><span class="w ${w>0?"pos":"neg"}">${w>0?"+":"−"}${Math.abs(w).toFixed(2)}</span></li>`).join("")||"<li>No strong ties yet.</li>";
+ $("soc-count").textContent=`${pairs.length} ties`;
+}
+function renderCodex(){
+ const el=$("codex");if(!el)return;const found=(cell("root")&&cell("root").codex)||[];
+ $("codex-count").textContent=`${found.length} of ${RULES.length}`;
+ el.innerHTML=found.length?found.map(i=>`<li><b>${esc(RULES[i].title)}.</b> ${esc(RULES[i].text)}</li>`).join(""):`<li class="empty">Carved arches, standing stones and small temples are scattered across the world. Each holds one of the hidden rules the world is built on.</li>`;
+}
 
 function renderLog(){
  const r=cell("root"),entries=(r&&r.log||[]).slice().reverse();
- $("log").innerHTML=entries.length?entries.map(e=>`<li class="${e.kind}">${esc(e.text)}${e.roll?`<br><span class="roll">${esc(e.roll)}</span>`:""}</li>`).join(""):`<li>Your journal fills in as you travel: every step, find, fight and dice roll.</li>`;
+ $("log").innerHTML=entries.length?entries.map(e=>`<li class="${e.kind}">${esc(e.text)}${e.roll?`<br><span class="roll">${esc(e.roll)}</span>`:""}</li>`).join(""):`<li>Your journal fills in as you travel: every step, find, fight, dice roll, storm, and what the townsfolk and creatures get up to nearby.</li>`;
  const ra=$("reset-area");
  if(!charId()){ra.innerHTML="";return}
  ra.innerHTML=deleteArmed?`<span class="confirm">Erase this world? <button class="small" id="reset-yes">Erase</button><button class="small" id="reset-no">Keep</button></span>`:`<button class="small" id="reset">New world</button>`;
- if(deleteArmed){$("reset-yes").onclick=()=>{deleteArmed=false;const ids=Object.keys(zz.cells);for(const id of ids)zz.removed.add(id);zz.cells={};coord.clear();zz.dirty.clear();rounds=[];draft.stats=rollStats();store.flush();render()};$("reset-no").onclick=()=>{deleteArmed=false;renderLog()}}
+ if(deleteArmed){$("reset-yes").onclick=()=>{deleteArmed=false;const keep=cell("root")&&cell("root").ent;const ids=Object.keys(zz.cells);for(const id of ids)zz.removed.add(id);zz.cells={};coord.clear();fieldCache.clear();zz.dirty.clear();rounds=[];flash=null;draft.stats=rollStats();draft.ent=keep;store.flush();render()};$("reset-no").onclick=()=>{deleteArmed=false;renderLog()}}
  else $("reset").onclick=()=>{deleteArmed=true;renderLog()};
 }
 
-function render(){renderPills();renderMap();renderCompass();renderPlace();renderSheet();renderLog()}
+function render(){renderPills();renderMap();renderCompass();renderPlace();renderSheet();renderSocial();renderCodex();renderLog();sound.update()}
+
+/* ============================================================
+   Soundtrack: generated live from white, pink and brown noise and a few oscillators.
+   Continuous beds (wind, running water, waterfall, rain, leaves, tavern crowd, cave drone,
+   grove hum) fade toward levels set by where you stand, the weather and the hour. Short
+   events (birdsong, owls, crickets, drips, clinking cups, fire crackle, thunder) are
+   scheduled at random, at rates set the same way.
+   ============================================================ */
+const sound={ctx:null,on:true,started:false,beds:{},
+ init(){try{if(localStorage.getItem("zr-sound")==="off")this.on=false}catch(e){}},
+ noise(type){const c=this.ctx,len=c.sampleRate*4,b=c.createBuffer(1,len,c.sampleRate),d=b.getChannelData(0);
+  let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0,last=0;
+  for(let i=0;i<len;i++){const w=Math.random()*2-1;
+   if(type==="white")d[i]=w*.5;
+   else if(type==="pink"){b0=.99886*b0+w*.0555179;b1=.99332*b1+w*.0750759;b2=.969*b2+w*.153852;b3=.8665*b3+w*.3104856;b4=.55*b4+w*.5329522;b5=-.7616*b5-w*.016898;d[i]=(b0+b1+b2+b3+b4+b5+b6+w*.5362)*.11;b6=w*.115926}
+   else{last=(last+.02*w)/1.02;d[i]=last*3.5}}
+  return b},
+ filt(type,f,q){const n=this.ctx.createBiquadFilter();n.type=type;n.frequency.value=f;if(q)n.Q.value=q;return n},
+ bed(name,buf,chain,lfo){
+  const c=this.ctx,s=c.createBufferSource();s.buffer=buf;s.loop=true;let node=s;for(const f of chain){node.connect(f);node=f}
+  const g=c.createGain();g.gain.value=0;node.connect(g);g.connect(this.master);s.start(0,Math.random()*3);
+  if(lfo){const o=c.createOscillator(),og=c.createGain();o.frequency.value=lfo.rate;og.gain.value=lfo.depth;o.connect(og);og.connect(lfo.param(chain,g));o.start()}
+  this.beds[name]=g},
+ start(){
+  if(this.started||!this.on)return;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+  try{this.ctx=new AC()}catch(e){return}
+  const c=this.ctx;this.master=c.createGain();this.master.gain.value=0;this.master.connect(c.destination);this.master.gain.setTargetAtTime(.8,c.currentTime,1);
+  this.echo=c.createDelay(1);this.echo.delayTime.value=.33;const fb=c.createGain();fb.gain.value=.42;this.echo.connect(fb);fb.connect(this.echo);this.echo.connect(this.master);
+  const W=this.noise("white"),P=this.noise("pink"),B=this.noise("brown");
+  this.white=W;this.brownBuf=B;
+  this.bed("wind",P,[this.filt("bandpass",500,.8)],{rate:.07,depth:300,param:ch=>ch[0].frequency});
+  this.bed("water",W,[this.filt("bandpass",1700,.5),this.filt("lowpass",5000)],{rate:.9,depth:250,param:ch=>ch[0].frequency});
+  this.bed("falls",B,[this.filt("lowpass",900)]);
+  this.bed("rain",W,[this.filt("highpass",2500)]);
+  this.bed("leaves",P,[this.filt("highpass",2800)],{rate:.35,depth:.03,param:(ch,g)=>g.gain});
+  this.bed("crowd",B,[this.filt("bandpass",420,1.2)],{rate:.6,depth:.05,param:(ch,g)=>g.gain});
+  this.bed("drone",B,[this.filt("lowpass",160)]);
+  const hum=c.createGain();hum.gain.value=0;hum.connect(this.master);this.beds.hum=hum;
+  for(const f of [220,221.6,330.4]){const o=c.createOscillator();o.frequency.value=f;const g=c.createGain();g.gain.value=.33;o.connect(g);g.connect(hum);o.start()}
+  this.started=true;this.update();
+ },
+ setOn(v){
+  this.on=v;try{localStorage.setItem("zr-sound",v?"on":"off")}catch(e){}
+  if(v){if(!this.started)this.start();else{this.ctx.resume();this.master.gain.setTargetAtTime(.8,this.ctx.currentTime,.4)}}
+  else if(this.started)this.master.gain.setTargetAtTime(0,this.ctx.currentTime,.3);
+  renderSoundButton();
+ },
+ env(){
+  const H=hereId()&&cell(hereId());if(!H)return null;
+  const t=gameNow(),night=isNight(t),z=zOf(H),w=weatherAt(H.x,H.y,z,t)||{wind:.3,rain:0,storm:0},ws=wxState();
+  const near=pred=>{let s=0;for(let dx=-1;dx<=1;dx++)for(let dy=-1;dy<=1;dy++){const id=coord.get(ck(H.x+dx,H.y+dy,z));if(id&&pred(cell(id)))s=Math.max(s,dx||dy?.45:1)}return s};
+  const T=H.terrain,under=z<0||T==="cave"||T==="dungeon";
+  const townSize=H.town?{small:.55,medium:.8,large:1}[H.town.size]:0;
+  const fire=fireNear(H.x,H.y);
+  return{
+   wind:under?.02:Math.min(.55,.05+w.wind*.17+(["mountain","sky","desert"].includes(T)?.12:0)),
+   water:near(c=>(c.river&&!c.hole)||(c.terrain==="water"&&!c.lake&&!c.falls))*.2,
+   falls:Math.max(near(c=>c.falls||c.hole)*.5,(H.t==="Behind the Falls")?.6:0),
+   rain:under?0:w.rain*.35,
+   leaves:["forest","grove"].includes(T)?.05+w.wind*.08:near(c=>c.terrain==="forest")*.025,
+   crowd:H.town?(night?.32:.15)*townSize:near(c=>c.town)*.04,
+   drone:under?.13:0,
+   hum:H.grove?.05:H.river&&H.river.crossing==="magic"&&magicPresent()?.04:0,
+   birds:!night&&!under&&w.rain<.4&&["forest","grove","plains","road","swamp","village","water"].includes(T)?(T==="forest"||T==="grove"?1:.45):0,
+   owls:night&&["forest","grove"].includes(T)?1:0,
+   crickets:night&&!under&&w.rain<.2&&["plains","road","village","forest","swamp","desert","grove"].includes(T)?1:0,
+   drips:under?1:0,
+   clinks:H.town?(night?1:.5):0,
+   crackle:(H.town&&night?.6:0)+(fire?1.6:0),
+   thunder:w.storm>.2?w.storm:ws&&ws.storm?.12:0
+  };
+ },
+ update(){
+  if(!this.started)return;const e=this.env();if(!e)return;const now=this.ctx.currentTime;
+  for(const k of ["wind","water","falls","rain","leaves","crowd","drone","hum"])this.beds[k].gain.setTargetAtTime(e[k],now,1.5);
+  this.e=e;
+ },
+ tick(){
+  if(!this.started||!this.on||!this.e)return;if(this.ctx.state==="suspended")return;const e=this.e,r=Math.random;
+  if(r()<.22*e.birds)this.birds();
+  if(r()<.03*e.owls)this.owl();
+  if(r()<.3*e.crickets)this.cricket();
+  if(r()<.35*e.drips)this.drip();
+  if(r()<.12*e.clinks)this.clink();
+  if(e.crackle)for(let i=0;i<3;i++)if(r()<.5*e.crackle)this.pop(i*.25+r()*.2);
+  if(r()<.04*e.thunder)this.thunder(e.thunder);
+ },
+ tone(f0,f1,dur,peak,at=0,type="sine",dest){
+  const c=this.ctx,t=c.currentTime+at,o=c.createOscillator(),g=c.createGain();o.type=type;
+  o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(Math.max(20,f1),t+dur);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(peak,t+Math.min(.02,dur/4));g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(dest||this.master);o.start(t);o.stop(t+dur+.05)},
+ birds(){const n=2+Math.floor(Math.random()*4),base=2400+Math.random()*2400;for(let i=0;i<n;i++)this.tone(base*(1+Math.random()*.2),base*(.7+Math.random()*.6),.07+Math.random()*.06,.05,i*.13)},
+ owl(){this.tone(390,360,.45,.07,0);this.tone(370,330,.7,.06,.6)},
+ cricket(){const f=4300+Math.random()*400;for(let i=0;i<5;i++)this.tone(f,f,.025,.012,i*.05)},
+ drip(){const f=900+Math.random()*900;this.tone(f*1.4,f,.18,.06,0,"sine",this.echo);this.tone(f*1.4,f,.18,.04,0)},
+ clink(){const f=2600+Math.random()*1200;this.tone(f,f,.35,.03,0);this.tone(f*2.01,f*2,.25,.012,0)},
+ pop(at){const c=this.ctx,t=c.currentTime+at,s=c.createBufferSource(),g=c.createGain(),hp=this.filt("highpass",900+Math.random()*1500);s.buffer=this.white;
+  g.gain.setValueAtTime(.25*Math.random(),t);g.gain.exponentialRampToValueAtTime(.0001,t+.02+Math.random()*.04);s.connect(hp);hp.connect(g);g.connect(this.master);s.start(t,Math.random()*3);s.stop(t+.1)},
+ thunder(strength){const c=this.ctx,t=c.currentTime,s=c.createBufferSource(),lp=this.filt("lowpass",1400),g=c.createGain(),dur=3+Math.random()*3;s.buffer=this.brownBuf;
+  lp.frequency.setValueAtTime(strength>.4?1600:500,t);lp.frequency.exponentialRampToValueAtTime(90,t+dur);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(Math.min(.9,.25+strength*.7),t+(strength>.4?.05:.6));g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  s.connect(lp);lp.connect(g);g.connect(this.master);s.start(t,Math.random()*2);s.stop(t+dur+.1)}
+};
+sound.init();
+// Browsers only allow sound after the first click or key press, so the soundtrack starts then
+for(const ev of ["pointerdown","keydown"])document.addEventListener(ev,()=>{if(sound.on&&!sound.started)sound.start();else if(sound.started&&sound.ctx.state==="suspended"&&sound.on)sound.ctx.resume()},{capture:true});
+setInterval(()=>sound.tick(),1000);
+function renderSoundButton(){const b=$("sound-toggle");if(!b)return;b.setAttribute("aria-pressed",String(sound.on));b.innerHTML=sound.on?`Sound: <b>on</b>${sound.started?"":" (click anywhere to start)"}`:"Sound: <b>off</b>"}
 
 /* ============================================================
    Events and start-up
    ============================================================ */
 document.addEventListener("click",e=>{
+ if(e.target.closest("#sound-toggle")){sound.setOn(!sound.on);return}
+ const g0=e.target.closest("button[data-go]");if(g0){move(g0.dataset.go);return}
  const b=e.target.closest("button[data-act]");
- if(b){const id=b.dataset.id;({take,drop,use:useItem,wear,wield,attack:i=>attack(+i),wind:secondWind})[b.dataset.act](id);return}
+ if(b){const id=b.dataset.id;({take,drop,use:useItem,wear,wield,talk,greet,feed,monument:readMonument,attack:i=>attack(+i),wind:secondWind})[b.dataset.act](id);return}
  const d=e.target.closest("#compass button[data-dir]");if(d){move(d.dataset.dir);return}
- const g=e.target.closest("#map g");if(g){if(g.dataset.dir)move(g.dataset.dir);else if(g.dataset.loc)travelTo(g.dataset.loc)}
+ const g=e.target.closest("#map g");if(g){if(g.dataset.dir)move(g.dataset.dir);else if(g.dataset.loc){const id=g.dataset.loc,H=cell(hereId()),C=cell(id);
+  const dir=H&&C?Object.keys(DIRS).find(k=>coord.get(ck(H.x+DIRS[k].dx,H.y+DIRS[k].dy,zOf(H)+DIRS[k].dz))===id):null;
+  if(dir)move(dir);else travelTo(id)}}
 });
 document.addEventListener("toggle",e=>{if(e.target.id==="zz-details")zzOpen=e.target.open},true);
 document.addEventListener("keydown",e=>{
@@ -906,16 +2185,37 @@ document.addEventListener("keydown",e=>{
  if(e.key==="r"||e.key==="R")rest();
  if(e.key==="f"||e.key==="F")attack(0);
 });
+// The clock ticks on screen. Day, night, the magical bridge and the weather change the world as they turn.
+let lastSig="";
+setInterval(()=>{
+ if(!cell("root"))return;renderClock();
+ if(!charId()||!hereId()||busy)return;
+ const t=gameNow(),H=cell(hereId()),w=weatherAt(H.x,H.y,zOf(H),t);
+ const sig=`${isNight(t)}|${magicPresent(t)}|${w&&w.short}`;
+ if(Math.floor((t-(cell("root").npcT||t))/TICK)>=1){simulate();store.flush();render();return}
+ if(sig!==lastSig){const first=!lastSig;lastSig=sig;if(!first){sweptAway();render()}}
+},1000);
 
 (async function start(){
  render();
  const samplePromise=window.claude&&claude.use?claude.use("sample").catch(()=>null):Promise.resolve(null);
+ const puterPromise=loadPuter();
  await store.connect();
  const saved=await store.load();
- if(saved){zz.cells=saved;for(const c of Object.values(zz.cells))if(c.k==="loc")coord.set(ck(c.x,c.y,zOf(c)),c.id);
-  if(store.mode==="cloud"&&store.from!=="cloud"){for(const id of Object.keys(zz.cells))touch(id);store.flush()}}
+ if(saved){
+  zz.cells=saved;for(const c of Object.values(zz.cells))if(c.k==="loc")coord.set(ck(c.x,c.y,zOf(c)),c.id);
+  const r=cell("root");if(!r.clock){r.clock={base:8*60,real:Date.now()};r.npcT=8*60;r.seed=Math.floor(Math.random()*1e6);touch("root")}
+  if(store.mode==="cloud"&&store.from!=="cloud"){for(const id of Object.keys(zz.cells))touch(id)}
+  simulate();store.flush();
+ }
  render();
  sample=await samplePromise;
+ if(sample)ai.kind="claude";
+ else if(await puterPromise&&window.puter){
+  puterReady=true;
+  try{if(puter.auth.isSignedIn())await puterAfterSignIn(false)}catch(e){}
+ }
  render();
+ if(hereId()&&!isDowned())ensureNeighbours(hereId());
 })();
 </script>
