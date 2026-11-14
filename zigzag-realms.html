@@ -736,7 +736,21 @@ const store={mode:"none",db:null,uid:null,from:null,chain:Promise.resolve(),erro
    return cells.root?cells:null;
   }catch(e){this.error="Could not read your saved world from Puter.";return null}
  },
+ /* One writer at a time. Each page that opens the world on Puter claims it (zzs:owner, outside the
+    zz: cells) with the time it opened. A page that sees a newer claim stops saving and says so, so an
+    old tab or another device can no longer save over the world you are playing now. */
+ session:null,stale:false,lastCheck:0,
+ async claim(){this.session={id:Math.random().toString(36).slice(2),since:Date.now()};this.stale=false;try{await puter.kv.set("zzs:owner",this.session)}catch(e){}},
+ async checkOwner(force){
+  if(this.mode!=="puter"||!this.session||this.stale)return this.stale;
+  if(!force&&Date.now()-this.lastCheck<15000)return false;this.lastCheck=Date.now();
+  try{const o=await puter.kv.get("zzs:owner");if(o&&o.id!==this.session.id&&o.since>=this.session.since){this.stale=true;
+   flash="Your world is now open in another tab or on another device, which saves it from now on. This page has stopped saving. Reload it to play here instead.";render()}}catch(e){}
+  return this.stale;
+ },
  sendPuter(){
+  if(this.stale){zz.dirty.clear();zz.removed.clear();renderSaving();return}
+  this.checkOwner();
   const items=[],dels=[];let pack=false;
   for(const id of zz.dirty){const c=cell(id);if(c&&c.k===PACKED){pack=true;continue}if(c)items.push({key:"zz:"+id,value:c});else dels.push(id)}
   for(const id of zz.removed)if(!cell(id))dels.push(id);
@@ -746,6 +760,7 @@ const store={mode:"none",db:null,uid:null,from:null,chain:Promise.resolve(),erro
   if(!items.length&&!dels.length){renderSaving();return}
   pending++;renderSaving();
   this.chain=this.chain.then(async()=>{
+   if(await this.checkOwner())return;
    try{for(let i=0;i<items.length;i+=500)await puter.kv.set(JSON.parse(JSON.stringify(items.slice(i,i+500))));
     for(const id of new Set(dels))await puter.kv.del("zz:"+id)}
    catch(e){this.error="Some changes could not be saved to Puter; they are kept in this browser."}
@@ -2020,7 +2035,7 @@ async function puterSignIn(){
 }
 async function puterAfterSignIn(migrate){
  try{const u=await puter.auth.getUser();puterUser=u&&u.username||"signed in"}catch(e){}
- ai.kind="puter";store.mode="puter";
+ ai.kind="puter";store.mode="puter";await store.claim();
  const remote=await store.loadPuter();
  if(remote&&remote.root&&(!zz.cells.root||!migrate)){zz.cells=remote;coord.clear();fieldCache.clear();for(const c of Object.values(zz.cells))if(c.k==="loc")coord.set(ck(c.x,c.y,zOf(c)),c.id)}
  else if(zz.cells.root){for(const id of Object.keys(zz.cells))touch(id)}
@@ -2788,7 +2803,8 @@ function mapTravellers(H,R,Z,P){
  }
  return out;
 }
-setInterval(()=>{if(mp.on()&&document.visibilityState!=="hidden")mpPing()},MP_PING);
+setInterval(()=>{if(store.stale)return;if(mp.on()&&document.visibilityState!=="hidden")mpPing()},MP_PING);
+setInterval(()=>{if(store.mode==="puter")store.checkOwner()},20000);
 
 /* ============================================================
    A fragment of the hidden rules, once a day: the first time you come back into the world
@@ -2962,6 +2978,7 @@ function renderSaving(){
  if(store.mode==="none"){p.innerHTML="World: <b>loading…</b>";return}
  p.classList.toggle("warn",!!store.error);
  const where=store.mode==="cloud"?"your Claude account":store.mode==="puter"?"your Puter account":"this browser";
+ if(store.stale){p.classList.add("warn");p.innerHTML="World: <b>open elsewhere, not saving here</b>";p.title="Another tab or device opened this world after this page did. Reload to play here.";return}
  p.innerHTML=store.error?"World: <b>save problem</b>":(pending||store.timer)?`World: <b>saving…</b>`:`World: <b>saved in ${where}</b>`;
  p.title=store.error||`Each place, item, anomaly, townsperson and stat is stored as a ZigZag cell in ${where}.`;
 }
@@ -3171,6 +3188,7 @@ function renderPlace(){
  chips.push(`<span class="chip">${L.dist?L.dist+" steps from the start":"starting point"}</span>`,`<span class="chip">written by ${L.by==="claude"?esc(ai.kind==="puter"?"AI":"Claude"):"built-in tables"}</span>`);
  let html=`<div class="placehead"><p class="eyebrow">You are at</p><h2>${esc(L.t)}</h2><div class="chips">${chips.join("")}</div></div>`;
  html+=renderRealmEvent(L);
+ if(canJoinRealm()&&!mp.on()&&puterUser&&!store.stale)html+=`<div class="realmevent"><span class="eyebrow">Shared realm</span><p>You are playing in a world of your own. Use <b>Join the shared realm</b> at the top of the page to roll a character in the world other players share.</p></div>`;
  if(busy)html+=`<p class="mapping">${busy.dir==="look"?"The narrator is writing what you can see from here":busy.dir==="up"?"The narrator is mapping what lies above":busy.dir==="down"?"The narrator is mapping what lies below":"The narrator is mapping the way "+busy.dir}</p>`;
  if(narratorNote&&!busy)html+=`<p class="note">${esc(narratorNote)}</p>`;
  if(flash)html+=`<p class="flash">${esc(flash)}</p>`;
