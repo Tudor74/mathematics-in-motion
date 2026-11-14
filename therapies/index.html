@@ -1,0 +1,752 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Therapies In Motion — v0.1</title>
+<meta name="description" content="An animated, interactive map of how psychotherapies differ in approach, built from the six-dimension framework in The Therapeutic Landscape in 2025.">
+<meta name="application-version" content="0.1">
+<style>
+:root{--ink:#192c37;--muted:#546873;--blue:#1772b7;--pale:#e8f2f8;--line:#c7d8e3;--paper:#fff;--bg:#f3f6f7;--warm:#ad472a;--purple:#7156a6;--green:#2c776c}
+*{box-sizing:border-box}
+html{background:var(--bg);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}
+body{margin:0;padding:22px;background:var(--bg)}
+button,select,input{font:inherit}
+button,select{min-height:44px}
+button{background:#fff;border:1px solid #aec3cf;border-radius:10px;padding:10px 17px;cursor:pointer;color:var(--ink);font-weight:600}
+button:hover{background:#edf5fa}button:active{background:#dfedf5}
+button:disabled{cursor:default;opacity:.5}
+button.primary{background:var(--blue);border-color:var(--blue);color:#fff;min-width:112px}
+button.primary:hover{background:#115c95}
+button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #a44289;outline-offset:3px}
+select{border:1px solid #aec3cf;border-radius:10px;padding:8px 12px;background:#fff;color:var(--ink);max-width:100%}
+.frame{max-width:1160px;margin:0 auto;background:var(--paper);border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 8px 35px #192c3709}
+header{padding:25px 30px 18px;display:flex;gap:18px;align-items:center;justify-content:space-between;border-bottom:1px solid #e3ebef;background:linear-gradient(120deg,#fff 55%,#f1eef8)}
+.eyebrow{font-size:12px;letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--muted);margin:0 0 7px}
+h1{font-size:clamp(22px,3.2vw,30px);font-weight:650;letter-spacing:-.035em;margin:0}
+.counter{font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap;border:1px solid var(--line);padding:8px 12px;border-radius:30px;color:var(--muted)}
+.honest{margin:0;padding:10px 30px;font-size:13px;line-height:1.5;color:var(--muted);background:#fbfaf6;border-bottom:1px solid #ece7da}
+.honest strong{color:var(--ink)}
+.stages{display:flex;gap:6px;padding:12px 30px;border-bottom:1px solid #e3ebef;overflow-x:auto;scrollbar-width:thin}
+.stages button{min-height:38px;padding:6px 12px;font-size:13px;white-space:nowrap;border-radius:30px}
+.lesson{display:grid;grid-template-columns:minmax(0,1.24fr) minmax(0,1fr);align-items:start;gap:28px;padding:26px 30px 22px}
+.picture{background:#f3f7fa;border:1px solid #e0e9ee;border-radius:16px;min-width:0;overflow:hidden}
+.picture svg{display:block;width:100%;height:auto;aspect-ratio:600/380;touch-action:manipulation}
+.picture svg text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.phase{padding:10px 14px;border-top:1px solid #dfe9ef;min-height:64px;font-size:13.5px;color:var(--muted);line-height:1.5;background:#fff}
+.progress{height:4px;background:#eaf0f3;position:relative;overflow:hidden}
+.progress span{position:absolute;top:0;bottom:0;left:0;background:var(--blue);width:0}
+.try{border-top:1px solid #dfe9ef;background:#fcfbff;padding:14px;display:none}
+.try.on{display:block}
+.try .row{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin:0 0 8px}
+.try label{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.try input[type=range]{width:150px;accent-color:var(--purple)}
+.try .chip{min-height:36px;padding:5px 11px;font-size:13px;border-radius:30px}
+.try .out{font-size:13.5px;line-height:1.5;color:var(--ink);margin:6px 0 0}
+.sliders{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px 16px}
+.sliders label{justify-content:space-between}
+.explanation{min-width:0}
+.explanation .eyebrow{margin-bottom:12px}
+h2{margin:0 0 16px;font-size:clamp(27px,3.9vw,41px);line-height:1.08;letter-spacing:-.04em;font-weight:600;overflow-wrap:anywhere}
+.definition{font-size:clamp(17px,2.1vw,21px);line-height:1.5;margin:0 0 18px}
+.example{font-size:15px;line-height:1.6;margin:0 0 16px;color:var(--muted);padding-left:14px;border-left:3px solid #bdd3e1;max-width:50ch}
+.source{font-size:13px;line-height:1.5;color:var(--muted);margin:0;padding:10px 12px;border-radius:10px;background:#f6f4ee}
+.source b{color:var(--ink)}
+button.word{display:inline;min-height:0;padding:0 2px;border:0;border-bottom:2px dotted var(--purple);border-radius:0;background:none;font-weight:inherit;color:inherit;cursor:help}
+button.word:hover{background:#f0ebf9}
+.controls{padding:18px 30px 22px;background:#fcfdfd;border-top:1px solid #e3ebef}
+.navrow{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.buttons{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.speed{font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:center}
+.modes{display:flex;border:1px solid #aec3cf;border-radius:12px;overflow:hidden}
+.modes button{border:0;border-radius:0;min-width:92px}
+footer{padding:14px 30px 20px;font-size:12.5px;line-height:1.55;color:var(--muted);border-top:1px solid #e3ebef}
+footer a{color:var(--blue)}
+dialog{border:1px solid var(--line);border-radius:18px;padding:0;max-width:min(520px,92vw);color:var(--ink);box-shadow:0 20px 60px #192c3733}
+dialog::backdrop{background:#192c3755}
+.dlg{padding:22px 24px}
+.dlg h3{margin:0 0 10px;font-size:24px;letter-spacing:-.02em}
+.dlg p{margin:0 0 12px;line-height:1.55}
+.dlg .contrast{color:var(--muted);font-size:14.5px}
+.dlg .ex{font-size:14.5px;border-left:3px solid #d6cbe9;padding-left:10px}
+.dlg .close{float:right;min-height:36px;padding:4px 12px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (max-width:860px){
+ body{padding:0}
+ .frame{border-radius:0;border-left:0;border-right:0}
+ header,.lesson,.controls,footer{padding-left:16px;padding-right:16px}
+ .honest,.stages{padding-left:16px;padding-right:16px}
+ .lesson{grid-template-columns:1fr;gap:18px}
+ .try input[type=range]{width:120px}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<main class="frame" id="app" aria-label="Therapies In Motion: an animated map of how therapies differ">
+<header>
+ <div>
+  <p class="eyebrow" id="stage-eyebrow">Therapies In Motion · v0.1</p>
+  <h1 id="stage-title">Six ways therapies differ</h1>
+ </div>
+ <div class="counter" id="counter" aria-live="polite">1 / 22</div>
+</header>
+<p class="honest"><strong>How to read this:</strong> the 0–1 scores are judgements assigned in the source essay, not measurements. This page maps how therapies differ in <em>approach</em>; it is not clinical advice. Choosing a therapy is a conversation with a GP or therapist. In England you can refer yourself to NHS Talking Therapies. If you need help now: NHS 111 (option 2), or Samaritans on 116 123.</p>
+<nav class="stages" id="stages" aria-label="Stages"></nav>
+<section class="lesson" aria-labelledby="term">
+ <div>
+  <div class="picture">
+   <svg id="drawing" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 380" role="img" aria-labelledby="svg-title"><title id="svg-title">Diagram</title></svg>
+   <div class="progress" aria-hidden="true"><span id="bar"></span></div>
+   <div class="phase" id="phase" aria-live="polite"></div>
+   <div class="try" id="try" aria-label="Try it controls"></div>
+  </div>
+ </div>
+ <div class="explanation" id="lesson-panel">
+  <p class="eyebrow" id="scene-eyebrow"></p>
+  <h2 id="term" tabindex="-1"></h2>
+  <p class="definition" id="definition"></p>
+  <p class="example" id="example"></p>
+  <p class="source" id="source"></p>
+ </div>
+</section>
+<section class="controls" aria-label="Playback controls">
+ <div class="navrow">
+  <div class="buttons">
+   <button type="button" id="previous" aria-label="Previous scene">← Previous</button>
+   <button type="button" id="play" class="primary" aria-label="Play">▶ Play</button>
+   <button type="button" id="next" aria-label="Next scene">Next →</button>
+   <button type="button" id="replay" aria-label="Replay this scene">↺ Replay</button>
+  </div>
+  <div class="buttons">
+   <label class="speed">Speed
+    <select id="speed" aria-label="Playback speed"><option value="0.6">Slow</option><option value="1" selected>Normal</option><option value="1.6">Fast</option></select>
+   </label>
+   <div class="modes" role="group" aria-label="Mode">
+    <button type="button" id="mode-watch" aria-pressed="true">Watch</button>
+    <button type="button" id="mode-try" aria-pressed="false">Try it</button>
+   </div>
+  </div>
+ </div>
+</section>
+<footer>
+ Source: Tudor Watson, <a href="https://tudorwatson900623.substack.com/p/the-therapeutic-landscape-in-2025" rel="noopener">“The Therapeutic Landscape in 2025”</a> (Aug 2025): six dimensions, 15 category profiles and the examples quoted. Where the essay gives only a category average, a therapy is placed at its category’s average, with any score the essay states for that therapy taking priority. Notes on UK guidance summarise NICE recommendations and may change; check the current guideline. Companion to <a href="https://github.com/Tudor74/mathematics-in-motion">Mathematics In Motion</a>. Keys: ←/→ scenes, space play/pause, T try it.
+</footer>
+</main>
+<dialog id="word-dialog" aria-labelledby="word-title"><div class="dlg"><button type="button" class="close" id="word-close" aria-label="Close definition">Close</button><h3 id="word-title"></h3><p id="word-here"></p><p class="contrast" id="word-contrast"></p><p class="ex" id="word-example"></p></div></dialog>
+<script>
+(function(){
+'use strict';
+/* Design note — the interaction chosen for each scene, and why.
+   Every diagram is a pure function of (progress p, state s), so play, rewind and replay are deterministic.
+   Watch mode animates p from 0 to 1; Try it mode freezes p = 1 and hands the state to the learner.
+   1 Fingerprint ........ overlay two categories: the shape of a difference is easier to see than a table.
+   2–7 Dimensions ........ drag one value from 0 to 1 and watch a session picture change: each axis is a spectrum, not a box.
+   8 Two continents ...... pick a dimension to light its correlations: shows the six axes collapse into two camps.
+   9 The map ............. click categories, toggle history and evidence layers: layers keep "how it works" apart from "how tested".
+   10 Evidence for what .. pick a condition: evidence belongs to a therapy–condition pair, never to a therapy alone.
+   11–13 Families ........ compare any two category fingerprints.
+   14 Distance ........... choose two therapies; the gap is shown per dimension so you can see where they differ.
+   15 Bridges ............ switch hubs: a bridge is defined by how many families it touches.
+   16 Stepping stones .... choose the middle stop: a detour never shortens the trip, it shrinks the biggest step.
+   17 Sequential care .... step through phases: integration as a sequence, not a blend.
+   18 Eras ............... scrub the year: the map's balance shifts with history.
+   19 Retired ............ inspect each retired practice: directiveness without evidence.
+   20 Shared ground ...... reveal common factors: what predicts outcome across every school.
+   21 What fits me ....... five sliders, nearest approaches light up — described, never recommended.
+   22 How it was made .... no try: the honest pipeline from judgements to pictures. */
+const $=id=>document.getElementById(id);
+const C={ink:'#192c37',muted:'#546873',blue:'#1772b7',pale:'#e1eef7',line:'#abc3d3',coral:'#c45238',coralp:'#f9e2d9',green:'#2c776c',greenp:'#dceee8',purple:'#7156a6',purplep:'#ece6f6',grid:'#d5e1e8'};
+const DUR=9;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const smooth=v=>{v=clamp(v,0,1);return v*v*(3-2*v)};
+const lerp=(a,b,t)=>a+(b-a)*t;
+const seg=(p,a,b)=>smooth((p-a)/(b-a));
+const f2=n=>Number(n).toFixed(2);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const hex=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+const mixc=(a,b,t)=>{const A=hex(a),B=hex(b);return '#'+A.map((v,i)=>Math.round(lerp(v,B[i],clamp(t,0,1))).toString(16).padStart(2,'0')).join('')};
+const symCol=v=>v<.5?mixc(C.blue,C.purple,v*2):mixc(C.purple,C.coral,(v-.5)*2);
+const T=(x,y,s,o={})=>`<text x="${f2(x)}" y="${f2(y)}" font-size="${o.size||13}" fill="${o.fill||C.ink}" text-anchor="${o.anchor||'start'}" font-weight="${o.weight||400}"${o.op!=null?` opacity="${f2(o.op)}"`:''}${o.style?` font-style="${o.style}"`:''}>${esc(s)}</text>`;
+
+/* ---------- Data ---------- */
+const DIMS=['Time structure','Directiveness','Somatic focus','Symbolic depth','Evidence base','Experiential level'];
+const SHORT=['Structure','Directive','Body','Symbolic','Evidence','Action'];
+const PROC=[0,1,2,3,5];
+const CATS={
+ cb:{name:'Cognitive & behavioural',n:10,coh:.429,s:[.81,.72,.23,.22,.85,.40],inc:'DBT, CBT, ACT, REBT',gist:'Structured and coach-like: change thoughts and behaviour in the present.'},
+ pd:{name:'Psychodynamic & analytic',n:9,coh:.437,s:[.42,.38,.23,.78,.57,.24],inc:'Object relations, psychoanalysis, Jungian, Adlerian',gist:'Talk that follows the unconscious; symptoms are read as symbols.'},
+ hu:{name:'Humanistic & existential',n:8,coh:.569,s:[.40,.35,.41,.55,.56,.39],inc:'Process-experiential, person-centred, Gestalt, existential',gist:'The here and now, the relationship and authenticity.'},
+ sy:{name:'Systemic & family',n:8,coh:.406,s:[.60,.58,.19,.42,.64,.38],inc:'Family systems, structural family therapy',gist:'The relationship system, not one person, is the client.'},
+ so:{name:'Somatic & body-based',n:10,coh:.460,s:[.42,.38,.93,.52,.44,.87],inc:'Body psychotherapy, Somatic Experiencing, Hakomi, Rolfing',gist:'Bottom-up: the body is the route to regulation.'},
+ an:{name:'Animal & nature',n:11,coh:.369,s:[.26,.35,.72,.54,.41,.95],inc:'Equine, adventure therapy, forest bathing',gist:'Doing things, outdoors or alongside animals.'},
+ cr:{name:'Creative & expressive',n:9,coh:.474,s:[.40,.30,.41,.86,.47,.71],inc:'Phototherapy, art, music, drama, play therapy',gist:'Making something says what words cannot.'},
+ mi:{name:'Mindfulness & meditation',n:7,coh:.489,s:[.49,.39,.56,.49,.61,.47],inc:'Members not listed in the source',gist:'Training attention and acceptance, often in groups.'},
+ tr:{name:'Trauma-specialised',n:8,coh:.547,s:[.71,.60,.44,.35,.71,.50],inc:'NET, EMDR, prolonged exposure, TF-CBT',gist:'Structured protocols that bring the body in.'},
+ ps:{name:'Psychedelic-assisted',n:4,coh:.613,s:[.55,.40,.50,.50,.55,.65],inc:'MDMA-assisted, psilocybin-assisted therapy',gist:'A drug-assisted session inside a therapeutic container, mostly in trials.'},
+ di:{name:'Digital & technology',n:4,coh:.598,s:[.65,.50,.25,.25,.55,.50],inc:'App-based CBT, VR therapy, AI-assisted tools, neurofeedback',gist:'Structured programmes delivered or extended by technology.'},
+ ot:{name:'Mixed / other',n:19,coh:.582,s:[.55,.53,.31,.46,.58,.47],inc:'Eclectic, solution-focused brief therapy, clinical hypnosis, integrative',gist:'The pragmatic middle: drawing on several models.'},
+ en:{name:'Energy & alternative',n:7,coh:.388,s:[.23,.27,.61,.71,.16,.61],inc:'Pranic healing, chakra balancing, crystal healing',gist:'Built on energy systems that are hard to test.'},
+ cu:{name:'Cultural & indigenous',n:5,coh:.521,s:[.20,.38,.60,.80,.24,.66],inc:'Shamanic healing, indigenous practices',gist:'Healing inside a cultural and spiritual cosmology.'},
+ hi:{name:'Historical & retired',n:9,coh:.887,s:[.59,.77,.49,.42,.16,.56],inc:'Primal scream, psychosurgery, insulin shock',gist:'Abandoned practices: a lesson in authority without evidence.',hist:true}
+};
+const CAT_IDS=Object.keys(CATS);
+/* Therapies: category average, overridden by any score the source states for that therapy. */
+const TH=[
+ ['CBT','cb',{0:.9,4:1}],['DBT','cb',{4:.95}],['Exposure therapy','cb',{4:.95}],['Behavioural activation','cb',{3:0}],['ACT','cb',{}],
+ ['EMDR','tr',{}],['TF-CBT','tr',{}],['Prolonged exposure','tr',{}],
+ ['Psychoanalysis','pd',{5:.1}],['Lacanian analysis','pd',{5:.1}],['Jungian analysis','pd',{3:1}],
+ ['Person-centred','hu',{1:.1}],['Gestalt','hu',{}],['Existential','hu',{}],
+ ['Bowenian family','sy',{2:.1}],['Structural family','sy',{}],
+ ['Somatic Experiencing','so',{2:1}],['Feldenkrais','so',{2:.95}],['Rolfing','so',{5:1}],['Hakomi','so',{}],
+ ['Equine therapy','an',{5:1}],['Adventure therapy','an',{5:1}],['Forest bathing','an',{0:.1}],
+ ['Art therapy','cr',{3:1}],['Music therapy','cr',{}],['Drama therapy','cr',{}],
+ ['Psilocybin-assisted','ps',{}],['MDMA-assisted','ps',{}],
+ ['App-based CBT','di',{2:.1}],['VR therapy','di',{}],
+ ['Solution-focused brief','ot',{}],['Clinical hypnosis','ot',{}],['Peer support','ot',{1:.1}],
+ ['Pranic healing','en',{4:.1}],['Chakra balancing','en',{4:.1}],
+ ['Shamanic healing','cu',{0:.1}],
+ ['Psychosurgery','hi',{0:1,1:1,2:0}],['Insulin shock','hi',{1:1,3:0}],['Phrenology','hi',{4:0}]
+].map(([name,cat,ov])=>{const s=CATS[cat].s.slice();const stated=[];for(const k in ov){s[k]=ov[k];stated.push(+k)}return {name,cat,s,stated,hist:!!CATS[cat].hist}});
+const thBy=n=>TH.find(t=>t.name===n);
+const dist=(a,b,idx=PROC)=>Math.sqrt(idx.reduce((m,i)=>m+(a[i]-b[i])**2,0));
+
+const GLOSSARY={
+ protocol:{t:'Protocol',h:'A planned sequence of sessions and steps that a therapy follows.',c:'Not the same as rigid: good protocols leave room for the person, but the order of work is set in advance.',e:'EMDR follows eight set phases.'},
+ manualised:{t:'Manualised',h:'Written down in a treatment manual so that different therapists deliver it in much the same way.',c:'A manual describes the method; it does not guarantee the relationship will be good.',e:'Manuals are what make large trials of CBT possible.'},
+ directive:{t:'Directive',h:'The therapist leads: sets the agenda, teaches skills, suggests tasks.',c:'Directive is not the same as controlling; modern directive therapies are collaborative.',e:'A CBT therapist might suggest a thought record for homework.'},
+ nondirective:{t:'Non-directive',h:'The client leads; the therapist follows, reflects and stays alongside.',c:'Not passive: it takes skill to follow well.',e:'Person-centred therapy, founded by Carl Rogers.'},
+ somatic:{t:'Somatic',h:'To do with the body: sensations, breathing, posture, the nervous system.',c:'Somatic therapies still involve talking, but attention starts in the body.',e:'Noticing a tight chest before naming the feeling.'},
+ interoception:{t:'Interoception',h:'Sensing what is happening inside your own body: heartbeat, gut, breath.',c:'Different from proprioception, which is sensing where your body is in space.',e:'Somatic therapies often train this first.'},
+ symbolic:{t:'Symbolic depth',h:'How far a therapy reads experience as meaning something beyond itself: dreams, images, metaphors.',c:'Low symbolic depth is not shallow; it means taking behaviour at face value.',e:'A Jungian analyst might explore a recurring dream image.'},
+ unconscious:{t:'Unconscious',h:'Mental processes that shape feelings and actions without being in awareness.',c:'Used differently by different schools; not every therapy relies on it.',e:'Psychodynamic work looks for unconscious patterns in relationships.'},
+ transference:{t:'Transference',h:'Feelings from past relationships showing up in the relationship with the therapist.',c:'Not a mistake to be fixed; in psychodynamic work it is material to explore.',e:'Feeling judged by a therapist who has said nothing judgemental.'},
+ rct:{t:'Randomised controlled trial (RCT)',h:'A study where people are randomly assigned to a treatment or a comparison, so that the difference can be credited to the treatment.',c:'An RCT tests a treatment for a particular problem and group; it does not test the therapy in general.',e:'Trials of trauma-focused CBT for adults with PTSD.'},
+ ebp:{t:'Evidence-based practice',h:'Combining the best research with clinical expertise and the person’s own values and preferences.',c:'It is not “only do what has RCTs”; preferences and expertise are part of the definition.',e:'Offering two well-supported options and choosing together.'},
+ experiential:{t:'Experiential',h:'Doing something in the session — moving, making, role-playing — rather than only talking about it.',c:'Talking can be experiential too when it is about what is happening right now.',e:'The Gestalt “empty chair” exercise.'},
+ correlation:{t:'Correlation (r)',h:'A number from −1 to 1 saying how strongly two scores rise or fall together.',c:'Here it describes the ratings in the source, not a measured property of therapies.',e:'r = 0.763 between time structure and directiveness.'},
+ distance:{t:'Distance',h:'How far apart two therapies sit when their scores are treated as coordinates.',c:'A distance is only as meaningful as the scores and the dimensions chosen.',e:'Square each gap, add them, take the square root.'},
+ bridge:{t:'Bridge therapy',h:'A therapy with a balanced profile that shares features with several families.',c:'A bridge is not a “best” therapy; it is a good translator.',e:'IFS, Gestalt and person-centred therapy in the source.'},
+ sequential:{t:'Sequential integration',h:'Combining therapies one after another along a planned path, instead of blending them in one session.',c:'Different from eclecticism, where one therapist mixes methods at once.',e:'Stabilise with DBT, then process with EMDR.'},
+ nice:{t:'NICE',h:'The National Institute for Health and Care Excellence, which publishes treatment guidance for the NHS in England.',c:'Guidance summarises evidence for a condition; it changes as evidence changes.',e:'The NICE guideline on PTSD.'},
+ alliance:{t:'Therapeutic alliance',h:'The working bond between client and therapist: trust, agreed goals and agreed tasks.',c:'Not just “getting on”: it includes agreeing what you are working on and how.',e:'Feeling able to say “this isn’t helping” and being heard.'},
+ commonfactors:{t:'Common factors',h:'Ingredients shared by most therapies: the relationship, empathy, hope and a credible rationale.',c:'They do not make all therapies equal for every problem; specific methods still matter.',e:'A clear explanation of why the method should help.'},
+ pendulation:{t:'Pendulation',h:'Moving attention gently between a distressing sensation and a calmer one.',c:'Different from exposure, which stays with the feared thing until distress falls.',e:'Used in Somatic Experiencing.'},
+ cohesion:{t:'Cohesion',h:'In the source, how tightly a category’s members cluster; lower means tighter.',c:'A loose category is more a label than a school.',e:'Historical & retired is the loosest at 0.887.'}
+};
+const W=(k,txt)=>`[[${k}|${txt}]]`;
+
+/* ---------- Drawing helpers ---------- */
+const RADAR_ANG=i=>(-90+i*60)*Math.PI/180;
+function radar(cx,cy,r,sets,o={}){
+ let g='';
+ for(const lv of [.25,.5,.75,1]){const pts=[0,1,2,3,4,5].map(i=>[cx+Math.cos(RADAR_ANG(i))*r*lv,cy+Math.sin(RADAR_ANG(i))*r*lv]);g+=`<polygon points="${pts.map(p=>p.map(f2).join(',')).join(' ')}" fill="${lv===1?'#fff':'none'}" stroke="${C.grid}" stroke-width="1"/>`}
+ const spokes=o.spokes==null?6:o.spokes;
+ for(let i=0;i<6;i++){const op=clamp(spokes-i,0,1);if(op<=0)continue;const x=cx+Math.cos(RADAR_ANG(i))*r,y=cy+Math.sin(RADAR_ANG(i))*r;
+  const hi=o.hi===i;
+  g+=`<line x1="${cx}" y1="${cy}" x2="${f2(lerp(cx,x,op))}" y2="${f2(lerp(cy,y,op))}" stroke="${hi?C.purple:i===4?C.green:C.line}" stroke-width="${hi?3:i===4?1.6:1.2}" ${i===4?'stroke-dasharray="4 3"':''}/>`;
+  const lx=cx+Math.cos(RADAR_ANG(i))*(r+16),ly=cy+Math.sin(RADAR_ANG(i))*(r+16)+4;
+  if(o.labels!==false)g+=T(lx,ly,SHORT[i],{size:o.lsize||12,anchor:Math.abs(lx-cx)<5?'middle':lx>cx?'start':'end',fill:hi?C.purple:i===4?C.green:C.muted,weight:hi?700:500,op})}
+ for(const s of sets){const pts=s.v.map((v,i)=>[cx+Math.cos(RADAR_ANG(i))*r*v,cy+Math.sin(RADAR_ANG(i))*r*v]);
+  g+=`<polygon points="${pts.map(p=>p.map(f2).join(',')).join(' ')}" fill="${s.fill||C.blue}" fill-opacity="${s.fo==null?.22:s.fo}" stroke="${s.stroke||s.fill||C.blue}" stroke-width="${s.sw||2.2}" ${s.dash?'stroke-dasharray="6 4"':''} opacity="${s.op==null?1:f2(s.op)}"/>`;
+  if(s.dots!==false)pts.forEach((p,i)=>{g+=`<circle cx="${f2(p[0])}" cy="${f2(p[1])}" r="${s.stated&&s.stated.includes(i)?4.5:3}" fill="${s.stated&&s.stated.includes(i)?'#fff':(s.stroke||s.fill||C.blue)}" stroke="${s.stroke||s.fill||C.blue}" stroke-width="2" opacity="${s.op==null?1:f2(s.op)}"/>`})}
+ return g}
+const MX0=.15,MX1=.85,MY0=.15,MY1=1.0,PX0=92,PX1=560,PY0=332,PY1=34;
+const mapX=v=>PX0+(v-MX0)/(MX1-MX0)*(PX1-PX0);
+const mapY=v=>PY0-(v-MY0)/(MY1-MY0)*(PY0-PY1);
+const pos=s=>[clamp(mapX((s[0]+s[1])/2),PX0+10,PX1-10),clamp(mapY((s[2]+s[5])/2),PY1+10,PY0-10)];
+const sideLabel=(x,y,txt,o={})=>x>PX1-150?T(x-16,y,txt,Object.assign({},o,{anchor:'end'})):T(x+16,y,txt,o);
+function mapFrame(op=1){
+ return `<g opacity="${f2(op)}"><rect x="${PX0}" y="${PY1}" width="${PX1-PX0}" height="${PY0-PY1}" fill="#fff" stroke="${C.grid}" rx="8"/>
+ <line x1="${(PX0+PX1)/2}" y1="${PY1}" x2="${(PX0+PX1)/2}" y2="${PY0}" stroke="${C.grid}" stroke-dasharray="3 4"/>
+ <line x1="${PX0}" y1="${(PY0+PY1)/2}" x2="${PX1}" y2="${(PY0+PY1)/2}" stroke="${C.grid}" stroke-dasharray="3 4"/>
+ ${T(PX0,PY0+20,'← emergent, client-led',{size:12,fill:C.muted})}${T(PX1,PY0+20,'structured, therapist-led →',{size:12,fill:C.muted,anchor:'end'})}
+ <g transform="translate(${PX0-14},${PY0}) rotate(-90)">${T(0,0,'talk & thought',{size:12,fill:C.muted})}</g>
+ <g transform="translate(${PX0-14},${PY1+92}) rotate(-90)">${T(0,0,'body & action →',{size:12,fill:C.muted})}</g>
+ ${T(PX1-6,PY1+16,'colour: literal → symbolic',{size:11,fill:C.muted,anchor:'end'})}</g>`}
+const LBL={cb:[0,-1],pd:[0,1],hu:[-1,0],sy:[1,1],so:[1,0],an:[1,0],cr:[-1,1],mi:[1,0],tr:[1,0],ps:[1,-1],di:[1,1],ot:[0,-1],en:[-1,0],cu:[1,-1],hi:[1,-1]};
+function catDot(id,o={}){
+ const c=CATS[id],[x,y]=pos(c.s),r=6+Math.sqrt(c.n)*3.2,op=o.op==null?1:o.op;
+ const fill=c.hist?'#9aa7ae':symCol(c.s[3]);
+ const ev=o.evidence?lerp(.12,1,c.s[4]):.85;
+ let g=`<g opacity="${f2(op)}"><circle cx="${f2(x)}" cy="${f2(y)}" r="${f2(r+(o.hi?4:0))}" fill="${fill}" fill-opacity="${f2(o.hi?.95:ev*.55)}" stroke="${o.hi?C.ink:fill}" stroke-width="${o.hi?2.5:1.5}" ${c.hist?'stroke-dasharray="3 3"':''}/>`;
+ if(o.label!==false){const [dx,dy]=LBL[id];const lx=x+dx*(r+5),ly=y+dy*(r+9)+(dy===0?4:dy>0?2:0);
+  g+=T(lx,ly,c.name,{size:o.lsize||11.5,anchor:dx>0?'start':dx<0?'end':'middle',fill:o.hi?C.ink:C.muted,weight:o.hi?700:500})}
+ return g+'</g>'}
+function scale(x0,x1,y,o={}){
+ let g=`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="${C.ink}" stroke-width="2"/>`;
+ for(let k=0;k<=10;k++){const x=lerp(x0,x1,k/10);g+=`<line x1="${f2(x)}" y1="${y-(k%5?4:7)}" x2="${f2(x)}" y2="${y+(k%5?4:7)}" stroke="${C.ink}" stroke-width="1.2"/>`}
+ g+=T(x0,y+24,'0 · '+(o.low||''),{size:12,fill:C.muted})+T(x1,y+24,(o.high||'')+' · 1',{size:12,fill:C.muted,anchor:'end'});
+ return g}
+function bubble(x,y,w,h,op,label){return `<g opacity="${f2(op)}"><rect x="${f2(x)}" y="${f2(y)}" width="${w}" height="${h}" rx="12" fill="#fff" stroke="${C.line}" stroke-width="1.5"/><path d="M${f2(x+18)} ${f2(y+h)} l6 10 l6 -10" fill="#fff" stroke="${C.line}" stroke-width="1.5"/><rect x="${f2(x+16)}" y="${f2(y+h-2)}" width="16" height="4" fill="#fff"/>${label?T(x+w/2,y+h/2+5,label,{size:12,anchor:'middle',fill:C.muted}):''}</g>`}
+function person(x,y,col,label,sc=1){return `<g><circle cx="${x}" cy="${y-30*sc}" r="${13*sc}" fill="${col}"/><path d="M${x-20*sc} ${y+10*sc} q${20*sc} ${-46*sc} ${40*sc} 0 z" fill="${col}"/>${label?T(x,y+28*sc,label,{size:12.5,anchor:'middle',fill:C.muted,weight:600}):''}</g>`}
+
+/* ---------- Dimension illustrations: pure functions of a value v in [0,1] ---------- */
+const ILL=[
+ v=>{ // time structure: sessions snap from organic to a grid
+  let g='';const n=8;const chaos=[[.02,.7,1.4],[.16,.35,.7],[.24,.8,1.6],[.43,.5,.9],[.52,.2,1.2],[.68,.65,.6],[.79,.3,1.5],[.9,.75,1]];
+  g+=`<path d="M60 ${lerp(150,120,v)} ${Array.from({length:24},(_,k)=>`L${f2(60+k*20.4)} ${f2(lerp(120+Math.sin(k*1.3)*34,120,v))}`).join(' ')}" fill="none" stroke="${C.line}" stroke-width="2" opacity="${f2(1-v*.8)}"/>`;
+  for(let i=0;i<n;i++){const [cx,cy,wd]=chaos[i];const x=lerp(60+cx*440,60+i*60,v),y=lerp(55+cy*120,85,v),w=lerp(28+wd*22,50,v),h=lerp(24+wd*16,58,v);
+   g+=`<rect x="${f2(x)}" y="${f2(y)}" width="${f2(w)}" height="${f2(h)}" rx="${f2(lerp(14,6,v))}" fill="${mixc(C.greenp,C.pale,v)}" stroke="${mixc(C.green,C.blue,v)}" stroke-width="1.6"/>`;
+   if(v>.55){const o=(v-.55)/.45;g+=T(x+25,y+20,'S'+(i+1),{size:12,anchor:'middle',fill:C.blue,weight:700,op:o});for(let k=0;k<3;k++)g+=`<line x1="${f2(x+9)}" y1="${f2(y+30+k*8)}" x2="${f2(x+41)}" y2="${f2(y+30+k*8)}" stroke="${C.blue}" stroke-width="1.4" opacity="${f2(o*.7)}"/>`}}
+  g+=T(300,190,v<.5?'sessions follow what emerges':'a planned course with an agenda each week',{size:13,anchor:'middle',fill:C.muted});
+  return g},
+ v=>{ // directiveness: who leads
+  const th=C.blue,cl=C.green;const lead=v;let g='';
+  g+=person(190,120,th,'Therapist',lerp(.85,1.15,lead))+person(410,120,cl,'Client',lerp(1.15,.85,lead));
+  const dir=lead>=.5?1:-1,str=Math.abs(lead-.5)*2;
+  const x1=dir>0?232:368,x2=dir>0?360:240;
+  g+=`<line x1="${x1}" y1="70" x2="${x2}" y2="70" stroke="${dir>0?th:cl}" stroke-width="${f2(2+str*5)}" opacity="${f2(.3+str*.7)}"/><path d="M${x2} 70 l${-dir*12} -8 v16 z" fill="${dir>0?th:cl}" opacity="${f2(.3+str*.7)}"/>`;
+  g+=T(300,58,str<.2?'shared lead':dir>0?'therapist sets the agenda':'client leads, therapist follows',{size:13,anchor:'middle',fill:C.muted});
+  g+=T(300,190,v<.5?'facilitative: reflecting, following, staying alongside':'expert-led: teaching, suggesting, setting tasks',{size:13,anchor:'middle',fill:C.muted});
+  return g},
+ v=>{ // somatic focus: attention moves from head to body
+  let g='';const hx=300;
+  g+=`<circle cx="${hx}" cy="62" r="${f2(26+(1-v)*10)}" fill="${C.purple}" opacity="${f2(.1+(1-v)*.25)}"/><ellipse cx="${hx}" cy="135" rx="${f2(46+v*16)}" ry="${f2(48+v*12)}" fill="${C.green}" opacity="${f2(.08+v*.28)}"/>`;
+  g+=`<circle cx="${hx}" cy="62" r="20" fill="#fff" stroke="${C.ink}" stroke-width="2"/><path d="M${hx-36} 178 q0 -86 36 -88 q36 2 36 88 z" fill="#fff" stroke="${C.ink}" stroke-width="2"/>`;
+  for(let k=0;k<3;k++)g+=bubble(hx+40+k*34,22+k*6,26,16,(1-v)*.9,'');
+  for(let k=0;k<3;k++)g+=`<path d="M${hx-26} ${118+k*16} q13 ${-9} 26 0 t26 0" fill="none" stroke="${C.green}" stroke-width="2.2" opacity="${f2(v)}"/>`;
+  g+=T(hx-120,70,'thoughts, beliefs',{size:13,anchor:'end',fill:C.purple,op:.4+(1-v)*.6,weight:600})+T(hx+120,140,'sensations, breath, posture',{size:13,fill:C.green,op:.4+v*.6,weight:600});
+  g+=T(hx,198,v<.5?'top-down: change the thought, the feeling follows':'bottom-up: settle the body, the thought follows',{size:13,anchor:'middle',fill:C.muted});
+  return g},
+ v=>{ // symbolic depth: an iceberg reveals deeper layers
+  let g=`<rect x="60" y="80" width="480" height="104" fill="${C.pale}" opacity=".6"/><line x1="60" y1="80" x2="540" y2="80" stroke="${C.blue}" stroke-width="1.5"/>`;
+  g+=`<path d="M270 80 L300 34 L330 80 Z" fill="#fff" stroke="${C.ink}" stroke-width="1.6"/>`+T(300,28,'what is said and done',{size:12.5,anchor:'middle',fill:C.ink,weight:600});
+  const layers=[['metaphor',.15],['dreams & images',.45],['archetypes, unconscious meaning',.75]];
+  layers.forEach(([lab,at],k)=>{const o=seg(v,at,at+.2);const w=90+k*70,y=84+k*32;g+=`<path d="M${300-w/2} ${y} L${300+w/2} ${y} L${300+w/2+22} ${y+28} L${300-w/2-22} ${y+28} Z" fill="${symCol(.4+k*.3)}" opacity="${f2(o*.35)}" stroke="${symCol(.4+k*.3)}" stroke-opacity="${f2(o)}"/>`+T(300,y+19,lab,{size:12.5,anchor:'middle',fill:C.ink,op:o})});
+  g+=T(300,198,v<.5?'a thought is a thought: take it at face value':'a symptom may stand for something deeper',{size:13,anchor:'middle',fill:C.muted});
+  return g},
+ v=>{ // evidence: trials accumulate
+  let g='';const cols=10;
+  for(let i=0;i<cols;i++){const h=Math.round(clamp(v*10-(i*.6)+Math.sin(i*2.1)*1.2,0,6));for(let k=0;k<h;k++)g+=`<rect x="${110+i*40}" y="${150-k*18}" width="30" height="14" rx="3" fill="${C.greenp}" stroke="${C.green}" stroke-width="1.2"/>`}
+  g+=`<line x1="100" y1="168" x2="510" y2="168" stroke="${C.ink}" stroke-width="1.5"/>`+T(305,186,'each block: one well-designed trial',{size:12.5,anchor:'middle',fill:C.muted});
+  g+=T(305,30,'Evidence is always evidence for something: a condition, an age group, a setting.',{size:12.5,anchor:'middle',fill:C.green,weight:600});
+  return g},
+ v=>{ // experiential: talk bubbles give way to doing
+  let g='';
+  g+=person(150,140,C.blue,'',.9)+person(230,140,C.green,'',.9);
+  for(let k=0;k<3;k++)g+=bubble(140+k*30,30+k*20,lerp(70,40,v),24,(1-v),k===1?'…':'');
+  const n=6;for(let k=0;k<n;k++){const o=seg(v,k/n*.8,k/n*.8+.25);const x=310+k*36,y=150-k*14;g+=`<ellipse cx="${x}" cy="${y}" rx="9" ry="14" transform="rotate(30 ${x} ${y})" fill="${C.green}" opacity="${f2(o*.8)}"/>`}
+  g+=`<rect x="470" y="40" width="60" height="44" rx="6" fill="${C.coralp}" stroke="${C.coral}" opacity="${f2(seg(v,.6,.9))}"/>`+T(500,68,'make',{size:12,anchor:'middle',fill:C.coral,op:seg(v,.6,.9)});
+  g+=T(300,198,v<.5?'talking about an experience':'having the experience in the room',{size:13,anchor:'middle',fill:C.muted});
+  return g}
+];
+const DIM_EX=[
+ [['Forest bathing',.1],['Shamanic healing',.1],['CBT',.9],['Psychosurgery',1,1]],
+ [['Person-centred',.1],['Peer support',.1],['Psychosurgery',1,1],['Insulin shock',1,1]],
+ [['Psychosurgery',0,1],['App-based CBT',.1],['Bowenian family',.1],['Feldenkrais',.95],['Somatic Experiencing',1]],
+ [['Behavioural activation',0],['Insulin shock',0,1],['Jungian analysis',1],['Art therapy',1]],
+ [['Phrenology',0,1],['Pranic healing',.1],['Chakra balancing',.1],['DBT',.95],['Exposure therapy',.95],['CBT',1]],
+ [['Psychoanalysis',.1],['Lacanian analysis',.1],['Rolfing',1],['Equine therapy',1],['Adventure therapy',1]]
+];
+function dimScale(i,v,showEx,showCats,markerOp){
+ const x0=80,x1=520,y=262;let g=scale(x0,x1,y,{low:['fluid','client-led','thought','literal','anecdotal','talk'][i],high:['structured','therapist-led','body','symbolic','many RCTs','action'][i]});
+ if(showCats>0)for(const id of CAT_IDS){const c=CATS[id],x=lerp(x0,x1,c.s[i]);g+=`<circle cx="${f2(x)}" cy="${y}" r="5" fill="${c.hist?'#9aa7ae':symCol(c.s[3])}" opacity="${f2(showCats*.75)}"><title>${esc(c.name)}: ${c.s[i].toFixed(2)}</title></circle>`}
+ const groups={};DIM_EX[i].forEach(e=>{const k=e[1].toFixed(2);(groups[k]=groups[k]||[]).push(e)});
+ let side=0;
+ for(const k in groups){const x=lerp(x0,x1,+k);const up=side++%2===0;groups[k].forEach((e,j)=>{const yy=up?y-16-j*15:y+44+j*15;g+=T(clamp(x,x0+30,x1-30),yy,e[0]+(e[2]?' (retired)':''),{size:11.5,anchor:'middle',fill:e[2]?'#8a969c':C.ink,op:showEx,style:e[2]?'italic':null})});
+  g+=`<circle cx="${f2(x)}" cy="${y}" r="4.5" fill="${C.ink}" opacity="${f2(showEx)}"/>`}
+ const mx=lerp(x0,x1,v);
+ g+=`<g opacity="${f2(markerOp)}"><path d="M${f2(mx)} ${y-9} l-8 -13 h16 z" fill="${C.purple}"/>${T(mx,y-26,v.toFixed(2),{size:12,anchor:'middle',fill:C.purple,weight:700})}</g>`;
+ return g}
+function nearestCat(i,v){let best=null,bd=9;for(const id of CAT_IDS){if(CATS[id].hist)continue;const d=Math.abs(CATS[id].s[i]-v);if(d<bd){bd=d;best=id}}return best}
+
+/* ---------- Scenes ---------- */
+const STAGES=[
+ {id:'six',name:'Six ways therapies differ'},
+ {id:'shape',name:'The shape of the field'},
+ {id:'fam',name:'Families of therapy'},
+ {id:'near',name:'Near and far'},
+ {id:'time',name:'Through time'},
+ {id:'share',name:'Shared ground, and what fits'}
+];
+const selCats=(id,val,excl)=>`<select id="${id}">${CAT_IDS.filter(c=>!excl||!CATS[c].hist).map(c=>`<option value="${c}"${c===val?' selected':''}>${esc(CATS[c].name)}</option>`).join('')}</select>`;
+const selTh=(id,val,hist)=>`<select id="${id}">${TH.filter(t=>hist||!t.hist).map(t=>`<option${t.name===val?' selected':''}>${esc(t.name)}</option>`).join('')}</select>`;
+
+const SCENES=[];
+/* 1 Fingerprint */
+SCENES.push({stage:'six',term:'A therapy fingerprint',
+ def:`Any therapy can be described by six scores from 0 to 1. Drawn on six spokes, they make a shape: the therapy’s fingerprint. Five spokes describe what happens in the room; the dashed green one, ${W('rct','evidence')}, describes how much research exists.`,
+ ex:'The cognitive & behavioural family leans to structure, direction and evidence; the somatic family leans to body and action. Their shapes barely overlap.',
+ src:'<b>From the source:</b> the six dimensions and the 15 category averages (Tables 1 and 2).',
+ phases:['Six spokes, one per dimension. The centre is 0, the rim is 1.','Cognitive & behavioural: structured, directive, well tested, literal.','Morphing into somatic & body-based: the shape swings to body and action.','Same field, opposite shapes. Try it: overlay any two families.'],
+ init:()=>({a:'cb',b:'so'}),
+ anim:p=>({a:'cb',b:'so',p}),
+ draw(p,s){
+  const A=CATS[s.a].s,B=CATS[s.b].s;let g='';
+  if(s.p!=null){const m=seg(p,.45,.85),v=A.map((x,i)=>lerp(x,B[i],m));
+   g+=radar(300,195,128,[{v:A,fill:C.blue,op:seg(p,.25,.4)*(1-m*.6),fo:.15},{v,fill:mixc(C.blue,C.green,m),op:seg(p,.25,.4)}],{spokes:p*14});
+   g+=T(300,32,m<.5?CATS[s.a].name:CATS[s.b].name,{size:16,anchor:'middle',weight:700})}
+  else{g+=radar(300,195,128,[{v:A,fill:C.blue,fo:.18},{v:B,fill:C.coral,fo:.14,dash:true}]);
+   g+=T(40,34,'■ '+CATS[s.a].name,{size:13,fill:C.blue,weight:700})+T(40,52,'▨ '+CATS[s.b].name,{size:13,fill:C.coral,weight:700})}
+  return g},
+ tryUI:s=>({html:`<div class="row"><label>Solid ${selCats('fa',s.a)}</label><label>Dashed ${selCats('fb',s.b)}</label></div><p class="out" id="tout"></p>`,
+  bind(q,re){q('#fa').onchange=e=>{s.a=e.target.value;re()};q('#fb').onchange=e=>{s.b=e.target.value;re()}},
+  out:s=>{const d=dist(CATS[s.a].s,CATS[s.b].s);const gaps=PROC.map(i=>[i,Math.abs(CATS[s.a].s[i]-CATS[s.b].s[i])]).sort((x,y)=>y[1]-x[1]);return `Biggest difference: <b>${DIMS[gaps[0][0]].toLowerCase()}</b> (${gaps[0][1].toFixed(2)}). Process distance ${d.toFixed(2)}.`}})
+});
+/* 2–7 the six dimensions */
+const DIMTEXT=[
+ {term:'Time structure',def:`How far a therapy follows a pre-planned ${W('protocol','protocol')}, from fluid and emergent (0) to structured and scheduled (1).`,ex:'A typical CBT session: set an agenda, review homework, practise a skill, set new homework, inside a course of roughly 12–20 sessions.',src:'<b>Source examples:</b> forest bathing 0.1, shamanic healing 0.1, CBT 0.9, psychosurgery 1.0. Mean across 130 modalities 0.507.'},
+ {term:'Directiveness',def:`Who leads. From ${W('nondirective','client-led')} and facilitative (0) to therapist-led and ${W('directive','prescriptive')} (1).`,ex:'Carl Rogers saw non-directiveness as an ethical stance: trust in the person’s own capacity to grow.',src:'<b>Source examples:</b> person-centred 0.1, peer support 0.1; psychosurgery and insulin shock 1.0 (both retired). Mean 0.474.'},
+ {term:'Somatic focus',def:`Where attention starts: in thoughts and beliefs (0, “top-down”) or in ${W('somatic','bodily')} sensation and the nervous system (1, “bottom-up”).`,ex:`Somatic therapies train ${W('interoception','interoception')} and use ${W('pendulation','pendulation')}: moving gently between a distressing sensation and a calmer one.`,src:'<b>Source examples:</b> app-based CBT 0.1, Bowenian family therapy 0.1, Feldenkrais 0.95, Somatic Experiencing 1.0. Mean 0.452.'},
+ {term:'Symbolic depth',def:`Whether experience is taken at face value (0) or read for ${W('symbolic','meaning beneath it')} — dreams, images, metaphor, the ${W('unconscious','unconscious')} (1).`,ex:'Behavioural activation treats low mood concretely: schedule rewarding activities. Jungian analysis treats a dream as a message worth decoding.',src:'<b>Source examples:</b> behavioural activation 0.0, Jungian analysis 1.0, art therapy 1.0. Mean 0.528.'},
+ {term:'Evidence base',def:`How much high-quality research, especially ${W('rct','randomised controlled trials')}, supports a therapy. Unlike the other five, it describes the research, not the session.`,ex:'Manualised therapies are easier to test in trials, so structure and evidence travel together. A low score means “not shown by trials yet”, not “shown not to work”.',src:'<b>Source examples:</b> phrenology 0.0, pranic healing 0.1, DBT 0.95, exposure 0.95, CBT 1.0. Mean 0.519.'},
+ {term:'Experiential level',def:`Whether the work is mostly talking and reflecting (0) or ${W('experiential','doing')} — moving, making, role-play, being outdoors (1).`,ex:'Psychoanalysis is the classic “talking cure”; equine and adventure therapy put you in an activity.',src:'<b>Source examples:</b> psychoanalysis 0.1, Lacanian analysis 0.1, Rolfing, equine and adventure therapy 1.0. Mean 0.566.'}
+];
+DIMTEXT.forEach((d,i)=>SCENES.push({stage:'six',term:d.term,def:d.def,ex:d.ex,src:d.src,
+ phases:['At 0: '+['fluid, following what emerges.','the client leads.','attention starts in thoughts.','everything taken literally.','anecdote and theory only.','talking about experience.'][i],
+  'Sliding towards 1: '+['a planned course, an agenda every week.','the therapist leads.','attention starts in the body.','layers of meaning open up.','trial after trial accumulates.','doing things in the room.'][i],
+  'Named examples from the source sit on the line. Retired practices are in grey italics.','Dots on the line: the 15 family averages. Try it: drag the marker yourself.'],
+ init:()=>({v:.5}),
+ anim:p=>({v:p<.5?smooth(p/.42)*1:lerp(1,.5,seg(p,.5,.62)),p}),
+ draw(p,s){const v=s.v;let g=ILL[i](v);g+=dimScale(i,v,s.p!=null?seg(p,.5,.62):1,s.p!=null?seg(p,.75,.9):1,1);
+  if(s.p==null){const n=nearestCat(i,v);g+=T(300,352,'nearest family average: '+CATS[n].name+' ('+CATS[n].s[i].toFixed(2)+')',{size:12.5,anchor:'middle',fill:C.purple,weight:600})}
+  return g},
+ tryUI:s=>({html:`<div class="row"><label>${esc(DIMS[i])} <input type="range" id="dv" min="0" max="1" step="0.01" value="${s.v}" aria-label="${esc(DIMS[i])} value"></label></div><p class="out" id="tout"></p>`,
+  bind(q,re){q('#dv').oninput=e=>{s.v=+e.target.value;re()}},
+  out:s=>{const n=nearestCat(i,s.v);return `At <b>${s.v.toFixed(2)}</b> you are closest to the <b>${esc(CATS[n].name.toLowerCase())}</b> family on this one dimension. One axis is never the whole story — see the map.`}})
+}));
+/* 8 Two continents */
+const CORR=[[0,1,.763],[0,4,.607],[2,5,.831],[0,3,-.759],[0,2,-.511],[4,3,-.467],[4,2,-.398]];
+SCENES.push({stage:'shape',term:'Two continents',
+ def:`The six scores are not independent. In the source’s ratings, structure, directiveness and evidence rise together, while body, symbol and action rise together — and the two groups pull against each other. Each line is a ${W('correlation','correlation')}.`,
+ ex:'Time structure and directiveness: r = 0.763. Somatic focus and experiential level: r = 0.831. Time structure and symbolic depth: r = −0.759.',
+ src:'<b>Caution:</b> these correlations are between the scores the source assigned. They show how the ratings hang together, which is suggestive, not a measured law of therapy.',
+ phases:['Six dimensions in a ring.','Solid green lines: scores that rise together.','Dashed coral lines: scores that pull apart.','The ring splits into two camps: “structured & tested” and “embodied & symbolic”.'],
+ init:()=>({hi:null}),
+ anim:p=>({hi:null,p}),
+ draw(p,s){
+  const ring=i=>[300+Math.cos(RADAR_ANG(i))*120,190+Math.sin(RADAR_ANG(i))*120];
+  const camp={0:[170,120],1:[150,215],4:[205,300],2:[430,120],5:[450,215],3:[395,300]};
+  const m=s.p!=null?seg(p,.72,.95):1;
+  const P=i=>{const a=ring(i),b=camp[i];return [lerp(a[0],b[0],m),lerp(a[1],b[1],m)]};
+  let g='';
+  if(m>0){g+=`<ellipse cx="175" cy="212" rx="${f2(95*m)}" ry="${f2(140*m)}" fill="${C.pale}" opacity=".7"/><ellipse cx="425" cy="212" rx="${f2(95*m)}" ry="${f2(140*m)}" fill="${C.greenp}" opacity=".7"/>`;
+   g+=T(175,50,'structured & tested',{size:13.5,anchor:'middle',fill:C.blue,weight:700,op:m})+T(425,50,'embodied & symbolic',{size:13.5,anchor:'middle',fill:C.green,weight:700,op:m})}
+  CORR.forEach(([a,b,r],k)=>{const pos=r>0;const show=s.p!=null?seg(p,pos?.2+k*.03:.45+k*.03,pos?.35+k*.03:.6+k*.03):1;
+   const on=s.hi==null||s.hi===a||s.hi===b;const A=P(a),B=P(b);
+   g+=`<line x1="${f2(A[0])}" y1="${f2(A[1])}" x2="${f2(lerp(A[0],B[0],show))}" y2="${f2(lerp(A[1],B[1],show))}" stroke="${pos?C.green:C.coral}" stroke-width="${f2(Math.abs(r)*7)}" ${pos?'':'stroke-dasharray="8 6"'} opacity="${f2(on?.85:.12)}" stroke-linecap="round"/>`;
+   if(show>.9&&on&&(s.hi!=null||s.p!=null))g+=T((A[0]+B[0])/2,(A[1]+B[1])/2-6,(r>0?'+':'−')+Math.abs(r).toFixed(2),{size:12,anchor:'middle',fill:pos?C.green:C.coral,weight:700})});
+  for(let i=0;i<6;i++){const [x,y]=P(i);const h=s.hi===i;g+=`<circle cx="${f2(x)}" cy="${f2(y)}" r="${h?30:26}" fill="#fff" stroke="${h?C.purple:C.ink}" stroke-width="${h?3:1.8}"/>`+T(x,y+4,SHORT[i],{size:12,anchor:'middle',weight:700})}
+  return g},
+ tryUI:s=>({html:`<div class="row">${DIMS.map((d,i)=>`<button type="button" class="chip" data-i="${i}" aria-pressed="${s.hi===i}">${esc(d)}</button>`).join('')}</div><p class="out" id="tout"></p>`,
+  bind(q,re,root){root.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;s.hi=s.hi===i?null:i;root.querySelectorAll('[data-i]').forEach(x=>x.setAttribute('aria-pressed',String(+x.dataset.i===s.hi)));re()})},
+  out:s=>s.hi==null?'Pick a dimension to see only its links.':CORR.filter(c=>c[0]===s.hi||c[1]===s.hi).map(c=>`${DIMS[c[0]===s.hi?c[1]:c[0]]}: <b>${c[2]>0?'+':'−'}${Math.abs(c[2]).toFixed(3)}</b>`).join(' · ')||'No correlation for this pair is reported in the source.'})
+});
+/* 9 The map */
+SCENES.push({stage:'shape',term:'The map',
+ def:'Because the six scores collapse into roughly two directions, a flat map loses little. Across: how structured and therapist-led (time structure and directiveness averaged). Up: how body- and action-based (somatic and experiential averaged). Colour: symbolic depth.',
+ ex:'Cognitive & behavioural sits bottom right. Somatic and nature-based therapies sit at the top. Psychodynamic sits low and purple: talk-based and symbolic.',
+ src:`<b>Placement:</b> the 15 category averages from the source; circle size is the number of members. Retired practices are a separate layer, off by default in Try it. Tight or loose families: see ${W('cohesion','cohesion')}.`,
+ phases:['Two axes: across for structure and direction, up for body and action.','The talk-based families arrive along the bottom.','The embodied and expressive families fill the top.','Grey dashed: the historical & retired layer. Try it: click a family, switch layers.'],
+ init:()=>({sel:'cb',hist:false,ev:false}),
+ anim:p=>({sel:null,hist:true,ev:false,p}),
+ draw(p,s){let g=mapFrame(s.p!=null?seg(p,0,.15):1);
+  const order=['cb','sy','pd','di','ot','hu','tr','mi','ps','cr','en','cu','so','an','hi'];
+  order.forEach((id,k)=>{if(CATS[id].hist&&!s.hist)return;const op=s.p!=null?seg(p,.15+k*.045,.25+k*.045):1;g+=catDot(id,{op,hi:s.sel===id,evidence:s.ev})});
+  if(s.sel&&s.p==null){const c=CATS[s.sel];g+=`<rect x="${PX0+6}" y="${PY1+6}" width="150" height="132" rx="10" fill="#fff" stroke="${C.line}" opacity=".96"/>`+radar(PX0+81,PY1+76,40,[{v:c.s,fill:c.hist?'#8a969c':symCol(c.s[3]),dots:false}],{lsize:9.5})}
+  return g},
+ tryUI:s=>({html:`<div class="row"><label>Family ${selCats('ms',s.sel)}</label><label><input type="checkbox" id="mh"${s.hist?' checked':''}> retired practices</label><label><input type="checkbox" id="me"${s.ev?' checked':''}> fade by evidence</label></div><p class="out" id="tout"></p>`,
+  bind(q,re){q('#ms').onchange=e=>{s.sel=e.target.value;if(CATS[s.sel].hist){s.hist=true;q('#mh').checked=true}re()};q('#mh').onchange=e=>{s.hist=e.target.checked;re()};q('#me').onchange=e=>{s.ev=e.target.checked;re()}},
+  out:s=>{const c=CATS[s.sel];return `<b>${esc(c.name)}</b> (${c.n} members; includes ${esc(c.inc)}). ${esc(c.gist)}`}})
+});
+/* 10 Evidence for what */
+const COND=[
+ {k:'Depression',th:['CBT','Behavioural activation','Mindfulness-based CBT (group)','Counselling','Short-term psychodynamic'],cats:['cb','mi','hu','pd']},
+ {k:'PTSD (adults)',th:['Trauma-focused CBT','EMDR'],cats:['tr','cb']},
+ {k:'Anxiety disorders',th:['CBT','Applied relaxation (GAD)'],cats:['cb']},
+ {k:'Anorexia (young people)',th:['Anorexia-focused family therapy'],cats:['sy']},
+ {k:'Self-harm with BPD',th:['DBT (may be considered)'],cats:['cb']}
+];
+SCENES.push({stage:'shape',term:'Evidence: for what?',
+ def:`A single evidence score hides the most important question: evidence for which problem, in whom? A therapy can be well tested for one condition and untested for another. So this page keeps evidence as a separate layer instead of mixing it into the map’s position.`,
+ ex:`In ${W('nice','NICE')} guidance, EMDR is recommended for adults with PTSD — but that says nothing about EMDR for depression, where it is not a listed option.`,
+ src:'<b>Our addition, not in the source:</b> examples of therapies named in NICE guidance for England (as of 2025). Guidance changes; it is not a full list, and it is no substitute for a clinician’s advice.',
+ phases:['The map, with every family at equal strength.','Now fade each family by its evidence score.','But evidence belongs to a pairing: a therapy and a condition.','Try it: pick a condition to see which approaches UK guidance names.'],
+ init:()=>({c:1}),
+ anim:p=>({c:p>.66?1:null,fade:seg(p,.25,.45),p}),
+ draw(p,s){let g=mapFrame();
+  const C2=s.c!=null?COND[s.c]:null;
+  for(const id of CAT_IDS){if(CATS[id].hist)continue;const on=C2?C2.cats.includes(id):true;const ev=s.p!=null&&s.fade>0;
+   g+=catDot(id,{op:C2?(on?1:.18):1,hi:C2&&on,evidence:ev&&!C2,label:!C2||on})}
+  if(C2){g+=`<rect x="${PX1-215}" y="${PY0-26-C2.th.length*17}" width="207" height="${20+C2.th.length*17}" rx="10" fill="#fff" stroke="${C.green}"/>`+T(PX1-205,PY0-10-C2.th.length*17,C2.k+':',{size:12.5,fill:C.green,weight:700});C2.th.forEach((t,k)=>{g+=T(PX1-205,PY0-10-C2.th.length*17+17*(k+1),'• '+t,{size:12,fill:C.ink})})}
+  return g},
+ tryUI:s=>({html:`<div class="row">${COND.map((c,i)=>`<button type="button" class="chip" data-c="${i}" aria-pressed="${s.c===i}">${esc(c.k)}</button>`).join('')}</div><p class="out" id="tout"></p>`,
+  bind(q,re,root){root.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{s.c=+b.dataset.c;root.querySelectorAll('[data-c]').forEach(x=>x.setAttribute('aria-pressed',String(+x.dataset.c===s.c)));re()})},
+  out:s=>`Highlighted: the families those therapies belong to. Everything else is not “disproved” for ${esc(COND[s.c].k.toLowerCase())}; it is simply not what the guideline names.`})
+});
+/* 11–13 Family tours */
+function tour(term,ids,def,ex){SCENES.push({stage:'fam',term,def,ex,
+ src:'<b>From the source:</b> category averages, member counts and the therapies each category “includes” (section III). Hollow dots elsewhere mark scores stated for a single therapy.',
+ phases:ids.map(id=>CATS[id].name+': '+CATS[id].gist),
+ init:()=>({a:ids[0],b:ids[1]}),
+ anim:p=>({k:p*ids.length,p}),
+ draw(p,s){let g='';
+  if(s.p!=null){const k=clamp(s.k,0,ids.length-.0001),i=Math.floor(k),f=seg(k-i,.6,1);const a=CATS[ids[i]],b=CATS[ids[Math.min(i+1,ids.length-1)]];
+   const v=a.s.map((x,j)=>lerp(x,b.s[j],f)),c=f<.5?a:b;
+   g+=radar(190,200,120,[{v,fill:symCol(c.s[3])}]);
+   g+=T(360,90,c.name,{size:17,weight:700})+T(360,114,c.n+' members · cohesion '+c.coh.toFixed(3),{size:12.5,fill:C.muted});
+   g+=wrap(360,150,c.gist,24,14,C.ink)+wrap(360,236,'Includes: '+c.inc,30,12.5,C.muted);
+   ids.forEach((id,j)=>{g+=`<circle cx="${370+j*20}" cy="330" r="6" fill="${j===i?C.ink:'#fff'}" stroke="${C.ink}"/>`})}
+  else{g+=radar(190,200,120,[{v:CATS[s.a].s,fill:C.blue,fo:.18},{v:CATS[s.b].s,fill:C.coral,fo:.12,dash:true}]);
+   g+=T(360,90,'■ '+CATS[s.a].name,{size:14,fill:C.blue,weight:700})+wrap(360,112,CATS[s.a].gist,30,12.5,C.ink);
+   g+=T(360,210,'▨ '+CATS[s.b].name,{size:14,fill:C.coral,weight:700})+wrap(360,232,CATS[s.b].gist,30,12.5,C.ink)}
+  return g},
+ tryUI:s=>({html:`<div class="row"><label>Solid ${selCats('ta',s.a)}</label><label>Dashed ${selCats('tb',s.b)}</label></div><p class="out" id="tout"></p>`,
+  bind(q,re){q('#ta').onchange=e=>{s.a=e.target.value;re()};q('#tb').onchange=e=>{s.b=e.target.value;re()}},
+  out:s=>`Includes — <b>${esc(CATS[s.a].name)}</b>: ${esc(CATS[s.a].inc)}. <b>${esc(CATS[s.b].name)}</b>: ${esc(CATS[s.b].inc)}.`})})}
+function wrap(x,y,txt,chars,size,fill){const words=String(txt).split(' ');let line='',out='',n=0;for(const w of words){if((line+' '+w).trim().length>chars){out+=T(x,y+n*size*1.35,line.trim(),{size,fill});n++;line=w}else line+=' '+w}if(line.trim())out+=T(x,y+n*size*1.35,line.trim(),{size,fill});return out}
+tour('Talk and think',['cb','pd','hu','sy'],`Four families that work mainly through conversation, but in very different ways: coaching new thinking (cognitive & behavioural), following the ${W('unconscious','unconscious')} and ${W('transference','transference')} (psychodynamic), staying with the here and now (humanistic), or treating the family as the client (systemic).`,'Psychodynamic and cognitive & behavioural are almost mirror images: one high on symbolic depth, the other high on structure and evidence.');
+tour('Body, action and making',['so','an','cr','mi'],'Four families where something happens beyond talking: tracking sensations, moving outdoors or with animals, making art or music, training attention.','Somatic & body-based has the highest body score of any family (0.93); animal & nature the highest action score (0.95).');
+tour('Specialist, new and outside the mainstream',['tr','ps','di','ot','en','cu'],'Trauma-specialised protocols, psychedelic-assisted and digital therapies, the pragmatic eclectic middle, and two families rooted in energy systems and cultural cosmologies that sit outside trial-based evidence.','Trauma-specialised therapies are a hybrid: structured and tested like CBT, but with more body and action.');
+/* 14 Distance */
+SCENES.push({stage:'near',term:'Distance between therapies',
+ def:`Treat each therapy’s scores as coordinates and you can measure how far apart two therapies are: square each gap, add them up, take the square root. This page uses the five process dimensions only, so the ${W('distance','distance')} measures how differently two therapies work, not how well tested they are.`,
+ ex:'CBT and Somatic Experiencing are far apart mainly because of the body, action and structure gaps, not because of symbolic depth.',
+ src:'<b>Source figures</b> (all six dimensions, their own scores): CBT ↔ Somatic Experiencing 1.245; DBT ↔ TF-CBT 0.050; CBT ↔ shamanic healing 1.766. <b>Numbers here</b> use this page’s placements, so they differ.',
+ phases:['Two therapies, two fingerprints.','The gap on each process dimension, as a bar.','Square, add, square root: one number for “how different”.','Try it: pick any two therapies.'],
+ init:()=>({a:'CBT',b:'Somatic Experiencing'}),
+ anim:p=>({a:'CBT',b:'Somatic Experiencing',p}),
+ draw(p,s){const A=thBy(s.a),B=thBy(s.b);let g='';const o=s.p!=null?p:1;
+  g+=radar(140,170,92,[{v:A.s,fill:C.blue,fo:.16,stated:A.stated},{v:B.s,fill:C.coral,fo:.12,dash:true,stated:B.stated}],{lsize:11});
+  g+=T(28,330,'■ '+A.name,{size:13,fill:C.blue,weight:700})+T(28,350,'▨ '+B.name,{size:13,fill:C.coral,weight:700});
+  let sum=0;PROC.forEach((i,k)=>{const gap=Math.abs(A.s[i]-B.s[i]);sum+=gap*gap;const show=seg(o,.2+k*.07,.32+k*.07);const y=70+k*42;
+   g+=T(300,y+4,DIMS[i],{size:12.5,fill:C.muted,op:show})+`<rect x="420" y="${y-10}" width="${f2(gap*150*show)}" height="16" rx="4" fill="${C.purple}" opacity=".75"/>`+T(426+gap*150*show,y+3,gap.toFixed(2),{size:12,fill:C.purple,weight:700,op:show})});
+  const sh=seg(o,.62,.8);g+=T(300,300,'distance = √(sum of squared gaps)',{size:12.5,fill:C.muted,op:sh})+T(300,328,'= '+Math.sqrt(sum).toFixed(2),{size:22,fill:C.ink,weight:700,op:sh});
+  return g},
+ tryUI:s=>({html:`<div class="row"><label>Solid ${selTh('da',s.a,true)}</label><label>Dashed ${selTh('db',s.b,true)}</label></div><p class="out" id="tout"></p>`,
+  bind(q,re){q('#da').onchange=e=>{s.a=e.target.value;re()};q('#db').onchange=e=>{s.b=e.target.value;re()}},
+  out:s=>{const A=thBy(s.a),B=thBy(s.b);const st=t=>t.stated.length?t.stated.map(i=>SHORT[i].toLowerCase()).join(', '):'none';return `Hollow dots are scores the source states for that therapy (${esc(A.name)}: ${st(A)}; ${esc(B.name)}: ${st(B)}); the rest come from its family average. Evidence: ${A.s[4].toFixed(2)} vs ${B.s[4].toFixed(2)}, shown but not counted.`}})
+});
+/* 15 Bridges */
+const BRIDGES=[
+ {k:'Person-centred',named:['hu','pd','cr','tr'],total:7,why:'Empathy, unconditional positive regard and congruence make the relationship safe for almost any kind of work.'},
+ {k:'Internal Family Systems (IFS)',named:['pd','hu','tr','ps'],total:7,why:'“Parts” and a core “Self” echo psychodynamic ideas, but are approached with humanistic compassion; it suits trauma work.'},
+ {k:'Gestalt',named:['hu','so','cr','an'],total:4,why:'Here-and-now awareness, experiments like the empty chair, and attention to how emotion is held in the body.'}
+];
+SCENES.push({stage:'near',term:'Bridge therapies',
+ def:`A ${W('bridge','bridge therapy')} has a balanced profile and shares features with several families, so it can act as a translator between them. Bridges are where integration is most natural.`,
+ ex:'Internal Family Systems connects psychodynamic, humanistic, trauma-specialised and psychedelic-assisted work.',
+ src:'<b>From the source</b> (section IV): person-centred and IFS each connect seven categories, Gestalt connects four. Solid links are the categories the source names; faint stubs are connections it counts but does not name.',
+ phases:['Person-centred: links to seven families.','Internal Family Systems: also seven.','Gestalt: humanistic, somatic, creative and nature-based.','A bridge is a good translator, not a “best” therapy. Try it: switch bridges.'],
+ init:()=>({b:1}),
+ anim:p=>({b:Math.min(2,Math.floor(p*3.2)),p}),
+ draw(p,s){let g=mapFrame();const B=BRIDGES[s.b];
+  for(const id of CAT_IDS){if(CATS[id].hist)continue;g+=catDot(id,{op:B.named.includes(id)?1:.3,hi:B.named.includes(id),label:B.named.includes(id)})}
+  const pts=B.named.map(id=>pos(CATS[id].s));const cx=pts.reduce((a,q)=>a+q[0],0)/pts.length,cy=pts.reduce((a,q)=>a+q[1],0)/pts.length;
+  const lp=s.p!=null?seg((p*3.2)%1,.05,.45):1;
+  pts.forEach(q=>{g+=`<line x1="${f2(cx)}" y1="${f2(cy)}" x2="${f2(lerp(cx,q[0],lp))}" y2="${f2(lerp(cy,q[1],lp))}" stroke="${C.ink}" stroke-width="2.4"/>`});
+  for(let k=0;k<B.total-B.named.length;k++){const a=(k*2.1+1.3);g+=`<line x1="${f2(cx)}" y1="${f2(cy)}" x2="${f2(cx+Math.cos(a)*40*lp)}" y2="${f2(cy+Math.sin(a)*40*lp)}" stroke="${C.ink}" stroke-width="1.5" stroke-dasharray="2 4" opacity=".5"/>`}
+  g+=`<circle cx="${f2(cx)}" cy="${f2(cy)}" r="15" fill="${C.ink}"/>`+T(cx,cy+4,String(B.total),{size:13,anchor:'middle',fill:'#fff',weight:700});
+  g+=`<rect x="${PX0+6}" y="${PY1+6}" width="${B.k.length*7.6+20}" height="26" rx="8" fill="#fff" stroke="${C.ink}"/>`+T(PX0+16,PY1+24,B.k,{size:13,weight:700});
+  return g},
+ tryUI:s=>({html:`<div class="row">${BRIDGES.map((b,i)=>`<button type="button" class="chip" data-b="${i}" aria-pressed="${s.b===i}">${esc(b.k)}</button>`).join('')}</div><p class="out" id="tout"></p>`,
+  bind(q,re,root){root.querySelectorAll('[data-b]').forEach(x=>x.onclick=()=>{s.b=+x.dataset.b;root.querySelectorAll('[data-b]').forEach(y=>y.setAttribute('aria-pressed',String(+y.dataset.b===s.b)));re()})},
+  out:s=>`<b>Why it bridges:</b> ${esc(BRIDGES[s.b].why)} The hub is drawn at the centre of the families it links; the source does not give it a score.`})
+});
+/* 16 Stepping stones */
+SCENES.push({stage:'near',term:'Stepping stones',
+ def:'Going from CBT straight to Somatic Experiencing is a big leap: from thought records and agendas to tracking sensations and following the body. A stop in between cannot make the whole trip shorter, but it can make the biggest single step smaller.',
+ ex:'EMDR is structured and well tested like CBT, but its body-scan phase and bilateral stimulation introduce attention to sensation — a step towards somatic work.',
+ src:'<b>From the source:</b> direct CBT → SE distance 1.245; via EMDR 1.268 in total — longer, as it must be. <b>Our reading:</b> the value of the detour is smaller steps, which the source describes as “a more clinically viable journey”.',
+ phases:['Direct route: one big leap across the divide.','Via EMDR: two shorter steps.','Total is slightly longer — a detour never shortens a trip.','What shrinks is the largest step. Try it: choose your own stepping stone.'],
+ init:()=>({mid:'EMDR'}),
+ anim:p=>({mid:'EMDR',p}),
+ draw(p,s){let g=mapFrame();for(const id of CAT_IDS){if(!CATS[id].hist)g+=catDot(id,{op:.25,label:false})}
+  const A=thBy('CBT'),M=thBy(s.mid),B=thBy('Somatic Experiencing');const pa=pos(A.s),pm=pos(M.s),pb=pos(B.s);
+  const o=s.p!=null?p:1;const d1=seg(o,.05,.25),d2=seg(o,.3,.55);
+  g+=`<line x1="${f2(pa[0])}" y1="${f2(pa[1])}" x2="${f2(lerp(pa[0],pb[0],d1))}" y2="${f2(lerp(pa[1],pb[1],d1))}" stroke="${C.coral}" stroke-width="3" stroke-dasharray="8 6"/>`;
+  const half=d2*2;g+=`<line x1="${f2(pa[0])}" y1="${f2(pa[1])}" x2="${f2(lerp(pa[0],pm[0],clamp(half,0,1)))}" y2="${f2(lerp(pa[1],pm[1],clamp(half,0,1)))}" stroke="${C.green}" stroke-width="4"/>`;
+  if(half>1)g+=`<line x1="${f2(pm[0])}" y1="${f2(pm[1])}" x2="${f2(lerp(pm[0],pb[0],half-1))}" y2="${f2(lerp(pm[1],pb[1],half-1))}" stroke="${C.green}" stroke-width="4"/>`;
+  [[A,pa,C.blue],[M,pm,C.green],[B,pb,C.coral]].forEach(([t,q,col])=>{g+=`<circle cx="${f2(q[0])}" cy="${f2(q[1])}" r="9" fill="${col}" stroke="#fff" stroke-width="2"/>`+sideLabel(q[0],q[1]+4,t.name,{size:12.5,weight:700})});
+  const a=dist(A.s,M.s),b=dist(M.s,B.s),d=dist(A.s,B.s),sh=seg(o,.6,.8);
+  g+=`<g opacity="${f2(sh)}"><rect x="${PX0+6}" y="${PY0-86}" width="232" height="80" rx="10" fill="#fff" stroke="${C.line}"/>`+T(PX0+16,PY0-66,'direct leap: '+d.toFixed(2),{size:12.5,fill:C.coral,weight:700})+T(PX0+16,PY0-46,'via '+M.name+': '+a.toFixed(2)+' + '+b.toFixed(2)+' = '+(a+b).toFixed(2),{size:12.5,fill:C.green,weight:700})+T(PX0+16,PY0-26,'biggest step: '+Math.max(a,b).toFixed(2)+(Math.max(a,b)<d?' (smaller)':' (not smaller)'),{size:12.5,fill:C.ink,weight:700})+'</g>';
+  return g},
+ tryUI:s=>({html:`<div class="row"><label>Stepping stone ${selTh('mid',s.mid,false)}</label></div><p class="out" id="tout"></p>`,
+  bind(q,re){q('#mid').onchange=e=>{s.mid=e.target.value;re()}},
+  out:s=>{const A=thBy('CBT'),M=thBy(s.mid),B=thBy('Somatic Experiencing');const a=dist(A.s,M.s),b=dist(M.s,B.s),d=dist(A.s,B.s);return Math.max(a,b)<d?`<b>${esc(M.name)}</b> splits the leap into steps of ${a.toFixed(2)} and ${b.toFixed(2)}, each smaller than ${d.toFixed(2)}.`:`<b>${esc(M.name)}</b> does not help: one step (${Math.max(a,b).toFixed(2)}) is as big as the direct leap (${d.toFixed(2)}).`}})
+});
+/* 17 Sequential care */
+const SEQ=[['Stabilise','DBT','Build skills for emotion regulation, distress tolerance and mindfulness.'],['Process','EMDR','Work through specific traumatic memories in a structured, contained way.'],['Integrate','Somatic Experiencing','Less structured depth work (IFS or Somatic Experiencing) on relational and attachment wounds.']];
+SCENES.push({stage:'near',term:'Sequential care',
+ def:`Instead of one therapist blending several models at once, ${W('sequential','sequential integration')} moves a person along a planned path of specialist therapies, each suited to a phase of recovery.`,
+ ex:'The source’s example for complex trauma: stabilise with DBT, process with EMDR, then integrate with IFS or Somatic Experiencing.',
+ src:'<b>From the source</b> (section VII). One illustrative pathway; real care is planned with clinicians and depends on the person, the service and what is available.',
+ phases:['Phase 1, stabilise: DBT, structured and skills-based.','Phase 2, process: EMDR, a structured bridge into the body.','Phase 3, integrate: IFS or Somatic Experiencing, less structured, deeper.','The path moves up and left: from structure towards emergence. Try it: step through.'],
+ init:()=>({k:2}),
+ anim:p=>({k:p*3,p}),
+ draw(p,s){let g=mapFrame();for(const id of CAT_IDS){if(!CATS[id].hist)g+=catDot(id,{op:.22,label:false})}
+  const P=SEQ.map(x=>pos(thBy(x[1]).s));const k=clamp(s.k,0,2.999),i=Math.floor(k);
+  for(let j=0;j<2;j++){const f=s.p!=null?clamp(k-j-.5,0,1)*2:(j<i?1:0);g+=`<line x1="${f2(P[j][0])}" y1="${f2(P[j][1])}" x2="${f2(lerp(P[j][0],P[j+1][0],clamp(f,0,1)))}" y2="${f2(lerp(P[j][1],P[j+1][1],clamp(f,0,1)))}" stroke="${C.purple}" stroke-width="4" stroke-linecap="round"/>`}
+  SEQ.forEach((x,j)=>{const on=j<=i;g+=`<circle cx="${f2(P[j][0])}" cy="${f2(P[j][1])}" r="${j===i?14:10}" fill="${on?C.purple:'#fff'}" stroke="${C.purple}" stroke-width="2"/>`+T(P[j][0],P[j][1]+5,String(j+1),{size:12,anchor:'middle',fill:on?'#fff':C.purple,weight:700})+sideLabel(P[j][0],P[j][1]+(j===2?22:-12),x[0]+': '+x[1],{size:12.5,weight:700,op:on?1:.4})});
+  g+=`<rect x="${PX0+6}" y="${PY0-70}" width="300" height="64" rx="10" fill="#fff" stroke="${C.purple}"/>`+wrap(PX0+16,PY0-50,SEQ[i][2],46,12,C.ink);
+  return g},
+ tryUI:s=>({html:`<div class="row">${SEQ.map((x,i)=>`<button type="button" class="chip" data-k="${i}" aria-pressed="${Math.floor(s.k)===i}">${i+1}. ${esc(x[0])}</button>`).join('')}</div><p class="out" id="tout"></p>`,
+  bind(q,re,root){root.querySelectorAll('[data-k]').forEach(x=>x.onclick=()=>{s.k=+x.dataset.k;root.querySelectorAll('[data-k]').forEach(y=>y.setAttribute('aria-pressed',String(+y.dataset.k===s.k)));re()})},
+  out:s=>`Phase ${Math.floor(s.k)+1}: <b>${esc(SEQ[Math.floor(s.k)][1])}</b>. ${esc(SEQ[Math.floor(s.k)][2])}`})
+});
+/* 18 Eras */
+const ERAS=[{k:'Historical',a:1890,b:1970,sig:[['Directiveness',.72],['Evidence',.20]],th:'Psychoanalysis, psychosurgery, insulin shock, orgone therapy, EST',ethos:'Authority-based, theory-driven'},
+ {k:'Contemporary',a:1970,b:2020,sig:[['Directiveness',.45],['Evidence',.54]],th:'CBT, DBT, ACT, EMDR, family systems, integrative therapy',ethos:'Evidence-based, problem-focused'},
+ {k:'Emerging',a:2020,b:2032,sig:[['Experiential',.57],['Evidence',.60]],th:'MDMA- and psilocybin-assisted therapy, VR, AI-assisted tools, neurofeedback',ethos:'Experience and evidence integrated'}];
+SCENES.push({stage:'time',term:'Three eras',
+ def:'The source reads the history of therapy as three eras, each with its own signature: authority without evidence, then evidence-based and problem-focused, and now an attempt to combine evidence with body, symbol and experience.',
+ ex:'Directiveness falls from 0.72 to 0.45 between the historical and contemporary eras, while evidence rises from 0.20 to 0.54.',
+ src:'<b>From the source</b> (Table 3). Era boundaries are approximate. Claims about emerging therapies are about research in progress; most psychedelic-assisted therapy is still within trials.',
+ phases:['1890s–1960s: grand theories and medical authority.','1970s–2020s: the cognitive revolution and the demand for trials.','2020s onwards: evidence plus experience — psychedelics, VR, neurofeedback.','Try it: drag through the years.'],
+ init:()=>({y:1995}),
+ anim:p=>({y:lerp(1890,2032,smooth(p*1.05)),p}),
+ draw(p,s){let g='';const X=y=>lerp(50,550,(y-1890)/(2032-1890));
+  ERAS.forEach((e,i)=>{const on=s.y>=e.a&&s.y<e.b||(i===2&&s.y>=e.a);g+=`<rect x="${f2(X(e.a))}" y="260" width="${f2(X(e.b)-X(e.a))}" height="34" fill="${[C.coralp,C.pale,C.greenp][i]}" stroke="${on?C.ink:'none'}" stroke-width="2"/>`+T((X(e.a)+X(e.b))/2,282,e.k,{size:12.5,anchor:'middle',weight:on?700:500})});
+  for(let y=1900;y<=2030;y+=20)g+=T(X(y),314,String(y),{size:11.5,anchor:'middle',fill:C.muted});
+  g+=`<line x1="${f2(X(s.y))}" y1="250" x2="${f2(X(s.y))}" y2="300" stroke="${C.purple}" stroke-width="3"/>`+T(X(s.y),244,String(Math.round(s.y)),{size:13,anchor:'middle',fill:C.purple,weight:700});
+  const e=ERAS[s.y<1970?0:s.y<2020?1:2];
+  g+=T(50,46,e.k+' era',{size:18,weight:700})+T(50,68,e.ethos,{size:13,fill:C.muted});
+  e.sig.forEach(([lab,v],k)=>{const y=100+k*44;g+=T(50,y+14,lab,{size:13,fill:C.muted})+`<rect x="150" y="${y}" width="300" height="20" rx="5" fill="#eef3f6"/><rect x="150" y="${y}" width="${f2(300*v)}" height="20" rx="5" fill="${lab==='Evidence'?C.green:lab==='Directiveness'?C.blue:C.coral}"/>`+T(160+300*v,y+15,v.toFixed(2),{size:12.5,weight:700})});
+  g+=wrap(50,206,'Representative: '+e.th,70,12.5,C.ink);
+  return g},
+ tryUI:s=>({html:`<div class="row"><label>Year <input type="range" id="yr" min="1890" max="2032" step="1" value="${Math.round(s.y)}" aria-label="Year"></label></div><p class="out" id="tout"></p>`,
+  bind(q,re){q('#yr').oninput=e=>{s.y=+e.target.value;re()}},
+  out:s=>`${Math.round(s.y)}: the <b>${ERAS[s.y<1970?0:s.y<2020?1:2].k.toLowerCase()}</b> era.`})
+});
+/* 19 Retired */
+const RET=[['Psychosurgery','Brain surgery such as lobotomy, widely used in the 1940s–50s and often causing severe lasting harm. Abandoned as a routine treatment.'],
+ ['Insulin shock','Deliberately induced insulin comas for schizophrenia in the 1930s–50s. Dropped after controlled studies found no specific benefit; it carried a real risk of death.'],
+ ['Phrenology','Reading character from the shape of the skull, popular in the 19th century. A pseudoscience with no basis.'],
+ ['Primal scream','A 1970s therapy of reliving early pain through intense emotional release. Not supported by evidence.']];
+SCENES.push({stage:'time',term:'Directiveness without evidence',
+ def:'The retired practices share a signature: very high directiveness with very low evidence. The person was a passive recipient and the theory went untested. This is the strongest argument in the source for why evidence matters.',
+ ex:'Modern CBT is also directive — but it is collaborative and tested. The difference is what restrains the direction.',
+ src:'<b>From the source:</b> historical & retired averages directiveness 0.77, evidence 0.16; placements for psychosurgery, insulin shock and phrenology use the scores the source states. Short histories are our summary.',
+ phases:['The map of current families.','The retired layer arrives: high on direction, low on evidence.','Shaded: where direction outruns evidence.','Try it: open each retired practice.'],
+ init:()=>({k:0}),
+ anim:p=>({k:null,p}),
+ draw(p,s){let g=mapFrame();const o=s.p!=null?p:1;
+  for(const id of CAT_IDS){if(!CATS[id].hist)g+=catDot(id,{op:.3,label:false})}
+  g+=`<rect x="${f2(mapX(.6))}" y="${PY1}" width="${f2(PX1-mapX(.6))}" height="${PY0-PY1}" fill="${C.coralp}" opacity="${f2(seg(o,.5,.7)*.6)}"/>`+T(PX1-8,PY0-10,'directed, little evidence',{size:12,anchor:'end',fill:C.coral,weight:700,op:seg(o,.5,.7)});
+  g+=catDot('hi',{op:seg(o,.2,.35),label:false});
+  ['Psychosurgery','Insulin shock','Phrenology'].forEach((n,k)=>{const t=thBy(n),q=pos(t.s),op=seg(o,.3+k*.06,.42+k*.06),on=s.k!=null&&RET[s.k][0]===n;g+=`<g opacity="${f2(op)}"><circle cx="${f2(q[0])}" cy="${f2(q[1])}" r="${on?9:6}" fill="#8a969c" stroke="${on?C.ink:'#fff'}" stroke-width="2"/>${T(q[0]+[-12,0,-12][k],q[1]+[-12,22,-12][k],n,{size:12,anchor:['end','middle','end'][k],fill:C.ink,weight:on?700:500,style:'italic'})}</g>`});
+  if(s.k!=null){g+=`<rect x="${PX0+6}" y="${PY1+6}" width="290" height="70" rx="10" fill="#fff" stroke="${C.coral}"/>`+T(PX0+16,PY1+26,RET[s.k][0],{size:13,weight:700})+wrap(PX0+16,PY1+44,RET[s.k][1],46,11.5,C.ink)}
+  return g},
+ tryUI:s=>({html:`<div class="row">${RET.map((r,i)=>`<button type="button" class="chip" data-r="${i}" aria-pressed="${s.k===i}">${esc(r[0])}</button>`).join('')}</div><p class="out" id="tout"></p>`,
+  bind(q,re,root){root.querySelectorAll('[data-r]').forEach(x=>x.onclick=()=>{s.k=+x.dataset.r;root.querySelectorAll('[data-r]').forEach(y=>y.setAttribute('aria-pressed',String(+y.dataset.r===s.k)));re()})},
+  out:s=>`${esc(RET[s.k][1])}${RET[s.k][0]==='Primal scream'?' (No individual scores are given in the source, so it is not plotted.)':''}`})
+});
+/* 20 Shared ground */
+const CF=[['The relationship','The working bond — trust, agreed goals, agreed tasks — is one of the most consistent predictors of how therapy goes, in every school.'],['Empathy','Feeling understood. It matters in directive and non-directive therapies alike.'],['Hope and a rationale','A believable explanation of what is wrong and why this method should help.'],['Your preferences','Evidence-based practice includes the person’s own values and choices, not only trials.']];
+SCENES.push({stage:'share',term:'What every therapy shares',
+ def:`None of the six dimensions captures the ingredient that matters across all of them: the ${W('alliance','therapeutic alliance')}. Research across many schools finds that the quality of the working relationship is one of the most consistent predictors of outcome. These shared ingredients are called ${W('commonfactors','common factors')}.`,
+ ex:'Being able to say “this isn’t working for me” — and being heard — is part of good therapy whatever the model.',
+ src:'<b>Our addition, not in the source:</b> a long line of psychotherapy research on common factors and the alliance. Specific methods still matter for specific problems; common factors do not make every therapy equal.',
+ phases:['Every family on the map …','… orbits shared ground in the middle.','At the centre: two people and the bond between them.','Try it: open each common factor.'],
+ init:()=>({k:0}),
+ anim:p=>({k:null,p}),
+ draw(p,s){let g='';const o=s.p!=null?p:1;const cx=300,cy=190;
+  const ids=CAT_IDS.filter(id=>!CATS[id].hist);
+  ids.forEach((id,k)=>{const a=k/ids.length*Math.PI*2-Math.PI/2+o*.6;const R=lerp(170,138,seg(o,.2,.5));const x=cx+Math.cos(a)*R*1.35,y=cy+Math.sin(a)*R*.95;
+   g+=`<line x1="${f2(x)}" y1="${f2(y)}" x2="${cx}" y2="${cy}" stroke="${C.grid}" opacity="${f2(seg(o,.3,.55))}"/><circle cx="${f2(x)}" cy="${f2(y)}" r="9" fill="${symCol(CATS[id].s[3])}" stroke="#fff" stroke-width="1.5"/>`});
+  const c=seg(o,.5,.75);
+  g+=`<ellipse cx="${cx}" cy="${cy}" rx="${f2(110*c)}" ry="${f2(72*c)}" fill="#fff" stroke="${C.purple}" stroke-width="2"/>`;
+  if(c>.3){g+=`<g opacity="${f2(c)}">${person(cx-42,cy+14,C.blue,'',.75)}${person(cx+42,cy+14,C.green,'',.75)}<path d="M${cx-24} ${cy-14} q24 -26 48 0" fill="none" stroke="${C.purple}" stroke-width="3"/></g>`+T(cx,cy+52,'the alliance',{size:13,anchor:'middle',fill:C.purple,weight:700,op:c})}
+  if(s.k!=null){g+=`<rect x="20" y="300" width="560" height="62" rx="10" fill="#fff" stroke="${C.purple}"/>`+T(34,322,CF[s.k][0],{size:13,weight:700,fill:C.purple})+wrap(34,342,CF[s.k][1],88,12,C.ink)}
+  return g},
+ tryUI:s=>({html:`<div class="row">${CF.map((r,i)=>`<button type="button" class="chip" data-f="${i}" aria-pressed="${s.k===i}">${esc(r[0])}</button>`).join('')}</div>`,
+  bind(q,re,root){root.querySelectorAll('[data-f]').forEach(x=>x.onclick=()=>{s.k=+x.dataset.f;root.querySelectorAll('[data-f]').forEach(y=>y.setAttribute('aria-pressed',String(+y.dataset.f===s.k)));re()})}})
+});
+/* 21 What fits me */
+SCENES.push({stage:'share',term:'How would you like therapy to feel?',
+ def:'Set the five process sliders to how you would like sessions to work — more structured or more open, led by you or by the therapist, through talk or the body — and the approaches that work that way light up.',
+ ex:'This describes styles, not suitability. What is right for you also depends on what you are dealing with, the evidence for it, and what is available — a conversation to have with a GP or therapist.',
+ src:'<b>How it works:</b> nearest therapies by distance on the five process dimensions, using this page’s placements. Retired practices are excluded. Evidence is shown beside each match, never used to rank.',
+ phases:['You start in the middle of everything.','Moving towards structure and direction …','… or towards body and action.','Try it: set your own preferences.'],
+ init:()=>({v:[.5,.5,.5,.5,.5,.5]}),
+ anim:p=>{const a=[.5,.5,.5,.5,.5,.5],b=[.85,.75,.2,.2,.5,.35],c=[.3,.3,.85,.55,.5,.85];const v=p<.5?a.map((x,i)=>lerp(x,b[i],seg(p,.15,.45))):b.map((x,i)=>lerp(x,c[i],seg(p,.55,.85)));return {v,p}},
+ draw(p,s){let g=mapFrame();for(const id of CAT_IDS){if(!CATS[id].hist)g+=catDot(id,{op:.2,label:false})}
+  const near=TH.filter(t=>!t.hist).map(t=>[t,dist(t.s,s.v)]).sort((a,b)=>a[1]-b[1]).slice(0,4);const me=pos(s.v);
+  near.forEach(([t],k)=>{const q=pos(t.s);g+=`<line x1="${f2(me[0])}" y1="${f2(me[1])}" x2="${f2(q[0])}" y2="${f2(q[1])}" stroke="${C.purple}" stroke-width="${3-k*.5}" opacity="${f2(1-k*.18)}"/>`});
+  TH.filter(t=>!t.hist).forEach(t=>{const q=pos(t.s);g+=`<circle cx="${f2(q[0])}" cy="${f2(q[1])}" r="3.5" fill="${C.muted}" opacity=".45"/>`});
+  near.forEach(([t],k)=>{const q=pos(t.s);g+=`<circle cx="${f2(q[0])}" cy="${f2(q[1])}" r="6" fill="${symCol(t.s[3])}" stroke="#fff" stroke-width="1.5"/>`});
+  g+=`<circle cx="${f2(me[0])}" cy="${f2(me[1])}" r="11" fill="${C.purple}" stroke="#fff" stroke-width="3"/>`+T(me[0],me[1]-16,'you',{size:12.5,anchor:'middle',fill:C.purple,weight:700});
+  g+=`<rect x="${PX1-206}" y="${PY1+6}" width="200" height="${26+near.length*18}" rx="10" fill="#fff" stroke="${C.line}" opacity=".96"/>`+T(PX1-196,PY1+24,'works most like this:',{size:12,fill:C.muted});
+  near.forEach(([t],k)=>{g+=T(PX1-196,PY1+42+k*18,(k+1)+'. '+t.name,{size:12.5,weight:k===0?700:500})});
+  return g},
+ tryUI:s=>({html:`<div class="sliders">${PROC.map(i=>`<label>${esc(['Structured','Therapist-led','Body-based','Symbolic','','Action-based'][i])} <input type="range" data-d="${i}" min="0" max="1" step="0.05" value="${s.v[i]}" aria-label="${esc(DIMS[i])}"></label>`).join('')}</div><p class="out" id="tout"></p>`,
+  bind(q,re,root){root.querySelectorAll('[data-d]').forEach(x=>x.oninput=()=>{s.v[+x.dataset.d]=+x.value;re()})},
+  out:s=>{const near=TH.filter(t=>!t.hist).map(t=>[t,dist(t.s,s.v)]).sort((a,b)=>a[1]-b[1]).slice(0,4);return 'Closest in style: '+near.map(([t])=>`<b>${esc(t.name)}</b> <span style="color:#546873">(evidence score ${t.s[4].toFixed(2)})</span>`).join(', ')+'. A description, not a recommendation.'}})
+});
+/* 22 How it was made */
+SCENES.push({stage:'share',term:'How this map was made',
+ def:'Every picture here starts with judgements: someone rated each therapy from 0 to 1 on six dimensions. Correlations, clusters, distances and maps are all calculated from those ratings, so they can only show the structure the ratings contain.',
+ ex:'That makes the map a good way to see how therapies differ in approach, and a poor way to prove anything about minds or about which therapy works. For that you need outcome research.',
+ src:'<b>What is missing</b> and worth adding: what a session is actually like, typical length, individual or group, who it is commonly used for, and how to access it locally. Corrections and better ratings are welcome — the data is in <code>categories.json</code>.',
+ phases:['Step 1: judgements — a rater scores each therapy.','Step 2: scores — 130 therapies × 6 numbers.','Step 3: patterns — correlations, clusters, maps.','The loop: the map can only show back what the scores put in.'],
+ init:()=>({}),anim:p=>({p}),
+ draw(p,s){const o=s.p!=null?p:1;let g='';const boxes=[['Judgements','a rater scores each therapy',C.coralp,C.coral],['Scores','130 × 6 numbers, 0 to 1',C.pale,C.blue],['Patterns','correlations, clusters, maps',C.greenp,C.green]];
+  boxes.forEach(([a,b,f,st],k)=>{const op=seg(o,k*.22,k*.22+.15),x=40+k*190;g+=`<g opacity="${f2(op)}"><rect x="${x}" y="110" width="150" height="90" rx="14" fill="${f}" stroke="${st}" stroke-width="2"/>${T(x+75,148,a,{size:15,anchor:'middle',weight:700})}${wrap(x+14,172,b,22,12,C.muted)}</g>`;
+   if(k<2)g+=`<path d="M${x+156} 155 h26" stroke="${C.ink}" stroke-width="2" opacity="${f2(seg(o,k*.22+.12,k*.22+.2))}"/><path d="M${x+184} 155 l-8 -5 v10 z" fill="${C.ink}" opacity="${f2(seg(o,k*.22+.12,k*.22+.2))}"/>`});
+  const l=seg(o,.72,.92);g+=`<path d="M495 205 C 495 300, 115 300, 115 205" fill="none" stroke="${C.purple}" stroke-width="2.5" stroke-dasharray="7 5" opacity="${f2(l)}"/><path d="M115 205 l-6 10 h12 z" fill="${C.purple}" opacity="${f2(l)}"/>`+T(300,316,'what the map shows back is what the ratings put in',{size:13,anchor:'middle',fill:C.purple,weight:700,op:l});
+  g+=T(300,60,'From judgement to picture',{size:18,anchor:'middle',weight:700});
+  return g}
+});
+
+/* ---------- App ---------- */
+let idx=0,t=0,playing=false,last=0,mode='watch',speed=1,hold=0;
+const states=SCENES.map(sc=>sc.init());
+const svg=$('drawing'),tryEl=$('try');
+function fmtText(s){return esc(s).replace(/\[\[(\w+)\|([^\]]+)\]\]/g,(m,k,txt)=>GLOSSARY[k]?`<button type="button" class="word" data-word="${k}">${txt}</button>`:txt)}
+function richText(s){return s.replace(/\[\[(\w+)\|([^\]]+)\]\]/g,(m,k,txt)=>GLOSSARY[k]?`<button type="button" class="word" data-word="${k}">${esc(txt)}</button>`:esc(txt))}
+function stageIndex(id){return STAGES.findIndex(s=>s.id===id)}
+function buildStages(){$('stages').innerHTML=STAGES.map((s,i)=>`<button type="button" data-stage="${s.id}" aria-pressed="false">${i+1} · ${esc(s.name)}</button>`).join('');
+ $('stages').querySelectorAll('button').forEach(b=>b.onclick=()=>go(SCENES.findIndex(sc=>sc.stage===b.dataset.stage)))}
+function render(){
+ const sc=SCENES[idx];const p=mode==='try'?1:clamp(t/DUR,0,1);
+ const st=mode==='try'?states[idx]:(sc.anim?sc.anim(p):states[idx]);
+ svg.innerHTML=`<title id="svg-title">${esc(sc.term)}</title>`+sc.draw(p,mode==='try'||!playing&&t>=DUR&&false?st:st);
+ $('bar').style.width=(p*100).toFixed(1)+'%';
+ const ph=sc.phases;$('phase').textContent=mode==='try'?'Try it: '+(ph[ph.length-1].split('Try it:')[1]||' change the inputs below.').trim():ph[Math.min(ph.length-1,Math.floor(p*ph.length*0.9999))];
+ if(mode==='try'&&sc.tryUI){const o=$('tout');if(o&&tryEl._out)o.innerHTML=tryEl._out(states[idx])}
+}
+function setTry(){
+ const sc=SCENES[idx];tryEl.innerHTML='';tryEl._out=null;
+ const can=!!sc.tryUI;$('mode-try').disabled=!can;
+ if(mode==='try'&&!can)mode='watch';
+ $('mode-watch').setAttribute('aria-pressed',String(mode==='watch'));$('mode-try').setAttribute('aria-pressed',String(mode==='try'));
+ tryEl.classList.toggle('on',mode==='try');
+ if(mode==='try'){const ui=sc.tryUI(states[idx]);tryEl.innerHTML=ui.html;tryEl._out=ui.out||null;ui.bind(sel=>tryEl.querySelector(sel),render,tryEl)}
+}
+function go(i,keepPlay){
+ idx=clamp(i,0,SCENES.length-1);t=keepPlay?0:DUR;hold=0;if(!keepPlay)setPlaying(false);
+ const sc=SCENES[idx];const si=stageIndex(sc.stage);
+ $('stage-title').textContent=STAGES[si].name;$('counter').textContent=`${idx+1} / ${SCENES.length}`;
+ $('scene-eyebrow').textContent=`Stage ${si+1} · scene ${SCENES.filter((s,k)=>s.stage===sc.stage&&k<=idx).length} of ${SCENES.filter(s=>s.stage===sc.stage).length}`;
+ $('term').textContent=sc.term;$('definition').innerHTML=richText(sc.def);$('example').innerHTML=richText(sc.ex);$('source').innerHTML=sc.src.replace(/\[\[(\w+)\|([^\]]+)\]\]/g,(m,k,txt)=>`<button type="button" class="word" data-word="${k}">${esc(txt)}</button>`);
+ $('stages').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.stage===sc.stage)));
+ $('previous').disabled=idx===0;$('next').disabled=idx===SCENES.length-1;
+ $('previous').setAttribute('aria-label',idx>0?'Previous: '+SCENES[idx-1].term:'No previous scene');$('next').setAttribute('aria-label',idx<SCENES.length-1?'Next: '+SCENES[idx+1].term:'No next scene');
+ setTry();render();
+ try{history.replaceState(null,'','#'+(idx+1))}catch(e){}
+}
+function setPlaying(on){playing=on;$('play').textContent=on?'❚❚ Pause':'▶ Play';$('play').setAttribute('aria-label',on?'Pause':'Play');if(on){last=performance.now();requestAnimationFrame(loop)}}
+function loop(now){if(!playing)return;const dt=Math.min(.1,(now-last)/1000);last=now;
+ if(t<DUR){t+=dt*speed;if(t>=DUR)t=DUR;render()}else{hold+=dt;if(hold>2.2){if(idx<SCENES.length-1){go(idx+1,true);render()}else{setPlaying(false);return}}}
+ requestAnimationFrame(loop)}
+$('play').onclick=()=>{if(mode==='try'){mode='watch';setTry()}if(playing){setPlaying(false)}else{if(t>=DUR)t=0;hold=0;setPlaying(true)}};
+$('replay').onclick=()=>{if(mode==='try'){mode='watch';setTry()}t=0;hold=0;setPlaying(true)};
+$('previous').onclick=()=>go(idx-1);$('next').onclick=()=>go(idx+1);
+$('speed').onchange=e=>{speed=+e.target.value};
+$('mode-watch').onclick=()=>{mode='watch';setTry();render()};
+$('mode-try').onclick=()=>{if(!SCENES[idx].tryUI)return;mode='try';setPlaying(false);t=DUR;setTry();render()};
+document.addEventListener('keydown',e=>{if(e.target.closest('input,select,textarea,dialog'))return;if(e.key==='ArrowRight')go(idx+1);else if(e.key==='ArrowLeft')go(idx-1);else if(e.key===' '&&!e.target.closest('button')){e.preventDefault();$('play').click()}else if(e.key==='t'||e.key==='T'){if(mode==='try')$('mode-watch').click();else $('mode-try').click()}});
+const dlg=$('word-dialog');
+document.addEventListener('click',e=>{const b=e.target.closest('button.word');if(!b)return;const g=GLOSSARY[b.dataset.word];if(!g)return;$('word-title').textContent=g.t;$('word-here').textContent=g.h;$('word-contrast').textContent=g.c;$('word-example').textContent='Example: '+g.e;if(dlg.showModal)dlg.showModal();else dlg.setAttribute('open','')});
+$('word-close').onclick=()=>dlg.close();
+buildStages();
+const h=parseInt((location.hash||'').slice(1),10);
+go(h>=1&&h<=SCENES.length?h-1:0);
+window.__TIM={SCENES,TH,CATS,go,setMode:m=>{m==='try'?$('mode-try').click():$('mode-watch').click()},renderAt:p=>{t=p*DUR;render()}};
+})();
+</script>
+</body>
+</html>
