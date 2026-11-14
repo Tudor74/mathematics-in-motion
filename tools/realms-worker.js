@@ -180,15 +180,18 @@ router.post("/ground/take", async ({ request, user }) => {
 });
 
 router.get("/health", async () => ({ ok: true, at: Date.now() }));
-// Opened in a browser, the worker explains itself instead of answering "Not found"
+// Opened in a browser, the worker explains itself in plain text instead of answering "Not found".
+// (Puter adds a warning pop-up to HTML served from a worker, so this is deliberately not a web page.)
 router.get("/", async () => {
   const meta = await me.puter.kv.get(P + "snap:meta");
-  const html = `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Zigzag Realms server</title>
-<style>body{font:17px/1.5 system-ui,sans-serif;max-width:36em;margin:3em auto;padding:0 16px;color:#1e2925;background:#edf0e8}a{color:#8b4c1f}</style>
-<h1>Zigzag Realms: shared realm server</h1>
-<p>This address is the server behind the shared realm. There is nothing to play here.</p>
-<p><a href="https://zigzag-realms.puter.site">Play Zigzag Realms</a>, and tick “Join the shared realm” before you set out.</p>
-<p>Status: ${meta ? "the shared realm has been founded" : "no one has founded the shared realm yet"}.</p>`;
-  return new Response(html, { headers: { "Content-Type": "text/html; charset=utf-8" } });
+  const text = [
+    "Zigzag Realms: shared realm server",
+    "",
+    "This address is the server behind the shared realm. There is nothing to play here.",
+    "To play, go to https://zigzag-realms.puter.site and tick \"Join the shared realm\" before you set out.",
+    "",
+    "Status: " + (meta ? "the shared realm has been founded." : "no one has founded the shared realm yet."),
+  ].join("\n");
+  return new Response(text, { headers: { "Content-Type": "text/plain; charset=utf-8" } });
 });
 router.get("/*page", async ({ params }) => bad("Not found: " + params.page, 404));
