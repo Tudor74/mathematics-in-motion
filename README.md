@@ -67,3 +67,10 @@ hard to confuse. Run `node tools/realm-script.mjs` to regenerate.
   On catching you they defeat you, take your magic items, restore your standing
   to a random point between the 5th and 20th percentile, and leave seven days of
   rations. They do not ride out again for two days.
+- **Layout** (v0.2.4): every panel except "You are at", the survey map and the
+  character sheet can be rolled up and dragged to any column (or moved with the
+  arrow keys from its grip). Desktop and phone layouts are saved separately.
+- **Town voices and sanctuaries** (v0.2.5): towns murmur with talk, carts and
+  song, scaled by size (talk by day, carts by day, singing mostly at night).
+  Sanctuaries are hushed. Resting at one heals fully, with a 4% chance of a boon
+  of +1 or +2 to one ability for 7 to 30 days.

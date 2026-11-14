@@ -1,5 +1,5 @@
 <title>Zigzag Realms</title>
-<meta name="application-version" content="0.2.3">
+<meta name="application-version" content="0.2.5">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -53,6 +53,8 @@ header.top .sub{color:var(--faint);font-size:15px;margin:4px 0 0;max-width:62ch}
 .pills{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .pill{font-family:var(--mono);font-size:12px;border:1px solid var(--rule);border-radius:99px;padding:3px 10px;color:var(--faint);background:var(--sheet);white-space:nowrap}
 .pill b{color:var(--ink);font-weight:500}
+.pill{max-width:100%}
+#sound-toggle{white-space:normal;text-align:left}
 .pill.warn b{color:var(--danger)}
 .pill.clock{display:inline-flex;align-items:center;gap:7px}
 .orb{width:11px;height:11px;border-radius:50%;background:var(--amber);flex:0 0 11px}
@@ -178,6 +180,8 @@ details.zz summary{cursor:pointer;font-family:var(--mono);font-size:13px;color:v
 .abil .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--faint)}
 .abil .v{font-family:var(--display);font-size:22px;font-weight:700}
 .abil .m{font-family:var(--mono);font-size:12px;color:var(--faint)}
+.abil .boon{border-color:var(--amber);box-shadow:inset 0 0 0 1px var(--amber)}
+.abil .boon .k{color:var(--amber)}
 .facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 12px;margin:0}
 .facts div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dotted var(--rule);padding:3px 0;font-size:14px}
 .facts dt{color:var(--faint)}.facts dd{margin:0;font-family:var(--mono);font-size:13px}
@@ -256,6 +260,13 @@ button.pill[aria-pressed="false"] b{color:var(--faint)}
 .panel.collapsed .fold svg{transform:rotate(-90deg)}
 .panel.collapsed{gap:0}
 .panel.collapsed>:not(.sectionhead){display:none!important}
+/* Drag to rearrange: a grip in each movable panel's header, a line showing where it will land */
+.grip{flex:0 0 auto;min-height:32px;min-width:28px;padding:0;display:inline-grid;place-items:center;border-radius:6px;border-color:transparent;background:transparent;color:var(--faint);cursor:grab;touch-action:none;align-self:center}
+.grip:hover:not(:disabled){border-color:var(--rule);color:var(--accent)}
+.grip svg{width:14px;height:14px}
+.panel.dragging{opacity:.45;outline:2px dashed var(--accent);outline-offset:2px}
+body.is-dragging,body.is-dragging *{cursor:grabbing!important;user-select:none}
+.dropline{height:4px;border-radius:2px;background:var(--accent);margin-block:-10px;grid-column:1 / -1;pointer-events:none}
 .alphabet{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px}
 .alphabet li{display:grid;justify-items:center;gap:1px;border:1px solid var(--rule);border-radius:6px;padding:6px 2px 5px;text-align:center}
 .alphabet .gl{color:var(--ink);line-height:0}
@@ -267,14 +278,14 @@ html.realm body{font-size:17.5px;letter-spacing:.02em;word-spacing:.12em}
 html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
 
 @media (max-width:1040px){.grid{grid-template-columns:minmax(0,300px) minmax(0,1fr)}.col.right{grid-column:1 / -1;grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:720px){.grid{grid-template-columns:minmax(0,1fr)}.col.right{grid-template-columns:minmax(0,1fr)}.place{order:-1}.create .row{grid-template-columns:1fr}.rolled{grid-template-columns:repeat(3,minmax(0,1fr))}.desc{font-size:17px}}
+@media (max-width:720px){.grid{grid-template-columns:minmax(0,1fr)}.col.right{grid-template-columns:minmax(0,1fr)}.col.center{order:-1}.create .row{grid-template-columns:1fr}.rolled{grid-template-columns:repeat(3,minmax(0,1fr))}.desc{font-size:17px}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
 <div class="wrap">
  <header class="top">
   <div>
-   <p class="eyebrow">A map that writes itself · v0.2.3</p>
+   <p class="eyebrow">A map that writes itself · v0.2.5</p>
    <h1>Zigzag Realms</h1>
    <p class="sub">A river with three towns, a woodland and its magical grove, a mountain with lakes, a waterfall and caves, and a desert are laid out when your journey begins, with townsfolk and creatures living among them. Claude writes everything else one step ahead of you. Every place is kept as a cell in a ZigZag structure, so you can find your way back.</p>
   </div>
@@ -287,11 +298,12 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
    <span id="account" class="pills"></span>
    <span class="pill" id="pill-save">World: <b>loading…</b></span>
    <span class="pill" id="pill-cells">Cells: <b>0</b></span>
+   <button class="pill" id="layout-reset" type="button" hidden>Reset layout</button>
   </div>
  </header>
 
  <div class="grid">
-  <div class="col left">
+  <div class="col left" data-col="left">
    <section class="panel map" aria-labelledby="map-h">
     <div class="sectionhead"><h3 id="map-h">Survey map</h3><span class="mono" id="coords" style="font-size:12px;color:var(--faint)"></span></div>
     <svg id="map" viewBox="0 0 420 420" role="img" aria-label="Map of explored places on your current level"></svg>
@@ -326,9 +338,11 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
    </section>
   </div>
 
-  <section class="panel place" id="place" aria-live="polite"></section>
+  <div class="col center" data-col="center">
+   <section class="panel place" id="place" aria-live="polite"></section>
+  </div>
 
-  <div class="col right">
+  <div class="col right" data-col="right">
    <section class="panel" id="sheet" aria-label="Character sheet"></section>
    <section class="panel" id="pack" aria-label="Your pack" data-fold="pack"></section>
    <section class="panel" aria-labelledby="codex-h" data-fold="codex">
@@ -535,7 +549,9 @@ const charId=()=>step("root","cursor","+");
 const hereId=()=>charId()&&step(charId(),"at","+");
 const foeId=(loc=hereId())=>loc?step(loc,"occupant","+"):null;
 const statCell=name=>rank(charId(),"stat").map(cell).find(c=>c.t===name);
-const sv=name=>statCell(name)?.v??0;
+// A stat's value is its base plus any active boon (boons only touch the six abilities)
+function boonFor(name){const ch=charId()&&cell(charId());if(!ch||!ch.boons)return 0;const t=gameNow();return ch.boons.filter(b=>b.stat===name&&b.until>t).reduce((s,b)=>s+b.amount,0)}
+const sv=name=>(statCell(name)?.v??0)+(STATS.includes(name)?boonFor(name):0);
 function setStat(name,v){const c=statCell(name);if(c&&c.v!==v){c.v=v;touch(c.id)}}
 const packIds=()=>rank(charId(),"contain");
 const storeIds=loc=>rank(loc,"contain");
@@ -1275,6 +1291,7 @@ function simulate(){
  }
  for(const f of npcs())touch(f.id);
  r.npcT=t;touch("root");recordBloom();checkPaladin();
+ const ch=charId()&&cell(charId());if(ch&&ch.boons&&ch.boons.length){const gone=ch.boons.filter(b=>b.until<=t);if(gone.length){for(const b of gone)log(`The boon from ${b.from} fades: +${b.amount} ${b.stat} is gone.`,"time");ch.boons=ch.boons.filter(b=>b.until>t);touch(ch.id)}}
 }
 function passTime(min){const r=cell("root");if(!r)return;r.clock={base:gameNow()+min,real:Date.now()};touch("root");simulate()}
 
@@ -1649,7 +1666,10 @@ function rest(){
  if(L.town){
   if(sv("GP")>=2){setStat("GP",sv("GP")-2);after=max;msg=`You take a room at the inn in ${L.t} for 2 gp. The taproom is loud until late, but you sleep well and wake fully healed (+${max-before} HP).`}
   else{after=Math.min(max,before+Math.ceil(max/2));msg=`You cannot pay for a room, so the innkeeper lets you sleep in the stable (+${after-before} HP).`}
- }else if(L.sanctuary){after=max;msg=`The keepers of ${L.t} tend your wounds without asking who you are. You wake fully healed (+${max-before} HP).`}
+ }else if(L.sanctuary){after=max;msg=`The keepers of ${L.t} tend your wounds without asking who you are. You sleep in deep quiet and wake fully healed (+${max-before} HP).`;
+  // A very small chance of a boon: +1 or +2 to one ability, lasting from a week to a month
+  if(Math.random()<.04){const stat=pick(STATS),amount=Math.random()<.25?2:1,days=7+rnd(23);ch.boons=(ch.boons||[]).concat([{stat,amount,until:t+span+days*1440,from:L.t}]);
+   msg+=` As you leave, the eldest keeper presses a hand to your brow: you feel ${{STR:"stronger",DEX:"quicker",CON:"hardier",INT:"sharper",WIS:"wiser",CHA:"more at ease with people"}[stat]} (+${amount} ${stat} for ${days} days).`}}
  else if(L.grove){after=max;msg=`You make camp beneath the silver trees of ${L.t}. You wake fully healed (+${max-before} HP), with the wisps' humming still in your ears.`}
  else{after=Math.min(max,before+Math.ceil(max/2));msg=`You make camp at ${L.t}${isNight(t)?" and sleep until dawn":" for eight hours"} (+${after-before} HP).`}
  setStat("HP",after);ch.windUsed=false;touch(ch.id);log(msg,"good");
@@ -2539,7 +2559,7 @@ function renderSheet(){
  const restBlocked=busy||foeId()||isDowned();
  el.innerHTML=`<div class="who"><h2>${esc(ch.t)}</h2><span class="mono" style="font-size:13px;color:var(--faint)">Level ${sv("LVL")} ${esc(ch.cls)}</span></div>
  <div><div class="hprow"><span>Hit points</span><span>${hp} / ${max}</span></div><div class="hpbar${pct<=34?" low":""}"><span style="width:${pct}%"></span></div></div>
- <div class="abil">${STATS.map(k=>`<div><span class="k">${k}</span><span class="v">${sv(k)}</span><span class="m">${sgn(mod(sv(k)))}</span></div>`).join("")}</div>
+ <div class="abil">${STATS.map(k=>`<div${boonFor(k)?` class="boon" title="Boon: +${boonFor(k)} until ${(ch.boons||[]).filter(b=>b.stat===k).map(b=>fmtClock(b.until)).join(", ")}"`:""}><span class="k">${k}${boonFor(k)?" ✦":""}</span><span class="v">${sv(k)}</span><span class="m">${sgn(mod(sv(k)))}</span></div>`).join("")}</div>
  <dl class="facts"><div><dt>Armour class</dt><dd>${armourClass()}</dd></div><div><dt>Proficiency</dt><dd>+${prof()}</dd></div><div><dt>Weapon</dt><dd>${w?esc(w.dmg||"1d6"):"1d2"}</dd></div><div><dt>Light</dt><dd>${hasLight()?"lantern":"none"}</dd></div><div><dt>XP</dt><dd>${sv("XP")} / ${sv("LVL")*100}</dd></div><div><dt>Gold</dt><dd>${sv("GP")} gp</dd></div></dl>
  <p class="note">${esc(CLASS_NOTES[ch.cls]||"")}</p>
  <div class="btnrow"><button id="rest" ${restBlocked?"disabled":""} title="${L&&L.town?"Pay 2 gp for a room and sleep until dawn (or eight hours): full HP.":"Make camp: sleep until dawn at night, or eight hours by day, for half your HP."}">${L&&L.town?"Take a room at the inn · 2 gp":"Make camp"}</button>${foeId()?'<span class="note">Not while it is here.</span>':""}</div>
@@ -2603,11 +2623,89 @@ function decoratePanels(){
   let b=head.querySelector(":scope>.fold");
   if(!b){b=document.createElement("button");b.type="button";b.className="fold";b.dataset.fold=key;
    b.innerHTML='<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6 8 10.5 12.5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';head.appendChild(b)}
+  let g=head.querySelector(":scope>.grip");
+  if(!g){g=document.createElement("button");g.type="button";g.className="grip";
+   g.innerHTML='<svg viewBox="0 0 14 14" aria-hidden="true"><g fill="currentColor"><circle cx="4.5" cy="3" r="1.3"/><circle cx="9.5" cy="3" r="1.3"/><circle cx="4.5" cy="7" r="1.3"/><circle cx="9.5" cy="7" r="1.3"/><circle cx="4.5" cy="11" r="1.3"/><circle cx="9.5" cy="11" r="1.3"/></g></svg>';head.insertBefore(g,b)}
   const shut=!!folds[key],name=(head.querySelector("h3")||{}).textContent||"panel";
+  g.setAttribute("aria-label",`Move ${name}: drag, or use the arrow keys`);g.title="Drag to move this panel";
   panel.classList.toggle("collapsed",shut);b.setAttribute("aria-expanded",String(!shut));b.setAttribute("aria-label",`${shut?"Roll down":"Roll up"} ${name}`);b.title=shut?"Roll down":"Roll up";
  }
 }
 function toggleFold(key){folds[key]=!folds[key];try{localStorage.setItem("zr-fold",JSON.stringify(folds))}catch(e){}decoratePanels()}
+/* Rearranging panels. Every panel with a roll-up arrow also has a grip: drag it to any column,
+   or focus it and use the arrow keys (up and down within a column, left and right across columns).
+   "You are at", the survey map and the character sheet stay pinned at the top of their columns.
+   Desktop and phone layouts are saved separately in this browser; on a phone the columns stack,
+   so dragging reorders one long column. */
+const phoneMQ=matchMedia("(max-width:720px)");
+const layoutKey=()=>phoneMQ.matches?"zr-layout-phone":"zr-layout-desk";
+const COLS=["left","center","right"],colEl=n=>document.querySelector(`.col[data-col="${n}"]`);
+const movable=col=>[...col.children].filter(e=>e.matches("section.panel[data-fold]"));
+const pinnedCount=col=>[...col.children].filter(e=>e.matches("section.panel:not([data-fold])")).length;
+let defaultLayout=null;
+function captureLayout(){const o={};for(const n of COLS)o[n]=movable(colEl(n)).map(e=>e.dataset.fold);return o}
+function applyLayout(o){
+ if(!o)return;const all=new Map([...document.querySelectorAll("section.panel[data-fold]")].map(e=>[e.dataset.fold,e]));
+ for(const n of COLS)for(const k of o[n]||[]){const e=all.get(k);if(e){colEl(n).appendChild(e);all.delete(k)}}
+}
+function saveLayout(){try{localStorage.setItem(layoutKey(),JSON.stringify(captureLayout()))}catch(e){}$("layout-reset").hidden=false}
+function loadLayout(){
+ if(!defaultLayout)defaultLayout=captureLayout();
+ let o=null;try{o=JSON.parse(localStorage.getItem(layoutKey())||"null")}catch(e){}
+ applyLayout(defaultLayout);applyLayout(o);$("layout-reset").hidden=!o;
+}
+function resetLayout(){try{localStorage.removeItem(layoutKey())}catch(e){}applyLayout(defaultLayout);$("layout-reset").hidden=true}
+phoneMQ.addEventListener("change",loadLayout);
+// Where would a panel land if dropped at this point?
+function dropTarget(x,y){
+ const cols=COLS.map(colEl),rects=cols.map(c=>c.getBoundingClientRect());
+ let best=0,bd=Infinity;
+ cols.forEach((c,i)=>{const r=rects[i],dx=x<r.left?r.left-x:x>r.right?x-r.right:0,dy=y<r.top?r.top-y:y>r.bottom?y-r.bottom:0,d=dx*1000+dy;if(d<bd){bd=d;best=i}});
+ const col=cols[best],items=movable(col).filter(e=>!e.classList.contains("dragging"));
+ let before=null;for(const e of items){const r=e.getBoundingClientRect();if(y<r.top+r.height/2){before=e;break}}
+ return{col,before};
+}
+let drag=null;
+function startDrag(grip,ev){
+ const panel=grip.closest("section.panel");ev.preventDefault();grip.setPointerCapture(ev.pointerId);
+ const line=document.createElement("div");line.className="dropline";
+ drag={panel,grip,line,id:ev.pointerId};panel.classList.add("dragging");document.body.classList.add("is-dragging");
+ moveDrag(ev);
+}
+function moveDrag(ev){
+ if(!drag||ev.pointerId!==drag.id)return;
+ const {col,before}=dropTarget(ev.clientX,ev.clientY),pins=[...col.children].filter(e=>e.matches("section.panel:not([data-fold])"));
+ if(before)col.insertBefore(drag.line,before);else col.appendChild(drag.line);
+ if(pins.length&&drag.line.compareDocumentPosition(pins[pins.length-1])&Node.DOCUMENT_POSITION_FOLLOWING)pins[pins.length-1].after(drag.line);
+ if(ev.clientY<60)scrollBy(0,-14);else if(ev.clientY>innerHeight-60)scrollBy(0,14);
+}
+function endDrag(ev,cancel){
+ if(!drag||(ev&&ev.pointerId!==drag.id))return;
+ const {panel,line}=drag;
+ if(!cancel&&line.parentNode){line.replaceWith(panel);saveLayout()}else line.remove();
+ panel.classList.remove("dragging");document.body.classList.remove("is-dragging");drag=null;
+}
+document.addEventListener("pointerdown",ev=>{const g=ev.target.closest("button.grip");if(g&&ev.button===0)startDrag(g,ev)});
+document.addEventListener("pointermove",moveDrag);
+document.addEventListener("pointerup",ev=>endDrag(ev,false));
+document.addEventListener("pointercancel",ev=>endDrag(ev,true));
+document.addEventListener("keydown",ev=>{if(ev.key==="Escape"&&drag)endDrag(null,true)});
+// Keyboard: arrows move the focused panel one place at a time
+function nudge(panel,key){
+ const col=panel.parentElement,ci=COLS.indexOf(col.dataset.col),list=movable(col),i=list.indexOf(panel);
+ if(key==="ArrowUp"&&i>0)list[i-1].before(panel);
+ else if(key==="ArrowDown"&&i<list.length-1)list[i+1].after(panel);
+ else if(key==="ArrowLeft"||key==="ArrowRight"||(phoneMQ.matches&&(key==="ArrowUp"||key==="ArrowDown"))){
+  const step=key==="ArrowLeft"||key==="ArrowUp"?-1:1,next=colEl(COLS[ci+step]);if(!next)return false;
+  const nl=movable(next);if(step<0||!nl.length)next.appendChild(panel);else nl[0].before(panel);
+ }else return false;
+ saveLayout();return true;
+}
+document.addEventListener("keydown",ev=>{
+ const g=ev.target.closest&&ev.target.closest("button.grip");if(!g||!["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(ev.key))return;
+ ev.preventDefault();ev.stopPropagation();if(nudge(g.closest("section.panel"),ev.key))g.focus();
+},true);
+
 function render(){renderPills();renderScriptButton();renderMap();renderCompass();renderPlace();renderSheet();renderSocial();renderGarden();renderCodex();renderAlphabet();renderLog();decoratePanels();sound.update()}
 
 /* ============================================================
@@ -2619,7 +2717,7 @@ function render(){renderPills();renderScriptButton();renderMap();renderCompass()
    ============================================================ */
 const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_EXP:{water:.35},PITCH_BASE:.6,PITCH_RIVER:1.6,pitch:.6,riverNear:0,vol:.8,revF:1,lastHere:null,lastScape:null,scapeName:"",
  /* Each kind of place has its own room sound: [reverb seconds, wet level]. */
- SCAPES:{cave:[4.6,.55,"cave"],falls:[2.3,.38,"waterfall"],water:[1.7,.28,"water"],forest:[1.3,.22,"woodland"],grove:[3.2,.42,"grove"],town:[.9,.18,"town"],open:[.8,.12,"open country"],heights:[2.9,.3,"heights"],desert:[.45,.05,"desert"]},
+ SCAPES:{cave:[4.6,.55,"cave"],falls:[2.3,.38,"waterfall"],water:[1.7,.28,"water"],forest:[1.3,.22,"woodland"],grove:[3.2,.42,"grove"],town:[.9,.18,"town"],sanctuary:[1.1,.1,"sanctuary"],open:[.8,.12,"open country"],heights:[2.9,.3,"heights"],desert:[.45,.05,"desert"]},
  init(){try{if(localStorage.getItem("zr-sound")==="off")this.on=false}catch(e){}},
  noise(type){const c=this.ctx,len=c.sampleRate*4,b=c.createBuffer(1,len,c.sampleRate),d=b.getChannelData(0);
   let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0,last=0;
@@ -2662,6 +2760,7 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_EXP:{water:
   // The river: soft pink noise, low-passed and gently resonant, with bubbles scattered on top (see bubble)
   this.bed("water",P,[this.filt("lowpass",950,.6),this.filt("peaking",420,1.1),this.filt("highpass",120)],{rate:.19,depth:90,param:ch=>ch[1].frequency});
   this.burbleOut=this.filt("lowpass",1800,.5);this.burbleOut.connect(this.master);
+  this.townOut=this.filt("lowpass",2600,.5);this.townOut.connect(this.master);
   this.bed("falls",B,[this.filt("lowpass",900)]);
   this.bed("rain",W,[this.filt("highpass",2500)]);
   this.bed("leaves",P,[this.filt("highpass",2800)],{rate:.35,depth:.03,param:(ch,g)=>g.gain});
@@ -2684,7 +2783,7 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_EXP:{water:
   const T=H.terrain,under=z<0||T==="cave"||T==="dungeon";
   const townSize=H.town?{small:.55,medium:.8,large:1}[H.town.size]:0;
   const fire=fireNear(H.x,H.y);
-  return{
+  const out={
    wind:under?.02:Math.min(.55,.05+w.wind*.17+(["mountain","sky","desert"].includes(T)?.12:0)),
    water:near(c=>(c.river&&!c.hole)||(c.terrain==="water"&&!c.lake&&!c.falls))*.2,
    falls:Math.max(near(c=>c.falls||c.hole)*.5,(H.t==="Behind the Falls")?.6:0),
@@ -2699,14 +2798,21 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_EXP:{water:
    drips:under?1:0,
    clinks:H.town?(night?1:.5):0,
    crackle:(H.town&&night?.6:0)+(fire?1.6:0),
-   thunder:w.storm>.2?w.storm:ws&&ws.storm?.12:0
+   thunder:w.storm>.2?w.storm:ws&&ws.storm?.12:0,
+   // Town life, by size: talk all day, carts by day, singing mostly from the taverns at night
+   talk:H.town?townSize*(night?.6:1):0,
+   carts:H.town&&!night?townSize:0,
+   singing:H.town?townSize*(night?1:.25):0
   };
+  // Sanctuaries are hushed: everything is softened and the crowd falls away
+  if(H.sanctuary){for(const k of ["wind","water","falls","rain","leaves","drone"])out[k]*=.3;out.crowd=0;out.hum=.025;out.birds*=.4;out.crickets*=.4;out.thunder*=.5;out.crackle=0;out.clinks=0}
+  return out;
  },
  scape(){
   const H=hereId()&&cell(hereId());if(!H)return"open";const T=H.terrain,z=zOf(H);
   if(z<0||T==="cave"||T==="dungeon")return"cave";
   if(H.falls||H.hole||H.t==="Behind the Falls")return"falls";
-  if(H.town)return"town";if(H.grove)return"grove";
+  if(H.town)return"town";if(H.sanctuary)return"sanctuary";if(H.grove)return"grove";
   if(H.river||H.lake||T==="water"||T==="swamp")return"water";
   if(T==="forest")return"forest";if(T==="desert")return"desert";
   if(T==="mountain"||T==="sky"||z>0)return"heights";
@@ -2786,6 +2892,9 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_EXP:{water:
   if(r()<.3*e.crickets)this.cricket();
   if(r()<.35*e.drips)this.drip();
   if(r()<.12*e.clinks)this.clink();
+  if(r()<.45*e.talk)this.chatter(e.talk);
+  if(r()<.035*e.carts)this.cart(e.carts);
+  if((this.singingUntil||0)<this.ctx.currentTime&&r()<.05*e.singing)this.song(e.singing);
   if(e.crackle)for(let i=0;i<3;i++)if(r()<.5*e.crackle)this.pop(i*.25+r()*.2);
   if(r()<.04*e.thunder)this.thunder(e.thunder);
  },
@@ -2794,6 +2903,43 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_EXP:{water:
   o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(Math.max(20,f1),t+dur);
   g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(peak,t+Math.min(.02,dur/4));g.gain.exponentialRampToValueAtTime(.0001,t+dur);
   o.connect(g);g.connect(dest||this.master);o.start(t);o.stop(t+dur+.05)},
+ /* A voice: a buzzing sawtooth through two vowel formants, so it reads as speech or song */
+ voice(f,at,dur,peak,vowel,vib){
+  const c=this.ctx,t=c.currentTime+at,o=c.createOscillator(),g=c.createGain();o.type="sawtooth";o.frequency.setValueAtTime(f,t);
+  if(vib){const l=c.createOscillator(),lg=c.createGain();l.frequency.value=5.2;lg.gain.value=f*.012;l.connect(lg);lg.connect(o.frequency);l.start(t);l.stop(t+dur+.05)}
+  const V={a:[750,1150],e:[480,1850],i:[300,2250],o:[480,850],u:[340,750]}[vowel]||[600,1200];
+  const mix=c.createGain();mix.gain.value=1;
+  for(const [fq,q,lvl] of [[V[0],8,1],[V[1],10,.5]]){const bp=this.filt("bandpass",fq,q),bg=c.createGain();bg.gain.value=lvl;o.connect(bp);bp.connect(bg);bg.connect(mix)}
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(peak,t+Math.min(.05,dur/3));g.gain.setValueAtTime(peak,t+dur*.7);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  mix.connect(g);g.connect(this.townOut||this.master);o.start(t);o.stop(t+dur+.05);
+ },
+ // Talking: bursts of syllables with a rising or falling contour, from several speakers
+ chatter(level){
+  const speakers=1+Math.floor(Math.random()*2+level*2);
+  for(let s=0;s<speakers;s++){
+   const base=Math.random()<.5?105+Math.random()*40:185+Math.random()*60,n=3+Math.floor(Math.random()*7),start=Math.random()*.8;let t=start;
+   for(let i=0;i<n;i++){const d=.07+Math.random()*.12;this.voice(base*(1+(Math.random()-.5)*.18-(i/n)*.08),t,d,.012+level*.012,pick(["a","e","i","o","u"]),false);t+=d+Math.random()*.06}
+  }
+ },
+ // A cart passing: low rumble swelling and fading, wheel creaks and hoof clops
+ cart(level){
+  const c=this.ctx,t=c.currentTime,dur=4+Math.random()*3,s=c.createBufferSource(),lp=this.filt("lowpass",180),g=c.createGain();s.buffer=this.brownBuf;
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.18*level,t+dur/2);g.gain.linearRampToValueAtTime(0,t+dur);
+  s.connect(lp);lp.connect(g);g.connect(this.townOut||this.master);s.start(t,Math.random()*2);s.stop(t+dur+.1);
+  for(let k=0;k<dur*2.2;k++){const at=k/2.2+Math.random()*.03,swell=Math.sin(Math.PI*at/dur);
+   const n=c.createBufferSource(),bp=this.filt("bandpass",k%2?1100:850,6),ng=c.createGain();n.buffer=this.white;
+   ng.gain.setValueAtTime(.0001,t+at);ng.gain.linearRampToValueAtTime(.12*level*swell,t+at+.005);ng.gain.exponentialRampToValueAtTime(.0001,t+at+.06);
+   n.connect(bp);bp.connect(ng);ng.connect(this.townOut||this.master);n.start(t+at,Math.random()*2);n.stop(t+at+.08)}
+  for(let k=0;k<4;k++){const at=.6+Math.random()*(dur-1.2),f=520+Math.random()*260;this.tone(f,f*1.25,.18,.012*level,at,"triangle",this.townOut)}
+ },
+ // A snatch of song: a pentatonic folk phrase, sometimes joined by a second voice a fifth above
+ song(level){
+  const scale=[0,2,4,7,9,12],root=pick([147,165,175,196]),notes=6+Math.floor(Math.random()*6);let t=.1;
+  const harmony=Math.random()<.35*level;
+  for(let i=0;i<notes;i++){const d=pick([.28,.28,.42,.56]),f=root*Math.pow(2,pick(scale)/12),v=pick(["a","o","e"]);
+   this.voice(f,t,d,.018+level*.014,v,true);if(harmony)this.voice(f*1.5,t,d,.01+level*.008,v,true);t+=d}
+  this.singingUntil=this.ctx.currentTime+t+2;
+ },
  bubble(at,level){
   const c=this.ctx,t=c.currentTime+at,o=c.createOscillator(),g=c.createGain(),lift=Math.pow(this.pitch,.3);
   const f0=(260+Math.random()*420)*lift,dur=.035+Math.random()*.06;o.type="sine";
@@ -2860,7 +3006,8 @@ setInterval(()=>{
 },1000);
 
 (async function start(){
- render();
+ render();loadLayout();
+ $("layout-reset").onclick=resetLayout;
  if(realm.on)realm.set(true);
  const samplePromise=window.claude&&claude.use?claude.use("sample").catch(()=>null):Promise.resolve(null);
  const puterPromise=loadPuter();
