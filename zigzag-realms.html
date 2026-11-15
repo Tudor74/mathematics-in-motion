@@ -4418,13 +4418,13 @@ let zzOpen=false;
    discs, ear spools, face paint, a jade pectoral). The pieces are chosen by a generator seeded from the
    character's name, so the same name always gives the same face; the class picks the headdress.
    ============================================================ */
-const FACE_PAL={
- skin:["#f6c66b","#f0c9a0","#d9a27a","#b97a50","#8d5a3b","#5e3b26","#f2d36b"],
- jade:["#2f9e8f","#3fae6a","#1f7a6d"],turq:["#38b6c9","#2a93b5"],red:["#c4452f","#a8322a","#d2602f"],gold:["#e2b53c","#d39b22"],
- ink:"#2b2118",bg:["#e9dcc0","#dbe6d8","#e6d6cf","#d9dbe8"],paint:["#c4452f","#2b2118","#2f9e8f","#2a93b5","#f2f0e6"]};
+const FACE_PAL={   // ink on paper: black, white and greys only
+ skin:["#f7f6f2","#ecebe6","#dedcd6","#cfcdc6"],
+ jade:["#3a3a3a","#4d4d4d"],turq:["#6e6e6e","#7d7d7d"],red:["#262626","#565656"],gold:["#a3a3a3","#b8b8b8"],
+ ink:"#161616",bg:["#fbfaf7","#f1f0eb","#e9e8e3"],paint:["#1c1c1c","#5c5c5c","#8f8f8f"]};
 function strSeed(s){let h=2166136261;for(const c of String(s))h=Math.imul(h^c.charCodeAt(0),16777619);return h|0}
-function faceSVG(name,cls,size=96){
- const r=seededRng(strSeed(name),strSeed(cls||""),0,31),pk=a=>a[Math.floor(r()*a.length)],ch=p=>r()<p;
+function faceSVG(name,cls,size=96,seed=0){
+ const r=seededRng(strSeed(name),strSeed(cls||""),seed|0,31),pk=a=>a[Math.floor(r()*a.length)],ch=p=>r()<p;
  const skin=pk(FACE_PAL.skin),jade=pk(FACE_PAL.jade),red=pk(FACE_PAL.red),gold=pk(FACE_PAL.gold),turq=pk(FACE_PAL.turq),bg=pk(FACE_PAL.bg),ink=FACE_PAL.ink;
  const accent=pk([jade,red,turq,gold]),accent2=pk([jade,red,turq,gold].filter(c=>c!==accent));
  let s="";
@@ -4433,7 +4433,7 @@ function faceSVG(name,cls,size=96){
  const fret=(y,c)=>{let d="";for(let x=6;x<114;x+=18)d+=`M${x} ${y+8} h6 v-6 h6 v6 h6`;return`<path d="${d}" fill="none" stroke="${c}" stroke-width="2.4" opacity=".55"/>`};
  s+=fret(-16,accent2)+fret(122,accent2);
  // shoulders and torso: a small brick body with a stepped pectoral
- const body=pk([red,jade,turq,"#6b4a8a","#3b5f8a"]);
+ const body=pk([red,jade,turq,"#4a4a4a","#7a7a7a"]);
  s+=`<path d="M30 140 L36 112 Q60 104 84 112 L90 140 Z" fill="${body}"/>`;
  const pect=pk(["steps","beads","disc"]);
  if(pect==="steps")s+=`<path d="M44 112 h32 v5 h-5 v5 h-5 v5 h-12 v-5 h-5 v-5 h-5 Z" fill="${gold}" stroke="${ink}" stroke-width="1.2"/>`;
@@ -4444,7 +4444,7 @@ function faceSVG(name,cls,size=96){
  const hw=pk([60,64,68]),hx=60-hw/2,hy=34,hh=66;
  s+=`<rect x="${hx+hw*.3}" y="${hy-9}" width="${hw*.4}" height="11" rx="3" fill="${skin}" stroke="${ink}" stroke-width="1.4"/>`; // the stud
  s+=`<rect x="${hx}" y="${hy}" width="${hw}" height="${hh}" rx="${pk([14,18,22])}" fill="${skin}" stroke="${ink}" stroke-width="1.8"/>`;
- s+=`<rect x="${hx+5}" y="${hy+4}" width="${hw*.22}" height="${hh-14}" rx="6" fill="#fff" opacity=".18"/>`; // a plastic shine
+ s+=`<path d="M${hx+7} ${hy+8} q-3 ${hh*.4} 2 ${hh-20}" fill="none" stroke="${ink}" stroke-width="1.2" opacity=".35"/>`; // a dry-brush shadow line
  // ear spools
  if(ch(.75)){const c=pk([jade,gold,turq]);for(const ex of [hx-3,hx+hw+3])s+=`<circle cx="${ex}" cy="${hy+40}" r="7" fill="${c}" stroke="${ink}" stroke-width="1.4"/><circle cx="${ex}" cy="${hy+40}" r="2.6" fill="${ink}"/>`}
  // face paint
@@ -4454,12 +4454,14 @@ function faceSVG(name,cls,size=96){
  if(paint==="cheeks")for(const cx of [hx+12,hx+hw-12])for(let i=0;i<3;i++)s+=`<circle cx="${cx+(i-1)*4}" cy="${hy+46}" r="1.7" fill="${pc}"/>`;
  if(paint==="steps")for(const cx of [hx+10,hx+hw-16])s+=`<path d="M${cx} ${hy+50} h6 v-4 h-3 v-3 h-3 Z" fill="${pc}"/>`;
  // eyes: big and shining (chibi), or printed dots (brick)
- const eye=pk(["big","big","big","dot","arc","sharp"]),ey=hy+34,ex1=60-hw*.2,ex2=60+hw*.2,iris=pk(["#2b2118","#3b5f8a","#2f6e4f","#6b3f22"]);
- for(const ex of [ex1,ex2]){
+ const eye=pk(["big","big","big","dot","arc","sharp"]),ey=hy+34,ex1=60-hw*.2,ex2=60+hw*.2,iris=pk(["#161616","#3c3c3c","#5e5e5e"]);
+ const esz=[.82+r()*.36,.82+r()*.36],edy=[(r()-.5)*3,(r()-.5)*3];
+ for(const [k,ex0] of [[0,ex1],[1,ex2]]){const ex=ex0,sc=esz[k];s+=`<g transform="translate(${ex} ${ey+edy[k]}) scale(${sc.toFixed(2)}) translate(${-ex} ${-ey})">`;
   if(eye==="big")s+=`<ellipse cx="${ex}" cy="${ey}" rx="7" ry="9" fill="${ink}"/><ellipse cx="${ex}" cy="${ey+1}" rx="5" ry="7" fill="${iris}"/><circle cx="${ex+2}" cy="${ey-3}" r="2.6" fill="#fff"/><circle cx="${ex-2}" cy="${ey+3}" r="1.2" fill="#fff"/>`;
   if(eye==="dot")s+=`<circle cx="${ex}" cy="${ey}" r="4" fill="${ink}"/><circle cx="${ex+1.3}" cy="${ey-1.3}" r="1.2" fill="#fff"/>`;
   if(eye==="arc")s+=`<path d="M${ex-6} ${ey+2} Q${ex} ${ey-6} ${ex+6} ${ey+2}" fill="none" stroke="${ink}" stroke-width="3" stroke-linecap="round"/>`;
   if(eye==="sharp")s+=`<path d="M${ex-7} ${ey} L${ex} ${ey-4} L${ex+7} ${ey} L${ex} ${ey+4} Z" fill="${ink}"/><circle cx="${ex+1}" cy="${ey-1}" r="1.3" fill="#fff"/>`;
+  s+=`</g>`;
  }
  // brows
  const brow=pk(["flat","up","down","none","thick"]);
@@ -4470,13 +4472,14 @@ function faceSVG(name,cls,size=96){
   if(brow==="thick")s+=`<rect x="${ex-7}" y="${ey-16}" width="14" height="4" rx="2" fill="${ink}"/>`;
  }
  // mouth
- const my=hy+52,mouth=pk(["smile","grin","flat","o","smirk","fangs"]);
+ const my=hy+52,mouth=pk(["smile","grin","flat","o","smirk","fangs"]),mshift=(r()-.5)*8;s+=`<g transform="translate(${mshift.toFixed(1)} 0) rotate(${((r()-.5)*10).toFixed(1)} 60 ${my})">`;
  if(mouth==="smile")s+=`<path d="M52 ${my} Q60 ${my+7} 68 ${my}" fill="none" stroke="${ink}" stroke-width="2.6" stroke-linecap="round"/>`;
  if(mouth==="grin")s+=`<path d="M50 ${my-1} Q60 ${my+11} 70 ${my-1} Z" fill="${ink}"/><path d="M53 ${my} h14" stroke="#fff" stroke-width="2"/>`;
  if(mouth==="flat")s+=`<path d="M53 ${my+2} h14" stroke="${ink}" stroke-width="2.6" stroke-linecap="round"/>`;
  if(mouth==="o")s+=`<ellipse cx="60" cy="${my+2}" rx="4" ry="5" fill="${ink}"/>`;
  if(mouth==="smirk")s+=`<path d="M53 ${my+2} Q63 ${my+5} 68 ${my-2}" fill="none" stroke="${ink}" stroke-width="2.6" stroke-linecap="round"/>`;
  if(mouth==="fangs")s+=`<path d="M51 ${my} Q60 ${my+8} 69 ${my}" fill="none" stroke="${ink}" stroke-width="2.6" stroke-linecap="round"/><path d="M55 ${my+2} l2 4 l2 -3.4 M61 ${my+2.6} l2 3.4 l2 -4" fill="#fff" stroke="${ink}" stroke-width=".8"/>`;
+ s+=`</g>`;
  if(ch(.5))s+=`<circle cx="${ex1-4}" cy="${ey+12}" r="4" fill="${red}" opacity=".25"/><circle cx="${ex2+4}" cy="${ey+12}" r="4" fill="${red}" opacity=".25"/>`; // chibi blush
  // headdress, by class
  const crown={Wizard:"feathers",Cleric:"sun",Fighter:"jaguar",Rogue:"band"}[cls]||pk(["feathers","sun","jaguar","band"]);
@@ -4488,14 +4491,16 @@ function faceSVG(name,cls,size=96){
  if(crown==="sun"){let rays="";for(let i=0;i<12;i++){const a=i/12*Math.PI*2;rays+=`M${60+Math.cos(a)*16} ${hy-6+Math.sin(a)*16} L${60+Math.cos(a+.13)*26} ${hy-6+Math.sin(a+.13)*26} L${60+Math.cos(a+.26)*16} ${hy-6+Math.sin(a+.26)*16}Z `}
   s+=`<path d="${rays}" fill="${gold}" stroke="${ink}" stroke-width="1.1"/><circle cx="60" cy="${hy-6}" r="15" fill="${gold}" stroke="${ink}" stroke-width="1.6"/><circle cx="60" cy="${hy-6}" r="7" fill="${jade}" stroke="${ink}" stroke-width="1.2"/>`;
   s+=`<rect x="${hx-2}" y="${hy+4}" width="${hw+4}" height="9" rx="3" fill="${red}" stroke="${ink}" stroke-width="1.4"/>`}
- if(crown==="jaguar"){const fur=pk(["#d9a02c","#c98a1f","#b8862f"]);
+ if(crown==="jaguar"){const fur=pk(["#9a9a9a","#b0b0b0","#c4c4c4"]);
   s+=`<path d="M${hx-6} ${hy+26} Q${hx-6} ${hy-14} 60 ${hy-16} Q${hx+hw+6} ${hy-14} ${hx+hw+6} ${hy+26} L${hx+hw-2} ${hy+14} Q60 ${hy-2} ${hx+2} ${hy+14} Z" fill="${fur}" stroke="${ink}" stroke-width="1.6"/>`;
   for(const ex of [hx+6,hx+hw-6])s+=`<path d="M${ex-8} ${hy-6} L${ex} ${hy-22} L${ex+8} ${hy-6} Z" fill="${fur}" stroke="${ink}" stroke-width="1.4"/>`;
   for(let i=0;i<7;i++)s+=`<circle cx="${hx+4+r()*(hw-8)}" cy="${hy-10+r()*18}" r="${1.6+r()*1.6}" fill="${ink}" opacity=".7"/>`}
  if(crown==="band"){s+=`<rect x="${hx-2}" y="${hy+8}" width="${hw+4}" height="11" fill="${ink}"/>`;for(let x=hx+2;x<hx+hw;x+=8)s+=`<rect x="${x}" y="${hy+11}" width="4" height="4" fill="${accent}"/>`;
   s+=`<path d="M${hx+hw+2} ${hy+12} q12 4 10 18 M${hx+hw+2} ${hy+15} q8 6 4 18" fill="none" stroke="${ink}" stroke-width="3" stroke-linecap="round"/>`;
   if(ch(.5))s+=`<path d="M${hx} ${hy} Q60 ${hy-18} ${hx+hw} ${hy} Z" fill="${accent2}" stroke="${ink}" stroke-width="1.4"/>`}
- return`<svg class="face" viewBox="0 -24 120 164" width="${size}" height="${Math.round(size*164/120)}" role="img" aria-label="Portrait of ${esc(name)}">${s}</svg>`;
+ let spat="";for(let i=0;i<3+Math.floor(r()*5);i++)spat+=`<circle cx="${(8+r()*104).toFixed(1)}" cy="${(-16+r()*150).toFixed(1)}" r="${(.6+r()*2.2).toFixed(1)}" fill="${ink}" opacity="${(.25+r()*.5).toFixed(2)}"/>`;
+ const tilt=((r()-.5)*7).toFixed(1),fid="brush"+(strSeed(name+cls+seed)>>>0).toString(36);
+ return`<svg class="face" viewBox="0 -24 120 164" width="${size}" height="${Math.round(size*164/120)}" role="img" aria-label="Portrait of ${esc(name)}"><defs><filter id="${fid}" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="${(.035+r()*.03).toFixed(3)}" numOctaves="2" seed="${Math.floor(r()*99)}"/><feDisplacementMap in="SourceGraphic" scale="${(2.4+r()*1.6).toFixed(1)}"/></filter></defs><g filter="url(#${fid})"><g transform="rotate(${tilt} 60 70)">${s}</g>${spat}</g></svg>`;
 }
 function renderCreate(el){
  if(canJoinRealm()){el.innerHTML=`<div class="placehead"><p class="eyebrow">New adventurer</p><h2>Join on the map</h2></div><p class="note">Choose a name and class on the map, then join the shared realm. Your abilities are rolled the classic way, and you set out at once.</p>`;return}
@@ -4526,12 +4531,13 @@ function renderSheet(){
  if(!charId()){el.innerHTML=`<div class="who"><h2>No character yet</h2></div><p class="empty">Roll a character to see their sheet here: abilities, hit points, armour class and level.</p>`;pk.innerHTML=`<div class="sectionhead"><h3 id="pack-h">Pack</h3></div><p class="empty">Your class kit, a healing potion and three random items go here when you set out.</p>`;return}
  const ch=cell(charId()),hp=sv("HP"),max=sv("MAXHP"),pct=Math.max(0,Math.min(100,hp/max*100)),w=weapon(),L=hereId()&&cell(hereId()),e=entitlement();
  const restBlocked=busy||foeId()||isDowned();
- el.innerHTML=`<div class="who"><span class="facebox">${faceSVG(ch.t,ch.cls,72)}</span><h2>${esc(ch.t)}</h2><span class="mono" style="font-size:13pt;color:var(--faint)">Level ${sv("LVL")} ${esc(ch.cls)}</span></div>
+ el.innerHTML=`<div class="who"><span class="facebox" title="A new portrait may become a small paid extra.">${faceSVG(ch.t,ch.cls,72,ch.faceSeed||0)}</span><h2>${esc(ch.t)}</h2><span class="mono" style="font-size:13pt;color:var(--faint)">Level ${sv("LVL")} ${esc(ch.cls)}</span></div>
  <button type="button" class="statfold" data-statfold aria-expanded="${statsOpen}" aria-controls="stat-details"><span class="lbl">Abilities</span><span class="sum mono">${statsOpen?"":`${hungerLevel()>=2?"starving · ":hungerLevel()>=1?"hungry · ":""}AC ${armourClass()} · XP ${sv("XP")}/${sv("LVL")*100} · ${sv("GP")} gp${STATS.some(k=>boonFor(k))?" · ✦ boon":""}`}</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6 8 10.5 12.5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <div class="statbody" id="stat-details"${statsOpen?"":" hidden"}>
  <div class="abil">${STATS.map(k=>`<div${boonFor(k)?` class="boon" title="Effect: ${boonFor(k)>0?"+":""}${boonFor(k)} until ${(ch.boons||[]).filter(b=>b.stat===k).map(b=>fmtClock(b.until)).join(", ")}"`:""}><span class="k">${k}${boonFor(k)?" ✦":""}</span><span class="v">${sv(k)}</span><span class="m">${sgn(mod(sv(k)))}</span></div>`).join("")}</div>
  <dl class="facts"><div><dt>Armour class</dt><dd>${armourClass()}</dd></div><div><dt>Proficiency</dt><dd>+${prof()}</dd></div><div><dt>Weapon</dt><dd>${w?esc(w.dmg||"1d6"):"1d2"}</dd></div><div><dt>Light</dt><dd>${hasLight()?"lantern":"none"}</dd></div><div><dt>XP</dt><dd>${sv("XP")} / ${sv("LVL")*100}</dd></div><div><dt>Gold</dt><dd>${sv("GP")} gp</dd></div></dl>
  <p class="note">${esc(CLASS_NOTES[ch.cls]||"")}</p>
+ <p class="note">Your portrait is drawn from your name. A fresh portrait may later become a small paid extra.</p>
  </div>
  <div class="btnrow"><button id="rest" ${restBlocked?"disabled":""} title="${L&&L.town?"Pay 2 gp for a room and sleep until dawn (or eight hours): full HP.":"Make camp: sleep until dawn at night, or eight hours by day, for half your HP."}">${L&&L.town?"Take a room at the inn · 2 gp":"Make camp"}</button>${foeId()?'<span class="note">Not while it is here.</span>':""}</div>
  ${hungerLevel()>=1?`<p class="flash${hungerLevel()>=2?" sharp":""}">${hungerLevel()>=2?"Starving: you lose 1 HP every six hours.":"Hungry: −1 STR, −1 CON, and you heal less when you rest."} Eat something.</p>`:""}

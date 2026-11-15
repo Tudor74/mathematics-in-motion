@@ -225,3 +225,6 @@ Check the version in the game source or live build before relying on these featu
 - **Coins** every 30–40 places: bronze, sometimes silver, never gold.
 - **Mushrooms**: real species, either plain food or with stat effects for up to 8 hours (always some up and some down: the real-world effect, made larger). Poisonous ones are labelled and need a second click to eat; none can kill.
 - No text smaller than 13pt. The map starts at 28 × 11 hexes.
+
+### Portraits (idea for paid extras)
+Each character's portrait is generated from their name: an asymmetric ink-brush drawing in black, white and greys, combining chibi proportions, a toy-brick head and Aztec ornament. The character cell can hold a `faceSeed`. Raising it draws a new face, so "a fresh portrait" could be offered as a small paid extra, through the intro page and not from inside the game.
