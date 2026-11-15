@@ -709,15 +709,15 @@ const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(M
    spend time: half an hour a step, eight hours a rest.
    ============================================================ */
 const CLOCK_RATE=4,TICK=30,STEP_MIN=30,REST_MIN=480;
-// By day the clock runs at 4× real time; at night much faster, so a whole night passes in ten real minutes.
-const NIGHT_RATE=60;
+// By day the clock runs at 4× real time; at night much faster, so a whole night passes in five real minutes.
+const NIGHT_RATE=120;
 /* Seasons: a year of 28 days, seven to each season. Days lengthen in summer and shorten in winter;
-   whatever its length, a night still passes in about ten real minutes. */
+   whatever its length, a night still passes in about five real minutes. */
 const YEAR_DAYS=28,SEASONS=["spring","summer","autumn","winter"];
 function seasonOf(t){const d=((Math.floor(t/1440)%YEAR_DAYS)+YEAR_DAYS)%YEAR_DAYS;return SEASONS[Math.floor(d/7)]}
 const DAWN={spring:6,summer:5,autumn:6.5,winter:7.5},DUSK={spring:20,summer:21.5,autumn:19,winter:17.5};
 const dawnH=t=>DAWN[seasonOf(t)],duskH=t=>DUSK[seasonOf(t)];
-const nightRate=t=>(24-duskH(t)+dawnH(t))*60/10;
+const nightRate=t=>(24-duskH(t)+dawnH(t))*60/5;
 function nightOrDayEdge(t){const h=((t%1440)+1440)%1440/60;return(h<dawnH(t)?dawnH(t)-h:h>=duskH(t)?24-h+DAWN[seasonOf(t+(24-h)*60)]:duskH(t)-h)*60}
 function advanceClock(t,ms){
  let left=ms;for(let guard=0;left>0&&guard<4000;guard++){
@@ -2722,7 +2722,7 @@ const RULES=[
  {title:"The ZigZag",text:"Every place, person, item and anomaly is a cell. Each cell has at most one neighbour in each direction of each dimension: east and west, north and south, up and down, and the hidden ones, the river's flow, a town's people, a store's contents. Walking is following a link."},
  {title:"The round world",text:`The world is ${2*WORLD_R+1} squares across and closes on itself. Walk ${WORLD_R+1} squares in any direction and you pass through the veil of golden mist to the far side. Its shape is a torus.`},
  {title:"Nothing before sight",text:"No place exists until you can see it. Each time you arrive, the squares you can see are written one step ahead of you, from where you stand, and are never written again."},
- {title:"Four times faster",text:`By day, time here runs ${CLOCK_RATE} times faster than yours; at night, ${NIGHT_RATE} times, so ten hours of darkness pass in ten of your minutes. A step costs half an hour. The magical bridge stands during about three hours in ten, chosen by the world's seed and the hour, not by chance at the moment.`},
+ {title:"Four times faster",text:`By day, time here runs ${CLOCK_RATE} times faster than yours; at night, ${NIGHT_RATE} times, so ten hours of darkness pass in five of your minutes. A step costs half an hour. The magical bridge stands during about three hours in ten, chosen by the world's seed and the hour, not by chance at the moment.`},
  {title:"Two hearts of weather",text:"The mountain stores storm energy each afternoon, E ← E + 0.06·sun − 0.03·E, and the desert breathes with the sun. Wind runs from the high to the low between them, and storms are born on the peak and die over the sand."},
  {title:"The lightning tithe",text:"Every half hour in the open, lightning takes one chance in two hundred and fifty, times the square of the storm's strength. On the peak it takes three times as many."},
  {title:"The law of affection",text:"Each half hour together, a tie moves w ← w + 0.08·(h − w) + 0.04·(friends in common). Apart, it fades: w ← 0.997·w. Like seeks like, and friends of friends drift closer."},
@@ -4069,7 +4069,7 @@ function renderClock(){
   $("seasonline").querySelector("i").style.left=`calc(${(yd/YEAR_DAYS*100).toFixed(2)}% - 1px)`;
   $("seasonline").title=`${seasonOf(t)}, day ${Math.floor(yd)%7+1} of 7`}
  p.setAttribute("aria-label",`${fmtClock(t)}, ${seasonOf(t)}, ${night?"night":"day"}`);p.setAttribute("role","timer");
- p.title=`The world clock runs at ${CLOCK_RATE}× real time by day and ${NIGHT_RATE}× at night, so a night lasts about ten real minutes. Each step takes half an hour.`;
+ p.title=`The world clock runs at ${CLOCK_RATE}× real time by day and ${NIGHT_RATE}× at night, so a night lasts about five real minutes. Each step takes half an hour.`;
  const H=hereId()&&cell(hereId()),w=H&&weatherAt(H.x,H.y,zOf(H),t);
  {const el=$("mapwx");if(!w){el.innerHTML=""}else{const ws=wxState(),night=isNight(t),k=w.short==="underground"?"under":/storm|blizzard/.test(w.short||"")?"storm":/snow/.test(w.short||"")?"snow":/rain|drizzle/.test(w.short||"")?"rain":/fog|mist/.test(w.short||"")?"fog":/cold/.test(w.short||"")?"cold":w.cloud>.6?"cloud":night?"night":"sun";
   const ang=ws&&ws.wind?Math.atan2(-ws.wind.y,ws.wind.x)*180/Math.PI:0,strong=w.wind>.9?"strong":w.wind>.4?"":"light";
