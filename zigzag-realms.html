@@ -72,6 +72,17 @@ header.top .sub{color:var(--faint);font-size:15px;margin:4px 0 0;max-width:62ch}
 .map .link{stroke:var(--ink);stroke-width:3;stroke-linecap:round;opacity:.55}
 .map .tile{stroke:var(--ink);stroke-opacity:.35;stroke-width:1;stroke-linejoin:round;cursor:pointer}
 .map .hexgrid{fill:none;stroke-linejoin:round}
+.zoomrow{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:-4px}
+.zoomrow button{min-width:40px;font-size:18px;line-height:1}.zoomrow span{font-size:12px;color:var(--faint);min-width:9em;text-align:center}
+.map .ghost.up{fill:var(--t-mountain);stroke:var(--ink);stroke-width:1;stroke-linejoin:round}
+.map .ghost.flank{fill:var(--t-mountain)}
+.map .ghost.down{fill:none;stroke:var(--ink);stroke-width:1.4;stroke-dasharray:4 3;stroke-linejoin:round}
+.layerbar{display:flex;align-items:center;justify-content:center;gap:3px}.layerbar .mono{font-size:11px;color:var(--faint);margin:0 4px}
+.layerbar .lv{width:14px;height:14px;border-radius:3px;background:var(--rule)}.layerbar .lv.up{background:var(--t-mountain)}.layerbar .lv.down{background:var(--t-cave)}
+.layerbar .lv.ground{background:var(--t-plains);outline:1px solid var(--faint)}.layerbar .lv.on{background:var(--accent);outline:2px solid var(--accent);outline-offset:1px}
+.map .layers .bg{fill:var(--sheet);stroke:var(--rule);opacity:.92}
+.map .layers .lv{fill:var(--rule)}.map .layers .lv.ground{fill:var(--faint)}.map .layers .lv.massif{fill:var(--t-mountain)}.map .layers .lv.on{fill:var(--accent)}
+.map .layers text{font-family:var(--mono);font-size:9px;fill:var(--faint)}
 .map .beacon .halo{filter:url(#beaconglow);opacity:.75}
 .map .beacon.sanctuary .halo{fill:var(--amber)}.map .beacon.cave .halo{fill:var(--magic)}
 .map .beacon .ring{fill:none;stroke-width:2.5;stroke-linejoin:round}
@@ -366,8 +377,10 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
    <section class="panel map" aria-labelledby="map-h">
     <div class="sectionhead"><h3 id="map-h">Survey map</h3><span class="mono" id="coords" style="font-size:12px;color:var(--faint)"></span></div>
     <svg id="map" viewBox="0 0 420 420" role="img" aria-label="Map of explored places on your current level"></svg>
+    <div class="zoomrow"><button class="small" id="zoom-out" type="button" aria-label="Zoom out">−</button><span class="mono" id="zoom-label">zoom</span><button class="small" id="zoom-in" type="button" aria-label="Zoom in">+</button></div>
+    <div class="layerbar" id="layerbar" role="img" aria-label="Layers"></div>
     <p class="legend"><span>▲ way up</span><span>▼ way down</span><span class="r">◆ anomaly</span><span class="p">● townsfolk</span><span style="color:var(--good)">● creatures</span><span class="m">┅ magical bridge</span><span style="color:var(--amber)">● sanctuary beacon</span><span class="m">● cave entrance</span></p>
-    <p class="mapnote">The map shows the level you are on. Faded squares are places you can see but have not visited. Click one next to you to go there, or any mapped square to walk back there. Lines show the ways that are open.</p>
+    <p class="mapnote">The map shows the layer you are on, one of fifteen from the deep caves to the peak. Faint stacked hexes are the mountain's higher layers; dashed outlines are places you have walked on other layers. Faded hexes are places you can see but have not visited. Click one next to you to go there, or any mapped square to walk back there. Lines show the ways that are open.</p>
    </section>
    <section class="panel" aria-labelledby="moves-h" data-fold="moves">
     <div class="sectionhead"><h3 id="moves-h">Directions</h3></div>
@@ -528,36 +541,18 @@ const REGION=[
  {x:-7,y:-5,n:"The Salt Pan",t:"desert",e:"nsew",g:"a dazzling salt pan",d:"A crust of salt crunches underfoot and dazzles the eye. Nothing lives here but a few black beetles."},
  {x:-8,y:-5,n:"Glass Waste",t:"desert",e:"nsew",g:"sand fused into green glass",d:"The sand here has been melted into sheets of green glass by some old, terrible heat. It rings faintly when the wind blows."},
  {x:-7,y:-6,n:"The Dry Well",t:"desert",e:"nsew",g:"a stone well-head in the sand",d:"A ring of carved stone marks a well that has been dry for a century. Old prayers are scratched into its lip.",p:{landmark:true}},
- {x:6,y:2,n:"Foothill Track",t:"plains",e:"nsew",g:"a track climbing into the foothills",d:"A track leaves the river country and climbs between gorse and grey boulders. The mountain rises ahead, its peak lost in cloud."},
- {x:7,y:2,n:"Goat Path",t:"mountain",e:"wne",g:"a narrow goat path up the slope",d:"A goat path zigzags up the slope. To the south the hillside drops away in a crag; a brook chatters to the east."},
- {x:7,y:3,n:"The Switchbacks",t:"mountain",e:"snwu",g:"the path turning back on itself up the mountain",d:"The path turns back and forth up a steep face. A cairn marks where it climbs on toward the high shoulder above; a stream comes down from the north, and an old mine lies west."},
- {x:6,y:3,n:"Old Mine Mouth",t:"mountain",e:"nsewd",g:"a timbered hole in the hillside",d:"Rotting timbers frame a tunnel into the mountain. Cold air breathes out of it, and a rusted rail runs down into the dark.",p:{landmark:true}},
- {x:7,y:4,n:"Tumbling Beck",t:"water",e:"ns",g:"a stream leaping down the rocks",d:"A mountain stream leaps from pool to pool between mossy rocks. You hop across on stepping stones, spray on your face."},
- {x:7,y:5,n:"The Falls",t:"water",e:"nsd",g:"a waterfall roaring down a cliff",d:"The stream pours off a cliff in a white curtain and thunders into a deep pool. Behind the falling water you glimpse a dark gap in the rock.",p:{falls:true,landmark:true}},
- {x:7,y:6,n:"Highmere Shore",t:"plains",e:"nsew",g:"a stony lakeshore",d:"Grey stones edge a cold mountain lake. The water is so still it holds the whole mountain upside down."},
- {x:7,y:7,n:"Highmere",t:"water",e:"",g:"Highmere, a deep mountain lake",d:"A deep, cold lake fed by the mountain streams.",p:{lake:true,landmark:true}},
- {x:8,y:7,n:"Highmere",t:"water",e:"",g:"Highmere, a deep mountain lake",d:"A deep, cold lake fed by the mountain streams.",p:{lake:true}},
- {x:8,y:2,n:"Southrun Brook",t:"water",e:"wse",g:"a brook running south off the mountain",d:"A quick brook runs south off the mountain over clean gravel. Watercress grows thick at its edges."},
- {x:8,y:1,n:"Southmere Shore",t:"plains",e:"nsew",g:"a reedy lakeshore",d:"Reeds and yellow iris fringe a broad lake where the brook spills in. Otter slides mark the mud."},
- {x:8,y:0,n:"Southmere",t:"water",e:"",g:"Southmere, a wide reedy lake",d:"A wide lake fed by the southern brook.",p:{lake:true,landmark:true}},
- {x:9,y:0,n:"Southmere",t:"water",e:"",g:"Southmere, a wide reedy lake",d:"A wide lake fed by the southern brook.",p:{lake:true}},
- {x:7,y:3,z:1,n:"The High Shoulder",t:"mountain",e:"de",g:"a windswept shoulder of the mountain",d:"You stand on a bare shoulder of rock high above the river country. The path runs east along a knife-edge toward a saddle."},
- {x:8,y:3,z:1,n:"The Saddle",t:"mountain",e:"wu",g:"a saddle between two crags",d:"A grassy saddle sits between two crags. From here a last steep scramble leads up to the summit."},
- {x:8,y:3,z:2,n:"The Peak",t:"mountain",e:"d",g:"the summit",d:"The summit is a crown of shattered rock. The whole land lies below: the river and its towns, two lakes like dropped coins, the dark wood in the west and, far to the south-west, the white glare of the desert.",p:{landmark:true}},
- {x:7,y:5,z:-1,n:"Behind the Falls",t:"cave",e:"us",g:"a cave behind a curtain of water",d:"The roar of the falls fills a wet cave behind the water. Light comes through the curtain in shifting green. A passage leads south into the mountain."},
- {x:7,y:4,z:-1,n:"Dripping Gallery",t:"cave",e:"nse",g:"a long gallery hung with dripstone",d:"Stalactites drip into still pools along a high gallery. The passage branches east and runs on south."},
- {x:7,y:3,z:-1,n:"The Great Cavern",t:"cave",e:"nwde",g:"a vast echoing cavern",d:"Your light cannot find the roof of this cavern. A shaft drops away into blackness, and you can hear water far below."},
- {x:8,y:4,z:-1,n:"Crystal Grotto",t:"cave",e:"ws",g:"a glitter of crystals",d:"Crystals as long as spears jut from every wall, catching your light and throwing it back in a thousand colours."},
- {x:8,y:3,z:-1,n:"The Bone Chamber",t:"cave",e:"nw",g:"a low chamber full of bones",d:"Small bones carpet the floor of a low chamber, gnawed and sorted into neat piles by something that likes order."},
- {x:6,y:3,z:-1,n:"Collapsed Adit",t:"dungeon",e:"eu",g:"an old mine tunnel, half fallen",d:"Old miners' props sag under the weight of the mountain. Rails lead up toward daylight and east into natural caves."},
- {x:7,y:3,z:-2,n:"The Underlake",t:"cave",e:"u",g:"black water under the mountain",d:"A lake lies under the mountain, black and perfectly still. Pale, eyeless fish turn slowly in your light.",p:{landmark:true}}
+ {x:6,y:4,n:"Foothill Track",t:"plains",e:"nsew",g:"a track climbing toward the mountain",d:"A track leaves the river country and climbs between gorse and grey boulders toward the mountain. Its peak is lost in cloud, seven ledges above you."},
+ {x:7,y:7,n:"Highmere",t:"water",e:"",g:"Highmere, a deep mountain lake",d:"A deep, cold lake at the mountain's foot, fed by the falls.",p:{lake:true,landmark:true}},
+ {x:8,y:7,n:"Highmere",t:"water",e:"",g:"Highmere, a deep mountain lake",d:"A deep, cold lake at the mountain's foot, fed by the falls.",p:{lake:true}},
+ {x:10,y:0,n:"Southmere",t:"water",e:"",g:"Southmere, a wide reedy lake",d:"A wide lake below the mountain's southern flank.",p:{lake:true,landmark:true}},
+ {x:11,y:0,n:"Southmere",t:"water",e:"",g:"Southmere, a wide reedy lake",d:"A wide lake below the mountain's southern flank.",p:{lake:true}}
 ];
 const CREATURES=[
  {name:"Old Bramble",species:"badger",at:[-2,2],r:3,active:"night",wary:.5,desc:"a grizzled badger with a torn ear",doing:"snuffling for grubs"},
  {name:"The White Hart",species:"deer",at:[-3,2],r:4,active:"day",wary:.8,desc:"a white stag with silver-tipped antlers",doing:"grazing"},
- {name:"Slip",species:"otter",at:[7,1],r:3,active:"day",wary:.25,desc:"a sleek, inquisitive otter",doing:"playing in the shallows"},
- {name:"Tumble",species:"otter",at:[8,1],r:3,active:"day",wary:.3,desc:"a young otter that never stops moving",doing:"rolling in the reeds"},
- {name:"Grey Wing",species:"heron",at:[7,6],r:3,active:"day",wary:.6,desc:"a tall grey heron with a patient eye",doing:"fishing, motionless"},
+ {name:"Slip",species:"otter",at:[9,0],r:3,active:"day",wary:.25,desc:"a sleek, inquisitive otter",doing:"playing in the shallows"},
+ {name:"Tumble",species:"otter",at:[12,0],r:3,active:"day",wary:.3,desc:"a young otter that never stops moving",doing:"rolling in the reeds"},
+ {name:"Grey Wing",species:"heron",at:[7,8],r:3,active:"day",wary:.6,desc:"a tall grey heron with a patient eye",doing:"fishing, motionless"},
  {name:"Corvin",species:"raven",at:[6,2],r:8,active:"day",wary:.15,desc:"a raven who repeats words he has overheard",doing:"watching everything"},
  {name:"Pip",species:"pony",at:[6,1],r:4,active:"day",wary:.35,desc:"a shaggy hill pony",doing:"cropping the turf"},
  {name:"Lume",species:"wisp",at:[-4,2],r:2,active:"night",wary:.4,desc:"a drifting mote of blue light that hums",doing:"drifting between the trees"},
@@ -643,7 +638,7 @@ const hitDie=()=>CLASSES[cell(charId()).cls]?.hd||8;
 const prof=()=>2+Math.floor((sv("LVL")-1)/4);
 function weapon(){const ws=packIds().map(cell).filter(i=>i.kind==="weapon");return ws.find(i=>i.wielded)||ws[0]||null}
 const zOf=c=>c.z||0;
-const towns=()=>Object.values(zz.cells).filter(c=>c.k==="loc"&&c.town);
+const towns=()=>Object.values(zz.cells).filter(c=>c.k==="loc"&&c.town&&!c.town.of);
 const npcs=()=>Object.values(zz.cells).filter(c=>c.k==="npc");
 const npcsAt=(x,y)=>npcs().filter(n=>n.x===x&&n.y===y);
 const hasLight=()=>!!charId()&&(packIds().some(id=>cell(id).light)||(typeof hasCompanion==="function"&&hasCompanion("wisp")));
@@ -665,7 +660,7 @@ function blockedBy(here,dir){
  const id=coord.get(ck(H.x+v.dx,H.y+v.dy,zOf(H)+v.dz)),T=id&&cell(id);
  if(T){
   const rb=riverBlock(id);if(rb)return rb;
-  if(seasonOf(gameNow())==="winter"&&zOf(T)>=1&&T.terrain==="mountain"&&!T.visited)return"Snow has closed the high path. It will open again in spring.";
+  if(seasonOf(gameNow())==="winter"&&zOf(T)>=3&&T.terrain==="mountain"&&!T.visited)return"Snow has closed the high path. It will open again in spring.";
   if(T.lake)return`${T.t} is deep, cold water. You can walk its shore but not cross it.`;
   if(T.exits&&T.exits[OPP[dir]]===false)return`You cannot get through that way: ${wallText(T,OPP[dir])}.`;
   const fire=fireAt(T.x,T.y,zOf(T));if(fire)return`${T.t} is on fire. Wait for it to burn out or for rain.`;
@@ -1019,6 +1014,7 @@ function missingDirs(locId){
   if(L.exits?L.exits[d]===false:!!v.dz)continue;
   if(L.river&&!L.river.crossing||L.lake||L.hole)continue;
   const pos={x:wrapC(L.x+v.dx),y:wrapC(L.y+v.dy),z:zOf(L)+v.dz};pos.dist=Math.abs(pos.x)+Math.abs(pos.y)+Math.abs(pos.z);
+  if(Math.abs(pos.z)>ZMAX)continue;
   if(Math.max(Math.abs(pos.x),Math.abs(pos.y))>exploreRange())continue;
   const id=coord.get(ck(pos.x,pos.y,pos.z));
   if(!id)out.push({dir:d,pos});
@@ -1027,7 +1023,7 @@ function missingDirs(locId){
  return out;
 }
 function landmarksFrom(L){
- const marks=Object.values(zz.cells).filter(c=>c.k==="loc"&&(c.landmark||c.town||(c.river&&(c.river.crossing||c.river.index===0||c.hole))));
+ const marks=Object.values(zz.cells).filter(c=>c.k==="loc"&&(c.landmark||(c.town&&!c.town.of)||(c.river&&(c.river.crossing||c.river.index===0||c.hole))));
  const seen=new Set();
  return marks.filter(c=>{if(seen.has(c.t))return false;seen.add(c.t);return true}).map(c=>{
   const dx=wrapC(c.x-L.x),dy=wrapC(c.y-L.y),dz=zOf(c)-zOf(L);
@@ -1097,6 +1093,111 @@ async function ensureNeighbours(locId){
 /* ============================================================
    The river, its towns and crossings, laid out once per world
    ============================================================ */
+/* ============================================================
+   Layers. The world has fifteen: the ground (0), seven above it (the mountain, up to its single
+   peak at +7) and seven below (caves and dungeons, down to −7). Places are still kept on a square
+   grid; the map draws them as hexagons in staggered columns, and hex distance follows that drawing.
+   ============================================================ */
+const ZMAX=7,MOUNTAIN_C={x:10,y:4},MOUNT_R=[3,3,2,2,1,1,1,0];
+const hexCube=(x,y)=>{const q=x,r=-y-((x-(x&1))/2);return[q,r,-q-r]};
+const hexDist=(a,b,c,d)=>{const A=hexCube(a,b),B=hexCube(c,d);return(Math.abs(A[0]-B[0])+Math.abs(A[1]-B[1])+Math.abs(A[2]-B[2]))/2};
+const hexNb=(x,y)=>{const a=((x%2)+2)%2===0?1:-1;return[[x,y+1],[x,y-1],[x+1,y],[x-1,y],[x+1,y+a],[x-1,y+a]]};
+const inMountain=(x,y,z=0)=>z>=0&&z<=ZMAX&&hexDist(x,y,MOUNTAIN_C.x,MOUNTAIN_C.y)<=MOUNT_R[z];
+const MOUNT_BANDS=[
+ {top:1,names:["Gorse Slope","Scree Fan","Boulder Field","Shepherd's Hut","Juniper Bank","Rowan Gully","Sheep Fold","Tumbled Wall","Heather Rise","Stone Stile","Bracken Shelf","Lynchet Steps"],
+  lines:["Gorse and heather give way to grey stone, and the land tilts up toward the mountain.","Sheep tracks wind between boulders furred with lichen. The wind smells of snow, even now.","A tumbled drystone wall climbs the slope and gives up halfway.","Rowan trees cling to a gully where a stream chatters down over stones."]},
+ {top:3,names:["Crag Ledge","Windy Shelf","Ravens' Rock","Bare Slabs","Lichen Steps","Cairn Ridge","Eagle Crag","Corrie Lip"],
+  lines:["Bare rock slabs, cold to the touch, step up toward the higher crags. The valley is a green map below.","A narrow ledge runs along a cliff face. Ravens tumble in the wind beneath your feet.","A cairn of piled stones marks the way across a ridge of broken rock.","The lip of a corrie holds a black tarn, perfectly still, ringed with old snow."]},
+ {top:6,names:["Snow Bowl","Knife Edge","Ice Chimney","Frost Shelf","Cloud Ledge","The Teeth","Rime Wall"],
+  lines:["Wind-packed snow fills a bowl between the crags. Every step crunches and sinks.","The ridge narrows to a knife edge, with cloud boiling up on either side.","Ice glazes the rock. Your breath hangs in front of you, and the air is thin.","Rime feathers every stone on this shelf, grown sideways by the wind."]}];
+function buildMountain(){
+ const C=MOUNTAIN_C,specials={
+  "7,4,0":{n:"Old Mine Mouth",d:"Rotting timbers frame a tunnel into the mountain's western flank. Cold air breathes out of it, and a rusted rail runs down into the dark.",down:true,p:{landmark:true}},
+  "8,6,0":{n:"The Falls",t:"water",d:"A mountain stream pours off a cliff in a white curtain into Highmere below. Behind the falling water you glimpse a dark gap in the rock.",down:true,p:{falls:true,landmark:true}},
+  "9,4,3":{n:"The High Shoulder",d:"You stand on a bare shoulder of rock, three ledges above the river country. Far below, the river glints between its towns."},
+  "10,3,5":{n:"The Saddle",d:"A grassy saddle sits between two crags, absurdly green this high up. A last steep scramble leads on toward the summit."},
+  [`${C.x},${C.y},${ZMAX}`]:{n:"The Peak",d:"The summit is a crown of shattered rock, seven ledges above the land. The whole world lies below: the river and its towns, the lakes like dropped coins, the dark wood in the west and, far to the south-west, the white glare of the desert.",p:{landmark:true}}};
+ for(let z=0;z<=ZMAX;z++)for(let x=C.x-3;x<=C.x+3;x++)for(let y=C.y-4;y<=C.y+4;y++){
+  if(!inMountain(x,y,z)||coord.get(ck(x,y,z)))continue;
+  const sp=specials[`${x},${y},${z}`],band=MOUNT_BANDS.find(b=>z<=b.top)||MOUNT_BANDS[2];
+  const ex={north:true,south:true,east:true,west:true,up:inMountain(x,y,z+1),down:z>0||!!(sp&&sp.down)};
+  const name=sp?sp.n:pick(band.names),desc=sp?sp.d:pick(band.lines)+(z===ZMAX?"":ex.up?" The mountain climbs on above you.":" Above you there is only sky.");
+  const id=createLocation({name,desc,terrain:sp&&sp.t||"mountain",items:[],hazard:z>=2&&!sp&&Math.random()<.22?{name:"Loose scree",text:"The stones shift under your boots.",stat:"DEX",dc:9+z,damage:"1d6"}:null,monster:null,by:"tables",exits:ex,glimpse:z?`${name}, ${z} ${z===1?"ledge":"ledges"} up the mountain`:`${name}, at the mountain's foot`},{x,y,z,dist:Math.abs(x)+Math.abs(y)+z});
+  Object.assign(cell(id),{planned:true,written:false,seen:false,massif:true},sp&&sp.p||{});
+ }
+ const peak=coord.get(ck(C.x,C.y,ZMAX));if(peak)appendTo(peak,"contain",itemCell(normItem({name:"Eagle's-eye stone",description:"A smooth stone left on the summit cairn by some earlier climber.",kind:"treasure",weight:0.2,value:25})));
+ // Under the mountain the caves go all the way down, from the old mine to the root of the mountain
+ digCaves(7,4,-1,-ZMAX,{within:(x,y)=>hexDist(x,y,C.x,C.y)<=4,deepName:"The Root of the Mountain",prize:true});
+ digCaves(8,6,-1,-1,{firstName:"Behind the Falls",within:(x,y)=>hexDist(x,y,C.x,C.y)<=4});
+}
+const CAVE_NAMES={shallow:["Dripping Gallery","Bat Roost","Narrow Crawl","Echo Hall","Fern Grotto","Badger Sett Cave","Chalk Chamber"],mid:["Crystal Grotto","The Bone Chamber","Fungus Garden","Blind Fish Pool","Chalk Stair","Hall of Pillars","The Underlake"],deep:["The Black Stair","Ember Vent","The Drowned Hall","Whispering Chasm","The Old Workings","Glass Cave","The Long Dark"]};
+const DUNGEON_NAMES={shallow:["Guardroom","Store Cellar","Wine Vault","Well Chamber"],mid:["The Cells","Ossuary","Torturer's Room","Flooded Passage"],deep:["The Oubliette","The Black Chapel","Forgotten Crypt"]};
+function placeAnomaly(locId,depth,strong){
+ if(foeId(locId))return;const tier=Math.min(3,strong?3:1+Math.floor(depth/3));
+ const opts=ANOMALIES.filter(m=>m.tier<=tier&&(!strong||m.tier>=2));const a=pick(opts.length?opts:ANOMALIES);if(!a)return;
+ const mid=newCell("monster",{t:a.name,designation:a.designation,objectClass:a.objectClass,desc:a.description,hp:a.hp,maxhp:a.hp,ac:a.ac,atk:a.attack,dmg:a.damage,special:a.special,born:gameNow(),roam:false,spread:false});
+ connect(locId,"occupant",mid);if(Math.random()<.6)appendTo(mid,"contain",itemCell(normItem({name:"Uncut gemstone",description:"Heavy and cloudy, but it catches the light.",kind:"treasure",weight:0.2,value:30+depth*5})));
+}
+/* Caves and dungeons: on each level a short winding passage; its last chamber has a shaft down to the
+   next level, which starts directly beneath. Exits open only along the passage. */
+function digCaves(x,y,top,bottom,o={}){
+ const names=o.names||CAVE_NAMES,terrain=o.terrain||"cave",T=TABLES[terrain]||TABLES.cave,made=[];let end=null;
+ for(let z=top;z>=bottom;z--){
+  if(coord.get(ck(x,y,z)))break;
+  const depth=-z,band=depth<=2?names.shallow:depth<=4?names.mid:names.deep,path=[[x,y]],len=2+rnd(3);
+  for(let i=0;i<len;i++){const [cx,cy]=path[path.length-1];
+   const opts=shuffle(FLAT).map(d=>[cx+DIRS[d].dx,cy+DIRS[d].dy]).filter(([nx,ny])=>!coord.get(ck(nx,ny,z))&&!path.some(([px,py])=>px===nx&&py===ny)&&(!o.within||o.within(nx,ny)));
+   if(!opts.length)break;path.push(opts[0])}
+  // A side chamber, sometimes
+  let side=null;if(path.length>2&&Math.random()<.45){const [mx,my]=path[1+Math.floor(Math.random()*(path.length-2))];
+   const so=shuffle(FLAT).map(d=>[mx+DIRS[d].dx,my+DIRS[d].dy]).filter(([nx,ny])=>!coord.get(ck(nx,ny,z))&&!path.some(([px,py])=>px===nx&&py===ny));if(so.length)side={from:[mx,my],at:so[0]}}
+  const cellsHere=path.map(p=>p).concat(side?[side.at]:[]),ids=[];
+  cellsHere.forEach(([px,py],i)=>{
+   const isSide=side&&i===cellsHere.length-1,last=!isSide&&i===path.length-1;
+   const ex={north:false,south:false,east:false,west:false,up:i===0,down:last&&z>bottom};
+   const linked=isSide?[side.from]:[path[i-1],path[i+1]].filter(Boolean).concat(side&&side.from[0]===px&&side.from[1]===py?[side.at]:[]);
+   for(const [qx,qy] of linked){const d=FLAT.find(d=>DIRS[d].dx===qx-px&&DIRS[d].dy===qy-py);if(d)ex[d]=true}
+   const nm=i===0&&z===top&&o.firstName?o.firstName:last&&z===bottom&&o.deepName?o.deepName:pick(band);
+   const desc=pick(T.lines)+(ex.down?" A shaft drops away into deeper dark.":"")+(ex.up?" A way leads back up.":"");
+   const id=createLocation({name:nm,desc,terrain,items:[],hazard:null,monster:null,by:"tables",exits:ex,glimpse:`${nm}, ${depth} ${depth===1?"level":"levels"} down`},{x:px,y:py,z,dist:Math.abs(px)+Math.abs(py)+depth*2});
+   Object.assign(cell(id),{planned:true,written:false,seen:false,cavern:true});ids.push(id);made.push(id);if(last)end=id;
+  });
+  if(Math.random()<.25+depth*.07)placeAnomaly(pick(ids.length>1?ids.slice(1):ids),depth);
+  if(Math.random()<.4)appendTo(pick(ids),"contain",itemCell(normItem(asItem(pick(LOOT.cave.concat(LOOT.dungeon||[]))))));
+  [x,y]=path[path.length-1];
+ }
+ // The prize waits in the last chamber of the deepest level dug
+ if(end&&o.prize){placeAnomaly(end,-bottom,true);appendTo(end,"contain",magicItem(pick(MAGIC_ITEMS),false))}
+ return made;
+}
+function freeSpot(minR,maxR,pad=1){
+ for(let t=0;t<5000;t++){const x=pick([-1,1])*rnd(maxR),y=pick([-1,1])*rnd(maxR);if(Math.max(Math.abs(x),Math.abs(y))<minR)continue;
+  let ok=true;for(let dx=-pad;dx<=pad&&ok;dx++)for(let dy=-pad;dy<=pad;dy++)if(coord.get(ck(x+dx,y+dy,0))){ok=false;break}
+  if(ok&&hexDist(x,y,MOUNTAIN_C.x,MOUNTAIN_C.y)>5)return[x,y]}
+ return null;
+}
+const CASTLE_NAMES=["Castle Morrow","Greyholt Keep","Ravensgarth","Castle Ashcombe","Wyvernhold","Blackstone Keep"];
+const CASTLE_DESC=["A square keep of dark stone stands inside a broken curtain wall. Rooks wheel about its towers, and a stair inside the gate leads both up and down.","An old castle squats on a rise, its moat long dry and full of nettles. The gate stands open; somewhere below, water drips."];
+function placeCastles(){
+ const names=shuffle(CASTLE_NAMES);
+ for(let i=0;i<2;i++){const s=freeSpot(6,BILLING.freeRange,1);if(!s)continue;const [x,y]=s,nm=names[i];
+  const keep=createLocation({name:nm,desc:pick(CASTLE_DESC),terrain:"ruin",items:[],hazard:null,monster:null,by:"tables",exits:{north:true,south:true,east:true,west:true,up:true,down:true},glimpse:`the towers of ${nm}`},{x,y,z:0,dist:Math.abs(x)+Math.abs(y)});
+  Object.assign(cell(keep),{planned:true,written:false,seen:false,landmark:true,castle:true});
+  const wall=createLocation({name:`Battlements of ${nm}`,desc:"Crenellated walls run around the keep's roof. The country spreads out on every side, and a narrow stair climbs the corner tower.",terrain:"ruin",items:[],hazard:null,monster:null,by:"tables",exits:{north:false,south:false,east:false,west:false,up:true,down:true},glimpse:`the battlements of ${nm}`},{x,y,z:1,dist:Math.abs(x)+Math.abs(y)+1});
+  Object.assign(cell(wall),{planned:true,written:false,seen:false,castle:true});
+  const tower=createLocation({name:`The High Tower of ${nm}`,desc:"The top of the tallest tower: a round room open to the wind, with a rusted brazier and a view across half the world.",terrain:"ruin",items:[],hazard:null,monster:null,by:"tables",exits:{north:false,south:false,east:false,west:false,up:false,down:true},glimpse:`the high tower of ${nm}`},{x,y,z:2,dist:Math.abs(x)+Math.abs(y)+2});
+  Object.assign(cell(tower),{planned:true,written:false,seen:false,castle:true});
+  digCaves(x,y,-1,-(2+rnd(3)),{terrain:"dungeon",names:DUNGEON_NAMES,deepName:"The Sealed Vault",prize:true});
+ }
+}
+function placeCaveMouths(){
+ const names=shuffle(["Sinkhole","The Hollow Hill","Swallow Hole","Barrow Mouth","The Fox Earth","Kettle Cave"]);
+ for(let i=0;i<3;i++){const s=freeSpot(4,BILLING.freeRange+4,1);if(!s)continue;const [x,y]=s;
+  const id=createLocation({name:names[i],desc:"The ground falls away into a dark mouth in the earth, ringed with ferns. Cold air rises from it, and the stones at the lip are worn smooth by feet.",terrain:"plains",items:[],hazard:null,monster:null,by:"tables",exits:{north:true,south:true,east:true,west:true,up:false,down:true},glimpse:`${names[i]}, a way down into the earth`},{x,y,z:0,dist:Math.abs(x)+Math.abs(y)});
+  Object.assign(cell(id),{planned:true,written:false,seen:false,landmark:true,cavemouth:true});
+  digCaves(x,y,-1,-(2+rnd(4)),{prize:Math.random()<.5});
+ }
+}
 function planRiver(){
  // The river rises at the foot of the mountain beside Highmere, runs west to the lowland, then meanders south.
  const cells=[[6,7],[5,7],[4,7]];let x=4,y=7,side=0;
@@ -1114,17 +1215,29 @@ function planRiver(){
   const opts=[];for(let i=a;i<=b;i++)opts.push(i);
   crossings[pick(opts.filter(straight).length?opts.filter(straight):opts)]=types[k];
  });
- // Towns: one in each of three stretches, on a bank, sizes in random order
+ // Towns: one in each of three stretches, on a bank, sizes in random order. A large town covers seven
+ // hexes (a centre and its six neighbours), a village three, a hamlet one.
  const sizes=shuffle(["small","medium","large"]),townList=[],taken=new Set(["0,0"]);
- const SIDES=[[1,0,"east"],[-1,0,"west"],[0,1,"north"],[0,-1,"south"]];
+ const SIDES=[[1,0,"east"],[-1,0,"west"],[0,1,"north"],[0,-1,"south"]],NEED={small:0,medium:2,large:6};
+ const free=(x,y)=>!isRiver(x,y)&&!taken.has(x+","+y)&&!regionAt.has(x+","+y)&&!inMountain(x,y)&&!(x===0&&y===0);
  [[2,5],[8,11],[13,16]].forEach(([a,b],k)=>{
-  const tries=shuffle(Array.from({length:b-a+1},(_,j)=>a+j));
-  for(const i of tries){
-   if(crossings[i])continue;
-   const [cx,cy]=cells[i];let placed=false;
-   for(const [sx,sy,side] of shuffle(SIDES)){const bx=cx+sx,by=cy+sy,key=bx+","+by;
-    if(isRiver(bx,by)||taken.has(key)||regionAt.has(key)||townList.some(t=>Math.abs(t.x-bx)+Math.abs(t.y-by)<3))continue;
-    townList.push({seg:i,x:bx,y:by,size:sizes[k],side});taken.add(key);placed=true;break}
+  const size=sizes[k];
+  for(const strict of [true,false]){
+   let placed=false;
+   const tries=shuffle(Array.from({length:b-a+1},(_,j)=>a+j));
+   for(const i of tries){
+    if(crossings[i])continue;
+    const [cx,cy]=cells[i];
+    for(const [sx,sy,side] of shuffle(SIDES)){
+     // A large town stands one step back from the bank so that all six of its outer hexes are dry land
+     const back=size==="large"&&strict?2:1,bx=cx+sx*back,by=cy+sy*back;
+     if(!free(bx,by)||townList.some(t=>Math.abs(t.x-bx)+Math.abs(t.y-by)<4))continue;
+     const room=hexNb(bx,by).filter(([x,y])=>free(x,y));
+     if(strict&&room.length<NEED[size])continue;
+     const parts=size==="large"?room:shuffle(room).slice(0,NEED[size]);
+     townList.push({seg:i,x:bx,y:by,size,side,parts});taken.add(bx+","+by);for(const [x,y] of parts)taken.add(x+","+y);placed=true;break}
+    if(placed)break;
+   }
    if(placed)break;
   }
  });
@@ -1196,6 +1309,12 @@ function buildRiverWorld(plan,w){
   const id=createLocation({name:w.towns[i].name,desc:w.towns[i].description,terrain:"village",items:[],hazard:null,monster:null,by:w.by},{x:t.x,y:t.y,z:0,dist:Math.abs(t.x)+Math.abs(t.y)});
   Object.assign(cell(id),{town:{size:t.size,side:t.side},seen:false});
   for(let k=0;k<TOWN_SIZES[t.size].folk;k++){const p=npcList.shift();if(p)appendTo(id,"residents",makeNpc(p,id,t))}
+  // The rest of the town's hexes: streets, a market, a quay
+  const PARTS={large:["Market Square","Gatehouse","Quay","Chapel Row","Tanners' Lane","Inn Yard"],medium:["Green","Mill Lane"]};
+  const PDESC={"Market Square":"Stalls crowd a cobbled square under striped awnings, loud with criers.","Gatehouse":"A squat gatehouse guards the road in, its portcullis rusted open.","Quay":"Barges tie up at a stone quay, and gulls squabble over the fish market.","Chapel Row":"A row of narrow houses leans toward a small chapel with a bell in a wooden cote.","Tanners' Lane":"The lane reeks of the tanneries; hides hang from every beam.","Inn Yard":"A busy inn yard full of carts, ostlers and steaming horses.","Green":"A village green with a pond, geese, and a maypole leaning a little.","Mill Lane":"A lane runs down to a mill whose wheel turns slowly in the race."};
+  (t.parts||[]).forEach(([px,py],k)=>{const nm=(PARTS[t.size]||[])[k]||"Lane";
+   const pid=createLocation({name:`${w.towns[i].name} ${nm}`,desc:`${PDESC[nm]||"A lane between close-built houses."} This is part of ${w.towns[i].name}.`,terrain:"village",items:[],hazard:null,monster:null,by:w.by},{x:px,y:py,z:0,dist:Math.abs(px)+Math.abs(py)});
+   Object.assign(cell(pid),{town:{size:t.size,side:t.side,of:id},seen:false})});
   for(const row of SHOP_STOCK[t.size]){const iid=itemCell(normItem(asItem(row)));cell(iid).forSale=true;appendTo(id,"contain",iid)}
   // Maps: about one in five is wrong somewhere
   for(const key of shuffle(Object.keys(MAP_TARGETS)).slice(0,{small:0,medium:2,large:3}[t.size])){const iid=itemCell(normItem({name:`Map of ${MAP_TARGETS[key].label}`,description:"Hand-drawn, a little smudged.",kind:"tool",weight:.1,value:8+rnd(10)}));Object.assign(cell(iid),{forSale:true,mapOf:key,wrong:Math.random()<.2});appendTo(id,"contain",iid)}
@@ -1213,7 +1332,7 @@ function buildRegion(){
   const mid=newCell("monster",{t:a.name,designation:a.designation,objectClass:a.objectClass,desc:a.description,hp:a.hp,maxhp:a.hp,ac:a.ac,atk:a.attack,dmg:a.damage,special:a.special});connect(id,"occupant",mid);
   appendTo(mid,"contain",itemCell(normItem({name:"Uncut gemstone",description:"Heavy and cloudy, but it catches the light.",kind:"treasure",weight:0.2,value:40})))}
  const grotto=coord.get(ck(8,4,-1));if(grotto)appendTo(grotto,"contain",itemCell(normItem({name:"Spear of crystal",description:"Snapped from the grotto wall, keen and light.",kind:"weapon",weight:2,value:30,damage:"1d8"})));
- const peak=coord.get(ck(8,3,2));if(peak)appendTo(peak,"contain",itemCell(normItem({name:"Eagle's-eye stone",description:"A smooth stone left on the summit cairn by some earlier climber.",kind:"treasure",weight:0.2,value:25})));
+
  for(const c of CREATURES){
   newCell("npc",{t:c.name,wild:true,species:c.species,desc:c.desc,doing:c.doing,den:{x:c.at[0],y:c.at[1]},radius:c.r,active:c.active,wary:c.wary,
    x:c.at[0],y:c.at[1],hp:6,maxhp:6,ac:12,atk:0,courage:.1,food:0,gold:0,activity:c.doing,memory:[],fear:null,ties:{}});
@@ -1452,7 +1571,7 @@ function passTime(min){const r=cell("root");if(!r)return;r.clock={base:gameNow()
    creatures and you, and can set mapped woodland alight. Fire spreads downwind through
    woodland, burns out after a few hours, and rain puts it out.
    ============================================================ */
-const MOUNTAIN={x:8,y:4},DESERT={x:-7,y:-5};
+const MOUNTAIN={x:10,y:4},DESERT={x:-7,y:-5};
 const diurnal=t=>Math.sin((hourOf(t)-9)/24*2*Math.PI);
 function wxState(){const r=cell("root");if(!r)return null;if(!r.wx)r.wx={E:.25,wind:{x:0,y:0},storm:null,fires:{}};return r.wx}
 const fireAt=(x,y,z)=>{const w=wxState();return!!(w&&!z&&w.fires[x+","+y])};
@@ -1462,12 +1581,12 @@ function weatherAt(x,y,z,t=gameNow()){
  const w=wxState();if(!w)return null;const d=diurnal(t);
  if(z<0)return{temp:10,rain:0,storm:0,cloud:0,wind:0,label:"still, cool underground air",short:"underground"};
  const dm=Math.hypot(x-MOUNTAIN.x,y-MOUNTAIN.y),dd=Math.hypot(x-DESERT.x,y-DESERT.y),mI=Math.exp(-dm/5),dI=Math.exp(-dd/5);
- const temp=Math.round(12+6*d+dI*(8+14*d)-mI*5-z*4+{spring:0,summer:6,autumn:-3,winter:-10}[seasonOf(t)]);
+ const temp=Math.round(12+6*d+dI*(8+14*d)-mI*5-z*2.5+{spring:0,summer:6,autumn:-3,winter:-10}[seasonOf(t)]);
  const hum=Math.max(0,Math.min(1,.45+.4*mI-.6*dI+.1*(1-d)));
  let storm=0;if(w.storm){const s=w.storm,ds=Math.hypot(x-s.x,y-s.y);storm=s.power*Math.exp(-(ds*ds)/(2*s.r*s.r))}
  const cloud=Math.max(0,Math.min(1,hum*.7+storm+mI*w.E*.5-dI*.4));
  const rain=Math.max(0,Math.min(1,(cloud-.6)*2+storm));
- const wind=Math.hypot(w.wind.x,w.wind.y)+mI*.3+storm*.8+Math.max(0,z)*.4;
+ const wind=Math.hypot(w.wind.x,w.wind.y)+mI*.3+storm*.8+Math.max(0,z)*.2;
  const night=isNight(t);
  let short;
  if(storm>.45)short=temp<=0?"blizzard":"thunderstorm";else if(rain>.15&&temp<=1)short=rain>.5?"heavy snow":"snow";else if(rain>.5)short="heavy rain";else if(rain>.15)short="drizzle";
@@ -1587,7 +1706,7 @@ function enter(locId,first){
  if(mp.on())mpSoon();
  const ch=charId(),prev=hereId();if(prev&&prev!==locId){cell(ch).prevAt=prev;touch(ch)}
  connect(ch,"at",locId);const L=cell(locId);lastHazard=null;rounds=[];
- if(!L.visited){L.visited=true;touch(locId);gainXP(L.town?25:10);if(L.town)log(`You reach ${L.t}, a ${TOWN_SIZES[L.town.size].label} on the ${riverName()}.`,"good")}
+ if(!L.visited){L.visited=true;touch(locId);gainXP(L.town&&!L.town.of?25:10);if(L.town&&!L.town.of)log(`You reach ${L.t}, a ${TOWN_SIZES[L.town.size].label} on the ${riverName()}.`,"good")}
  markSeen(locId);ravenScout(locId);checkRumour(locId);checkMarks(L);
  if(first&&!L.town)foxFind(locId);
  if(L.town)stockMagic(locId);
@@ -1691,6 +1810,7 @@ function secondWind(){
 /* Movement */
 // Exploration range: free explorers can go a set number of squares from the start; supporters further (see BILLING)
 function rangeBlock(H,v){
+ if(Math.abs(zOf(H)+(v.dz||0))>ZMAX)return v.dz>0?"There is nothing above the seventh ledge but sky.":"Nothing lies below the seventh level of the deep.";
  const x=wrapC(H.x+v.dx),y=wrapC(H.y+v.dy),lim=exploreRange();
  if(Math.max(Math.abs(x),Math.abs(y))<=lim||coord.get(ck(x,y,zOf(H)+v.dz)))return null;
  return plan()==="free"?`A grey mist closes in beyond here. Free explorers can travel ${lim} squares from the start; supporters can roam the whole world.`:`A grey mist closes in beyond here. The world ends ${lim} squares from the start, for now.`;
@@ -1967,6 +2087,9 @@ async function begin(opts={}){
  const w=normWorld(await askClaude(worldPrompt(riverPlan)),riverPlan);
  buildRiverWorld(riverPlan,w);
  buildRegion();
+ buildMountain();
+ placeCastles();
+ placeCaveMouths();
  placeMonuments();
  placeSanctuaries();
  busy={dir:"start"};render();
@@ -1976,7 +2099,7 @@ async function begin(opts={}){
  connect(ch,"at",home);cell(home).visited=true;markSeen(home);
  if(opts.founding){
   busy={dir:"founding"};render();
-  try{const meta=await uploadRealm();Object.assign(cell("root"),{shared:meta.id,founder:meta.by});log("You have founded the shared realm. Every traveller who joins from now on walks this world.","good")}
+  try{const meta=await uploadRealm();Object.assign(cell("root"),{shared:meta.id,founder:meta.by});mp.realmChecked=true;log("You have founded the shared realm. Every traveller who joins from now on walks this world.","good")}
   catch(e){flash=`The shared realm could not be saved (${e.message}). You are playing in a world of your own.`}
  }
  busy={dir:"look"};render();
@@ -2587,7 +2710,7 @@ function foxFind(locId){if(!hasCompanion("fox")||Math.random()>.2)return;appendT
 function dawnGifts(){for(const n of companions())if(n.species==="otter"||n.species==="heron"){appendTo(charId(),"contain",itemCell(normItem({name:"Fresh fish",description:`Brought to you by ${n.t}.`,kind:"food",weight:.5,value:2,heal:"1d4+1"})));log(`${n.t} drops a fresh fish at your feet.`,"good")}}
 
 /* ---------- Maps for sale (some are wrong) and notes on places ---------- */
-const MAP_TARGETS={mountain:{label:"the mountain",test:c=>c.x>=6&&c.y>=0&&c.y<=8},woodland:{label:"the old wood and its grove",test:c=>c.x<=-1&&c.x>=-5&&c.y>=0&&c.y<=4},desert:{label:"the desert",test:c=>c.terrain==="desert"},river:{label:"the river and its crossings",test:c=>!!c.river},monuments:{label:"the carved stones",test:c=>!!c.monument},sanctuaries:{label:"the sanctuaries",test:c=>!!c.sanctuary}};
+const MAP_TARGETS={mountain:{label:"the mountain",test:c=>c.massif||(c.terrain==="mountain"&&c.x>=6&&c.y>=0&&c.y<=8)},woodland:{label:"the old wood and its grove",test:c=>c.x<=-1&&c.x>=-5&&c.y>=0&&c.y<=4},desert:{label:"the desert",test:c=>c.terrain==="desert"},river:{label:"the river and its crossings",test:c=>!!c.river},monuments:{label:"the carved stones",test:c=>!!c.monument},sanctuaries:{label:"the sanctuaries",test:c=>!!c.sanctuary}};
 function marks(){const r=cell("root");return r?(r.marks=r.marks||[]):[]}
 function readMap(id){
  const it=cell(id),T=MAP_TARGETS[it.mapOf];if(!T)return;const cells=Object.values(zz.cells).filter(c=>c.k==="loc"&&zOf(c)===0&&T.test(c));
@@ -2720,7 +2843,7 @@ function joinRealm(cells,meta){
  for(const id of Object.keys(zz.cells))zz.removed.add(id);
  zz.cells=cells;coord.clear();fieldCache.clear();zz.dirty.clear();rounds=[];sound.riverPts=null;
  for(const c of Object.values(zz.cells)){if(c.k==="loc"){coord.set(ck(c.x,c.y,zOf(c)),c.id);if(c.id!==cells.root.home)c.visited=false}touch(c.id)}
- const r=cell("root");Object.assign(r,{log:[],created:Date.now(),clock:{base:8*60,real:Date.now()},npcT:8*60,ent:keepEnt||null,shared:meta.id,founder:meta.by});
+ const r=cell("root");Object.assign(r,{log:[],created:Date.now(),clock:{base:8*60,real:Date.now()},npcT:8*60,ent:keepEnt||null,shared:meta.id,founder:meta.by});mp.realmChecked=true;
  const {ch,extras}=makeCharacter();
  const home=r.home;connect(ch,"at",home);cell(home).visited=true;markSeen(home);
  busy=null;
@@ -2756,8 +2879,20 @@ function publishSquares(sq){
 
 // Presence: where everyone is, and what they said
 function mpSoon(){clearTimeout(mp.soon);mp.soon=setTimeout(()=>mpPing(),1600)}
+// A save from an earlier shared realm must not mix with the current one: if the realm has been
+// founded anew (or not yet), this world quietly becomes a private one, and Join is offered.
+async function mpCheckRealm(){
+ if(mp.realmChecked||!mp.on())return true;
+ try{const info=await mp.call("/realm");mp.realmChecked=true;const r=cell("root");
+  if(!info.ready||!info.meta||info.meta.id!==r.shared){r.sharedOld=r.shared;delete r.shared;touch("root");
+   flash="The shared realm has been founded anew, with fifteen layers, a great mountain, castles and deep caves. This world is now yours alone. Use Join the shared realm to roll a character in the new one.";
+   store.flush();render();return false}
+ }catch(e){}
+ return true;
+}
 async function mpPing(say){
  if(!mp.on()||!charId()||!hereId())return;
+ if(!mp.realmChecked&&!(await mpCheckRealm()))return;
  if(mp.busy){if(say)mp.queued=say;return}
  const L=cell(hereId()),ch=cell(charId());mp.busy=true;
  try{
@@ -3021,10 +3156,15 @@ function renderAccount(){
 let joinArmed=false;
 
 const GLYPH_MON={arch:"M16 35 V21 Q26 6 36 21 V35 M20 35 V22 Q26 12 32 22 V35",stones:"M13 35 V21 M21 35 V15 M29 35 V17 M37 35 V22 M11 35 H41",temple:"M11 20 L26 11 L41 20 Z M14 20 V32 M21 20 V32 M31 20 V32 M38 20 V32 M11 33 H41"};
+const ZOOMS=[2,3,4,5,6,8];let mapZoom=3;try{const z=+localStorage.getItem("zr-zoom");if(ZOOMS.includes(z))mapZoom=z}catch(e){}
+function setZoom(step){const i=Math.max(0,Math.min(ZOOMS.length-1,ZOOMS.indexOf(mapZoom)+step));mapZoom=ZOOMS[i];try{localStorage.setItem("zr-zoom",String(mapZoom))}catch(e){}renderMap()}
+document.addEventListener("click",e=>{if(e.target.closest("#zoom-in"))setZoom(-1);else if(e.target.closest("#zoom-out"))setZoom(1)});
 function renderMap(){
  const svg=$("map"),here=hereId();
  if(!here){svg.innerHTML=`<text x="210" y="215" text-anchor="middle" class="axis">The map starts when your character sets out.</text>`;$("coords").textContent="";return}
- const H=cell(here),Z=zOf(H),R=3,S=48,magic=magicPresent(),t=gameNow(),ws=wxState();
+ const H=cell(here),Z=zOf(H),R=mapZoom,magic=magicPresent(),t=gameNow(),ws=wxState();
+ // Zoom: the drawing keeps its scale and the view widens; V is the visible width around the centre
+ const V=420*(R+.6)/3.6,VB=[210-V/2,210-V/2,V,V],ui=V/420,UI=s=>`<g transform="translate(${VB[0]} ${VB[1]}) scale(${ui})">${s}</g>`;
  /* Flat-topped hexagons in staggered columns: odd columns (by world x) sit half a hex lower, so each
     place touches six others. The world is still a square grid underneath; only the drawing changes.
     P gives the top-left of a 60×60 box centred on the hex, so everything drawn at +30,+30 is centred. */
@@ -3032,15 +3172,25 @@ function renderMap(){
  const C=(dx,dy)=>[210+dx*HW*.75,210-dy*HH+shift(H.x+dx)],P=(dx,dy)=>{const [cx,cy]=C(dx,dy);return[cx-30,cy-30]};
  const hex=(cx,cy,k=1)=>[0,60,120,180,240,300].map(a=>{const r=a*Math.PI/180;return`${(cx+Math.cos(r)*HW/2*k).toFixed(1)},${(cy+Math.sin(r)*HW/2*k).toFixed(1)}`}).join(" ");
  let out="";
- for(let dx=-R-2;dx<=R+2;dx++)for(let dy=-R-1;dy<=R+1;dy++){const [cx,cy]=C(dx,dy);if(cy<-HH||cy>420+HH)continue;out+=`<polygon class="gridline hexgrid" points="${hex(cx,cy)}"/>`}
- const vis=new Map();for(let dx=-R;dx<=R;dx++)for(let dy=-R;dy<=R;dy++){const id=coord.get(ck(H.x+dx,H.y+dy,Z));if(id&&visible(cell(id)))vis.set(id,[dx,dy])}
+ for(let dx=-R-3;dx<=R+3;dx++)for(let dy=-R-2;dy<=R+2;dy++){const [cx,cy]=C(dx,dy);if(cy<VB[1]-HH||cy>VB[1]+V+HH||cx<VB[0]-HW||cx>VB[0]+V+HW)continue;out+=`<polygon class="gridline hexgrid" points="${hex(cx,cy)}"/>`}
+ /* Every layer at once: the mountain above you is always painted, each layer as a faint hex, so the
+    layers stack up darker toward the peak; lower slopes and caves you have walked show beneath, dashed. */
+ for(let dx=-R-2;dx<=R+2;dx++)for(let dy=-R-1;dy<=R+1;dy++){const [cx,cy]=C(dx,dy);
+  for(let z=-ZMAX;z<=ZMAX;z++){const id=coord.get(ck(H.x+dx,H.y+dy,z));if(!id)continue;const c=cell(id),gap=Math.abs(z-Z);
+   if(z===Z){if(c.massif&&!visible(c))out+=`<polygon class="ghost up" points="${hex(cx,cy,.95)}" style="opacity:.16"/>`;continue}
+   if(z>Z&&c.massif)out+=`<polygon class="ghost up" points="${hex(cx,cy,.95-.04*Math.min(gap,6))}" style="opacity:${(.32/Math.sqrt(gap)).toFixed(3)}"><title>${esc(c.t)}, ${z-Z} ${z-Z===1?"layer":"layers"} above</title></polygon>`;
+   else if(z<Z&&c.massif)out+=`<polygon class="ghost flank" points="${hex(cx,cy,.95)}" style="opacity:${(.18/gap).toFixed(3)}"/>`;
+   else if(z<Z&&c.visited)out+=`<polygon class="ghost down" points="${hex(cx,cy,.8)}" style="opacity:${(.55/gap).toFixed(3)}"><title>${esc(c.t)}, ${Z-z} ${Z-z===1?"layer":"layers"} below</title></polygon>`;
+   else if(z>Z&&c.visited)out+=`<polygon class="ghost down" points="${hex(cx,cy,.8)}" style="opacity:${(.4/gap).toFixed(3)}"/>`;
+  }}
+ const vis=new Map();for(let dx=-R-1;dx<=R+1;dx++)for(let dy=-R;dy<=R;dy++){const id=coord.get(ck(H.x+dx,H.y+dy,Z));if(id&&visible(cell(id)))vis.set(id,[dx,dy])}
  const walkable=a=>{const c=cell(a);return!(c.river&&!c.river.crossing)&&!c.lake};
  for(const [id,[dx,dy]] of vis){const c=cell(id),[px,py]=P(dx,dy);
   const e=coord.get(ck(c.x+1,c.y,Z)),n=coord.get(ck(c.x,c.y+1,Z));
   if(e&&vis.has(e)&&walkable(id)&&walkable(e)&&exitOpen(c,"east")&&exitOpen(cell(e),"west")){const [qx,qy]=P(dx+1,dy);out+=`<line class="link" x1="${px+30}" y1="${py+30}" x2="${qx+30}" y2="${qy+30}"/>`}
   if(n&&vis.has(n)&&walkable(id)&&walkable(n)&&exitOpen(c,"north")&&exitOpen(cell(n),"south")){const [qx,qy]=P(dx,dy+1);out+=`<line class="link" x1="${px+30}" y1="${py+30}" x2="${qx+30}" y2="${qy+30}"/>`}}
  for(const [id,[dx,dy]] of vis){const c=cell(id),[px,py]=P(dx,dy),tr=TERRAINS.includes(c.terrain)?c.terrain:"other",f=foeId(id);
-  const glyph=c.sanctuary?"M14 34 V22 L26 13 L38 22 V34 Z M26 19 V31 M20 25 H32":c.monument?GLYPH_MON[c.monument]:c.town?GLYPH["town_"+c.town.size]:c.falls?GLYPH.falls:GLYPH[tr]||GLYPH.other;
+  const glyph=c.sanctuary?"M14 34 V22 L26 13 L38 22 V34 Z M26 19 V31 M20 25 H32":c.monument?GLYPH_MON[c.monument]:c.castle?"M13 35 V19 h5 v4 h4 v-4 h5 v4 h4 v-4 h5 v16 Z M23 35 v-6 a3 3 0 0 1 6 0 v6":c.cavemouth?GLYPH.cave:c.town?(c.town.of?GLYPH.village:GLYPH["town_"+c.town.size]):c.falls?GLYPH.falls:GLYPH[tr]||GLYPH.other;
   const label=c.town?`${c.t}, ${TOWN_SIZES[c.town.size].label}`:c.hole?`${c.t}, where the river falls into the hole`:c.river?(c.river.crossing?`${c.t}, ${CROSSINGS[c.river.crossing]}${c.river.crossing==="magic"&&!magic?" (absent now)":""}`:`${c.t}, the river`):c.lake?`${c.t}, a lake`:c.t;
   const wa=Z>=0?weatherAt(c.x,c.y,Z,t):null,fire=fireAt(c.x,c.y,Z);
   out+=`<g data-loc="${id}"${c.visited?"":' class="unvisited"'}><polygon class="tile t-${c.hole?"cave":tr}" points="${hex(px+30,py+30,.95)}" tabindex="0" role="button" aria-label="${esc(label)}${id===here?" (you are here)":""}${f?", anomaly at large":""}${fire?", on fire":""}"><title>${esc(label)}${f?" · "+esc(cell(f).designation)+" at large":""}${wa?" · "+esc(wa.short):""}${fire?" · burning":""}</title></polygon><path class="${c.monument?"rune":"glyph"}" transform="translate(${px+4} ${py+4})" d="${c.hole?"M16 25 a10 8 0 1 0 20 0 a10 8 0 1 0 -20 0 M21 25 a5 4 0 1 0 10 0 a5 4 0 1 0 -10 0":glyph}"/>`;
@@ -3070,9 +3220,9 @@ function renderMap(){
    const dx=wrapC(c.x-H.x),dy=wrapC(c.y-H.y),d=Math.max(Math.abs(dx),Math.abs(dy));if(d<=20)found[kind].push({c,dx,dy,d,kind})}
   for(const b of [...found.sanctuary.sort((a,b)=>a.d-b.d).slice(0,3),...found.cave.sort((a,b)=>a.d-b.d).slice(0,3)]){
    const what=b.kind==="sanctuary"?"Sanctuary":"Cave entrance",tip=`${what}: ${b.c.t}, ${bearing({x:b.c.x,y:b.c.y,z:0},H)}`;
-   if(Math.abs(b.dx)<=R&&Math.abs(b.dy)<=R){const [cx,cy]=C(b.dx,b.dy);
+   if(Math.abs(b.dx)<=R+1&&Math.abs(b.dy)<=R){const [cx,cy]=C(b.dx,b.dy);
     beacons+=`<g class="beacon ${b.kind}" pointer-events="none"><circle class="halo" cx="${cx}" cy="${cy}" r="27"/><polygon class="ring" points="${hex(cx,cy,.98)}"/></g>`;continue}
-   const [tx,ty]=C(b.dx,b.dy),vx=tx-210,vy=ty-210,k=Math.min(180/Math.abs(vx||1e-9),180/Math.abs(vy||1e-9)),ex=210+vx*k,ey=210+vy*k;
+   const [tx,ty]=C(b.dx,b.dy),vx=tx-210,vy=ty-210,k=Math.min(V*.43/Math.abs(vx||1e-9),V*.43/Math.abs(vy||1e-9)),ex=210+vx*k,ey=210+vy*k;
    const icon=b.kind==="sanctuary"?`<path d="M${ex-7} ${ey+6} V${ey-1} L${ex} ${ey-7} L${ex+7} ${ey-1} V${ey+6} Z M${ex} ${ey-3} V${ey+4} M${ex-3} ${ey} H${ex+3}"/>`:`<path d="M${ex-7} ${ey-5} H${ex+7} L${ex} ${ey+6} Z"/>`;
    beacons+=`<g class="beacon ${b.kind} far" data-loc="${b.c.id}"><circle class="halo" cx="${ex}" cy="${ey}" r="14"/>${icon}<text x="${ex}" y="${ey+(ey>210?-14:22)}" text-anchor="middle">${b.d}</text><title>${esc(tip)}</title></g>`;
   }
@@ -3080,19 +3230,23 @@ function renderMap(){
  const [hx,hy]=P(0,0);
  out+=`<polygon class="here" points="${hex(hx+30,hy+30,1.02)}" pointer-events="none"/><circle class="pawn" cx="${hx+44}" cy="${hy+44}" r="6"/>`;
  if(ws&&ws.storm&&Z>=0){const sx=wrapC(Math.round(ws.storm.x)-H.x),sy=wrapC(Math.round(ws.storm.y)-H.y);const [qx,qy]=P(sx,sy);out+=`<circle class="stormring" cx="${qx+30}" cy="${qy+30}" r="${ws.storm.r*HW*.6}"/>`}
- out+=`<text class="axis" x="414" y="14" text-anchor="end">N ↑</text>`;
+ out+=UI(`<text class="axis" x="414" y="14" text-anchor="end">N ↑</text>`);
+ // The fifteen layers, deepest on the left, the peak on the right; yours is marked
+ $("layerbar").innerHTML=`<span class="mono">−${ZMAX}</span>${Array.from({length:2*ZMAX+1},(_,i)=>{const z=i-ZMAX;return`<span class="lv${z===Z?" on":z===0?" ground":z>0?" up":" down"}" title="${z===0?"ground level":z>0?`${z} above ground`:`${-z} below ground`}${z===Z?" (you are here)":""}"></span>`}).join("")}<span class="mono">+${ZMAX}</span>`;
+ $("layerbar").setAttribute("aria-label",`Layer ${Z>0?"+"+Z:Z} of fifteen, from −${ZMAX} to +${ZMAX}`);
  // At night the map greys out and a notice sits over it, so nightfall is hard to miss; the beacons still shine
  if(isNight(t)&&Z>=0){
   const mins=Math.max(1,Math.round(realMinutesToDawn(t))),steps=Math.floor(nightLeft()/STEP_MIN);
   const line=!hasLight()?"Too dark to travel without a lantern. Make camp, or take a room at an inn."
    :steps>0?`Your lantern has ${steps} ${steps===1?"step":"steps"} left tonight.`:"Your lantern is spent. Make camp, or take a room at an inn.";
-  out=`<g class="nightfade">${out}</g>${beacons}<g class="nightnote" pointer-events="none"><rect x="40" y="150" width="340" height="120" rx="12"/>
+  out=`<g class="nightfade">${out}</g>${beacons}`+UI(`<g class="nightnote" pointer-events="none"><rect x="40" y="150" width="340" height="120" rx="12"/>
    <text class="nn-h" x="210" y="196" text-anchor="middle">Night</text>
    <text class="nn-t" x="210" y="226" text-anchor="middle">${esc(line.length>52?line.slice(0,line.lastIndexOf(" ",52)):line)}</text>
    ${line.length>52?`<text class="nn-t" x="210" y="244" text-anchor="middle">${esc(line.slice(line.lastIndexOf(" ",52)+1))}</text>`:""}
-   <text class="nn-s" x="210" y="${line.length>52?262:248}" text-anchor="middle">Dawn in about ${mins} real ${mins===1?"minute":"minutes"}</text></g>`;
+   <text class="nn-s" x="210" y="${line.length>52?262:248}" text-anchor="middle">Dawn in about ${mins} real ${mins===1?"minute":"minutes"}</text></g>`);
  }
  else out+=beacons;
+ svg.setAttribute("viewBox",VB.map(v=>v.toFixed(1)).join(" "));$("zoom-label").textContent=`${2*R+1} hexes across`;$("zoom-in").disabled=R<=ZOOMS[0];$("zoom-out").disabled=R>=ZOOMS[ZOOMS.length-1];
  svg.innerHTML=`<defs><filter id="beaconglow" x="-1" y="-1" width="3" height="3"><feGaussianBlur stdDeviation="4"/></filter></defs>`+out;
  const ew=H.x===0?"0":Math.abs(H.x)+(H.x>0?" E":" W"),ns=H.y===0?"0":Math.abs(H.y)+(H.y>0?" N":" S");
  $("coords").textContent=`${ew}, ${ns} · level ${Z>0?"+"+Z:Z===0?"0":"−"+(-Z)}`;
