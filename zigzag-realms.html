@@ -2300,9 +2300,24 @@ function gainXP(n){
   log(`You reach level ${sv("LVL")}. Maximum HP rises by ${gain}.`,"good",r.text+` ${sgn(mod(sv("CON")))} CON`);
  }
 }
+/* No place may trap you. If none of a place's six sides is open both ways (its own wall, or a wall on the
+   neighbour's side, can close each one), the side back toward where you came from is opened on both places;
+   failing that, the first side that is not deep water, a lake or the hole. */
+function ensureWayOut(id,fromId){
+ const N=cell(id);if(!N||N.k!=="loc"||N.river&&!N.river.crossing||N.lake)return;
+ if(sideMoves(N.x).some(d=>sideOpen(id,d)))return;
+ const Z=zOf(N),F=fromId&&cell(fromId),nb=d=>coord.get(ck(N.x+DIRS[d].dx,N.y+DIRS[d].dy,Z)),bad=o=>{const O=o&&cell(o);return!!(O&&(O.lake||O.hole||(O.river&&!O.river.crossing)))};
+ let d=F&&zOf(F)===Z?FLAT.find(e=>nb(e)===fromId):null;
+ if(!d&&F&&zOf(F)===Z)d=FLAT.filter(e=>!bad(nb(e))).sort((a,b)=>{const A=cell(nb(a)),B=cell(nb(b));return(A?hexDist(A.x,A.y,F.x,F.y):9)-(B?hexDist(B.x,B.y,F.x,F.y):9)})[0];
+ if(!d)d=FLAT.find(e=>!bad(nb(e)));if(!d)return;
+ N.exits=N.exits||EX("nsew");N.exits[d]=true;if(N.walls)delete N.walls[d];touch(id);
+ const o=nb(d);if(o){const O=cell(o);O.exits=O.exits||EX("nsew");O.exits[OPP[d]]=true;if(O.walls)delete O.walls[OPP[d]];touch(o)}
+ N.desc=String(N.desc||"").replace(/ ?(The only way in or out is to|You can only come and go to) [^.]*\./,"");
+}
 function enter(locId,first){
  if(mp.on()){mpSoon();const T=cell(locId);if(T&&T.town)maybeIntroduce(T)}
  const ch=charId(),prev=hereId();if(prev&&prev!==locId){cell(ch).prevAt=prev;touch(ch)}
+ ensureWayOut(locId,prev);
  connect(ch,"at",locId);const L=cell(locId);lastHazard=null;rounds=[];
  if(!L.visited){L.visited=true;touch(locId);gainXP(L.town&&!L.town.of?25:10);if(L.town&&!L.town.of)log(`You reach ${L.t}, a ${TOWN_SIZES[L.town.size].label} on the ${riverName()}.`,"good")}
  markSeen(locId);ravenScout(locId);checkRumour(locId);checkMarks(L);
@@ -5520,6 +5535,7 @@ setInterval(()=>{
  if(saved){
   zz.cells=saved;for(const c of Object.values(zz.cells))if(c.k==="loc")coord.set(ck(c.x,c.y,zOf(c)),c.id);
   for(const c of Object.values(zz.cells))if(c.k==="loc"&&c.river&&c.river.crossing)fixCrossing(c.id);
+  if(hereId())ensureWayOut(hereId(),charId()&&cell(charId()).prevAt);
   {const ch=charId()&&cell(charId());if(ch&&ch.lastMeal==null){ch.lastMeal=gameNow();touch(ch.id)}if(!cell("root").rivalry&&towns().length)seedRivalry()}
   const r=cell("root");if(!r.clock){r.clock={base:8*60,real:Date.now()};r.npcT=8*60;r.seed=Math.floor(Math.random()*1e6);touch("root")}
   if(store.mode==="cloud"&&store.from!=="cloud"){for(const id of Object.keys(zz.cells))touch(id)}
