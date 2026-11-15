@@ -4443,7 +4443,7 @@ function disengage(){
 let dreadFor=null;
 function renderEncounter(){
  const el=$("encounter");if(!el)return;const f=charId()&&hereId()&&!isDowned()?foeId():null;
- if(f&&f!==dreadFor&&sound.started&&sound.on&&sound.ctx)sound.dread();dreadFor=f||null;
+ if(f&&sound.started&&sound.on&&sound.ctx){if(!sound._dread)sound.dread()}else if(sound._dread)sound.stopDread();dreadFor=f||null;
  el.classList.toggle("show",!!f);if(!f){el.innerHTML="";return}
  el.innerHTML=`<div class="card">${renderFoe(f)}<p class="note">Disengage to stay in this hex without fighting, or flee by a way on the rose or a hex at the edge of the map.</p></div>`;
  requestAnimationFrame(()=>{const me=document.querySelector("#map .headmark.me"),w=el.getBoundingClientRect();if(me&&w.width){const r=me.getBoundingClientRect(),right=(r.x+r.width/2)>w.x+w.width/2;el.classList.toggle("dock-left",right);el.classList.toggle("dock-right",!right)}});
@@ -5278,6 +5278,7 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_EXP:{water:
   this.started=true;this.update();
  },
  setOn(v){
+  if(!v)this.stopDread();
   this.on=v;try{localStorage.setItem("zr-sound",v?"on":"off")}catch(e){}
   if(v){if(!this.started)this.start();else{this.ctx.resume();this.master.gain.setTargetAtTime(this.vol,this.ctx.currentTime,.4)}}
   else if(this.started)this.master.gain.setTargetAtTime(0,this.ctx.currentTime,.3);
@@ -5475,15 +5476,19 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_EXP:{water:
   g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(peak,t+Math.min(.02,dur/4));g.gain.exponentialRampToValueAtTime(.0001,t+dur);
   o.connect(g);g.connect(dest||this.fx||this.master);o.start(t);o.stop(t+dur+.05)},
  /* Something is coming: a low two-note ostinato a semitone apart, slow at first, then faster and louder,
-    on a growling sawtooth through a lowpass, like double basses sawing in the dark. About five seconds. */
+    on a growling sawtooth through a lowpass, like double basses sawing in the dark. It builds for about five
+    seconds, then keeps pulsing for as long as the fight lasts, and fades away when it ends. */
  dread(){
-  const c=this.ctx;if(!c)return;const out=c.createGain();out.gain.value=1;const lp=this.filt("lowpass",420,.9);lp.connect(out);out.connect(this.master);
-  const lo=41.2,hi=43.65;let at=.05,gap=.95,k=0;
-  const note=(f,a,dur,peak)=>{const t=c.currentTime+a;for(const [type,mul,lvl] of [["sawtooth",1,1],["triangle",2,.5],["sine",.5,.8]]){const o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.setValueAtTime(f*mul,t);
+  const c=this.ctx;if(!c||this._dread)return;const out=c.createGain();out.gain.value=1;const lp=this.filt("lowpass",420,.9);lp.connect(out);out.connect(this.master);
+  const lo=41.2,hi=43.65,D={out,lp,k:0,timer:null};this._dread=D;
+  const note=(f,a,dur,peak)=>{const t=a;for(const [type,mul,lvl] of [["sawtooth",1,1],["triangle",2,.5],["sine",.5,.8]]){const o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.setValueAtTime(f*mul,t);
    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(peak*lvl,t+.04);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g);g.connect(lp);o.start(t);o.stop(t+dur+.05)}};
-  while(at<5){const p=.07+.13*Math.min(1,at/4.2);note(k%2?hi:lo,at,Math.min(.55,gap*.8),p);at+=gap;gap=Math.max(.16,gap*.8);k++}
-  note(lo,at,1.4,.24);
+  let at=c.currentTime+.05,gap=.95;
+  while(at<c.currentTime+5){const p=.07+.13*Math.min(1,(at-c.currentTime)/4.2);note(D.k%2?hi:lo,at,Math.min(.55,gap*.8),p);at+=gap;gap=Math.max(.3,gap*.8);D.k++}
+  // the loop: schedule a little ahead, a steady pulse with an occasional swell
+  D.next=at;D.timer=setInterval(()=>{if(this._dread!==D)return;while(D.next<c.currentTime+1.5){const bar=Math.floor(D.k/8)%4,p=bar===3?.24:.18;note(D.k%2?hi:lo,D.next,.26,p);D.next+=bar===3?.24:.3;D.k++}},400);
  },
+ stopDread(){const D=this._dread;if(!D)return;this._dread=null;clearInterval(D.timer);const c=this.ctx;try{D.out.gain.setTargetAtTime(0,c.currentTime,.35);setTimeout(()=>{try{D.out.disconnect()}catch(e){}},2500)}catch(e){}},
  /* A voice: a buzzing sawtooth through two vowel formants, so it reads as speech or song */
  voice(f,at,dur,peak,vowel,vib,dest){
   const c=this.ctx,t=c.currentTime+at,o=c.createOscillator(),g=c.createGain();o.type="sawtooth";o.frequency.setValueAtTime(f,t);
