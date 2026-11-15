@@ -4519,8 +4519,8 @@ function renderMap(){
  const walkable=a=>{const c=cell(a);return!(c.river&&!c.river.crossing)&&!c.lake};
  for(const [id,[dx,dy]] of vis){const c=cell(id),[px,py]=P(dx,dy);
   const e=coord.get(ck(c.x+1,c.y,Z)),n=coord.get(ck(c.x,c.y+1,Z));
-  if(e&&vis.has(e)&&walkable(id)&&walkable(e)&&exitOpen(c,"east")&&exitOpen(cell(e),"west")){const [qx,qy]=P(dx+1,dy);out+=`<line class="link" x1="${px+30}" y1="${py+30}" x2="${qx+30}" y2="${qy+30}"/>`}
-  if(n&&vis.has(n)&&walkable(id)&&walkable(n)&&exitOpen(c,"north")&&exitOpen(cell(n),"south")){const [qx,qy]=P(dx,dy+1);out+=`<line class="link" x1="${px+30}" y1="${py+30}" x2="${qx+30}" y2="${qy+30}"/>`}
+  if(e&&vis.has(e)&&walkable(id)&&walkable(e)&&exitOpen(c,"east")&&exitOpen(cell(e),"west")){}
+  if(n&&vis.has(n)&&walkable(id)&&walkable(n)&&exitOpen(c,"north")&&exitOpen(cell(n),"south")){}
   // Railway track: a dark line with sleepers between neighbouring hexes of the same line
   if(c.rails)for(const [nb,ddx,ddy] of [[e,1,0],[n,0,1]]){if(!nb||!vis.has(nb))continue;const N=cell(nb);if(!N.rails||!N.rails.some(l=>c.rails.includes(l)))continue;const [qx,qy]=P(dx+ddx,dy+ddy);
    out+=`<line class="rail" x1="${px+30}" y1="${py+30}" x2="${qx+30}" y2="${qy+30}"/><line class="sleepers" x1="${px+30}" y1="${py+30}" x2="${qx+30}" y2="${qy+30}"/>`}}
@@ -5202,7 +5202,7 @@ function renderMapKey(){const k=$("mapkey");if(!k||k.innerHTML)return;
  const row=(sw,label)=>`<li><span class="sw">${sw}</span>${esc(label)}</li>`;
  k.innerHTML=`<div class="sectionhead"><h3>Map key</h3><button class="small iconbtn" id="mapkey-close" aria-label="Close" title="Close">${ic("close","Close")}</button></div><ul>
   ${row("▲","a way up")}${row("▼","a way down")}${row('<span style="color:var(--danger)">◆</span>',"an anomaly")}
-  ${row('<span style="color:var(--magic)">┅</span>',"the magical bridge")}${row("┿","railway")}${row('<span style="color:var(--amber)">●</span>',"a sanctuary, far away")}${row('<span style="color:var(--magic)">●</span>',"a cave entrance, far away")}
+  ${row('<span style="color:var(--magic)">┅</span>',"the magical bridge")}${row("┿","railway")}${row("━","a blocked way: you cannot cross that edge")}${row('<span style="color:var(--amber)">●</span>',"a sanctuary, far away")}${row('<span style="color:var(--magic)">●</span>',"a cave entrance, far away")}
   ${row('<span style="color:var(--accent)">◯</span>',"a friend, roughly")}${row("⬡","tap any hex to walk there")}${row("⬢","tap your own hex to see this place")}</ul>`;
  $("mapkey-close").onclick=()=>{k.hidden=true}}
 // Travellers have twice the hit points they used to; older characters are brought up once
