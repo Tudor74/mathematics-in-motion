@@ -4087,7 +4087,7 @@ function renderAccount(){
  const signin=puterReady&&store.mode!=="puter"?`<button class="small" id="puter-signin">Sign in to save and use AI</button>`:"";
  
  const who="";
- {const mr=$("maprealm");if(mr){mr.innerHTML=mp.on()&&charId()?`<span title="Players seen in the last three minutes"><span class="dot${mp.online>1?" live":""}"></span>Shared realm · <b>${mp.status?esc(mp.status):mp.online==null?"connecting…":mp.online+" online"}</b></span>`:""}}
+ {const mr=$("maprealm");if(mr){mr.innerHTML=mp.on()&&charId()?`<span title="Players seen in the last three minutes"><span class="dot${mp.online>1?" live":""}"></span><b>${mp.status?esc(mp.status):mp.online==null?"connecting…":mp.online+" online"}</b></span>`:""}}
  // Players who already have a world of their own can move to the shared realm from here
  const join=canJoinRealm()&&!mp.on()&&charId()?(joinArmed
   ?`<span class="confirm">Move to the shared realm? You roll a new character there and this world is erased. <button class="small" id="join-yes">Move</button><button class="small" id="join-no">Stay</button></span>`
@@ -4114,14 +4114,14 @@ function renderGate(){
   $("wake").onclick=wakeAtHome;if($("resurrect"))$("resurrect").onclick=resurrect;return}
  const local=!!charId()&&!mp.on(),working=busy&&(busy.dir==="realm"||busy.dir==="founding"||busy.dir==="river"||busy.dir==="start"||busy.dir==="look");
  const sig=[local,joinArmed,working&&busy.dir,flash||""].join("|");if(g.dataset.sig===sig&&g.innerHTML)return;g.dataset.sig=sig;
- const status=working?`<p class="mapping">${busy.dir==="founding"?"Founding the shared realm for everyone who comes after…":busy.dir==="realm"?"Finding the shared realm and its travellers…":"Writing where your journey begins…"}</p>`:"";
- g.innerHTML=`<div class="card" role="dialog" aria-modal="true" aria-labelledby="gate-h"><h2 id="gate-h">The shared realm</h2>
-  <p class="note">One world, shared by every traveller.</p>
+ const status=working?`<p class="mapping">${busy.dir==="founding"?"Founding the world for everyone who comes after…":busy.dir==="realm"?"Finding the world and its travellers…":"Writing where your journey begins…"}</p>`:"";
+ g.innerHTML=`<div class="card" role="dialog" aria-modal="true" aria-labelledby="gate-h"><h2 id="gate-h">One world, shared by every traveller</h2>
+  
   <div class="gaterow"><span class="facebox" id="gate-face">${faceSVG(draft.name,draft.cls,60)}</span>
    <div class="gatefields"><label for="g-name">Name<input id="g-name" value="${esc(draft.name)}" maxlength="40" ${working?"disabled":""}></label>
    <label for="g-cls">Class<select id="g-cls" ${working?"disabled":""}>${Object.keys(CLASSES).map(k=>`<option${k===draft.cls?" selected":""}>${k}</option>`).join("")}</select></label></div></div>
   ${local&&joinArmed?`<p class="note">Joining erases the world in this browser.</p><div class="btnrow" style="justify-content:center"><button class="primary" id="gate-yes">Erase it and join</button><button id="gate-no">Not yet</button></div>`
-   :`<div class="btnrow" style="justify-content:center"><button class="primary" id="gate-join" ${working?"disabled":""}>Join the shared realm</button></div>`}
+   :`<div class="btnrow" style="justify-content:center"><button class="primary" id="gate-join" ${working?"disabled":""}>Set out</button></div>`}
   ${status}${!working&&flash?`<p class="note" style="color:var(--danger)">${esc(flash)}</p>`:""}</div>`;
  const face=()=>{$("gate-face").innerHTML=faceSVG(draft.name,draft.cls,60)};
  if($("g-name"))$("g-name").oninput=e=>{draft.name=e.target.value;face()};
@@ -4670,7 +4670,7 @@ function faceSVG(name,cls,size=96,seed=0){
  return`<svg class="face" viewBox="0 -24 120 164" width="${size}" height="${Math.round(size*164/120)}" role="img" aria-label="Portrait of ${esc(name)}"><defs><filter id="${fid}" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="${(.035+r()*.03).toFixed(3)}" numOctaves="2" seed="${Math.floor(r()*99)}"/><feDisplacementMap in="SourceGraphic" scale="${(2.4+r()*1.6).toFixed(1)}"/></filter></defs><g filter="url(#${fid})"><g transform="rotate(${tilt} 60 70)">${s}</g>${spat}</g></svg>`;
 }
 function renderCreate(el){
- if(canJoinRealm()){el.innerHTML=`<div class="placehead"><p class="eyebrow">New adventurer</p><h2>Join on the map</h2></div><p class="note">Choose a name and class on the map, then join the shared realm. Your abilities are rolled the classic way, and you set out at once.</p>`;return}
+ if(canJoinRealm()){el.innerHTML=`<div class="placehead"><p class="eyebrow">New adventurer</p><h2>Join on the map</h2></div><p class="note">Choose a name and class on the map, then set out. Your abilities are rolled the classic way, and you set out at once.</p>`;return}
  const s=draft.stats,C=CLASSES[draft.cls],hp=Math.max(1,C.hd+mod(s[2]));
  const waiting=busy?`<span class="mapping">${busy.dir==="realm"?"Finding the shared realm and its travellers":busy.dir==="founding"?"Founding the shared realm for everyone who comes after":busy.dir==="river"?"The narrator is charting the river and its towns":busy.dir==="look"?"The narrator is writing what you can see":"The narrator is writing where your journey begins"}</span>`:"";
  el.innerHTML=`<div class="create"><div class="placehead facehead"><span class="facebox" id="face-preview">${faceSVG(draft.name,draft.cls,88)}</span><div><p class="eyebrow">New adventurer</p><h2>Roll a character</h2></div></div>
