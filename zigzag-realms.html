@@ -203,7 +203,7 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .map .ghost.up{fill:var(--t-mountain);stroke:var(--ink);stroke-width:1;stroke-linejoin:round}
 .map .ghost.flank{fill:var(--t-mountain)}
 .map .ghost.down{fill:none;stroke:var(--ink);stroke-width:1.4;stroke-dasharray:4 3;stroke-linejoin:round}
-.layerbar{display:flex;align-items:center;justify-content:center;gap:3px}.layerbar .mono{font-size:13pt;color:var(--faint);margin:0 4px}
+.layerbar{display:none;/* hidden for now; a better layer gauge to come */align-items:center;justify-content:center;gap:3px}.layerbar .mono{font-size:13pt;color:var(--faint);margin:0 4px}
 .layerbar .lv{width:14px;height:14px;border-radius:3px;background:var(--rule)}.layerbar .lv.up{background:var(--t-mountain)}.layerbar .lv.down{background:var(--t-cave)}
 .layerbar .lv.ground{background:var(--t-plains);outline:1px solid var(--faint)}.layerbar .lv.on{background:var(--accent);outline:2px solid var(--accent);outline-offset:1px}
 .map .layers .bg{fill:var(--sheet);stroke:var(--rule);opacity:.92}
