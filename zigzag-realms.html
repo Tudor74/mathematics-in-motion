@@ -4158,7 +4158,7 @@ function renderHud(){
 }
 let lastMapShape="";window.addEventListener("resize",()=>{const b=$("map").getBoundingClientRect(),sh=Math.round(b.width/Math.max(1,b.height)*20);if(String(sh)!==lastMapShape){lastMapShape=String(sh);renderMap()}});
 let mapCam=null;
-const easeBack=t=>{const c1=1.3,c2=c1*1.525;return t<.5?(Math.pow(2*t,2)*((c2+1)*2*t-c2))/2:(Math.pow(2*t-2,2)*((c2+1)*(t*2-2)+c2)+2)/2};
+const easeBack=t=>-(Math.cos(Math.PI*t)-1)/2;   // a slow, smooth slide: gentle start, gentle stop
 function camNow(){const a=mapCam&&mapCam.anim;if(!a)return mapCam?{x:mapCam.x,y:mapCam.y}:{x:0,y:0};
  const t=Math.min(1,(performance.now()-a.t0)/a.dur),e=easeBack(t);return{x:a.fx+(mapCam.x-a.fx)*e,y:a.fy+(mapCam.y-a.fy)*e}}
 function camBox(){const f=mapCam.frame,c=camNow();return[210+(c.x-f.hx)-f.W/2,210+(c.y-f.hy)-f.V/2,f.W,f.V]}
@@ -4180,8 +4180,8 @@ function renderMap(){
     centre you again, overshooting a little at each end. Positions here are in world pixels. */
  const WPX=x=>x*HW*.75,WPY=(x,y)=>-y*HH+(odd(x)?HH/2:0),hx0=WPX(H.x),hy0=WPY(H.x,H.y),shape=Math.round(ASP*20);
  if(!mapCam||mapCam.z!==Z||mapCam.R!==R||mapCam.shape!==shape||Math.abs(hx0-mapCam.x)>W*2||Math.abs(hy0-mapCam.y)>V*2)mapCam={x:hx0,y:hy0,z:Z,R,shape,anim:null};
- else{const limX=Math.max(HW*.75,W/2-HW*.6),limY=Math.max(HH*.5,V/2-HH*.6);
-  if(Math.abs(hx0-mapCam.x)>limX+1||Math.abs(hy0-mapCam.y)>limY+1){const cur=camNow();mapCam.anim={fx:cur.x,fy:cur.y,t0:performance.now(),dur:matchMedia("(prefers-reduced-motion: reduce)").matches?1:750};mapCam.x=hx0;mapCam.y=hy0;requestAnimationFrame(stepMapCam)}}
+ else{const limX=Math.max(HW*.75,W/2-HW*.45),limY=Math.max(HH*.5,V/2-HH*.45);
+  if(Math.abs(hx0-mapCam.x)>limX+1||Math.abs(hy0-mapCam.y)>limY+1){const cur=camNow();mapCam.anim={fx:cur.x,fy:cur.y,t0:performance.now(),dur:matchMedia("(prefers-reduced-motion: reduce)").matches?1:1800};mapCam.x=hx0;mapCam.y=hy0;requestAnimationFrame(stepMapCam)}}
  mapCam.frame={hx:hx0,hy:hy0,W,V};
  VB[0]=210+(mapCam.x-hx0)-W/2;VB[1]=210+(mapCam.y-hy0)-V/2;
  // what to draw: the final view, plus where the glide starts
