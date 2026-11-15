@@ -112,7 +112,7 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .mapside .card.drift{animation:drift var(--dur,12s) ease-in-out infinite}.mapside:hover .card.drift{animation-play-state:paused}
 @keyframes drift{0%,18%{transform:translateY(0)}50%,68%{transform:translateY(calc(-1 * var(--dist,0px)))}100%{transform:translateY(0)}}
 @media (prefers-reduced-motion:reduce){.mapside .card.drift{animation:none}.maprow .mapside .mapplace{overflow-y:auto}}.mapside .chips{display:flex;flex-wrap:wrap;gap:4px}.mapside h2{margin:0;font-size:22px}.mapside .desc{margin:0;max-width:none}
-.map .side{stroke-linecap:round;pointer-events:none}.map .side.shut{stroke:var(--ink);stroke-width:5;opacity:.85}.map .side.shut.mine{stroke-width:6.5;opacity:1}
+.map .side{stroke-linecap:round;pointer-events:none}.map .side.shut{stroke:#8b8b86;stroke-width:3;opacity:1}.map .side.shut.mine{stroke-width:3.6}.map .side.rough{stroke:#8b8b86;stroke-width:3.4;stroke-dasharray:.1 6;stroke-linecap:round}
 .map .side.open.mine{stroke:var(--good);stroke-width:3.5;opacity:.8;stroke-dasharray:6 5}
 .map .side.pulse{animation:sidepulse .7s ease 3}@keyframes sidepulse{0%,100%{stroke:var(--ink)}50%{stroke:var(--danger);stroke-width:9}}
 .encounter{position:absolute;inset:0;display:grid;place-items:center;padding:0;pointer-events:none;z-index:5}.encounter:not(.show){display:none}
@@ -810,6 +810,11 @@ const nightLeft=(t=gameNow())=>Math.max(0,LANTERN_NIGHT_MIN+(typeof hasCompanion
 // Only places below ground are dark: a cave mouth or sinkhole on the surface is under the open sky
 const isDark=c=>!!c&&zOf(c)<0;
 const exitOpen=(c,d)=>!c||!c.exits||c.exits[d]!==false;
+/* Hard going: a side drawn dotted. It can be crossed, but only by day, and it takes whatever is left of the day. */
+function roughSide(id,d){if(!FLAT.includes(d))return false;const A=cell(id);if(!A)return false;const v=DIRS[d],bid=coord.get(ck(A.x+v.dx,A.y+v.dy,zOf(A))),B=bid&&cell(bid);
+ return!!((A.rough&&A.rough[d])||(B&&B.rough&&B.rough[OPP[d]]))}
+const toDusk=t=>Math.max(STEP_MIN,Math.round((duskH(t)-hourOf(t))*60));
+let roughAsk=null;
 function wallText(c,d){if(c&&c.walls&&c.walls[d])return c.walls[d];return d==="up"?"no way up":d==="down"?"no way down":"no way through"}
 // Why you cannot go a given way right now, or null if you can
 function blockedBy(here,dir){
@@ -1447,6 +1452,8 @@ function rollOpenSides(fromDir){
 function limitApproaches(data,fromDir,open,told){
  const e=data.exits;open=open||rollOpenSides(fromDir);
  for(const d of FLAT)e[d]=open.includes(d);
+ // now and then a closed side is only hard going: passable, but it costs the rest of the day
+ for(const d of FLAT)if(!e[d]&&data.terrain!=="water"&&Math.random()<.3){e[d]=true;(data.rough=data.rough||{})[d]=true}
  data.walls=data.walls||{};
  for(const d of FLAT)if(!e[d]&&!data.walls[d])data.walls[d]=pick(WALLS[data.terrain]||["no way through"]);
  const ways=FLAT.filter(d=>e[d]);
@@ -1454,6 +1461,7 @@ function limitApproaches(data,fromDir,open,told){
   const list=ways.length===1?`the ${ways[0]}`:`the ${ways.slice(0,-1).join(", ")} and ${ways[ways.length-1]}`;
   data.desc=data.desc.trim()+(ways.length===1?` The only way in or out is to ${list}.`:` You can only come and go to ${list}.`);
  }
+ if(data.rough){const hard=FLAT.filter(d=>data.rough[d]);if(hard.length&&data.desc)data.desc=data.desc.trim()+` To the ${hard.join(" and ")} the going is hard: crossing will take the rest of the day.`}
  return data;
 }
 function normWalls(raw){const w={};if(raw&&typeof raw==="object")for(const d of Object.keys(DIRS))if(typeof raw[d]==="string"&&raw[d].trim())w[d]=raw[d].trim().slice(0,80);return w}
@@ -2344,7 +2352,7 @@ function itemCell(it){return newCell("item",{t:it.name,desc:it.desc,kind:it.kind
 function createLocation(data,pos){
  placeExtras(data,pos);const {x,y,z,dist}=pos;
  const id=newCell("loc",{t:data.name,desc:data.desc,terrain:data.terrain,x,y,z,dist,hazard:data.hazard,hazardDone:false,outcome:null,visited:false,by:data.by||"tables",defeated:null,
-  exits:data.exits||null,walls:data.walls||null,glimpse:data.glimpse||null});
+  exits:data.exits||null,walls:data.walls||null,glimpse:data.glimpse||null,rough:data.rough||null});
  coord.set(ck(x,y,z),id);
  for(const it of data.items)appendTo(id,"contain",itemCell(it));
  if(data.monster){
@@ -2575,6 +2583,13 @@ async function move(dir){
  const here=hereId(),v=DIRS[dir],H=cell(here);
  const block=blockedBy(here,dir)||rangeBlock(H,v);
  if(block){flash=block;render();flashBlocked(dir,block);return}
+ let mins=STEP_MIN;
+ if(roughSide(here,dir)&&!foeId()){
+  const t=gameNow();
+  if(isNight(t)){flash=`The way ${dir} is hard going. It needs daylight: wait for morning.`;render();flashBlocked(dir,"Hard going: it needs daylight");return}
+  if(!(roughAsk&&roughAsk.here===here&&roughAsk.dir===dir&&Date.now()-roughAsk.t<10000)){roughAsk={here,dir,t:Date.now()};flash=`The way ${dir} is hard going: crossing will take the rest of the day, until dusk at ${String(Math.floor(duskH(t))).padStart(2,"0")}:${duskH(t)%1?"30":"00"}. Go that way again to set off.`;render();return}
+  roughAsk=null;mins=toDusk(t);
+ }
  flash=null;
  const f=foeId();
  if(f){
@@ -2595,7 +2610,8 @@ async function move(dir){
   busy=null;
   const b2=blockedBy(here,dir);if(b2){flash=b2;store.flush();render();return}
  }
- arriveAt(coord.get(key),verb,H,v.dx,v.dy,STEP_MIN);
+ if(mins>STEP_MIN)log(`The going is hard: it takes you the rest of the day to get across.`,"time");
+ arriveAt(coord.get(key),verb,H,v.dx,v.dy,mins);
 }
 function arriveAt(next,verb,H,dx,dy,mins){
  const N=cell(next),firstTime=!N.visited;
@@ -2628,15 +2644,15 @@ function diagCheck(here,d){
  if(!hexDiagOK(H.x,d))return{block:"That hex is two steps away, not a neighbour.",key,target:tid,far:true};
  const rb=rangeBlock(H,{dx:D.dx,dy:D.dy,dz:0});if(rb)return{block:rb,key,target:tid};
  for(const [a,b] of [D.via,[D.via[1],D.via[0]]]){
-  const b1=blockedBy(here,a);if(b1){why=why||b1;continue}
+  const b1=blockedBy(here,a)||(roughSide(here,a)?"The going is hard that way.":null);if(b1){why=why||b1;continue}
   const sid=coord.get(ck(H.x+DIRS[a].dx,H.y+DIRS[a].dy,Z));if(!sid)continue;
   const S=cell(sid),f=foeId(sid);if(f){why=why||`${cell(f).t} lurks at ${S.t}, on the corner.`;continue}
-  const b2=blockedBy(sid,b);if(b2){why=why||b2;continue}
+  const b2=blockedBy(sid,b)||(roughSide(sid,b)?"The going is hard that way.":null);if(b2){why=why||b2;continue}
   return{side:sid,a,b,key,target:tid};
  }
  // A neighbouring hex: step straight across unless walls close both of the sides that face it
  const [a,b]=D.via,T=tid&&cell(tid);
- const hereOpen=!blockedBy(here,a)||!blockedBy(here,b)||(!coord.get(ck(H.x+DIRS[a].dx,H.y+DIRS[a].dy,Z))&&!coord.get(ck(H.x+DIRS[b].dx,H.y+DIRS[b].dy,Z)));
+ const hereOpen=(!blockedBy(here,a)&&!roughSide(here,a))||(!blockedBy(here,b)&&!roughSide(here,b))||(!coord.get(ck(H.x+DIRS[a].dx,H.y+DIRS[a].dy,Z))&&!coord.get(ck(H.x+DIRS[b].dx,H.y+DIRS[b].dy,Z)));
  const thereOpen=!T||((T.exits?(T.exits[OPP[a]]!==false||T.exits[OPP[b]]!==false):true)&&!T.lake&&!riverBlock(tid));
  if(hereOpen&&thereOpen)return{side:here,a:b,b:a,key,target:tid,direct:true};
  return{block:why||"Walls close that side.",key,target:tid};
@@ -2681,7 +2697,7 @@ function pathTo(target){
  for(let h=0;h<q.length;h++){const id=q[h];if(id===target)break;const c0=cell(id);
   for(const [d,v] of Object.entries(DIRS)){
    const n=coord.get(ck(c0.x+v.dx,c0.y+v.dy,zOf(c0)+v.dz));if(!n||n in prev)continue;const c=cell(n);
-   if(!visible(c)||!exitOpen(c0,d)||!exitOpen(c,OPP[d])||riverBlock(n)||c.lake||(n!==target&&foeId(n)))continue;
+   if(!visible(c)||!exitOpen(c0,d)||!exitOpen(c,OPP[d])||riverBlock(n)||c.lake||(n!==target&&foeId(n))||roughSide(id,d))continue;
    if(!hasLight()&&isDark(c))continue;
    prev[n]=id;q.push(n)}}
  if(!(target in prev))return null;const p=[];for(let c=target;c!==start;c=prev[c])p.unshift(c);return p;
@@ -2697,7 +2713,7 @@ async function walkToward(tx,ty){
   const now=hexDist(H.x,H.y,tx,ty);
   const opts=[...FLAT.map(d=>({d,dx:DIRS[d].dx,dy:DIRS[d].dy})),...Object.keys(DIAG).filter(k=>hexDiagOK(H.x,k)).map(k=>({d:k,dx:DIAG[k].dx,dy:DIAG[k].dy}))]
    .map(o=>({...o,dist:hexDist(H.x+o.dx,H.y+o.dy,tx,ty),id:coord.get(ck(H.x+o.dx,H.y+o.dy,zOf(H)))})).filter(o=>o.dist<=now&&!(o.id&&been.has(o.id))).sort((a,b)=>a.dist-b.dist);
-  const ok=opts.find(o=>DIAG[o.d]?!diagCheck(here,o.d).block:!blockedBy(here,o.d));
+  const ok=opts.find(o=>DIAG[o.d]?!diagCheck(here,o.d).block:!blockedBy(here,o.d)&&!roughSide(here,o.d));
   if(!ok){if(!steps){flash=(opts[0]&&(DIAG[opts[0].d]?diagCheck(here,opts[0].d).block:blockedBy(here,opts[0].d)))||"There is no clear way that direction from here.";render();flashBlocked(opts[0]&&opts[0].d,flash)}else log(`You stop: the way on toward there is blocked.`);break}
   await (DIAG[ok.d]?moveDiag(ok.d):move(ok.d));
   if(hereId()===here)break;been.add(hereId());
@@ -4567,9 +4583,9 @@ function renderMap(){
  }
  let mineSides="";{const corner=(cx,cy,k)=>[cx+Math.cos(k*Math.PI/3)*HW/2*.97,cy+Math.sin(k*Math.PI/3)*HW/2*.97];
   for(const [id,[dx,dy]] of vis){const c=cell(id),moves=sideMoves(c.x),[cx,cy]=C(dx,dy),me=id===here;
-   for(let k=0;k<6;k++){const d=moves[k],open=sideOpen(id,d);if(open)continue;
+   for(let k=0;k<6;k++){const d=moves[k],open=sideOpen(id,d),rough=open&&roughSide(id,d);if(open&&!rough)continue;
     const [x1,y1]=corner(cx,cy,k),[x2,y2]=corner(cx,cy,k+1);
-    (me?(s_=>mineSides+=s_):(s_=>out+=s_))(`<line class="side ${open?"open":"shut"}${me?" mine":""}"${me?` data-d="${d}"`:""} x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/>`)}}}
+    (me?(s_=>mineSides+=s_):(s_=>out+=s_))(`<line class="side ${rough?"rough":"shut"}${me?" mine":""}"${me?` data-d="${d}"`:""} x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/>`)}}}
  const [hx,hy]=P(0,0);
  out+=``+(()=>{const ch=cell(charId());return headAt(ch.t,ch.cls,ch.faceSeed||0,hx+30,hy+30,36,`${ch.t} (you)`,"me")})();out+=mineSides;
  // Wanderers within earshot show as a little whistled note
@@ -5202,7 +5218,7 @@ function renderMapKey(){const k=$("mapkey");if(!k||k.innerHTML)return;
  const row=(sw,label)=>`<li><span class="sw">${sw}</span>${esc(label)}</li>`;
  k.innerHTML=`<div class="sectionhead"><h3>Map key</h3><button class="small iconbtn" id="mapkey-close" aria-label="Close" title="Close">${ic("close","Close")}</button></div><ul>
   ${row("▲","a way up")}${row("▼","a way down")}${row('<span style="color:var(--danger)">◆</span>',"an anomaly")}
-  ${row('<span style="color:var(--magic)">┅</span>',"the magical bridge")}${row("┿","railway")}${row("━","a blocked way: you cannot cross that edge")}${row('<span style="color:var(--amber)">●</span>',"a sanctuary, far away")}${row('<span style="color:var(--magic)">●</span>',"a cave entrance, far away")}
+  ${row('<span style="color:var(--magic)">┅</span>',"the magical bridge")}${row("┿","railway")}${row('<span style="color:#8b8b86">━</span>',"a blocked way: you cannot cross that edge")}${row('<span style="color:#8b8b86">┈</span>',"hard going: passable by day, but it takes the rest of the day")}${row('<span style="color:var(--amber)">●</span>',"a sanctuary, far away")}${row('<span style="color:var(--magic)">●</span>',"a cave entrance, far away")}
   ${row('<span style="color:var(--accent)">◯</span>',"a friend, roughly")}${row("⬡","tap any hex to walk there")}${row("⬢","tap your own hex to see this place")}</ul>`;
  $("mapkey-close").onclick=()=>{k.hidden=true}}
 // Travellers have twice the hit points they used to; older characters are brought up once
