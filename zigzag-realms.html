@@ -2641,7 +2641,18 @@ function rest(){
  if(hungerLevel()>=1&&!L.town){after=Math.min(after,before+Math.ceil((after-before)/2));msg+=" Hunger keeps you from resting well."}
  setStat("HP",after);ch.windUsed=false;ch.nightWalk=null;touch(ch.id);log(msg,"good");
  for(const id of packIds())if(cell(id).burnsOut){log(`Your ${cell(id).t.toLowerCase()} has burned down.`);excise(id,"contain");destroy(id)}
- passTime(span);store.flush();render();
+ passTime(span);forageAtCamp(L);store.flush();render();
+}
+/* Camping in the wild, you forage greens, berries and roots around camp: half a day's food each time.
+   Camp often enough and you can bank enough to reach a town. Nothing grows on the high mountain or deep down. */
+const FORAGE_MIN=720,FORAGE_CAP=2*1440;
+function forageAtCamp(L){
+ const ch=charId()&&cell(charId());if(!ch||!L||L.town||starveZone(L)||isDowned())return;
+ const t=gameNow(),was=ch.lastMeal??t;ch.lastMeal=Math.min(t+FORAGE_CAP,Math.max(was,t-2*1440)+FORAGE_MIN);
+ if(hungerLevel()<1){ch.hungerSaid=0;ch.starveMark=0}else if(hungerLevel()<2&&(ch.hungerSaid||0)>1)ch.hungerSaid=1;
+ touch(ch.id);
+ const what=zOf(L)<0?"pale mushrooms and cave cress":pick(["grass seed, berries and sorrel","berries, nettle tops and a few roots","wild garlic, hazelnuts and bramble fruit","clover, sorrel and a handful of berries"]);
+ log(`While you camp you forage ${what}: food for half a day${ch.lastMeal>=t+FORAGE_CAP?" (you cannot carry any more fresh forage)":""}.`,"good");
 }
 
 /* Talking to townsfolk, greeting and feeding creatures */
@@ -4297,7 +4308,7 @@ function renderStarving(){
  const on=!!(ch&&L&&!isDowned()&&!foeId()&&!L.town&&hungerLevel()>=2&&!packIds().some(i=>cell(i).kind==="food")&&starveDismissed!==ch.lastMeal);
  el.classList.toggle("show",on);if(!on){el.innerHTML="";return}
  const T=towns().slice().sort((a,b)=>hexDist(L.x,L.y,a.x,a.y)-hexDist(L.x,L.y,b.x,b.y))[0];
- el.innerHTML=`<div class="card"><b>Starving</b><p>Every scrap of food is gone. Find a town, where no one goes hungry, or hunt a creature and eat what it leaves.</p>
+ el.innerHTML=`<div class="card"><b>Starving</b><p>Every scrap of food is gone. Find a town, where no one goes hungry, hunt a creature and eat what it leaves, or make camp: each camp forages half a day's food.</p>
   <div class="btnrow">${T?`<button class="primary" id="starve-go">Head for ${esc(T.t)}</button>`:""}<button id="starve-ok">Later</button></div></div>`;
  if($("starve-go"))$("starve-go").onclick=()=>{const p=pathTo(T.id);if(p)travelTo(T.id);else walkToward(T.x,T.y)};
  $("starve-ok").onclick=()=>{starveDismissed=ch.lastMeal;renderStarving()};
@@ -4872,7 +4883,7 @@ function renderSheet(){
  <p class="note">${esc(CLASS_NOTES[ch.cls]||"")}</p>
  <p class="note">Your portrait is drawn from your name. A fresh portrait may later become a small paid extra.</p>
  </div>
- <div class="btnrow"><button id="rest" ${restBlocked?"disabled":""} title="${L&&L.town?"Pay 2 gp for a room and sleep until dawn (or eight hours): full HP.":"Make camp: sleep until dawn at night, or eight hours by day, for half your HP."}">${L&&L.town?"Take a room at the inn · 2 gp":"Make camp"}</button>${foeId()?'<span class="note">Not while it is here.</span>':""}</div>
+ <div class="btnrow"><button id="rest" ${restBlocked?"disabled":""} title="${L&&L.town?"Pay 2 gp for a room and sleep until dawn (or eight hours): full HP.":"Make camp: sleep until dawn at night, or eight hours by day, for half your HP. You forage half a day's food around camp."}">${L&&L.town?"Take a room at the inn · 2 gp":"Make camp"}</button>${foeId()?'<span class="note">Not while it is here.</span>':""}</div>
  ${hungerLevel()>=1?`<p class="flash${hungerLevel()>=2?" sharp":""}">${hungerLevel()>=2?"Starving: you lose 1 HP every six hours.":"Hungry: −1 STR, −1 CON, and you heal less when you rest."} Eat something.</p>`:""}
  ${companions().length?`<p class="note">Companions: ${companions().map(n=>`<b>${esc(n.t)}</b> (${esc(GIFTS[n.species]||"keeps you company")})`).join("; ")}.</p>`:""}
  <details class="standing"><summary>Reputation, towns and plan</summary>
