@@ -361,7 +361,7 @@ details.standing[open]{gap:10px}
 /* Log */
 .log ol{list-style:none;margin:0;padding:0;display:grid;gap:4px;max-height:280px;overflow:auto;font-size:13pt}
 .log li{padding-left:12px;border-left:2px solid var(--rule)}
-.log li.bad{border-left-color:var(--danger)}.log li.good{border-left-color:var(--good)}.log li.npc{border-left-color:var(--water)}.log li.time{border-left-color:var(--amber)}
+.rounds li.lesson{color:var(--water);font-style:italic}.log li.lesson{border-left-color:var(--water)}.log li.bad{border-left-color:var(--danger)}.log li.good{border-left-color:var(--good)}.log li.npc{border-left-color:var(--water)}.log li.time{border-left-color:var(--amber)}
 .log .roll{font-family:var(--mono);font-size:13pt;color:var(--faint)}
 
 /* Creation */
@@ -2295,7 +2295,7 @@ const visible=c=>c.seen!==false||c.visited;
 function gainXP(n){
  setStat("XP",sv("XP")+n);
  while(sv("XP")>=sv("LVL")*100){
-  const r=roll(`1d${hitDie()}`),gain=Math.max(1,r.total+mod(sv("CON")));
+  const r=roll(`1d${hitDie()}`),gain=2*Math.max(1,r.total+mod(sv("CON")));
   setStat("LVL",sv("LVL")+1);setStat("MAXHP",sv("MAXHP")+gain);setStat("HP",sv("HP")+gain);
   log(`You reach level ${sv("LVL")}. Maximum HP rises by ${gain}.`,"good",r.text+` ${sgn(mod(sv("CON")))} CON`);
  }
@@ -2393,10 +2393,34 @@ function monsterTurn(){
  for(let i=0;i<swings&&sv("HP")>0;i++){
   const d=rnd(20),tot=d+F.atk,ac=armourClass();let txt=`d20 → ${d} +${F.atk} = ${tot} against your AC ${ac}`;
   if(d===1||(d!==20&&tot<ac))say(`${F.t} lunges and misses.`,"good",txt);
-  else{const r=roll(F.dmg,d===20?2:1);txt+=`; damage ${r.text}`;setStat("HP",sv("HP")-r.total);say(d===20?`A critical blow from ${F.t}: ${r.total} damage.`:`${F.t} hits you for ${r.total} damage.`,"bad",txt)}
+  else{const r=roll(F.dmg,d===20?2:1);txt+=`; damage ${r.text}`;setStat("HP",sv("HP")-r.total);say(d===20?`A critical blow from ${F.t}: ${r.total} damage.`:`${F.t} hits you for ${r.total} damage.`,"bad",txt);if(sv("HP")>0)foeLesson(F)}
  }
  if(F.special==="regenerate"&&F.hp<F.maxhp){const r=roll("1d4");F.hp=Math.min(F.maxhp,F.hp+r.total);touch(f);say(`${F.t} knits itself back together (+${r.total}).`,"",r.text)}
  if(sv("HP")<=0){if(F.objectClass==="Keter")fall(hereId());else woundedRetreat(F)}
+}
+/* Each time an anomaly wins a round you learn something useful about it: how hard it is to hit, how
+   hard it hits, what it can do, how hurt it is, which of your attacks suits it and how easily you could slip away. */
+function foeLesson(F){
+ const opts=attackOptions(),you=sv("HP"),hitOf=o=>Math.max(.05,Math.min(.95,(21-(F.ac-mod(sv(o.stat))-prof()))/20));
+ const avg=s=>{const m=/(\d+)d(\d+)([+-]\d+)?/.exec(String(s||""));return m?(+m[1])*((+m[2])+1)/2+(+(m[3]||0)):3};
+ const yourAvg=o=>avg(o.dice)+(o.addMod?mod(sv(o.stat)):0)+(o.sneak?o.sneak*3.5:0);
+ const best=opts.slice().sort((a,b)=>hitOf(b)*yourAvg(b)-hitOf(a)*yourAvg(a))[0];
+ const tough=F.ac>=15?"Its hide turns most blows; few of your swings will land.":F.ac>=13?"It is well guarded: expect to miss about as often as you hit.":"Its guard is poor: most of your blows will land.";
+ const harm=avg(F.dmg)*(F.special==="frenzy"?2:1),turns=Math.max(1,Math.ceil(you/Math.max(1,harm)));
+ const flee=Math.max(0,Math.min(10,Math.round((21-(10+Math.floor(F.atk/2)-mod(sv("DEX"))))/2)));
+ const hits=Math.max(1,Math.ceil(Math.max(0,F.hp)/Math.max(1,yourAvg(best))));
+ const pool=[
+  ["guard",tough],
+  ["harm",turns<=2?`It hits hard: two or three more blows like that could put you down.`:`At this rate you could stand about ${turns} more of its blows.`],
+  ["special",F.special==="regenerate"?"Its wounds close as you watch. Finish it quickly or not at all.":F.special==="phasing"?"Now and then your blows pass straight through it. Patience.":F.special==="frenzy"?"It strikes twice in each round once roused.":"It has no strange gifts: what you see is what you fight."],
+  ["best",opts.length>1?`${best.label} suits this foe best.`:`Your best hope is to ${best.label.charAt(0).toLowerCase()+best.label.slice(1)}; about ${Math.round(hitOf(best)*10)} in 10 of your blows should land.`],
+  ["flee",`Your chance of slipping away from it is about ${flee} in 10.`],
+  ["habit",F.spread?"Left alone, it spreads to the places around it.":F.roam?"It roams: if you back off, it may follow you or wander away.":"It stays put: back off and it will not follow."]
+ ];
+ F.learned=F.learned||[];const next=pool.find(([k])=>!F.learned.includes(k));
+ let tip;if(next){F.learned.push(next[0]);tip=next[1]}
+ else tip=F.hp<=F.maxhp/3?`It is badly hurt: about ${hits} more good ${hits===1?"hit":"hits"} should finish it.`:F.hp<=F.maxhp*2/3?`It is wounded, but has fight left: perhaps ${hits} more hits.`:`It is barely scratched: it could take ${hits} or more of your hits.`;
+ touch(F.id);say(`You learn: ${tip}`,"lesson");
 }
 function attack(index){
  const f=foeId();if(busy||!f||isDowned())return;const F=cell(f),opt=attackOptions()[index||0];if(!opt)return;const h0=F.hp;
@@ -2732,8 +2756,8 @@ function feed(id){
 /* New world */
 let draft={name:"Wren Ashdown",cls:"Fighter",theme:"A misty borderland of old forests, ruined watchtowers, river villages and the hills where the old kingdom fell. Lately, things have been seen that do not belong in any bestiary.",stats:rollStats()};
 function makeCharacter(){
- const ch=newCell("char",{t:draft.name.trim()||"Nameless wanderer",cls:draft.cls,windUsed:false,ties:{}});connect("root","cursor",ch);
- const C=CLASSES[draft.cls],con=mod(draft.stats[2]),hp=Math.max(1,C.hd+con);
+ const ch=newCell("char",{t:draft.name.trim()||"Nameless wanderer",cls:draft.cls,windUsed:false,ties:{},hpx2:true});connect("root","cursor",ch);
+ const C=CLASSES[draft.cls],con=mod(draft.stats[2]),hp=2*Math.max(1,C.hd+con);
  const vals=Object.fromEntries(STATS.map((s,i)=>[s,draft.stats[i]]));Object.assign(vals,{HP:hp,MAXHP:hp,LVL:1,XP:0,GP:10});
  for(const [k,v] of Object.entries(vals)){const s=newCell("stat",{t:k,v});appendTo(ch,"stat",s)}
  const extras=shuffle(START_POOL).slice(0,3);
@@ -5063,7 +5087,9 @@ function renderMapKey(){const k=$("mapkey");if(!k||k.innerHTML)return;
   ${row('<span style="color:var(--magic)">┅</span>',"the magical bridge")}${row("┿","railway")}${row('<span style="color:var(--amber)">●</span>',"a sanctuary, far away")}${row('<span style="color:var(--magic)">●</span>',"a cave entrance, far away")}
   ${row('<span style="color:var(--accent)">◯</span>',"a friend, roughly")}${row("⬡","tap any hex to walk there")}${row("⬢","tap your own hex to see this place")}</ul>`;
  $("mapkey-close").onclick=()=>{k.hidden=true}}
-function render(){renderMapKey();renderGate();renderDream();renderEncounter();renderStarving();{const x=$("exploring");if(x)x.classList.toggle("show",!!(busy&&charId()&&!isDowned()&&!["realm","founding","river","start"].includes(busy.dir)))}renderPills();renderScriptButton();renderMap();renderCompass();renderPlace();renderSheet();renderSocial();renderGarden();renderCodex();renderAlphabet();renderLog();renderVoice();decoratePanels();iconHeads();sound.update();voiceOnRender()}
+// Travellers have twice the hit points they used to; older characters are brought up once
+function doubleHP(){const ch=charId()&&cell(charId());if(!ch||ch.hpx2)return;ch.hpx2=true;setStat("MAXHP",2*sv("MAXHP"));setStat("HP",Math.max(1,2*sv("HP")));touch(ch.id)}
+function render(){doubleHP();renderMapKey();renderGate();renderDream();renderEncounter();renderStarving();{const x=$("exploring");if(x)x.classList.toggle("show",!!(busy&&charId()&&!isDowned()&&!["realm","founding","river","start"].includes(busy.dir)))}renderPills();renderScriptButton();renderMap();renderCompass();renderPlace();renderSheet();renderSocial();renderGarden();renderCodex();renderAlphabet();renderLog();renderVoice();decoratePanels();iconHeads();sound.update();voiceOnRender()}
 
 /* ============================================================
    Soundtrack: generated live from white, pink and brown noise and a few oscillators.
