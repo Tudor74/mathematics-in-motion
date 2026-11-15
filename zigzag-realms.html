@@ -807,7 +807,8 @@ const nightKey=t=>isNight(t)?(hourOf(t)>=duskH(t)?dayOf(t):dayOf(t)-1):null;
 function nightUsed(t=gameNow()){const ch=charId()&&cell(charId());if(!ch||!ch.nightWalk||!isNight(t))return 0;return ch.nightWalk.key===nightKey(t)?ch.nightWalk.min:0}
 function spendNight(min,t){if(!isNight(t))return;const ch=cell(charId());ch.nightWalk={key:nightKey(t),min:nightUsed(t)+min};touch(ch.id)}
 const nightLeft=(t=gameNow())=>Math.max(0,LANTERN_NIGHT_MIN+(typeof hasCompanion==="function"&&hasCompanion("deer")?60:0)-nightUsed(t));
-const isDark=c=>c&&(["cave","dungeon"].includes(c.terrain)||zOf(c)<0);
+// Only places below ground are dark: a cave mouth or sinkhole on the surface is under the open sky
+const isDark=c=>!!c&&zOf(c)<0;
 const exitOpen=(c,d)=>!c||!c.exits||c.exits[d]!==false;
 function wallText(c,d){if(c&&c.walls&&c.walls[d])return c.walls[d];return d==="up"?"no way up":d==="down"?"no way down":"no way through"}
 // Why you cannot go a given way right now, or null if you can
