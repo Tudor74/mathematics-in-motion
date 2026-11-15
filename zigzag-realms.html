@@ -69,7 +69,7 @@ header.top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align
 #segdigits .on{fill:#ffb35c;filter:drop-shadow(0 0 .8px #ff8a1f) drop-shadow(0 0 2.2px #ff6a00aa)}
 #segdigits .off{fill:currentColor;opacity:.07}
 #segdigits .dot{fill:#ffb35c;filter:drop-shadow(0 0 1.5px #ff6a00);animation:nixblink 2s steps(1) infinite}
-#moon{width:30px;height:30px;overflow:visible}#moon .dark{fill:currentColor;opacity:.12}#moon .lit{fill:#f4ecd2;filter:drop-shadow(0 0 3px #fff6d8aa)}#moon .rim{fill:none;stroke:currentColor;stroke-opacity:.25}
+#moon{width:40px;height:40px;overflow:visible;flex:0 0 auto}#moon .dark{fill:currentColor;opacity:.12}#moon .lit{fill:#f4ecd2;filter:drop-shadow(0 0 3px #fff6d8aa)}#moon .rim{fill:none;stroke:currentColor;stroke-opacity:.25}
 .seasonline{position:relative;display:flex;gap:2px;width:100%;height:5px;margin-top:2px}
 .seasonline span{flex:1;border-radius:3px;opacity:.28}
 .seasonline .sp{background:#6fbf63}.seasonline .su{background:#f0bd3e}.seasonline .au{background:#d4702f}.seasonline .wi{background:#79ace3}
@@ -96,15 +96,18 @@ header.top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align
 /* Map */
 .map svg{display:block;width:100%;height:auto;max-width:100%;aspect-ratio:480/416;background:var(--wash);border-radius:6px}
 .mapwrap{position:relative}
-.panel.map{background:none;border:0;padding:0;border-radius:0;box-shadow:none}.panel.map svg{border-radius:12px;border:1px solid var(--rule)}.panel.map .hud{left:10px;top:10px}.panel.map .mapwx{right:10px;bottom:10px}
+.panel.map{background:none;border:0;padding:0;border-radius:0;box-shadow:none}.panel.map svg{border-radius:12px;border:1px solid var(--rule)}.panel.map .mapwx{right:10px;bottom:10px}
 /* The heads-up display: what changes as you play, over the map's top-left corner */
-.hud{position:absolute;left:8px;top:8px;display:grid;gap:4px;padding:7px 9px;border-radius:8px;background:color-mix(in srgb,var(--sheet) 88%,transparent);border:1px solid var(--rule);font-family:var(--mono);font-size:13pt;color:var(--ink);min-width:150px;max-width:calc(100% - 16px);box-shadow:0 2px 8px #0002}
-.mapwx{position:absolute;right:8px;bottom:8px;padding:5px 10px;border-radius:8px;background:color-mix(in srgb,var(--sheet) 88%,transparent);border:1px solid var(--rule);font-family:var(--mono);font-size:13pt;color:var(--ink);max-width:calc(100% - 16px);box-shadow:0 2px 8px #0002;pointer-events:none}.mapwx:empty{display:none}
+.hud{position:absolute;left:10px;top:10px;display:flex;align-items:flex-start;gap:8px;pointer-events:none}
 .hud:empty{display:none}
-.hud .row{display:flex;justify-content:space-between;gap:10px;align-items:center}
-.hud .bar{height:6px;border-radius:99px;background:var(--wash);border:1px solid var(--rule);overflow:hidden}.hud .bar span{display:block;height:100%;background:var(--good)}
-.hud .bar.low span{background:var(--danger)}.hud .bar.xp span{background:var(--magic)}
-.hud .warn{color:var(--danger)}.hud button{min-height:26px;padding:2px 8px;font-size:13pt;font-family:var(--body)}
+.mapwx{position:absolute;right:10px;bottom:10px;padding:5px 10px;border-radius:8px;background:color-mix(in srgb,var(--sheet) 88%,transparent);border:1px solid var(--rule);font-family:var(--mono);font-size:13pt;color:var(--ink);max-width:calc(100% - 20px);box-shadow:0 2px 8px #0002;pointer-events:none}.mapwx:empty{display:none}
+.map .hud svg{aspect-ratio:auto;background:none;border:0;border-radius:0;max-width:none}.map .hud .hpdial{width:72px;height:72px}.map .hud .gp svg{width:24px;height:24px}
+.hpdial{width:72px;height:72px;display:block}.hpdial .bg{fill:color-mix(in srgb,var(--sheet) 88%,transparent);stroke:var(--rule)}.hpdial .track{fill:none;stroke:var(--wash);stroke-width:7}
+.hpdial .arc{fill:none;stroke-width:7;stroke-linecap:round}.hpdial .hpv{font-family:var(--mono);font-size:13pt;font-weight:700;fill:var(--ink)}.hpdial .hpm{font-family:var(--mono);font-size:13pt;fill:var(--faint)}
+.hudside{display:grid;gap:4px;justify-items:start;padding-top:6px}
+.hud .gp{display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 4px;border-radius:99px;background:color-mix(in srgb,var(--sheet) 88%,transparent);border:1px solid var(--rule);font-family:var(--mono);font-size:13pt;color:var(--ink)}
+.hud .gp svg{width:24px;height:24px}.hud .gp .c1{fill:#e2b53c;stroke:#a87b12;stroke-width:1.4}.hud .gp .c2{fill:none;stroke:#a87b12;stroke-width:1.1;opacity:.7}
+.hudwarn{padding:2px 9px;border-radius:99px;background:color-mix(in srgb,var(--sheet) 88%,transparent);border:1px solid var(--danger);color:var(--danger);font-family:var(--mono);font-size:13pt}
 .mapplace{display:grid;gap:2px;min-width:0}
 .mapplace h2{font-size:21px;line-height:1.15;margin:0}
 .mapplace .titlerow{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
@@ -425,12 +428,12 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
   <div class="hdr-right">
   <div class="nixie" id="pill-clock" data-night="false">
    <div class="whoami" id="whoami"></div>
-   <div class="segclock"><button id="sound-toggle" class="soundicon" aria-pressed="true" type="button" aria-label="Sound on"></button><svg aria-hidden="true" id="segdigits" viewBox="0 0 132 44"></svg><svg id="moon" viewBox="0 0 32 32"></svg></div>
+   <div class="segclock"><svg id="moon" viewBox="3.5 3.5 25 25"></svg><button id="sound-toggle" class="soundicon" aria-pressed="true" type="button" aria-label="Sound on"></button><svg aria-hidden="true" id="segdigits" viewBox="0 0 132 44"></svg></div>
    <div class="seasonline" id="seasonline" aria-hidden="true"><span class="sp"></span><span class="su"></span><span class="au"></span><span class="wi"></span><i></i></div>
   </div>
   <div class="pills">
-   <button class="pill" id="script-toggle" aria-pressed="false" type="button">Script: <b>Latin</b></button>
-   <span class="pill" id="pill-ai">Narrator: <b>connecting…</b></span>
+   <button class="pill" id="script-toggle" aria-pressed="false" type="button" hidden>Script: <b>Latin</b></button>
+   <span class="pill" id="pill-ai" hidden>Narrator: <b>connecting…</b></span>
    <span id="account" class="pills"></span>
    <span class="pill" id="pill-save" hidden></span>
    <button class="pill" id="layout-reset" type="button" hidden>Reset layout</button>
@@ -1156,13 +1159,13 @@ const SHROOMS={
  puffball:{name:"Giant puffball",latin:"Calvatia gigantea",about:"A white ball the size of a head; good sliced and fried while it is white inside.",food:"1d4",where:["plains"]},
  chicken:{name:"Chicken of the woods",latin:"Laetiporus sulphureus",about:"Sulphur-yellow shelves on old oaks; it does taste like chicken.",food:"1d3",where:["forest"]},
  oyster:{name:"Oyster mushroom",latin:"Pleurotus ostreatus",about:"Grey fans on dead wood, even on old pit props underground.",food:"1d2",where:["forest","cave","dungeon"]},
- libertycap:{name:"Liberty cap",latin:"Psilocybe semilanceata",about:"A small pointed cap in damp grassland. In the real world it brings visions and bends perception; here, more so.",fx:{WIS:3,CHA:1,DEX:-2,STR:-1},hours:6,where:["plains","grove"]},
+ libertycap:{name:"Liberty cap",latin:"Psilocybe semilanceata",about:"A small pointed cap in damp grassland. In the real world it brings visions and bends perception; here, more so: for two hours the very letters change.",fx:{WIS:3,CHA:1,DEX:-2,STR:-1},hours:6,glyphs:true,where:["plains","grove"]},
  lionsmane:{name:"Lion's mane",latin:"Hericium erinaceus",about:"A white cascade of soft spines on a wounded tree. Studied in the real world for memory and nerves; here it sharpens the mind and loosens the hands.",fx:{INT:2,WIS:1,DEX:-1},hours:8,food:"1",where:["forest"]},
  cordyceps:{name:"Cordyceps",latin:"Cordyceps militaris",about:"Orange clubs rising from buried insects. A traditional stamina tonic; here it fills you with restless strength.",fx:{CON:2,STR:1,WIS:-1,CHA:-1},hours:5,where:["forest","grove"]},
  reishi:{name:"Reishi",latin:"Ganoderma lucidum",about:"A lacquered red bracket, too woody to eat, so you chew a strip. Brewed for calm in the real world; here it makes you calm and slow.",fx:{WIS:2,CON:1,DEX:-2},hours:8,where:["forest","swamp"]},
  chaga:{name:"Chaga",latin:"Inonotus obliquus",about:"A black, cracked growth on birch, orange inside. A bitter tonic; it toughens you and sours your breath.",fx:{CON:2,CHA:-1},hours:6,where:["forest"]},
  inkcap:{name:"Common ink cap",latin:"Coprinopsis atramentaria",about:"A grey cap that melts into black ink. Edible, but in the real world it turns any drink you take for days into a poison.",fx:{STR:1,CON:-1},hours:4,food:"1",where:["plains","ruin","road"],warn:"Never with ale or wine."},
- flyagaric:{name:"Fly agaric",latin:"Amanita muscaria",about:"Red cap, white spots, the toadstool from every storybook. Poisonous and intoxicating; legend gives it to berserkers.",fx:{STR:3,CHA:1,WIS:-3,DEX:-2},hours:4,poison:"1d4",where:["forest"]},
+ flyagaric:{name:"Fly agaric",latin:"Amanita muscaria",about:"Red cap, white spots, the toadstool from every storybook. Poisonous and intoxicating; legend gives it to berserkers.",fx:{STR:3,CHA:1,WIS:-3,DEX:-2},hours:4,poison:"1d4",glyphs:true,where:["forest"]},
  sickener:{name:"The sickener",latin:"Russula emetica",about:"A bright red cap with white gills, peppery hot. Poisonous: it empties your stomach.",fx:{DEX:1,CON:-2,STR:-1},hours:3,poison:"1d3",empties:true,where:["forest","swamp"]},
  jackolantern:{name:"Jack-o'-lantern",latin:"Omphalotus olearius",about:"Orange clusters on buried roots whose gills glow faintly in the dark. Poisonous; here the glow gets into you.",fx:{WIS:1,CON:-2,CHA:-1},hours:4,poison:"1d4",glow:true,where:["forest","cave"]},
  deathcap:{name:"Death cap",latin:"Amanita phalloides",about:"A pale olive cap with a white ring and a cup at its foot. The deadliest mushroom in the real world.",fx:{WIS:1,CON:-4,STR:-3,DEX:-2},hours:8,poison:"deadly",where:["forest"]},
@@ -1185,6 +1188,7 @@ function eatShroom(id){
  if(m.poison){const hp=sv("HP"),loss=m.poison==="deadly"?hp-1:Math.min(hp-1,roll(m.poison).total);setStat("HP",hp-Math.max(0,loss));
   lines.push(m.poison==="deadly"?"You are terribly ill; you cling to life with 1 HP":`it makes you ill: −${Math.max(0,loss)} HP`)}
  if(m.empties){ch.lastMeal=Math.min(ch.lastMeal||t,t-480);lines.push("your stomach is empty")}
+ if(m.glyphs){ch.glyphUntil=t+120;ch.boons=(ch.boons||[]).concat(STATS.map(stat=>({stat,amount:1,until:t+120,from:"the visions"})));lines.push("every ability +1 for two hours, and the letters of the world twist into strange shapes")}
  if(m.glow){ch.glowUntil=t+m.hours*60;lines.push("a faint light comes off your skin, enough to walk by")}
  if(m.food&&!m.poison)ate(m.name.toLowerCase());
  touch(ch.id);log(`You eat the ${m.name.toLowerCase()}: ${lines.join("; ")}.`,m.poison?"bad":"good");store.flush();render();
@@ -2754,7 +2758,7 @@ function realmSVG(k,size=40){
 }
 // Build an OpenType font of the script in the browser (opentype.js), and use it for all letters
 const realm={on:false,font:false,loading:null,
- init(){try{this.on=localStorage.getItem("zr-script")==="realm"}catch(e){}if(this.on)this.load()},
+ init(){this.on=false},   // the realm script now comes only from certain mushrooms
  load(){
   if(this.font)return Promise.resolve(true);if(this.loading)return this.loading;
   this.loading=new Promise(res=>{
@@ -2780,7 +2784,7 @@ const realm={on:false,font:false,loading:null,
  },
  async set(v){
   this.on=v;try{localStorage.setItem("zr-script",v?"realm":"latin")}catch(e){}
-  if(v){const ok=await this.load();if(!ok){this.on=false;flash="The realm script could not be loaded here (its font library is blocked), so text stays in Latin letters."}}
+  if(v){const ok=await this.load();if(!ok){this.on=false;this.broken=true;flash="The realm script could not be loaded here (its font library is blocked), so text stays in Latin letters."}}
   document.documentElement.classList.toggle("realm",this.on);render();
  }
 };
@@ -4030,14 +4034,16 @@ document.addEventListener("click",e=>{if(e.target.closest("#zoom-in"))setZoom(-1
 /* The HUD: hit points, level and XP, gold, load, light and hunger, plus a rest button, over the map */
 function renderHud(){
  const el=$("hud");if(!el)return;if(!charId()||!hereId()){el.innerHTML="";return}
- const hp=sv("HP"),max=sv("MAXHP"),pct=Math.max(0,Math.min(100,hp/max*100)),lvl=sv("LVL"),xp=sv("XP"),L=cell(hereId()),night=isNight(gameNow());
- const steps=Math.floor(nightLeft()/STEP_MIN),light=!hasLight()?(night||zOf(L)<0?'<span class="warn">no light</span>':"no lantern"):night?`lantern · ${steps} ${steps===1?"step":"steps"}`:"lantern";
- const hunger=hungerLevel()>=2?'<span class="warn">starving</span>':hungerLevel()>=1?'<span class="warn">hungry</span>':"fed";
- const restBlocked=busy||foeId()||isDowned();
- el.innerHTML=`<div class="row"><span>HP ${hp}/${max}</span><span>${sv("GP")} gp</span></div><div class="bar${pct<=34?" low":""}"><span style="width:${pct}%"></span></div>
-  <div class="row"><span>Level ${lvl}</span><span>XP ${xp}/${lvl*100}</span></div><div class="bar xp"><span style="width:${Math.min(100,xp/(lvl*100)*100)}%"></span></div>
-  <div class="row"><span>${light}</span><span>${hunger}</span></div><div class="row"><span>${fmtW(carried())}/${capacity()} lb</span><button type="button" id="hud-rest" ${restBlocked?"disabled":""}>${L.town?"Room · 2 gp":"Camp"}</button></div>`;
- $("hud-rest").onclick=rest;
+ {const want=(cell(charId()).glyphUntil||0)>gameNow();if(want!==realm.on&&!(want&&realm.broken)){if(!want&&realm.on)log("The letters settle back into shapes you know.","time");realm.set(want);return}}
+ const hp=sv("HP"),max=Math.max(1,sv("MAXHP")),f=Math.max(0,Math.min(1,hp/max)),L=cell(hereId()),night=isNight(gameNow());
+ // A dial: the full ring is your maximum HP, the coloured arc what you have now
+ const R=27,C=2*Math.PI*R,col=f<=.34?"var(--danger)":f<=.67?"var(--amber)":"var(--good)";
+ const dial=`<svg class="hpdial" viewBox="0 0 72 72" role="img" aria-label="HP ${hp} of ${max}"><circle cx="36" cy="36" r="34" class="bg"/><circle cx="36" cy="36" r="${R}" class="track"/>
+  <circle cx="36" cy="36" r="${R}" class="arc" stroke="${col}" stroke-dasharray="${(C*f).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 36 36)"/>
+  <text x="36" y="35" text-anchor="middle" class="hpv">${hp}</text><text x="36" y="51" text-anchor="middle" class="hpm">/${max}</text></svg>`;
+ const coin=`<span class="gp" title="${sv("GP")} gold pieces"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" class="c1"/><circle cx="12" cy="12" r="6.6" class="c2"/></svg><b>${sv("GP")}</b></span>`;
+ const warn=[hungerLevel()>=2?"starving":hungerLevel()>=1?"hungry":"",!hasLight()&&(night||zOf(L)<0)?"no light":""].filter(Boolean);
+ el.innerHTML=`${dial}<div class="hudside">${coin}${warn.map(w=>`<span class="hudwarn">${w}</span>`).join("")}</div>`;
 }
 let lastMapShape="";window.addEventListener("resize",()=>{const b=$("map").getBoundingClientRect(),sh=Math.round(b.width/Math.max(1,b.height)*20);if(String(sh)!==lastMapShape){lastMapShape=String(sh);renderMap()}});
 function renderMap(){
