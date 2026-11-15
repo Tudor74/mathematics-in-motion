@@ -105,6 +105,7 @@ header.top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align
 .gate{position:absolute;inset:0;display:grid;place-items:center;padding:8px;overflow-y:auto;border-radius:12px;background:color-mix(in srgb,var(--paper) 70%,transparent);backdrop-filter:blur(3px);z-index:5}.gate[hidden]{display:none}
 .gate .card{max-width:520px;width:100%;display:grid;gap:8px;text-align:center;padding:12px 16px;border-radius:12px;background:var(--sheet);border:1px solid var(--rule);box-shadow:0 6px 24px #0003}
 .gate h2{margin:0;font-size:22px}.gate p{margin:0}
+.gate .card.mapcard{background-color:var(--wash);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='83.1' viewBox='0 0 48 83.1'%3E%3Cpath d='M12 0 L36 0 L48 20.8 L36 41.6 L12 41.6 L0 20.8 Z M0 62.4 L12 41.6 M36 41.6 L48 62.4 L36 83.1 L12 83.1 L0 62.4' fill='none' stroke='%23999' stroke-opacity='.35' stroke-width='1'/%3E%3C/svg%3E");border:1px solid var(--rule);text-align:center;max-width:480px}.gate .card.mapcard .placehead{display:grid;justify-items:center}.gate .card.mapcard .btnrow{justify-content:center}
 .gaterow{display:flex;gap:14px;align-items:center;text-align:left}.gatefields{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:8px;flex:1;min-width:0}
 .mapwx{position:absolute;right:10px;bottom:10px;padding:5px 10px;border-radius:8px;background:color-mix(in srgb,var(--sheet) 88%,transparent);border:1px solid var(--rule);font-family:var(--mono);font-size:13pt;color:var(--ink);max-width:calc(100% - 20px);box-shadow:0 2px 8px #0002;pointer-events:none}.mapwx:empty{display:none}
 .map .hud svg{aspect-ratio:auto;background:none;border:0;border-radius:0;max-width:none}.map .hud .hpdial{width:72px;height:72px}.map .hud .gp svg{width:24px;height:24px}
@@ -4076,8 +4077,12 @@ function renderAccount(){
 let joinArmed=false;
 function renderGate(){
  const g=$("gate");if(!g)return;
- const need=canJoinRealm()&&!(mp.on()&&charId());
+ const downed=!!charId()&&isDowned();
+ const need=downed||(canJoinRealm()&&!(mp.on()&&charId()));
  g.hidden=!need;if(!need){g.innerHTML="";g.dataset.sig="";return}
+ if(downed){const sig="downed|"+(flash||"");if(g.dataset.sig===sig&&g.innerHTML)return;g.dataset.sig=sig;
+  g.innerHTML=`<div class="card mapcard" role="dialog" aria-modal="true">${renderDowned()}</div>`;
+  $("wake").onclick=wakeAtHome;if($("resurrect"))$("resurrect").onclick=resurrect;return}
  const local=!!charId()&&!mp.on(),working=busy&&(busy.dir==="realm"||busy.dir==="founding"||busy.dir==="river"||busy.dir==="start"||busy.dir==="look");
  const sig=[local,joinArmed,working&&busy.dir,flash||""].join("|");if(g.dataset.sig===sig&&g.innerHTML)return;g.dataset.sig=sig;
  const status=working?`<p class="mapping">${busy.dir==="founding"?"Founding the shared realm for everyone who comes after…":busy.dir==="realm"?"Finding the shared realm and its travellers…":"Writing where your journey begins…"}</p>`:"";
@@ -4374,7 +4379,7 @@ function renderDowned(){
 function renderPlace(){
  const el=$("place");
  if(!charId()||!hereId()){renderCreate(el);return}
- if(isDowned()){el.innerHTML=renderDowned();$("wake").onclick=wakeAtHome;if($("resurrect"))$("resurrect").onclick=resurrect;return}
+ if(isDowned()){el.innerHTML=`<div class="placehead"><p class="eyebrow">You have fallen</p><h2>See the map</h2></div><p class="note">Choose how your story goes on, in the panel on the map.</p>`;return}
  const here=hereId(),L=cell(here),f=foeId(here),magic=magicPresent(),t=gameNow(),wa=weatherAt(L.x,L.y,zOf(L),t);
  const tr=TERRAINS.includes(L.terrain)?L.terrain:"other";
  const chips=[`<span class="chip terrain">${L.sanctuary?"sanctuary":L.monument?esc(MONUMENT_KIND[L.monument]):L.town?esc(TOWN_SIZES[L.town.size].label):L.river?(L.river.crossing?esc(CROSSINGS[L.river.crossing]):"river"):tr}</span>`,`<span class="chip">${esc(depthName(zOf(L)))}</span>`];
