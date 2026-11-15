@@ -405,7 +405,7 @@ details.standing[open]{gap:10px}
 .social .edge{fill:none;stroke-linecap:round}
 .social .edge.pos{stroke:var(--water)}.social .edge.neg{stroke:var(--danger)}
 .social .node{stroke:var(--sheet);stroke-width:1.5}
-.social .node.human{fill:var(--accent)}.social .node.beast{fill:var(--good)}.social .node.you{fill:var(--magic)}
+.social .node.human{fill:var(--accent)}.social .node.beast{fill:var(--good)}.social .node.you{fill:var(--magic);stroke:var(--sheet);stroke-width:2.5}
 .social text{font-family:var(--mono);font-size:calc(13pt * var(--u,1));fill:var(--faint)}
 .social text.you{fill:var(--magic);font-weight:500}
 .ties{list-style:none;margin:0;padding:0;font-size:13pt;display:grid;gap:3px}
@@ -5106,16 +5106,19 @@ function renderSocial(){
  const me=charId()&&cell(charId());
  const nodes=me?folk.concat([me]):folk;
  if(!nodes.length){svg.innerHTML=`<text x="170" y="170" text-anchor="middle">Nobody yet</text>`;$("ties").innerHTML="";$("soc-count").textContent="";return}
+ // Everyone else stands round the ring; you are the dot in the middle, and your ties are straight spokes
  const C=170,R=112,pos=new Map();
- nodes.forEach((n,i)=>{const a=i/nodes.length*2*Math.PI-Math.PI/2;pos.set(n.id,{x:C+R*Math.cos(a),y:C+R*Math.sin(a),a})});
+ folk.forEach((n,i)=>{const a=i/Math.max(1,folk.length)*2*Math.PI-Math.PI/2;pos.set(n.id,{x:C+R*Math.cos(a),y:C+R*Math.sin(a),a})});
+ if(me)pos.set(me.id,{x:C,y:C,a:0,centre:true});
  let out="";const pairs=[];
  for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
   const a=nodes[i],b=nodes[j],w=(tie(a,b)+tie(b,a))/2;if(Math.abs(w)<.2)continue;pairs.push([a,b,w]);
-  const p=pos.get(a.id),q=pos.get(b.id);
-  out+=`<path class="edge ${w>0?"pos":"neg"}" d="M${p.x.toFixed(1)} ${p.y.toFixed(1)} Q${C} ${C} ${q.x.toFixed(1)} ${q.y.toFixed(1)}" stroke-width="${(.5+2.5*Math.abs(w)).toFixed(2)}" stroke-opacity="${(.25+.6*Math.abs(w)).toFixed(2)}"/>`;
+  const p=pos.get(a.id),q=pos.get(b.id),mx=(p.x+q.x)/2,my=(p.y+q.y)/2,cx=p.centre||q.centre?mx:C+(mx-C)*.45,cy=p.centre||q.centre?my:C+(my-C)*.45;
+  out+=`<path class="edge ${w>0?"pos":"neg"}${p.centre||q.centre?" mine":""}" d="M${p.x.toFixed(1)} ${p.y.toFixed(1)} Q${cx.toFixed(1)} ${cy.toFixed(1)} ${q.x.toFixed(1)} ${q.y.toFixed(1)}" stroke-width="${(.5+2.5*Math.abs(w)).toFixed(2)}" stroke-opacity="${(.25+.6*Math.abs(w)).toFixed(2)}"/>`;
  }
  for(const n of nodes){const p=pos.get(n.id),deg=p.a*180/Math.PI,flip=Math.cos(p.a)<0;
-  out+=`<circle class="node ${n.k==="char"?"you":n.wild?"beast":"human"}" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${n.k==="char"?6:4.5}"><title>${esc(n.t)}${n.wild?" · "+esc(n.species):n.role?" · "+esc(n.role):""}</title></circle>`;
+  out+=`<circle class="node ${n.k==="char"?"you":n.wild?"beast":"human"}" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${n.k==="char"?7.5:4.5}"><title>${esc(n.t)}${n.wild?" · "+esc(n.species):n.role?" · "+esc(n.role):""}</title></circle>`;
+  if(p.centre){out+=`<text class="you" x="${C}" y="${C+19}" text-anchor="middle">you</text>`;continue}
   const lx=C+(R+9)*Math.cos(p.a),ly=C+(R+9)*Math.sin(p.a);
   out+=`<text class="${n.k==="char"?"you":""}" x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" transform="rotate(${flip?deg+180:deg} ${lx.toFixed(1)} ${ly.toFixed(1)})" text-anchor="${flip?"end":"start"}" dominant-baseline="middle">${esc(n.k==="char"?"you":n.t.split(" ")[0])}</text>`;}
  svg.innerHTML=out;
