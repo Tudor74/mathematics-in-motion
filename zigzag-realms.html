@@ -2794,9 +2794,12 @@ function wield(id){
 }
 // Make camp anywhere, or take a room at a town inn. At night you sleep until dawn; by day, eight hours.
 function minutesToDawn(t){return Math.round(nightOrDayEdge(t))}
-function rest(){
+function rest(atDusk){
  if(busy||!charId()||!hereId()||isDowned())return;const ch=cell(charId()),here=hereId(),L=cell(here),t=gameNow();
  if(foeId()){say("You cannot rest with an anomaly at large here.","bad");store.flush();render();return}
+ // Already camped tonight (it happens by itself at nightfall): sleeping on just takes you to dawn
+ if(isNight(t)&&!atDusk&&ch.campedNight===nightKey(t)&&ch.campedAt===here){log("You sleep on until dawn.","time");passTime(minutesToDawn(t));store.flush();render();return}
+ if(isNight(t)){ch.campedNight=nightKey(t);ch.campedAt=here}
  const span=isNight(t)?minutesToDawn(t):REST_MIN,max=sv("MAXHP"),before=sv("HP");let after,msg;
  if(L.town){
   if(atCottage()){after=max;ate("supper by your own hearth");msg=`You sleep in your own cottage in ${L.t} and wake fully rested (+${max-before} HP).`}
@@ -2810,9 +2813,19 @@ function rest(){
  else if(hasCompanion("badger")){after=max;msg=`You make camp at ${L.t}. Your badger keeps watch all night and you sleep deeply (+${max-before} HP).`}
  else{after=Math.min(max,before+Math.ceil(max/2));msg=`You make camp at ${L.t}${isNight(t)?" and sleep until dawn":" for eight hours"} (+${after-before} HP).`}
  if(hungerLevel()>=1&&!L.town){after=Math.min(after,before+Math.ceil((after-before)/2));msg+=" Hunger keeps you from resting well."}
- setStat("HP",after);ch.windUsed=false;ch.nightWalk=null;touch(ch.id);log(msg,"good");
+ setStat("HP",after);ch.windUsed=false;if(!atDusk)ch.nightWalk=null;touch(ch.id);log(msg,"good");
  for(const id of packIds())if(cell(id).burnsOut){log(`Your ${cell(id).t.toLowerCase()} has burned down.`);excise(id,"contain");destroy(id)}
- passTime(span);forageAtCamp(L);store.flush();render();
+ if(atDusk)forageAtCamp(L);else{passTime(span);forageAtCamp(L)}   // at nightfall you sleep through the night as it passes
+ store.flush();render();
+}
+/* Night falls (or your lantern gives out) and you cannot go on: you make camp, or take a room in a town,
+   by yourself. The night then passes as it does, with its dream; Make camp again to sleep straight to dawn. */
+function campAtNightfall(){
+ if(!charId()||!hereId()||busy||isDowned()||foeId()||walking)return;
+ const t=gameNow(),ch=cell(charId()),L=cell(hereId());if(!isNight(t)||zOf(L)<0)return;
+ if(hasLight()&&nightLeft(t)>0)return;
+ if(ch.campedNight===nightKey(t))return;
+ log(L.town?"Night falls, so you find a bed for the night.":"Night falls and you make camp.","time");rest(true);
 }
 /* Camping in the wild, you forage greens, berries and roots around camp: half a day's food each time.
    Camp often enough and you can bank enough to reach a town. Nothing grows on the high mountain or deep down. */
@@ -5657,6 +5670,7 @@ setInterval(()=>{
  if(!charId()||!hereId()||busy){return}
  const night=isNight(gameNow());
  if(lastNight===false&&night)showNudge();
+ if(night)campAtNightfall();
  if(!night)hideNudge();
  lastNight=night;
 },1000);
