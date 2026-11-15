@@ -1085,10 +1085,14 @@ function missingDirs(locId){
   if(Math.max(Math.abs(pos.x),Math.abs(pos.y))>exploreRange())continue;
   const id=coord.get(ck(pos.x,pos.y,pos.z));
   if(!id)out.push({dir:d,pos});
-  else if(cell(id).planned&&!cell(id).written&&ai.ready()&&!cell(id).lake)out.push({dir:d,pos,planned:id});
+  else if(cell(id).planned&&!cell(id).written&&ai.ready()&&!cell(id).lake&&aiWorthy(cell(id)))out.push({dir:d,pos,planned:id});
  }
  return out;
 }
+/* Which prepared places the AI rewrites when first seen: the memorable ones. Crags, mountain ledges, cave
+   passages, rail track, town streets and the hand-written region keep their built-in text, which
+   roughly halves the AI calls; new places beyond the starting map are always written by the AI. */
+const aiWorthy=c=>!!(c.landmark||(c.town&&!c.town.of)||(c.castle&&zOf(c)===0)||c.monument||c.sanctuary||c.cavemouth||c.falls||c.hole);
 function landmarksFrom(L){
  const marks=Object.values(zz.cells).filter(c=>c.k==="loc"&&(c.landmark||(c.town&&!c.town.of)||(c.river&&(c.river.crossing||c.river.index===0||c.hole))));
  const seen=new Set();
