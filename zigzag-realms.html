@@ -206,6 +206,7 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .layerbar{display:none;/* hidden for now; a better layer gauge to come */align-items:center;justify-content:center;gap:3px}.layerbar .mono{font-size:13pt;color:var(--faint);margin:0 4px}
 .layerbar .lv{width:14px;height:14px;border-radius:3px;background:var(--rule)}.layerbar .lv.up{background:var(--t-mountain)}.layerbar .lv.down{background:var(--t-cave)}
 .layerbar .lv.ground{background:var(--t-plains);outline:1px solid var(--faint)}.layerbar .lv.on{background:var(--accent);outline:2px solid var(--accent);outline-offset:1px}
+.map .wnote{font-size:calc(22px * var(--u,1));fill:var(--water);animation:wbob 1.4s ease-in-out infinite alternate}.map .wnote.bard{fill:var(--water)}@keyframes wbob{from{transform:translateY(0)}to{transform:translateY(-4px)}}
 .map .layers .bg{fill:var(--sheet);stroke:var(--rule);opacity:.92}
 .map .layers .lv{fill:var(--rule)}.map .layers .lv.ground{fill:var(--faint)}.map .layers .lv.massif{fill:var(--t-mountain)}.map .layers .lv.on{fill:var(--accent)}
 .map .layers text{font-family:var(--mono);font-size:calc(13pt * var(--u,1));fill:var(--faint)}
@@ -2109,6 +2110,92 @@ function encounterCheck(n,t){
   stepToward(n,t);n.activity=`retreating, wounded, from ${F.t}`;news(n,`${n.t} the ${n.role} fought ${F.designation} ${F.t} at ${L.t} and was driven off, wounded.`,"bad");
  }
 }
+/* ============================================================
+   Wanderers. Nine travelling folk walk the land by day, from town to landmark and on, finding their way
+   round walls and water with the same route search the test traveller uses. You hear one coming from three
+   hexes away: a jaunty little tune, as if whistled on a tin whistle, each their own. Meet one and they give
+   you a useful tip and a few hours' boost to an ability; except the bard, whose songs take 3 HP and leave
+   you a little worse for a while.
+   ============================================================ */
+const WANDERERS=[
+ {kind:"mage",name:"Ottoline Vex, a wandering mage",stat:"INT",amt:2,hours:6,greet:"A woman in a star-stitched coat taps your brow with one finger. Your thoughts come clearer."},
+ {kind:"paladin",name:"Sir Aldous Penn, a wandering paladin",stat:"STR",amt:2,hours:6,greet:"A knight in dented plate clasps your arm and says a short prayer for your sword arm."},
+ {kind:"beggar",name:"Old Crabbe, a beggar",stat:"WIS",amt:1,hours:8,greet:"A ragged old man asks for nothing, shares a crust, and tells you what the road has taught him."},
+ {kind:"guru",name:"The Guru of Seven Silences",stat:"WIS",amt:2,hours:6,greet:"A barefoot sage sits with you in silence for a while. Afterwards everything seems simpler."},
+ {kind:"troubadour",name:"Rosamund, a troubadour",stat:"CHA",amt:2,hours:6,greet:"A troubadour sings you a verse about yourself, slightly better than the truth. You stand taller."},
+ {kind:"bard",name:"Merrick, a bard",bard:true,greet:"A bard plays you an endless ballad, very badly, and then asks for payment. Your head throbs."},
+ {kind:"minstrel",name:"Lyle, a minstrel",stat:"DEX",amt:2,hours:6,greet:"A minstrel teaches you a quick-stepping dance. Your feet feel lighter for it."},
+ {kind:"magician",name:"Fennimore the Magician",stat:"DEX",amt:1,hours:8,greet:"A magician pulls a coin from your ear, then shows you how. Your fingers are nimbler."},
+ {kind:"handler",name:"Hob, an animal handler",stat:"CON",amt:2,hours:6,greet:"A man with a ferret on his shoulder and a goat on a string shares a draught of goat's milk. You feel hardy."}
+];
+const wanderers=()=>{const r=cell("root");return r&&r.wanderers||[]};
+function wanderGoals(){return Object.values(zz.cells).filter(c=>c.k==="loc"&&zOf(c)===0&&!c.river&&!c.lake&&((c.town&&!c.town.of)||c.landmark||c.sanctuary||c.grove)&&Math.max(Math.abs(c.x),Math.abs(c.y))<=exploreRange())}
+function seedWanderers(){
+ const r=cell("root");if(!r||r.wanderers||!charId())return;const G=wanderGoals();if(G.length<2)return;
+ r.wanderers=WANDERERS.map((w,i)=>{const a=pick(G),b=pick(G.filter(g=>g!==a));return{i,x:a.x,y:a.y,goal:[b.x,b.y],met:-1e9,heard:false}});touch("root");
+}
+// One step along the shortest route on the hex grid: known places by the walking rules, unexplored ground assumed open
+function routeStep(x,y,tx,ty){
+ const key=(a,b)=>a+","+b,start=key(x,y),goal=key(tx,ty),prev={[start]:null},q=[[x,y]],R=hexDist(x,y,tx,ty)+10;let found=false;
+ for(let h=0;h<q.length&&h<5000;h++){const [cx,cy]=q[h];if(key(cx,cy)===goal){found=true;break}const id=coord.get(ck(cx,cy,0));
+  for(const d of sideMoves(cx)){const D=DIRS[d]||DIAG[d],nx=wrapC(cx+D.dx),ny=wrapC(cy+D.dy),k=key(nx,ny);if(k in prev||hexDist(nx,ny,tx,ty)>R)continue;
+   const nid=coord.get(ck(nx,ny,0)),N=nid&&cell(nid);
+   if(id?!sideOpen(id,d):(N&&(N.lake||N.hole||(N.river&&riverBlock(nid)))))continue;
+   prev[k]={from:key(cx,cy),x:nx,y:ny};q.push([nx,ny])}}
+ if(!found)return null;let k=goal;while(prev[k]&&prev[k].from!==start)k=prev[k].from;return prev[k]?[prev[k].x,prev[k].y]:null;
+}
+function wanderTick(t){
+ if(isNight(t))return;const ws=wanderers();if(!ws.length)return;if(Math.floor(t/TICK)%2)return;   // a hex an hour, by day
+ for(const w of ws){
+  if(w.x===w.goal[0]&&w.y===w.goal[1]){const G=wanderGoals().filter(g=>g.x!==w.x||g.y!==w.y);if(G.length){const g=pick(G);w.goal=[g.x,g.y]}continue}
+  const n=routeStep(w.x,w.y,w.goal[0],w.goal[1]);if(n){w.x=n[0];w.y=n[1]}else{const G=wanderGoals();if(G.length){const g=pick(G);w.goal=[g.x,g.y]}}
+ }
+ touch("root");
+}
+// A jaunty little tune for each wanderer: seeded from their name, pentatonic, dotted rhythm, on a whistle
+function whistleTune(i){
+ if(!(sound.started&&sound.on&&sound.ctx))return;
+ const rng=seededRng(1009*(i+3)),scale=[0,2,4,7,9,12,14,16],base=WANDERERS[i].bard?698:784,notes=[];let at=.05,idx=Math.floor(rng()*4);
+ for(let k=0;k<9;k++){idx=Math.max(0,Math.min(scale.length-1,idx+[-2,-1,1,1,2,0][Math.floor(rng()*6)]));const dur=k%2?.11:.2;notes.push([base*Math.pow(2,scale[idx]/12),at,dur]);at+=dur+.02}
+ notes.push([base*Math.pow(2,scale[0]/12)*(WANDERERS[i].bard?.94:1),at+.04,.4]);
+ for(const [f,a,d] of notes){sound.tone(f*1.01,f,d,.045,a,"sine");sound.tone(f*2,f*2,d*.8,.008,a,"triangle")}
+}
+function hexWord(dx,dy){const a=Math.atan2(dy,dx)*180/Math.PI;const W=["east","north-east","north","north-west","west","south-west","south","south-east"];return W[((Math.round(a/45)%8)+8)%8]}
+function wandererTip(){
+ const H=cell(hereId()),tips=[];
+ const T=towns().slice().sort((a,b)=>hexDist(H.x,H.y,a.x,a.y)-hexDist(H.x,H.y,b.x,b.y))[0];
+ if(T&&T.id!==H.id)tips.push(`${T.t} is the nearest town, about ${hexDist(H.x,H.y,T.x,T.y)} hexes to the ${hexWord(wrapC(T.x-H.x),wrapC(T.y-H.y))}.`);
+ const A=Object.values(zz.cells).filter(c=>c.k==="loc"&&zOf(c)===0&&foeId(c.id)&&c.id!==H.id).sort((a,b)=>hexDist(H.x,H.y,a.x,a.y)-hexDist(H.x,H.y,b.x,b.y))[0];
+ if(A&&hexDist(H.x,H.y,A.x,A.y)<=8)tips.push(`Something unnatural waits at ${A.t}, ${hexDist(H.x,H.y,A.x,A.y)} hexes to the ${hexWord(wrapC(A.x-H.x),wrapC(A.y-H.y))}. Go rested, or go round.`);
+ {const t=gameNow();for(let h=1;h<48;h++){const tt=Math.floor(t/60+h)*60;if(magicPresent(tt)&&!magicPresent(t)){tips.push(`The bridge of light over the ${riverName()} will stand again at ${fmtClock(tt)}.`);break}}}
+ tips.push("Make camp in the open and you will forage half a day's food; nothing grows on the heights or deep below.");
+ tips.push("When a fight turns, disengage: you keep your ground, and most things let you be.");
+ tips.push("A lantern carries you two hours into the night. Without one, the dark stops you where you stand.");
+ tips.push("Sleep in a sanctuary or the Moonlit Grove and you wake fully healed.");
+ const S=sanctuaries().slice().sort((a,b)=>hexDist(H.x,H.y,a.x,a.y)-hexDist(H.x,H.y,b.x,b.y))[0];
+ if(S)tips.push(`${S.t} lies ${hexDist(H.x,H.y,S.x,S.y)} hexes to the ${hexWord(wrapC(S.x-H.x),wrapC(S.y-H.y))}. They heal anyone, no questions asked.`);
+ return pick(tips.slice(0,3).concat(pick(tips.slice(3))?[pick(tips.slice(3))]:[]));
+}
+function meetWanderer(w){
+ const W=WANDERERS[w.i],ch=cell(charId()),t=gameNow();w.met=t;touch("root");
+ if(W.bard){
+  const before=sv("HP");setStat("HP",Math.max(1,before-3));const stats=shuffle(["STR","DEX","CON","INT","WIS","CHA"]).slice(0,2);
+  ch.boons=(ch.boons||[]).concat(stats.map(stat=>({stat,amount:-1,until:t+4*60,from:W.name})));touch(ch.id);
+  log(`${W.name}. ${W.greet} You lose ${before-sv("HP")} HP, and feel duller for a while (−1 ${stats.join(", −1 ")} for 4 hours).`,"bad");
+ }else{
+  ch.boons=(ch.boons||[]).concat([{stat:W.stat,amount:W.amt,until:t+W.hours*60,from:W.name}]);touch(ch.id);
+  log(`${W.name}. ${W.greet} (+${W.amt} ${W.stat} for ${W.hours} hours.) "${wandererTip()}"`,"npc");
+ }
+}
+function checkWanderers(){
+ if(!charId()||!hereId()||isDowned())return;seedWanderers();const H=cell(hereId());if(zOf(H)!==0)return;const t=gameNow();
+ for(const w of wanderers()){
+  const d=hexDist(H.x,H.y,w.x,w.y);
+  if(d===0&&t-w.met>12*60&&!foeId()){meetWanderer(w);continue}
+  if(d<=3&&!w.heard){w.heard=true;touch("root");whistleTune(w.i);if(d>0)log(`A jaunty tune, whistled, drifts from the ${hexWord(wrapC(w.x-H.x),wrapC(w.y-H.y))}: someone is on the road, ${d} ${d===1?"hex":"hexes"} away.`,"npc")}
+  else if(d>4&&w.heard){w.heard=false;touch("root")}
+ }
+}
 function simulate(){
  const r=cell("root");if(!r)return;
  const end=gameNow();let t=r.npcT??end;let n=Math.floor((end-t)/TICK);if(n<=0)return;
@@ -2127,10 +2214,10 @@ function simulate(){
    f.wild?creatureTick(f,t):npcTick(f,t);
   }
   if(!follow)socialStep();
-  paladinTick();wolvesTick();
+  paladinTick();wolvesTick();wanderTick(t);
  }
  for(const f of npcs())touch(f.id);
- r.npcT=t;touch("root");recordBloom();checkPaladin();
+ r.npcT=t;touch("root");recordBloom();checkPaladin();checkWanderers();
  const ch=charId()&&cell(charId());if(ch&&ch.boons&&ch.boons.length){const gone=ch.boons.filter(b=>b.until<=t);if(gone.length){for(const b of gone)log(`The effect of ${b.from} fades: ${b.amount>0?"+":""}${b.amount} ${b.stat} is gone.`,"time");ch.boons=ch.boons.filter(b=>b.until>t);touch(ch.id)}}
 }
 function passTime(min){const r=cell("root");if(!r)return;r.clock={base:gameNow()+min,real:Date.now()};touch("root");simulate()}
@@ -4482,6 +4569,9 @@ function renderMap(){
     (me?(s_=>mineSides+=s_):(s_=>out+=s_))(`<line class="side ${open?"open":"shut"}${me?" mine":""}"${me?` data-d="${d}"`:""} x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/>`)}}}
  const [hx,hy]=P(0,0);
  out+=``+(()=>{const ch=cell(charId());return headAt(ch.t,ch.cls,ch.faceSeed||0,hx+30,hy+30,36,`${ch.t} (you)`,"me")})();out+=mineSides;
+ // Wanderers within earshot show as a little whistled note
+ if(Z===0)for(const w of wanderers()){const sx=wrapC(w.x-H.x),sy=wrapC(w.y-H.y),dd=hexDist(H.x,H.y,w.x,w.y);if(dd>3||!dd)continue;const [qx,qy]=P(sx,sy);
+  out+=`<text class="wnote${WANDERERS[w.i].bard?" bard":""}" x="${(qx+30).toFixed(1)}" y="${(qy+38).toFixed(1)}" text-anchor="middle"><title>A whistled tune: ${esc(WANDERERS[w.i].name.split(",")[0])} is on the road</title>♪</text>`}
  if(ws&&ws.storm&&Z>=0){const sx=wrapC(Math.round(ws.storm.x)-H.x),sy=wrapC(Math.round(ws.storm.y)-H.y);const [qx,qy]=P(sx,sy);out+=`<circle class="stormring" cx="${qx+30}" cy="${qy+30}" r="${ws.storm.r*HW*.6}"/>`}
  out+=`<text class="axis" x="${VB[0]+W/2}" y="${VB[1]+16*ui}" text-anchor="middle">N ↑</text>`;
  // The fifteen layers, deepest on the left, the peak on the right; yours is marked
