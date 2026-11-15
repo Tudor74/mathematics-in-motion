@@ -217,3 +217,11 @@ Check the version in the game source or live build before relying on these featu
 - **Narration** is shorter, and the voice carries the mood (steady or urgent, optionally
   a second voice).
 - **Layout**: the map runs full width on desktop, with three equal columns below.
+
+## v0.8: richer places, signs of the dead, coins and mushrooms
+
+- **Sentence constructor**, about ten times larger. Each kind of ground has many more pieces. A smooth field over the world gives each region a dialect and a mood, and each dialect brings its own sentence shapes: Norse kennings, Welsh and Gaelic fronted predicates, Japanese topic–comment, Latin absolutes, Arabic paired phrases and the plain English of the Shires. It also brings glossed loanwords such as *tarn*, *cwm*, *komorebi* and *wadi*. Neighbouring hexes never share a sentence shape.
+- **Signs of death** every 17–24 places: a single boot, a broken sword, a rotting clump of arrows.
+- **Coins** every 30–40 places: bronze, sometimes silver, never gold.
+- **Mushrooms**: real species, either plain food or with stat effects for up to 8 hours (always some up and some down: the real-world effect, made larger). Poisonous ones are labelled and need a second click to eat; none can kill.
+- No text smaller than 13pt. The map starts at 28 × 11 hexes.

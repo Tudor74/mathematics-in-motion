@@ -710,7 +710,7 @@ const zOf=c=>c.z||0;
 const towns=()=>Object.values(zz.cells).filter(c=>c.k==="loc"&&c.town&&!c.town.of);
 const npcs=()=>Object.values(zz.cells).filter(c=>c.k==="npc");
 const npcsAt=(x,y)=>npcs().filter(n=>n.x===x&&n.y===y);
-const hasLight=()=>!!charId()&&(packIds().some(id=>cell(id).light)||(typeof hasCompanion==="function"&&hasCompanion("wisp")));
+const hasLight=()=>!!charId()&&(packIds().some(id=>cell(id).light)||(cell(charId()).glowUntil||0)>gameNow()||(typeof hasCompanion==="function"&&hasCompanion("wisp")));
 /* A lantern carries you only so far into the night: two game hours of travel (four steps), then you
    must rest. The allowance belongs to one night and refills when you rest or the sun comes up. */
 const LANTERN_NIGHT_MIN=120;
@@ -986,13 +986,216 @@ const LEX={
   feat:["a signal arm stands at danger","a water tower drips onto the ballast","a platelayers' hut has a kettle on its stove","a level crossing gate stands open"],
   sense:["the rails hum before a train comes","coal smoke hangs in the cutting","the rails are bright where the wheels run"],life:["sparrows bathe in the cinders","a fox crosses the line without looking"]}
 };
-function seededRng(x,y,z,salt=0){let a=(h32((x*73856093)^(y*19349663)^((z+11)*83492791)^(salt*2654435761))*4294967296)>>>0;return()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296}}
+function seededRng(x,y,z,salt=0){let a=Math.imul(x|0,0x9E3779B1)^Math.imul(y|0,0x85EBCA77)^Math.imul((z+11)|0,0xC2B2AE3D)^Math.imul(salt|0,0x27D4EB2F);a=Math.imul(a^(a>>>16),0x7feb352d);a=Math.imul(a^(a>>>15),0x846ca68b);a=(a^(a>>>16))>>>0;return()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296}}
 const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
-function compose(kind,x,y,z,salt=0){
- const L=LEX[kind]||LEX.plains,r=seededRng(x|0,y|0,z|0,salt),pk=a=>a[Math.floor(r()*a.length)];
- const way=`${cap(pk(L.way))} ${pk(L.run)} ${pk(L.to)}.`,feat=`${cap(pk(L.feat))}.`,sense=`${cap(pk(L.sense))}.`,life=`${cap(pk(L.life))}.`;
- const shapes=[[way,feat],[way,sense],[way,feat,life],[feat,way],[way,life],[way,sense,feat]];
- return pk(shapes).join(" ");
+/* ------------------------------------------------------------
+   The sentence constructor, enlarged. Three layers:
+   1. More pieces: every slot for every ground roughly trebled.
+   2. A smooth field over the world (value noise, an atlas of overlapping charts) gives each region
+      a dialect and a mood that drift slowly from hex to hex, so neighbouring places feel related and
+      far ones feel foreign. Each dialect brings sentence shapes borrowed from a real language family:
+      Norse kennings and plain stacked statements, Welsh and Gaelic fronted predicates, Japanese
+      topic-and-comment, Latin absolute clauses, Arabic paired phrases, and the plain English of the
+      Shires. It also brings loanwords for the land, glossed the first time you meet them.
+   3. Neighbouring hexes never share a sentence shape, because people notice repeated shapes sooner
+      than repeated words.
+   ------------------------------------------------------------ */
+const LEX_MORE={
+ forest:{way:["a charcoal burners' track","a holloway sunk between banks","a ride cut for the hunt","a path of soft needles","a sunken lane roofed with branches","a badger run","a woodcutters' trail","a line of trodden bluebells"],
+  run:["slips","climbs","bends","dives"],to:["among pines that creak in the wind","under a roof of beech","past coppiced hazel","around a hollow oak big enough to stand in","toward a clearing full of light","between holly dark as ink","down to a mossy ford","into a stand of silver birch"],
+  feat:["a woodpile has rotted into a hill of fungus","an old boundary bank runs through the trees","a charcoal hearth has left a black circle","a yew stands alone, older than the wood around it","a swing hangs from a branch, its rope green with age","bracket fungus climbs a dead trunk like stairs","a deer has rubbed the bark from a young tree","a spring wells up between two roots"],
+  sense:["pine needles muffle every step","the wood breathes out a cool, wet air","birdsong stops and starts like talk","the canopy turns the light to green water","rain still drips from the leaves long after it stopped","the smell of wild garlic is strong underfoot"],
+  life:["a wren scolds you with a voice too big for it","a pigeon claps away through the branches","a woodpecker drums, then listens","ants stream across the path in a line","a fox watches from the bracken, then is gone","an owl, disturbed, drifts away without a sound"]},
+ plains:{way:["a green lane","a bridleway","a field edge","a path along a ditch","a line of stiles","a track of chalk"],
+  run:["strides across","wanders over","follows the swell of","heads out over"],to:["a sea of barley","downland cropped by sheep","common land gold with gorse","a plain under a great sky","pasture where cattle lie","stubble fields after harvest"],
+  feat:["a standing stone leans in the middle of a field","a scarecrow has lost its head","a barrow mound rises, green and round","a dry-stone wall wanders off over the hill","a shepherd's hut stands on iron wheels","poppies run red along a field margin","a well with no bucket stands by the path","a white horse is cut into the far hillside"],
+  sense:["cloud shadows race across the ground","the wind smells of rain long before it comes","the horizon is a long way off in every direction","bees drone in the clover","the light is wide and pale"],
+  life:["lapwings tumble and cry","a buzzard mews overhead","a herd of ponies lifts their heads to watch","grasshoppers spring away from your boots","skylarks rise singing from almost under your feet"]},
+ water:{way:["a towpath","a ford of flat stones","a plank bridge","a fishermen's path","a gravel bar","a line of old pilings"],
+  run:["hugs","shadows","wanders beside","crosses"],to:["a river the colour of tea","a millpond scummed with weed","a broad and lazy reach","shallows full of light","a deep pool under the alders","a weir that roars white"],
+  feat:["an eel trap lies broken on the bank","a kingfisher's burrow pocks the clay","a rope swing hangs over the deep part","a ferryman's bell hangs on a post, green with age","a waterwheel has stopped turning","otter tracks print the mud"],
+  sense:["the current pulls at the reeds","mist lifts off the water in threads","the air is cool and full of the river's noise","sunlight glitters so you have to look away"],
+  life:["a kingfisher flashes past, blue as a spark","swallows skim the water","a trout hangs in the current, still","ducks complain from the reeds","water boatmen row across a pool"]},
+ mountain:{way:["a goat track","a shepherd's stair","a gully full of boulders","a broad green shoulder","a ledge of slate","a zigzag of worn steps"],
+  run:["heaves up","threads along","picks over","winds round"],to:["a bowl of grey stone","the knife edge of a ridge","a saddle between two summits","a field of shattered rock","a spring that rises out of the hillside","the foot of a waterfall"],
+  feat:["a wall of stacked stones shelters a hollow","a bothy crouches out of the wind","old snow lingers in a north-facing gully","a stream leaps down the hillside in white steps","the bones of a sheep lie bleached on the turf","a memorial stone carries a name worn smooth"],
+  sense:["the air is so clear the far peaks look close","clouds pour over the ridge like a slow river","sound carries a long way and comes back","sunlight on the far snow hurts your eyes"],
+  life:["a ptarmigan clatters up from under your feet","a hare in its winter coat sits up and watches","choughs wheel and call","a lizard basks on warm rock"]},
+ crag:{way:["a rotten chimney","a polished slab","a crack that takes only fingers","a lip of frost-shattered stone"],
+  run:["falls away","leans out","gives way","narrows"],to:["above a fall of white water","toward a lower ledge you cannot reach","into the sound of wind","above a scree slope far below"],
+  feat:["an old peg is rusted into the rock","a nest is wedged into a crack","a rope, cut, hangs from above","the rock is smooth where many hands have failed"],
+  sense:["the wind howls through a crack","the drop makes your knees weak","the rock is cold as iron"],
+  life:["a falcon stoops past close enough to hear","a goat looks down at you, unimpressed"]},
+ cave:{way:["a squeeze between two flakes","a stream passage","a mud bank","a stair of flowstone","a sandy tunnel","a ledge over black water"],
+  run:["plunges","doubles back","climbs","crawls"],to:["past columns like a stone forest","toward a faint draught","into a chamber that rings","beneath a ceiling of roots","to the edge of a still lake","into the cold"],
+  feat:["painted hands cover a wall, red and very old","a cave pearl lies in a pool","a curtain of stone glows when your light passes","a dead torch lies where someone dropped it","old footprints are fixed in the mud","a waterfall falls into darkness and never lands"],
+  sense:["the silence is so deep you hear your own blood","the air moves, so somewhere there is another way out","your breath steams in your light","the rock sweats and glistens"],
+  life:["a cave spider as big as your hand sits very still","a white crayfish backs away from your light","moths cluster on the ceiling"]},
+ dungeon:{way:["a guardroom passage","a narrow stair inside the wall","a corridor of cells","a sloping ramp","a sewer walk"],
+  run:["bends","drops","narrows","goes on"],to:["into the castle's roots","past a dry cistern","toward a smell of old smoke","beside a channel of black water"],
+  feat:["a name is carved deep beside a door","chains hang empty from a beam","a trapdoor is nailed shut","a well shaft is covered with a grating","a cupboard holds broken shackles"],
+  sense:["every drip echoes","the walls are furred with damp","the air tastes of iron"],
+  life:["something skitters into a crack","a moth beats against your light"]},
+ ruin:{way:["a grassy causeway","a mosaic floor cracked by roots","a stair of broken stone","a cloister walk"],
+  run:["leads","wanders","circles","sinks"],to:["toward a roofless chapel","under an ivy-hung gate","around a collapsed tower","into a garden gone wild"],
+  feat:["a sundial has lost its gnomon","a statue's hand lies in the grass","fire has blackened one wall","a bell lies cracked in the nettles","a well head is carved with knots"],
+  sense:["it is very quiet, as if the place is listening","dust hangs in the slant light","the stones hold the cold of the night"],
+  life:["a kestrel nests in a window","swifts scream around the tower","a fox has made its earth under the hearth"]},
+ swamp:{way:["a line of marker poles","a raised dyke","a punt channel","a path of sedge"],
+  run:["edges","wanders through","snakes across","fades into"],to:["water black as tea","a bog that trembles","a maze of channels","an alder carr"],
+  feat:["an old punt lies sunk to its gunwales","a gibbet post leans out of the reeds","a willow has split and grown again","peat cuttings are full of water"],
+  sense:["the ground quakes when you step","the reeds whisper all together","the smell of peat is thick and sweet"],
+  life:["an eel ripples under the surface","a marsh harrier quarters the reeds","a heron stands like a post"]},
+ road:{way:["a drove road","a turnpike","a sunken lane","a paved causeway"],
+  run:["runs on","dips","snakes","rolls"],to:["toward a toll house","under an avenue of elms","past an inn sign swinging","over a hump-backed bridge"],
+  feat:["a coaching inn stands boarded up","a cart lies overturned in the ditch","a cross stands where four parishes meet","a horse trough is full of leaves"],
+  sense:["hoofprints are pressed in the dried mud","the smell of horses lingers","the road shines after rain"],
+  life:["a drover's dog lies in the shade","a cart horse looks at you over a gate"]},
+ desert:{way:["a caravan track","a wadi bed","a line of cairns","a hard pan of gravel"],
+  run:["winds","wanders","runs on","fades"],to:["across a sea of dunes","between red rock towers","along a dry riverbed","to the edge of a salt lake"],
+  feat:["a ruined caravanserai offers shade","a palm grove marks water","a carved stone lists the wells ahead","a dead tree holds up white arms"],
+  sense:["the sand sings when the wind crosses it","the nights here will be cold","the light is hard and white"],
+  life:["a lizard flicks its tongue at you","a hawk sits on a rock, panting","a line of ants carries seeds"]},
+ grove:{way:["a path of moonstones","a mossy stair","a ring of flat stones"],
+  run:["curls","drifts","settles"],to:["around an ancient oak","into a dappled hollow","toward water that chimes"],
+  feat:["ribbons are tied to every branch","a stone bowl holds clear water","flowers grow out of season here"],
+  sense:["the light is gold and slow","sounds from outside do not reach in"],life:["a white hart watches, then fades","bees hum in time with something"]},
+ village:{way:["a high street","a cobbled square","a path behind the cottages"],
+  run:["leads","bends","climbs"],to:["toward the church tower","past the inn","around the pond"],
+  feat:["a notice board is crowded with notices","a maypole stands on the green","a pump stands in the square","an old woman knits on a bench"],
+  sense:["someone is baking","a fiddle plays somewhere","the bell tells the hour"],life:["a dog barks at you, then wags","hens scratch in the lane"]},
+ rail:{way:["a branch line","a siding","a viaduct"],run:["strides","bends","runs"],to:["over the valley","into a tunnel mouth","past a goods yard"],
+  feat:["a lamp hut stands by the points","milk churns wait on a halt platform"],sense:["the rails tick as they cool","steam drifts from the tunnel"],life:["a cat sleeps on the platform"]}
+};
+for(const [k,v] of Object.entries(LEX_MORE))for(const [s,a] of Object.entries(v))LEX[k][s]=[...LEX[k][s],...a];
+
+// Kennings: a thing named by what it does, the way the northern skalds did
+const KENNING={forest:["the wolf-hall","the leaf-house","the green roof"],plains:["the wind's floor","the lark-field","the sky-meadow"],water:["the swan-road","the fish-path","the moon's mirror"],
+ mountain:["the bones of the earth","the cloud-anvil","the raven's stair"],crag:["the fall-maker","the eagle's wall"],cave:["the throat of the dark","the stone's belly","the night-house"],
+ dungeon:["the hall of chains","the cold keep's root"],ruin:["the giants' work","the hall the years ate"],swamp:["the drowned field","the mist-mire"],road:["the cart-river","the hoof-way"],
+ desert:["the thirst-land","the sun's anvil"],grove:["the quiet hall","the bright wood"],village:["the hearth-ring"],rail:["the iron road","the smoke-way"]};
+// Words for the land borrowed from other tongues, with the gloss given the first time
+const LOAN={
+ norse:[["fell","a high bare hill"],["tarn","a mountain lake"],["gill","a narrow ravine with a stream"],["carr","a wet wood"],["holm","a river island"],["scree","loose broken stone"]],
+ gael:[["corrie","a round hollow in the hills"],["machair","grassland by the sea"],["bealach","a mountain pass"],["drumlin","a long low hill"],["loch","a lake"],["strath","a wide valley"]],
+ cymru:[["cwm","a deep hollow"],["nant","a stream"],["hiraeth","a longing for a home you cannot return to"],["llyn","a lake"],["bryn","a hill"],["pant","a dip in the land"]],
+ nippon:[["komorebi","light sifting through leaves"],["yūgen","a sense of the world too deep for words"],["mono no aware","the gentle sadness of passing things"],["shinrin-yoku","bathing in the forest's air"],["kawa","a river"],["yama","a mountain"]],
+ latin:[["genius loci","the spirit of the place"],["terra incognita","land no map has caught"],["memento mori","a reminder that all things end"],["via","a road"],["silva","a wood"],["fons","a spring"]],
+ arabic:[["wadi","a dry riverbed"],["erg","a sea of dunes"],["hamada","a stony plateau"],["sabkha","a salt flat"],["oasis","a well among palms"],["qanat","a buried water channel"]],
+ shire:[["holloway","a lane worn deep by feet"],["spinney","a small wood"],["bourne","a stream that runs only in winter"],["combe","a short valley"],["dene","a wooded valley"],["leat","a channel to a mill"]]};
+const DIALECTS=Object.keys(LOAN);
+const TERRAIN_BIAS={desert:{arabic:.35},mountain:{norse:.2,gael:.15},crag:{norse:.25},forest:{nippon:.1,shire:.08},water:{cymru:.12,gael:.08},ruin:{latin:.3},dungeon:{latin:.2},road:{latin:.1,shire:.1},swamp:{norse:.1},grove:{nippon:.3},village:{shire:.3},rail:{shire:.3}};
+// A smooth field: value noise on a lattice, blended with smoothstep, at a chosen scale
+function vnoise(x,y,z,salt,scale){const fx=x/scale,fy=y/scale,x0=Math.floor(fx),y0=Math.floor(fy),tx=fx-x0,ty=fy-y0,s=t=>t*t*(3-2*t);
+ const g=(i,j)=>seededRng(i,j,Math.floor(z/3),salt)();const a=g(x0,y0),b=g(x0+1,y0),c=g(x0,y0+1),d=g(x0+1,y0+1),u=s(tx),v=s(ty);return a+(b-a)*u+(c-a)*v+(a-b-c+d)*u*v}
+function dialectAt(x,y,z,kind){let best=null,bv=-1;DIALECTS.forEach((d,i)=>{const v=vnoise(x,y,z,500+i,7)+((TERRAIN_BIAS[kind]||{})[d]||0);if(v>bv){bv=v;best=d}});return best}
+const moodAt=(x,y,z)=>vnoise(x,y,z,900,5); // 0 sombre … 1 bright
+const MOOD={bright:["It is a good place to stop a while.","Something here lifts the heart.","You find yourself smiling for no reason.","The world seems kindly disposed, just here.","It would be a fine place to build a house."],
+ mid:["Nobody seems to have passed this way for a while.","You could rest here, if you had to.","The place keeps its own counsel.","It is neither welcoming nor unkind.",""],
+ sombre:["You do not want to linger.","Something about the place makes you keep your voice down.","You feel watched, though nothing is there.","The light seems thinner here.","It is the kind of place stories end badly in."]};
+// Sentence shapes. Each takes the chosen pieces (w: way, f: feature, s: sense, l: life, k: kenning, n: noun for the place)
+const lc=s=>s.charAt(0).toLowerCase()+s.slice(1);
+const SHAPES={
+ any:[p=>[p.way,p.f],p=>[p.way,p.s],p=>[p.way,p.f,p.l],p=>[p.f,p.way],p=>[p.way,p.l],p=>[p.way,p.s,p.f],
+  p=>[`${cap(p.s)}, and ${lc(p.l)}.`,p.way],p=>[`${cap(p.w)} ${p.run} ${p.to}, and ${lc(p.f)}.`],p=>[p.way,`Here ${lc(p.f)}, and ${lc(p.s)}.`],p=>[`First you notice that ${lc(p.s)}. Then that ${lc(p.f)}.`]],
+ norse:[p=>[`${cap(p.k)}, the old songs call this.`,p.way,`${cap(p.s)}.`],p=>[`${cap(p.w)}. ${cap(p.to)}. ${cap(p.f)}.`],p=>[p.way,`${cap(p.l)}; ${lc(p.s)}.`],p=>[`Here is ${p.k}. ${cap(p.f)}.`,`${cap(p.l)}.`]],
+ gael:[p=>[`${cap(p.adj)} is the way here, and ${p.adj2}.`,p.way,`${cap(p.f)}.`],p=>[`What you notice first is that ${lc(p.s)}.`,p.way],p=>[p.way,`There is a quiet in it.`,`${cap(p.l)}.`]],
+ cymru:[p=>[`${cap(p.adj)} and ${p.adj2} is this place.`,p.way,`${cap(p.f)}.`],p=>[p.way,`${cap(p.f)}, and ${lc(p.s)}, and ${lc(p.l)}.`],p=>[`${cap(p.s)}. ${cap(p.s2)}.`,p.way]],
+ nippon:[p=>[`As for ${p.n}: ${lc(p.s)}.`,p.way,`${cap(p.l)}.`],p=>[p.way,`${cap(p.f)}. Only that.`],p=>[`${cap(p.l)}. ${cap(p.s)}.`,p.way],p=>[`As for the path, it ${p.run} ${p.to}. As for you, you walk on.`,`${cap(p.f)}.`]],
+ latin:[p=>[`${cap(p.past)}, ${lc(p.f)}.`,p.way],p=>[p.way,`Whoever built here is long gone; ${lc(p.f)}.`],p=>[`${cap(p.past)}, ${lc(p.s)}.`,p.way,`${cap(p.l)}.`]],
+ arabic:[p=>[`${cap(p.pair)}.`,p.way,`${cap(p.f)}.`],p=>[p.way,`${cap(p.s)}, and again ${lc(p.s2)}.`],p=>[`${cap(p.pair)}, and ${lc(p.l)}.`,p.way]],
+ shire:[p=>[p.way,`${cap(p.f)}, as it always has.`,`${cap(p.l)}.`],p=>[`Folk round here would call this ${p.loanA}.`,p.way,`${cap(p.s)}.`],p=>[p.way,`${cap(p.f)}, and nobody remembers why.`]]};
+const ADJ={forest:["green","deep","old","shadowed"],plains:["wide","open","long","pale"],water:["slow","bright","cold","quiet"],mountain:["steep","high","grey","bare"],crag:["sheer","cruel","cold"],cave:["dark","cold","narrow","deep"],dungeon:["cold","close","grim"],ruin:["old","broken","quiet"],swamp:["soft","sour","grey"],road:["long","worn","straight"],desert:["white","dry","hot","wide"],grove:["still","bright","gentle"],village:["busy","small","snug"],rail:["straight","black","long"]};
+const PAST=["the storm long gone","the frost lifted","the last traveller long departed","the old walls fallen","the harvest gathered","the fires long out","the river's flood gone down","the singing ended"];
+const NOUN={forest:"the wood",plains:"the field",water:"the water",mountain:"the mountain",crag:"the crag",cave:"the cave",dungeon:"the dungeon",ruin:"the ruin",swamp:"the marsh",road:"the road",desert:"the sand",grove:"the grove",village:"the village",rail:"the line"};
+const PAIRS={desert:["sand upon sand, stone upon stone","heat by day, cold by night","no water, no shade","dune behind dune"],water:["water over stone, stone under water","reed after reed"],mountain:["rock upon rock, cloud upon cloud"],forest:["tree behind tree, shade within shade"],cave:["dark behind dark"]};
+const shapeKey=(kind,x,y,z)=>{const d=dialectAt(x,y,z,kind),r=seededRng(x,y,z,77)(),pool=[...SHAPES.any.map((_,i)=>"a"+i),...SHAPES[d].map((_,i)=>d[0]+i),...SHAPES[d].map((_,i)=>d[0]+i)];return pool[Math.floor(r*pool.length)]};
+let compose=function(kind,x,y,z,salt=0){
+ x|=0;y|=0;z|=0;const L=LEX[kind]||LEX.plains,r=seededRng(x,y,z,salt),pk=a=>a[Math.floor(r()*a.length)];
+ const d=dialectAt(x,y,z,kind),loan=pick2(LOAN[d],r),w=pk(L.way),run=pk(L.run),to=pk(L.to);
+ const p={w,run,to,way:`${cap(w)} ${run} ${to}.`,f:cap(pk(L.feat))+".",s:pk(L.sense),s2:pk(L.sense),l:pk(L.life),k:pk(KENNING[kind]||KENNING.plains),n:NOUN[kind]||"this place",
+  adj:pk(ADJ[kind]||ADJ.plains),adj2:pk(ADJ[kind]||ADJ.plains),past:pk(PAST),pair:pk(PAIRS[kind]||[`${pk(ADJ[kind]||ADJ.plains)} on ${pk(ADJ[kind]||ADJ.plains)}`]),loanA:`a ${loan[0]}, ${loan[1]}`};
+ if(p.adj2===p.adj)p.adj2=(ADJ[kind]||ADJ.plains).find(a=>a!==p.adj)||"old";if(p.s2===p.s)p.s2=L.sense.find(s=>s!==p.s);
+ p.f=p.f.replace(/\.$/,"");p.f=cap(p.f);
+ // the shape: never the same as the hex to the west or the south
+ let key=shapeKey(kind,x,y,z);const avoid=[shapeKey(kind,x-1,y,z),shapeKey(kind,x,y-1,z)];
+ const all=[...SHAPES.any.map((_,i)=>"a"+i),...SHAPES[d].map((_,i)=>d[0]+i)];let i=all.indexOf(key);if(i<0)i=0;let guard=0;while(avoid.includes(all[i])&&guard++<all.length)i=(i+1)%all.length;key=all[i];
+ const fn=key[0]==="a"?SHAPES.any[+key.slice(1)]:SHAPES[d][+key.slice(1)];
+ let out=fn({...p,f:p.f,l:p.l,s:p.s}).map(t=>cap(t.replace(/\.\.$/,"."))).map(t=>/[.!?]$/.test(t)?t:t+".").join(" ");
+ // a borrowed word for the land, sometimes, and a closing line from the mood of the region
+ if(r()<.22&&key[0]!=="s")out+=` The ${d==="shire"?"old folk":"old tongue"} has a word for a place like this: ${loan[0]}, ${loan[1]}.`;
+ const m=moodAt(x,y,z),ml=m>.62?MOOD.bright:m<.38?MOOD.sombre:MOOD.mid;if(r()<.45){const c=pk(ml);if(c)out+=" "+c}
+ return out.replace(/\s+/g," ").trim();
+};
+function pick2(a,r){return a[Math.floor(r()*a.length)]}
+/* Signs of death: one place in about twenty carries a quiet reminder that not everyone came back.
+   The world is cut into blocks of 4 x 5 hexes on every layer and each block holds exactly one sign at a
+   seeded spot, so they come round roughly every 17 to 24 places, never in clumps and never absent long. */
+const DEATH={any:["a single boot lies on its side, the laces still tied","a broken sword is half buried, its edge gone to rust","a rotting clump of arrows lies where a quiver burst","a dented helmet sits upturned, full of rainwater","a shield lies face down, its paint flaking, its owner nowhere","a cairn of stones has been heaped over something long","a bow, unstrung, has warped in the wet","a scrap of cloak is snagged on a thorn, stiff and brown","a ring lies in the dirt; nobody has picked it up","a pack lies open and empty, its straps cut","three crossed sticks mark a grave no one tends","a gauntlet lies palm up, as if asking for something","a spearhead without its shaft lies in the grass","a tin cup and a broken spoon lie by a cold fire ring","a mail shirt lies flattened in the mud, its rings red with rust"],
+ water:["a shield lies in the shallows, green with weed","a boat's oar, splintered, rocks against the bank"],
+ mountain:["a frayed rope ends in nothing at the edge of a drop","an ice axe is wedged in a crack, its owner gone"],
+ crag:["a frayed rope ends in nothing at the edge of a drop"],
+ cave:["a skeleton in rusted mail sits against the wall, as if resting","a lantern lies smashed, its oil long dried"],
+ dungeon:["bones are still chained to the wall","a skull grins from a niche, a coin in its teeth"],
+ desert:["a waterskin lies dry and split beside a set of bones","a camel's saddle lies half buried in the sand"],
+ swamp:["a hand's worth of finger bones pokes from the peat","a helmet sits on the mud, slowly sinking"],
+ forest:["an arrow is buried deep in an oak, the fletching long rotted","a hunter's horn hangs from a branch, green and silent"]};
+function deathLine(kind,x,y,z){const r=seededRng(x,y,z,4343),pool=[...DEATH.any,...(DEATH[kind]||[]),...(DEATH[kind]||[])];return cap(pool[Math.floor(r()*pool.length)])+"."}
+/* Countdowns kept with the world: a sign of death every 17 to 24 places made, a coin every 30 to 40.
+   Coins are mostly bronze, sometimes silver, never gold. */
+const COINS=[{name:"Bronze coin",desc:"A worn bronze coin, the face on it rubbed away.",value:1,w:5},{name:"Bronze coin",desc:"A green-crusted bronze coin with a hole punched through it.",value:1,w:3},{name:"Silver coin",desc:"A thin silver coin, clipped at the edge, still bright.",value:4,w:2}];
+
+/* Mushrooms: real species. The plain edible ones are food. The rest change your abilities for a few
+   hours, always some up and some down: the real effect, made larger. Poisonous ones say so, and you are
+   asked twice before you eat one. None can kill you; at worst they leave you on 1 HP. */
+const SHROOMS={
+ chanterelle:{name:"Chanterelle",latin:"Cantharellus cibarius",about:"Apricot-scented and golden; one of the best wild mushrooms there is.",food:"1d3",where:["forest"]},
+ pennybun:{name:"Penny bun",latin:"Boletus edulis",about:"A fat brown cap on a stout white stem; the porcini of southern cooks.",food:"1d4",where:["forest"]},
+ field:{name:"Field mushroom",latin:"Agaricus campestris",about:"White cap, pink gills, found in grazed grass after rain.",food:"1d2",where:["plains"]},
+ puffball:{name:"Giant puffball",latin:"Calvatia gigantea",about:"A white ball the size of a head; good sliced and fried while it is white inside.",food:"1d4",where:["plains"]},
+ chicken:{name:"Chicken of the woods",latin:"Laetiporus sulphureus",about:"Sulphur-yellow shelves on old oaks; it does taste like chicken.",food:"1d3",where:["forest"]},
+ oyster:{name:"Oyster mushroom",latin:"Pleurotus ostreatus",about:"Grey fans on dead wood, even on old pit props underground.",food:"1d2",where:["forest","cave","dungeon"]},
+ libertycap:{name:"Liberty cap",latin:"Psilocybe semilanceata",about:"A small pointed cap in damp grassland. In the real world it brings visions and bends perception; here, more so.",fx:{WIS:3,CHA:1,DEX:-2,STR:-1},hours:6,where:["plains","grove"]},
+ lionsmane:{name:"Lion's mane",latin:"Hericium erinaceus",about:"A white cascade of soft spines on a wounded tree. Studied in the real world for memory and nerves; here it sharpens the mind and loosens the hands.",fx:{INT:2,WIS:1,DEX:-1},hours:8,food:"1",where:["forest"]},
+ cordyceps:{name:"Cordyceps",latin:"Cordyceps militaris",about:"Orange clubs rising from buried insects. A traditional stamina tonic; here it fills you with restless strength.",fx:{CON:2,STR:1,WIS:-1,CHA:-1},hours:5,where:["forest","grove"]},
+ reishi:{name:"Reishi",latin:"Ganoderma lucidum",about:"A lacquered red bracket, too woody to eat, so you chew a strip. Brewed for calm in the real world; here it makes you calm and slow.",fx:{WIS:2,CON:1,DEX:-2},hours:8,where:["forest","swamp"]},
+ chaga:{name:"Chaga",latin:"Inonotus obliquus",about:"A black, cracked growth on birch, orange inside. A bitter tonic; it toughens you and sours your breath.",fx:{CON:2,CHA:-1},hours:6,where:["forest"]},
+ inkcap:{name:"Common ink cap",latin:"Coprinopsis atramentaria",about:"A grey cap that melts into black ink. Edible, but in the real world it turns any drink you take for days into a poison.",fx:{STR:1,CON:-1},hours:4,food:"1",where:["plains","ruin","road"],warn:"Never with ale or wine."},
+ flyagaric:{name:"Fly agaric",latin:"Amanita muscaria",about:"Red cap, white spots, the toadstool from every storybook. Poisonous and intoxicating; legend gives it to berserkers.",fx:{STR:3,CHA:1,WIS:-3,DEX:-2},hours:4,poison:"1d4",where:["forest"]},
+ sickener:{name:"The sickener",latin:"Russula emetica",about:"A bright red cap with white gills, peppery hot. Poisonous: it empties your stomach.",fx:{DEX:1,CON:-2,STR:-1},hours:3,poison:"1d3",empties:true,where:["forest","swamp"]},
+ jackolantern:{name:"Jack-o'-lantern",latin:"Omphalotus olearius",about:"Orange clusters on buried roots whose gills glow faintly in the dark. Poisonous; here the glow gets into you.",fx:{WIS:1,CON:-2,CHA:-1},hours:4,poison:"1d4",glow:true,where:["forest","cave"]},
+ deathcap:{name:"Death cap",latin:"Amanita phalloides",about:"A pale olive cap with a white ring and a cup at its foot. The deadliest mushroom in the real world.",fx:{WIS:1,CON:-4,STR:-3,DEX:-2},hours:8,poison:"deadly",where:["forest"]},
+ angel:{name:"Destroying angel",latin:"Amanita virosa",about:"Pure white and beautiful. Deadly poisonous in the real world.",fx:{CHA:1,CON:-4,STR:-2,DEX:-2},hours:8,poison:"deadly",where:["forest","grove"]}};
+const SHROOM_TERRAIN={forest:.14,swamp:.08,grove:.12,plains:.07,cave:.06,dungeon:.03,ruin:.05,road:.02};
+function shroomItem(key){const m=SHROOMS[key],poison=!!m.poison;
+ const fx=m.fx?Object.entries(m.fx).map(([k,v])=>`${k} ${v>0?"+":""}${v}`).join(", ")+` for ${m.hours} hours`:"";
+ return{name:poison?`${m.name} (poisonous)`:m.name,desc:`${m.latin}. ${m.about}${fx?` Effect: ${fx}.`:""}${poison?(m.poison==="deadly"?" DEADLY POISONOUS: do not eat.":" POISONOUS."):""}${m.warn?" "+m.warn:""}`,
+  kind:m.fx||poison?"mushroom":"food",weight:.1,value:m.fx&&!poison?2:0,heal:!m.fx&&!poison?m.food:null,shroom:key}}
+function placeShrooms(data){const p=SHROOM_TERRAIN[data.terrain]||0;if(Math.random()>=p)return;
+ const keys=Object.keys(SHROOMS).filter(k=>SHROOMS[k].where.includes(data.terrain));if(!keys.length)return;
+ // poisonous ones are commoner than you would like, as in life
+ const key=keys[Math.floor(Math.random()*keys.length)];data.items=[...(data.items||[]),shroomItem(key)]}
+function eatShroom(id){
+ const it=cell(id),m=SHROOMS[it.shroom];if(!m)return;const ch=cell(charId()),t=gameNow();
+ if(m.poison&&!(ch.eatOk===id&&Date.now()-(ch.eatOkAt||0)<20000)){ch.eatOk=id;ch.eatOkAt=Date.now();
+  flash=`${m.name} is ${m.poison==="deadly"?"deadly poisonous":"poisonous"}. Eat it anyway? Press Eat again within 20 seconds.`;render();return}
+ delete ch.eatOk;excise(id,"contain");destroy(id);const lines=[];
+ if(m.fx){ch.boons=(ch.boons||[]).concat(Object.entries(m.fx).map(([stat,amount])=>({stat,amount,until:t+m.hours*60,from:m.name})));lines.push(Object.entries(m.fx).map(([k,v])=>`${k} ${v>0?"+":""}${v}`).join(", ")+` for ${m.hours} hours`)}
+ if(m.poison){const hp=sv("HP"),loss=m.poison==="deadly"?hp-1:Math.min(hp-1,roll(m.poison).total);setStat("HP",hp-Math.max(0,loss));
+  lines.push(m.poison==="deadly"?"You are terribly ill; you cling to life with 1 HP":`it makes you ill: −${Math.max(0,loss)} HP`)}
+ if(m.empties){ch.lastMeal=Math.min(ch.lastMeal||t,t-480);lines.push("your stomach is empty")}
+ if(m.glow){ch.glowUntil=t+m.hours*60;lines.push("a faint light comes off your skin, enough to walk by")}
+ if(m.food&&!m.poison)ate(m.name.toLowerCase());
+ touch(ch.id);log(`You eat the ${m.name.toLowerCase()}: ${lines.join("; ")}.`,m.poison?"bad":"good");store.flush();render();
+}
+function placeExtras(data,pos){
+ const r=cell("root");if(!r||data.terrain==="village")return;placeShrooms(data);
+ if(r.deathIn==null)r.deathIn=17+Math.floor(Math.random()*8);if(r.coinIn==null)r.coinIn=30+Math.floor(Math.random()*11);
+ if(!data.sharedDesc&&--r.deathIn<=0){r.deathIn=17+Math.floor(Math.random()*8);const kind=LEX[data.terrain]?data.terrain:"plains",line=deathLine(kind,pos.x|0,pos.y|0,pos.z|0),parts=String(data.desc||"").split(/(?<=\.) /);
+  parts.splice(Math.min(parts.length,1),0,line);data.desc=parts.join(" ");data.death=true}
+ if(--r.coinIn<=0){r.coinIn=30+Math.floor(Math.random()*11);let t=Math.random()*COINS.reduce((a,c)=>a+c.w,0);const c=COINS.find(c=>(t-=c.w)<0)||COINS[0];
+  data.items=[...(data.items||[]),{name:c.name,desc:c.desc,kind:"treasure",weight:0,value:c.value}]}
+ touch("root");
 }
 
 function tableLocation(from,dir,pos){
@@ -1839,7 +2042,7 @@ function simulate(){
  }
  for(const f of npcs())touch(f.id);
  r.npcT=t;touch("root");recordBloom();checkPaladin();
- const ch=charId()&&cell(charId());if(ch&&ch.boons&&ch.boons.length){const gone=ch.boons.filter(b=>b.until<=t);if(gone.length){for(const b of gone)log(`The boon from ${b.from} fades: +${b.amount} ${b.stat} is gone.`,"time");ch.boons=ch.boons.filter(b=>b.until>t);touch(ch.id)}}
+ const ch=charId()&&cell(charId());if(ch&&ch.boons&&ch.boons.length){const gone=ch.boons.filter(b=>b.until<=t);if(gone.length){for(const b of gone)log(`The effect of ${b.from} fades: ${b.amount>0?"+":""}${b.amount} ${b.stat} is gone.`,"time");ch.boons=ch.boons.filter(b=>b.until>t);touch(ch.id)}}
 }
 function passTime(min){const r=cell("root");if(!r)return;r.clock={base:gameNow()+min,real:Date.now()};touch("root");simulate()}
 
@@ -1958,10 +2161,10 @@ let busy=null,lastHazard=null,deleteArmed=false,rounds=[],flash=null;
 const talkLines={};
 function log(text,kind,rolltext){const r=cell("root");if(!r)return;r.log=(r.log||[]).concat([{text,kind:kind||"",roll:rolltext||"",t:Date.now()}]).slice(-60);touch("root")}
 function say(text,kind,rolltext){rounds.push({text,kind:kind||"",roll:rolltext||""});rounds=rounds.slice(-6);log(text,kind,rolltext)}
-function itemCell(it){return newCell("item",{t:it.name,desc:it.desc,kind:it.kind,weight:it.weight,value:it.value,heal:it.heal,ac:it.ac,dmg:it.dmg,finesse:it.finesse,light:!!it.light,worn:false,wielded:false})}
+function itemCell(it){return newCell("item",{t:it.name,desc:it.desc,kind:it.kind,weight:it.weight,value:it.value,heal:it.heal,ac:it.ac,dmg:it.dmg,finesse:it.finesse,light:!!it.light,worn:false,wielded:false,shroom:it.shroom||null})}
 
 function createLocation(data,pos){
- const {x,y,z,dist}=pos;
+ placeExtras(data,pos);const {x,y,z,dist}=pos;
  const id=newCell("loc",{t:data.name,desc:data.desc,terrain:data.terrain,x,y,z,dist,hazard:data.hazard,hazardDone:false,outcome:null,visited:false,by:data.by||"tables",defeated:null,
   exits:data.exits||null,walls:data.walls||null,glimpse:data.glimpse||null});
  coord.set(ck(x,y,z),id);
@@ -2279,6 +2482,7 @@ function useItem(id){
  const it=cell(id);
  if(it.kind==="treasure"){setStat("GP",sv("GP")+(+it.value||0));log(`You add ${it.t} to your purse: ${it.value} gp.`,"good");excise(id,"contain");destroy(id);store.flush();render();return}
  if(it.mapOf){readMap(id);return}
+ if(it.kind==="mushroom"){eatShroom(id);return}
  if(!it.heal)return;
  if(it.kind==="food"){ate(it.t.toLowerCase());if(it.shared){const ch=cell(charId());ch.lastMeal=gameNow()+720;touch(ch.id);log("Food that was shared goes twice as far.","good")}}
  const r=roll(it.heal),before=sv("HP"),after=Math.min(sv("MAXHP"),before+r.total*(it.shared?2:1));
@@ -3242,7 +3446,7 @@ function squareOut(id,planned){
 function squareIn(s,L,n){
  const base=tableLocation(L,n.dir,n.pos);   // local items and anomalies, so each player still finds their own
  if(s.hasMon)base.monster=s.mon?Object.assign({},s.mon,{maxhp:s.mon.hp,loot:null}):null;
- return Object.assign(base,{name:s.name||base.name,desc:s.desc,terrain:TERRAINS.includes(s.terrain)?s.terrain:base.terrain,
+ return Object.assign(base,{sharedDesc:true,name:s.name||base.name,desc:s.desc,terrain:TERRAINS.includes(s.terrain)?s.terrain:base.terrain,
   exits:s.exits?EX(s.exits):normExits(null,n.dir),walls:normWalls(s.walls),glimpse:s.glimpse||`${s.name||base.name}: ${GLIMPSE[s.terrain]||GLIMPSE.other}`,hazard:s.hazard&&s.hazard.name?normLocation({hazard:s.hazard},base.terrain,n.pos).hazard:base.hazard,by:"shared"});
 }
 function publishSquares(sq){
@@ -3994,6 +4198,7 @@ function itemRow(id,where){
  if(where==="here")acts=it.forSale?`<button class="small" data-act="take" data-id="${id}" ${busy||sv("GP")<it.value?"disabled":""} title="${sv("GP")<it.value?"You cannot afford it":"Buy it"}">Buy · ${it.value} gp</button>`:`<button class="small" data-act="take" data-id="${id}" ${busy||foeId()?"disabled":""}>Take</button>`;
  else{
   if(it.heal)acts+=`<button class="small" data-act="use" data-id="${id}">${it.kind==="food"?"Eat":"Drink"}</button>`;
+  if(it.kind==="mushroom")acts+=`<button class="small" data-act="use" data-id="${id}" title="${esc(it.desc||"")}">Eat</button>`;
   if(it.mapOf)acts+=`<button class="small" data-act="use" data-id="${id}">Read</button>`;
   if(atCottage())acts+=`<button class="small" data-act="deposit" data-id="${id}" title="Keep it safe in your chest">Store</button>`;
   if(it.kind==="treasure")acts+=`<button class="small" data-act="use" data-id="${id}">Pocket</button>`;
@@ -4154,7 +4359,7 @@ function renderSheet(){
  el.innerHTML=`<div class="who"><h2>${esc(ch.t)}</h2><span class="mono" style="font-size:13pt;color:var(--faint)">Level ${sv("LVL")} ${esc(ch.cls)}</span></div>
  <button type="button" class="statfold" data-statfold aria-expanded="${statsOpen}" aria-controls="stat-details"><span class="lbl">Abilities</span><span class="sum mono">${statsOpen?"":`${hungerLevel()>=2?"starving · ":hungerLevel()>=1?"hungry · ":""}AC ${armourClass()} · XP ${sv("XP")}/${sv("LVL")*100} · ${sv("GP")} gp${STATS.some(k=>boonFor(k))?" · ✦ boon":""}`}</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6 8 10.5 12.5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <div class="statbody" id="stat-details"${statsOpen?"":" hidden"}>
- <div class="abil">${STATS.map(k=>`<div${boonFor(k)?` class="boon" title="Boon: +${boonFor(k)} until ${(ch.boons||[]).filter(b=>b.stat===k).map(b=>fmtClock(b.until)).join(", ")}"`:""}><span class="k">${k}${boonFor(k)?" ✦":""}</span><span class="v">${sv(k)}</span><span class="m">${sgn(mod(sv(k)))}</span></div>`).join("")}</div>
+ <div class="abil">${STATS.map(k=>`<div${boonFor(k)?` class="boon" title="Effect: ${boonFor(k)>0?"+":""}${boonFor(k)} until ${(ch.boons||[]).filter(b=>b.stat===k).map(b=>fmtClock(b.until)).join(", ")}"`:""}><span class="k">${k}${boonFor(k)?" ✦":""}</span><span class="v">${sv(k)}</span><span class="m">${sgn(mod(sv(k)))}</span></div>`).join("")}</div>
  <dl class="facts"><div><dt>Armour class</dt><dd>${armourClass()}</dd></div><div><dt>Proficiency</dt><dd>+${prof()}</dd></div><div><dt>Weapon</dt><dd>${w?esc(w.dmg||"1d6"):"1d2"}</dd></div><div><dt>Light</dt><dd>${hasLight()?"lantern":"none"}</dd></div><div><dt>XP</dt><dd>${sv("XP")} / ${sv("LVL")*100}</dd></div><div><dt>Gold</dt><dd>${sv("GP")} gp</dd></div></dl>
  <p class="note">${esc(CLASS_NOTES[ch.cls]||"")}</p>
  </div>
