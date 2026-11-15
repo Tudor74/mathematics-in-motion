@@ -4342,7 +4342,7 @@ function renderMap(){
  }
  let mineSides="";{const corner=(cx,cy,k)=>[cx+Math.cos(k*Math.PI/3)*HW/2*.97,cy+Math.sin(k*Math.PI/3)*HW/2*.97];
   for(const [id,[dx,dy]] of vis){const c=cell(id),moves=sideMoves(c.x),[cx,cy]=C(dx,dy),me=id===here;
-   for(let k=0;k<6;k++){const d=moves[k],open=sideOpen(id,d);if(open&&!me)continue;
+   for(let k=0;k<6;k++){const d=moves[k],open=sideOpen(id,d);if(open)continue;
     const [x1,y1]=corner(cx,cy,k),[x2,y2]=corner(cx,cy,k+1);
     (me?(s_=>mineSides+=s_):(s_=>out+=s_))(`<line class="side ${open?"open":"shut"}${me?" mine":""}"${me?` data-d="${d}"`:""} x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/>`)}}}
  const [hx,hy]=P(0,0);
