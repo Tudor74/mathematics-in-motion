@@ -4227,7 +4227,7 @@ function renderMap(){
     centre you again, overshooting a little at each end. Positions here are in world pixels. */
  const WPX=x=>x*HW*.75,WPY=(x,y)=>-y*HH+(odd(x)?HH/2:0),hx0=WPX(H.x),hy0=WPY(H.x,H.y),shape=Math.round(ASP*20);
  if(!mapCam||mapCam.z!==Z||mapCam.R!==R||mapCam.shape!==shape||Math.abs(hx0-mapCam.x)>W*2||Math.abs(hy0-mapCam.y)>V*2)mapCam={x:hx0,y:hy0,z:Z,R,shape,anim:null};
- else{const limX=Math.max(HW*.75,W/2-HW*.45),limY=Math.max(HH*.5,V/2-HH*.45);
+ else{const limX=Math.max(HW*.75,W/2-HW*.9),limY=Math.max(HH*.5,V/2-HH*1.0);   // the moment you step onto the outermost full row or column
   if(Math.abs(hx0-mapCam.x)>limX+1||Math.abs(hy0-mapCam.y)>limY+1){const cur=camNow();mapCam.anim={fx:cur.x,fy:cur.y,t0:performance.now(),dur:matchMedia("(prefers-reduced-motion: reduce)").matches?1:1800};mapCam.x=hx0;mapCam.y=hy0;requestAnimationFrame(stepMapCam)}}
  mapCam.frame={hx:hx0,hy:hy0,W,V};
  VB[0]=210+(mapCam.x-hx0)-W/2;VB[1]=210+(mapCam.y-hy0)-V/2;
