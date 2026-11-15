@@ -1739,7 +1739,7 @@ function renderContest(){
 function festivalPrize(kind){
  const F=festivalToday(),r=cell("root");if(!F||festivalEntered()!=="won")return;
  if(kind==="stat"){setStat(F.stat,sv(F.stat)+1);log(`Your ${F.stat} rises to ${sv(F.stat)}, for good.`,"good")}
- else{const need=Math.max(1,sv("LVL")*100-sv("XP"));gainXP(need);log(`You take the purse of honour: ${need} XP.`,"good")}
+ else{const need=Math.max(1,xpFor(sv("LVL")+1)-sv("XP"));gainXP(need);log(`You take the purse of honour: ${need} XP.`,"good")}
  r.festivals[festivalKey()]="claimed";touch("root");store.flush();render();
 }
 function renderFestival(L){
@@ -2292,9 +2292,11 @@ function markSeen(locId){
  for(const d of ["up","down"]){const id=coord.get(ck(L.x,L.y,Z+DIRS[d].dz));if(id&&cell(id).seen===false&&exitOpen(L,d)){cell(id).seen=true;touch(id)}}
 }
 const visible=c=>c.seen!==false||c.visited;
+// XP needed to reach a level: each level costs a hundred times its number (L2 100, L3 300, L4 600, L10 4500)
+const xpFor=l=>50*l*(l-1);
 function gainXP(n){
  setStat("XP",sv("XP")+n);
- while(sv("XP")>=sv("LVL")*100){
+ while(sv("XP")>=xpFor(sv("LVL")+1)){
   const r=roll(`1d${hitDie()}`),gain=2*Math.max(1,r.total+mod(sv("CON")));
   setStat("LVL",sv("LVL")+1);setStat("MAXHP",sv("MAXHP")+gain);setStat("HP",sv("HP")+gain);
   log(`You reach level ${sv("LVL")}. Maximum HP rises by ${gain}.`,"good",r.text+` ${sgn(mod(sv("CON")))} CON`);
@@ -4940,10 +4942,10 @@ function renderSheet(){
  const ch=cell(charId()),hp=sv("HP"),max=sv("MAXHP"),pct=Math.max(0,Math.min(100,hp/max*100)),w=weapon(),L=hereId()&&cell(hereId()),e=entitlement();
  const restBlocked=busy||foeId()||isDowned();
  el.innerHTML=`<div class="who"><span class="facebox" title="A new portrait may become a small paid extra.">${faceSVG(ch.t,ch.cls,72,ch.faceSeed||0)}</span><h2>${esc(ch.t)}</h2><span class="mono" style="font-size:13pt;color:var(--faint)">Level ${sv("LVL")} ${esc(ch.cls)}</span></div>
- <button type="button" class="statfold" data-statfold aria-expanded="${statsOpen}" aria-controls="stat-details"><span class="lbl">Abilities</span><span class="sum mono">${statsOpen?"":`${hungerLevel()>=1?icv("hunger",hungerLevel()>=2?"starving":"hungry",""):""}${icv("shield","armour class",armourClass())} ${icv("xp","experience",`${sv("XP")}/${sv("LVL")*100}`)} ${icv("coin","gold",sv("GP"))}${STATS.some(k=>boonFor(k))?" ✦":""}`}</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6 8 10.5 12.5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+ <button type="button" class="statfold" data-statfold aria-expanded="${statsOpen}" aria-controls="stat-details"><span class="lbl">Abilities</span><span class="sum mono">${statsOpen?"":`${hungerLevel()>=1?icv("hunger",hungerLevel()>=2?"starving":"hungry",""):""}${icv("shield","armour class",armourClass())} ${icv("xp","experience",`${sv("XP")}/${xpFor(sv("LVL")+1)}`)} ${icv("coin","gold",sv("GP"))}${STATS.some(k=>boonFor(k))?" ✦":""}`}</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6 8 10.5 12.5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <div class="statbody" id="stat-details"${statsOpen?"":" hidden"}>
  <div class="abil">${STATS.map(k=>`<div${boonFor(k)?` class="boon" title="Effect: ${boonFor(k)>0?"+":""}${boonFor(k)} until ${(ch.boons||[]).filter(b=>b.stat===k).map(b=>fmtClock(b.until)).join(", ")}"`:""}><span class="k">${ic(k,{STR:"Strength",DEX:"Dexterity",CON:"Constitution",INT:"Intelligence",WIS:"Wisdom",CHA:"Charisma"}[k])}${k}${boonFor(k)?" ✦":""}</span><span class="v">${sv(k)}</span><span class="m">${sgn(mod(sv(k)))}</span></div>`).join("")}</div>
- <dl class="facts"><div><dt>${ic("shield","Armour class")}</dt><dd>${armourClass()}</dd></div><div><dt>${ic("level","Proficiency")}</dt><dd>+${prof()}</dd></div><div><dt>${ic("weapon","Weapon damage")}</dt><dd>${w?esc(w.dmg||"1d6"):"1d2"}</dd></div><div><dt>${ic("lantern","Light")}</dt><dd>${hasLight()?"lantern":"none"}</dd></div><div><dt>${ic("xp","Experience")}</dt><dd>${sv("XP")} / ${sv("LVL")*100}</dd></div><div><dt>${ic("coin","Gold")}</dt><dd>${sv("GP")}</dd></div></dl>
+ <dl class="facts"><div><dt>${ic("shield","Armour class")}</dt><dd>${armourClass()}</dd></div><div><dt>${ic("level","Proficiency")}</dt><dd>+${prof()}</dd></div><div><dt>${ic("weapon","Weapon damage")}</dt><dd>${w?esc(w.dmg||"1d6"):"1d2"}</dd></div><div><dt>${ic("lantern","Light")}</dt><dd>${hasLight()?"lantern":"none"}</dd></div><div><dt>${ic("xp","Experience")}</dt><dd>${sv("XP")} / ${xpFor(sv("LVL")+1)}</dd></div><div><dt>${ic("coin","Gold")}</dt><dd>${sv("GP")}</dd></div></dl>
  <p class="note">${esc(CLASS_NOTES[ch.cls]||"")}</p>
  <p class="note">Your portrait is drawn from your name. A fresh portrait may later become a small paid extra.</p>
  </div>
@@ -5112,7 +5114,7 @@ function renderMapKey(){const k=$("mapkey");if(!k||k.innerHTML)return;
  $("mapkey-close").onclick=()=>{k.hidden=true}}
 // Travellers have twice the hit points they used to; older characters are brought up once
 function doubleHP(){const ch=charId()&&cell(charId());if(!ch||ch.hpx2)return;ch.hpx2=true;setStat("MAXHP",2*sv("MAXHP"));setStat("HP",Math.max(1,2*sv("HP")));touch(ch.id)}
-function render(){doubleHP();renderMapKey();renderGate();renderDream();renderEncounter();renderStarving();{const x=$("exploring");if(x)x.classList.toggle("show",!!(busy&&charId()&&!isDowned()&&!["realm","founding","river","start"].includes(busy.dir)))}renderPills();renderScriptButton();renderMap();renderCompass();renderPlace();renderSheet();renderSocial();renderGarden();renderCodex();renderAlphabet();renderLog();renderVoice();decoratePanels();iconHeads();sound.update();voiceOnRender()}
+function render(){doubleHP();if(hereId()&&!isDowned())ensureWayOut(hereId(),cell(charId()).prevAt);renderMapKey();renderGate();renderDream();renderEncounter();renderStarving();{const x=$("exploring");if(x)x.classList.toggle("show",!!(busy&&charId()&&!isDowned()&&!["realm","founding","river","start"].includes(busy.dir)))}renderPills();renderScriptButton();renderMap();renderCompass();renderPlace();renderSheet();renderSocial();renderGarden();renderCodex();renderAlphabet();renderLog();renderVoice();decoratePanels();iconHeads();sound.update();voiceOnRender()}
 
 /* ============================================================
    Soundtrack: generated live from white, pink and brown noise and a few oscillators.
