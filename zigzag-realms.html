@@ -70,7 +70,22 @@ header.top .sub{color:var(--faint);font-size:15px;margin:4px 0 0;max-width:62ch}
 .map svg{display:block;width:100%;height:auto;max-width:100%;aspect-ratio:1/1;background:var(--wash);border-radius:6px}
 .map .gridline{stroke:var(--rule);stroke-width:1}
 .map .link{stroke:var(--ink);stroke-width:3;stroke-linecap:round;opacity:.55}
-.map .tile{stroke:var(--ink);stroke-opacity:.35;stroke-width:1;cursor:pointer}
+.map .tile{stroke:var(--ink);stroke-opacity:.35;stroke-width:1;stroke-linejoin:round;cursor:pointer}
+.map .hexgrid{fill:none;stroke-linejoin:round}
+.map .beacon .halo{filter:url(#beaconglow);opacity:.75}
+.map .beacon.sanctuary .halo{fill:var(--amber)}.map .beacon.cave .halo{fill:var(--magic)}
+.map .beacon .ring{fill:none;stroke-width:2.5;stroke-linejoin:round}
+.map .beacon.sanctuary .ring{stroke:var(--amber)}.map .beacon.cave .ring{stroke:var(--magic)}
+.map .beacon.far{cursor:pointer}.map .beacon.far path{fill:var(--sheet);stroke:var(--ink);stroke-width:1.4;stroke-linejoin:round}
+.map .beacon.far text{font-family:var(--mono);font-size:11px;fill:var(--ink);paint-order:stroke;stroke:var(--sheet);stroke-width:3px}
+.map .beacon.sanctuary .halo{animation:beaconpulse 3.2s ease-in-out infinite}.map .beacon.cave .halo{animation:beaconpulse 4.1s ease-in-out infinite}
+@keyframes beaconpulse{0%,100%{opacity:.45}50%{opacity:.9}}
+.map .nightfade{filter:grayscale(1) brightness(.72);opacity:.5}
+.map .nightnote rect{fill:var(--sheet);stroke:var(--water);stroke-width:2;opacity:.95}
+.map .nightnote .nn-h{font-family:var(--display);font-size:30px;font-weight:700;fill:var(--ink)}
+.map .nightnote .nn-t{font-family:var(--body);font-size:14.5px;fill:var(--ink)}
+.map .nightnote .nn-s{font-family:var(--mono);font-size:11.5px;fill:var(--faint)}
+.map .here{stroke-linejoin:round}
 .map .tile:hover{stroke-opacity:1;stroke-width:2}
 .map .glyph{fill:none;stroke:var(--ink);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;opacity:.7;pointer-events:none}
 .map .cross{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;pointer-events:none}
@@ -194,7 +209,9 @@ details.zz summary{cursor:pointer;font-family:var(--mono);font-size:13px;color:v
 .abil .boon .k{color:var(--amber)}
 .facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 12px;margin:0}
 .facts div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dotted var(--rule);padding:3px 0;font-size:14px}
-.facts dt{color:var(--faint)}.facts dd{margin:0;font-family:var(--mono);font-size:13px}
+.facts dt{color:var(--faint)}
+.facts>div{min-width:0}.facts dd{text-align:right;overflow-wrap:anywhere;min-width:0}
+.facts.towns{grid-template-columns:minmax(0,1fr)}.facts dd{margin:0;font-family:var(--mono);font-size:13px}
 
 /* Log */
 .log ol{list-style:none;margin:0;padding:0;display:grid;gap:4px;max-height:280px;overflow:auto;font-size:14px}
@@ -349,7 +366,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
    <section class="panel map" aria-labelledby="map-h">
     <div class="sectionhead"><h3 id="map-h">Survey map</h3><span class="mono" id="coords" style="font-size:12px;color:var(--faint)"></span></div>
     <svg id="map" viewBox="0 0 420 420" role="img" aria-label="Map of explored places on your current level"></svg>
-    <p class="legend"><span>▲ way up</span><span>▼ way down</span><span class="r">◆ anomaly</span><span class="p">● townsfolk</span><span style="color:var(--good)">● creatures</span><span class="m">┅ magical bridge</span></p>
+    <p class="legend"><span>▲ way up</span><span>▼ way down</span><span class="r">◆ anomaly</span><span class="p">● townsfolk</span><span style="color:var(--good)">● creatures</span><span class="m">┅ magical bridge</span><span style="color:var(--amber)">● sanctuary beacon</span><span class="m">● cave entrance</span></p>
     <p class="mapnote">The map shows the level you are on. Faded squares are places you can see but have not visited. Click one next to you to go there, or any mapped square to walk back there. Lines show the ways that are open.</p>
    </section>
    <section class="panel" aria-labelledby="moves-h" data-fold="moves">
@@ -3007,21 +3024,26 @@ const GLYPH_MON={arch:"M16 35 V21 Q26 6 36 21 V35 M20 35 V22 Q26 12 32 22 V35",s
 function renderMap(){
  const svg=$("map"),here=hereId();
  if(!here){svg.innerHTML=`<text x="210" y="215" text-anchor="middle" class="axis">The map starts when your character sets out.</text>`;$("coords").textContent="";return}
- const H=cell(here),Z=zOf(H),R=3,S=60,magic=magicPresent(),t=gameNow(),ws=wxState();
- const P=(dx,dy)=>[(dx+R)*S,(R-dy)*S];
+ const H=cell(here),Z=zOf(H),R=3,S=48,magic=magicPresent(),t=gameNow(),ws=wxState();
+ /* Flat-topped hexagons in staggered columns: odd columns (by world x) sit half a hex lower, so each
+    place touches six others. The world is still a square grid underneath; only the drawing changes.
+    P gives the top-left of a 60×60 box centred on the hex, so everything drawn at +30,+30 is centred. */
+ const HW=64,HH=HW*Math.sqrt(3)/2,odd=x=>((x%2)+2)%2===1,shift=x=>(odd(x)?HH/2:0)-(odd(H.x)?HH/2:0);
+ const C=(dx,dy)=>[210+dx*HW*.75,210-dy*HH+shift(H.x+dx)],P=(dx,dy)=>{const [cx,cy]=C(dx,dy);return[cx-30,cy-30]};
+ const hex=(cx,cy,k=1)=>[0,60,120,180,240,300].map(a=>{const r=a*Math.PI/180;return`${(cx+Math.cos(r)*HW/2*k).toFixed(1)},${(cy+Math.sin(r)*HW/2*k).toFixed(1)}`}).join(" ");
  let out="";
- for(let i=0;i<=7;i++){out+=`<line class="gridline" x1="${i*S}" y1="0" x2="${i*S}" y2="420"/><line class="gridline" x1="0" y1="${i*S}" x2="420" y2="${i*S}"/>`}
+ for(let dx=-R-2;dx<=R+2;dx++)for(let dy=-R-1;dy<=R+1;dy++){const [cx,cy]=C(dx,dy);if(cy<-HH||cy>420+HH)continue;out+=`<polygon class="gridline hexgrid" points="${hex(cx,cy)}"/>`}
  const vis=new Map();for(let dx=-R;dx<=R;dx++)for(let dy=-R;dy<=R;dy++){const id=coord.get(ck(H.x+dx,H.y+dy,Z));if(id&&visible(cell(id)))vis.set(id,[dx,dy])}
  const walkable=a=>{const c=cell(a);return!(c.river&&!c.river.crossing)&&!c.lake};
  for(const [id,[dx,dy]] of vis){const c=cell(id),[px,py]=P(dx,dy);
   const e=coord.get(ck(c.x+1,c.y,Z)),n=coord.get(ck(c.x,c.y+1,Z));
-  if(e&&vis.has(e)&&walkable(id)&&walkable(e)&&exitOpen(c,"east")&&exitOpen(cell(e),"west"))out+=`<line class="link" x1="${px+30}" y1="${py+30}" x2="${px+90}" y2="${py+30}"/>`;
-  if(n&&vis.has(n)&&walkable(id)&&walkable(n)&&exitOpen(c,"north")&&exitOpen(cell(n),"south"))out+=`<line class="link" x1="${px+30}" y1="${py+30}" x2="${px+30}" y2="${py-30}"/>`;}
+  if(e&&vis.has(e)&&walkable(id)&&walkable(e)&&exitOpen(c,"east")&&exitOpen(cell(e),"west")){const [qx,qy]=P(dx+1,dy);out+=`<line class="link" x1="${px+30}" y1="${py+30}" x2="${qx+30}" y2="${qy+30}"/>`}
+  if(n&&vis.has(n)&&walkable(id)&&walkable(n)&&exitOpen(c,"north")&&exitOpen(cell(n),"south")){const [qx,qy]=P(dx,dy+1);out+=`<line class="link" x1="${px+30}" y1="${py+30}" x2="${qx+30}" y2="${qy+30}"/>`}}
  for(const [id,[dx,dy]] of vis){const c=cell(id),[px,py]=P(dx,dy),tr=TERRAINS.includes(c.terrain)?c.terrain:"other",f=foeId(id);
   const glyph=c.sanctuary?"M14 34 V22 L26 13 L38 22 V34 Z M26 19 V31 M20 25 H32":c.monument?GLYPH_MON[c.monument]:c.town?GLYPH["town_"+c.town.size]:c.falls?GLYPH.falls:GLYPH[tr]||GLYPH.other;
   const label=c.town?`${c.t}, ${TOWN_SIZES[c.town.size].label}`:c.hole?`${c.t}, where the river falls into the hole`:c.river?(c.river.crossing?`${c.t}, ${CROSSINGS[c.river.crossing]}${c.river.crossing==="magic"&&!magic?" (absent now)":""}`:`${c.t}, the river`):c.lake?`${c.t}, a lake`:c.t;
   const wa=Z>=0?weatherAt(c.x,c.y,Z,t):null,fire=fireAt(c.x,c.y,Z);
-  out+=`<g data-loc="${id}"${c.visited?"":' class="unvisited"'}><rect class="tile t-${c.hole?"cave":tr}" x="${px+5}" y="${py+5}" width="50" height="50" rx="5" tabindex="0" role="button" aria-label="${esc(label)}${id===here?" (you are here)":""}${f?", anomaly at large":""}${fire?", on fire":""}"><title>${esc(label)}${f?" · "+esc(cell(f).designation)+" at large":""}${wa?" · "+esc(wa.short):""}${fire?" · burning":""}</title></rect><path class="${c.monument?"rune":"glyph"}" transform="translate(${px+4} ${py+4})" d="${c.hole?"M16 25 a10 8 0 1 0 20 0 a10 8 0 1 0 -20 0 M21 25 a5 4 0 1 0 10 0 a5 4 0 1 0 -10 0":glyph}"/>`;
+  out+=`<g data-loc="${id}"${c.visited?"":' class="unvisited"'}><polygon class="tile t-${c.hole?"cave":tr}" points="${hex(px+30,py+30,.95)}" tabindex="0" role="button" aria-label="${esc(label)}${id===here?" (you are here)":""}${f?", anomaly at large":""}${fire?", on fire":""}"><title>${esc(label)}${f?" · "+esc(cell(f).designation)+" at large":""}${wa?" · "+esc(wa.short):""}${fire?" · burning":""}</title></polygon><path class="${c.monument?"rune":"glyph"}" transform="translate(${px+4} ${py+4})" d="${c.hole?"M16 25 a10 8 0 1 0 20 0 a10 8 0 1 0 -20 0 M21 25 a5 4 0 1 0 10 0 a5 4 0 1 0 -10 0":glyph}"/>`;
   if(c.river&&c.river.crossing){const cr=c.river.crossing;out+=`<path class="${cr==="magic"?"magicarc"+(magic?"":" gone"):"cross"}" transform="translate(${px+4} ${py+4})" d="${CROSS_GLYPH[cr]}"/>`}
   if(wa&&wa.rain>.2)out+=`<path class="rainmark" d="M${px+40} ${py+12} l-4 8 M${px+46} ${py+12} l-4 8 M${px+52} ${py+12} l-4 8" style="opacity:${Math.min(1,.3+wa.rain)}"/>`;
   if(fire)out+=`<path class="flame" d="M${px+30} ${py+16} q10 12 0 24 q-10 -12 0 -24 Z"/>`;
@@ -3032,18 +3054,46 @@ function renderMap(){
   if(Z===0){const folk=npcsAt(c.x,c.y).slice(0,5);folk.forEach((o,k)=>{out+=`<circle class="folk${o.wild?" beast":""}" cx="${px+12+k*7}" cy="${py+48}" r="3.2"/>`})}
   out+=`</g>`;}
  for(const d of FLAT){const v=DIRS[d],id=coord.get(ck(H.x+v.dx,H.y+v.dy,Z));if((id&&visible(cell(id)))||!exitOpen(H,d))continue;const [px,py]=P(v.dx,v.dy);
-  out+=`<g data-dir="${d}"><rect class="frontier" x="${px+7}" y="${py+7}" width="46" height="46" rx="5" tabindex="0" role="button" aria-label="Explore ${d}"><title>Explore ${d}</title></rect><text class="q" x="${px+30}" y="${py+36}" text-anchor="middle">${genFor===here?"…":"?"}</text></g>`;}
+  out+=`<g data-dir="${d}"><polygon class="frontier" points="${hex(px+30,py+30,.88)}" tabindex="0" role="button" aria-label="Explore ${d}"><title>Explore ${d}</title></polygon><text class="q" x="${px+30}" y="${py+36}" text-anchor="middle">${genFor===here?"…":"?"}</text></g>`;}
  const pal=paladin();if(pal&&Z>=0){const dx=wrapC(pal.x-H.x),dy=wrapC(pal.y-H.y);if(Math.abs(dx)<=R&&Math.abs(dy)<=R){const [qx,qy]=P(dx,dy);out+=`<path class="threat" d="M${qx+22} ${qy+10} h16 v8 q0 10 -8 14 q-8 -4 -8 -14 Z"><title>${esc(pal.t)}, a paladin hunting you</title></path>`}}
  for(const m of marks().filter(m=>!m.done).map(m=>({x:m.x,y:m.y,label:`Map mark: ${m.label}`})).concat(rumours().filter(r=>!r.found&&cell(r.cell)).map(r=>({x:cell(r.cell).x,y:cell(r.cell).y,label:`Rumour: ${r.text}`})))){
   if(Z!==0)break;const dx=wrapC(m.x-H.x),dy=wrapC(m.y-H.y);if(Math.abs(dx)>R||Math.abs(dy)>R||(!dx&&!dy))continue;const [qx,qy]=P(dx,dy);
   out+=`<text class="markstar" x="${qx+48}" y="${qy+19}" text-anchor="middle"><title>${esc(m.label)}</title>★</text>`}
  out+=mapTravellers(H,R,Z,P)+mapRealmEvent(H,R,Z,P);
+ /* Beacons: the nearest sanctuaries and cave entrances shine from far off. In view they glow on their
+    hex; beyond the map they show at its edge, in their direction, with how many squares away. */
+ let beacons="";
+ if(Z===0){
+  const found={sanctuary:[],cave:[]};
+  for(const c of Object.values(zz.cells)){if(c.k!=="loc"||zOf(c)!==0||c.id===here)continue;
+   const kind=c.sanctuary?"sanctuary":exitOpen(c,"down")&&!c.town?"cave":null;if(!kind)continue;
+   const dx=wrapC(c.x-H.x),dy=wrapC(c.y-H.y),d=Math.max(Math.abs(dx),Math.abs(dy));if(d<=20)found[kind].push({c,dx,dy,d,kind})}
+  for(const b of [...found.sanctuary.sort((a,b)=>a.d-b.d).slice(0,3),...found.cave.sort((a,b)=>a.d-b.d).slice(0,3)]){
+   const what=b.kind==="sanctuary"?"Sanctuary":"Cave entrance",tip=`${what}: ${b.c.t}, ${bearing({x:b.c.x,y:b.c.y,z:0},H)}`;
+   if(Math.abs(b.dx)<=R&&Math.abs(b.dy)<=R){const [cx,cy]=C(b.dx,b.dy);
+    beacons+=`<g class="beacon ${b.kind}" pointer-events="none"><circle class="halo" cx="${cx}" cy="${cy}" r="27"/><polygon class="ring" points="${hex(cx,cy,.98)}"/></g>`;continue}
+   const [tx,ty]=C(b.dx,b.dy),vx=tx-210,vy=ty-210,k=Math.min(180/Math.abs(vx||1e-9),180/Math.abs(vy||1e-9)),ex=210+vx*k,ey=210+vy*k;
+   const icon=b.kind==="sanctuary"?`<path d="M${ex-7} ${ey+6} V${ey-1} L${ex} ${ey-7} L${ex+7} ${ey-1} V${ey+6} Z M${ex} ${ey-3} V${ey+4} M${ex-3} ${ey} H${ex+3}"/>`:`<path d="M${ex-7} ${ey-5} H${ex+7} L${ex} ${ey+6} Z"/>`;
+   beacons+=`<g class="beacon ${b.kind} far" data-loc="${b.c.id}"><circle class="halo" cx="${ex}" cy="${ey}" r="14"/>${icon}<text x="${ex}" y="${ey+(ey>210?-14:22)}" text-anchor="middle">${b.d}</text><title>${esc(tip)}</title></g>`;
+  }
+ }
  const [hx,hy]=P(0,0);
- out+=`<rect class="here" x="${hx+3}" y="${hy+3}" width="54" height="54" rx="7" pointer-events="none"/><circle class="pawn" cx="${hx+44}" cy="${hy+44}" r="6"/>`;
- if(ws&&ws.storm&&Z>=0){const sx=wrapC(Math.round(ws.storm.x)-H.x),sy=wrapC(Math.round(ws.storm.y)-H.y);const [qx,qy]=P(sx,sy);out+=`<circle class="stormring" cx="${qx+30}" cy="${qy+30}" r="${ws.storm.r*S*.8}"/>`}
- if(isNight(t)&&Z>=0)out+=`<rect class="veil" x="0" y="0" width="420" height="420"/>`;
+ out+=`<polygon class="here" points="${hex(hx+30,hy+30,1.02)}" pointer-events="none"/><circle class="pawn" cx="${hx+44}" cy="${hy+44}" r="6"/>`;
+ if(ws&&ws.storm&&Z>=0){const sx=wrapC(Math.round(ws.storm.x)-H.x),sy=wrapC(Math.round(ws.storm.y)-H.y);const [qx,qy]=P(sx,sy);out+=`<circle class="stormring" cx="${qx+30}" cy="${qy+30}" r="${ws.storm.r*HW*.6}"/>`}
  out+=`<text class="axis" x="414" y="14" text-anchor="end">N ↑</text>`;
- svg.innerHTML=out;
+ // At night the map greys out and a notice sits over it, so nightfall is hard to miss; the beacons still shine
+ if(isNight(t)&&Z>=0){
+  const mins=Math.max(1,Math.round(realMinutesToDawn(t))),steps=Math.floor(nightLeft()/STEP_MIN);
+  const line=!hasLight()?"Too dark to travel without a lantern. Make camp, or take a room at an inn."
+   :steps>0?`Your lantern has ${steps} ${steps===1?"step":"steps"} left tonight.`:"Your lantern is spent. Make camp, or take a room at an inn.";
+  out=`<g class="nightfade">${out}</g>${beacons}<g class="nightnote" pointer-events="none"><rect x="40" y="150" width="340" height="120" rx="12"/>
+   <text class="nn-h" x="210" y="196" text-anchor="middle">Night</text>
+   <text class="nn-t" x="210" y="226" text-anchor="middle">${esc(line.length>52?line.slice(0,line.lastIndexOf(" ",52)):line)}</text>
+   ${line.length>52?`<text class="nn-t" x="210" y="244" text-anchor="middle">${esc(line.slice(line.lastIndexOf(" ",52)+1))}</text>`:""}
+   <text class="nn-s" x="210" y="${line.length>52?262:248}" text-anchor="middle">Dawn in about ${mins} real ${mins===1?"minute":"minutes"}</text></g>`;
+ }
+ else out+=beacons;
+ svg.innerHTML=`<defs><filter id="beaconglow" x="-1" y="-1" width="3" height="3"><feGaussianBlur stdDeviation="4"/></filter></defs>`+out;
  const ew=H.x===0?"0":Math.abs(H.x)+(H.x>0?" E":" W"),ns=H.y===0?"0":Math.abs(H.y)+(H.y>0?" N":" S");
  $("coords").textContent=`${ew}, ${ns} · level ${Z>0?"+"+Z:Z===0?"0":"−"+(-Z)}`;
 }
@@ -3266,7 +3316,7 @@ function renderSheet(){
  <div class="btnrow"><button id="rest" ${restBlocked?"disabled":""} title="${L&&L.town?"Pay 2 gp for a room and sleep until dawn (or eight hours): full HP.":"Make camp: sleep until dawn at night, or eight hours by day, for half your HP."}">${L&&L.town?"Take a room at the inn · 2 gp":"Make camp"}</button>${foeId()?'<span class="note">Not while it is here.</span>':""}</div>
  ${hungerLevel()>=1?`<p class="flash${hungerLevel()>=2?" sharp":""}">${hungerLevel()>=2?"Starving: you lose 1 HP every six hours.":"Hungry: −1 STR, −1 CON, and you heal less when you rest."} Eat something.</p>`:""}
  ${companions().length?`<p class="note">Companions: ${companions().map(n=>`<b>${esc(n.t)}</b> (${esc(GIFTS[n.species]||"keeps you company")})`).join("; ")}.</p>`:""}
- <dl class="facts">${towns().map(T=>{const v=townStanding(T.id);return`<div><dt>${esc(T.t)}</dt><dd>${repTier(v)} ${v>=0?"+":"−"}${Math.abs(v).toFixed(2)}</dd></div>`}).join("")}</dl>
+ <dl class="facts towns">${towns().map(T=>{const v=townStanding(T.id);return`<div><dt>${esc(T.t)}</dt><dd>${repTier(v)} ${v>=0?"+":"−"}${Math.abs(v).toFixed(2)}</dd></div>`}).join("")}</dl>
  ${(()=>{const T=towns(),rel=[];for(let i=0;i<T.length;i++)for(let j=i+1;j<T.length;j++)rel.push(`${esc(T[i].t)} and ${esc(T[j].t)}: ${relationName(rivalry(T[i].id,T[j].id))}`);return rel.length?`<p class="note">${rel.join(" · ")}. Helping one town is noticed by its rivals.</p>`:""})()}
  ${rumours().filter(r=>!r.found).length?`<div class="sectionhead"><h3>Rumours</h3><span class="mono" style="font-size:12px;color:var(--faint)">${rumours().filter(r=>!r.found).length} unproven</span></div><ul class="quests">${rumours().filter(r=>!r.found).slice(-6).reverse().map(r=>`<li>${esc(r.from)}: ${esc(r.text)}</li>`).join("")}</ul>`:""}
  <dl class="facts"><div><dt>Reputation</dt><dd>${repTier()} ${reputation()>=0?"+":"−"}${Math.abs(reputation()).toFixed(2)}</dd></div><div><dt>Standing</dt><dd>${ordinal(Math.round(standingPercentile()))} pct</dd></div><div><dt>Magic offered</dt><dd>${reputation()>=.5?"rare and common":reputation()>=.25?"common":"none"}</dd></div></dl>
