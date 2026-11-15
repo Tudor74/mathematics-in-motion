@@ -110,7 +110,7 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .maprow .mapside{display:none!important}
 .maprealm{position:absolute;right:10px;top:10px;pointer-events:none}.maprealm:empty{display:none}
 .maprealm>span{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;background:color-mix(in srgb,var(--sheet) 88%,transparent);border:1px solid var(--rule);box-shadow:0 2px 8px #0002;font-family:var(--mono);font-size:13pt;color:var(--ink)}
-.maprealm .ic{width:1.4em;height:1.4em}.maprealm .live .ic{color:var(--good)}
+.maprealm .facehead{display:block;border-radius:50%;background:var(--sheet)}.maprealm .live .facehead{box-shadow:0 0 0 2px var(--good)}
 .arrive{position:absolute;inset:0;display:grid;place-items:center;padding:12px;pointer-events:none;opacity:0;transition:opacity .45s ease;z-index:4}
 .arrive.show{opacity:1}.arrive .veil{position:absolute;inset:0;border-radius:12px;background:color-mix(in srgb,var(--paper) 50%,transparent)}
 .arrive .card{position:relative;max-width:600px;max-height:100%;overflow:auto;display:grid;gap:6px;padding:12px 16px;border-radius:12px;background:var(--sheet);border:1px solid var(--rule);box-shadow:0 6px 24px #0003;transform:translateY(6px);transition:transform .45s ease}
@@ -4088,7 +4088,7 @@ function renderAccount(){
  
  const who="";
  {const mr=$("maprealm");if(mr){const n=mp.online,lab=n==null?(mp.status||"connecting"):`${n} ${n===1?"traveller":"travellers"} here now`;
-  mr.innerHTML=mp.on()&&charId()?`<span class="${n>1?"live":""}" title="${esc(lab)}">${ic("head",lab)}<b>${n==null?"…":n}</b></span>`:""}}
+  mr.innerHTML=mp.on()&&charId()?`<span class="${n>1?"live":""}" title="${esc(lab)}" role="img" aria-label="${esc(lab)}">${faceHead(cell(charId()).t,cell(charId()).cls,cell(charId()).faceSeed||0,30)}<b>${n==null?"…":n}</b></span>`:""}}
  // Players who already have a world of their own can move to the shared realm from here
  const join=canJoinRealm()&&!mp.on()&&charId()?(joinArmed
   ?`<span class="confirm">Move to the shared realm? You roll a new character there and this world is erased. <button class="small" id="join-yes">Move</button><button class="small" id="join-no">Stay</button></span>`
@@ -4671,6 +4671,8 @@ function faceSVG(name,cls,size=96,seed=0){
  const tilt=((r()-.5)*7).toFixed(1),fid="brush"+(strSeed(name+cls+seed)>>>0).toString(36);
  return`<svg class="face" viewBox="0 -24 120 164" width="${size}" height="${Math.round(size*164/120)}" role="img" aria-label="Portrait of ${esc(name)}"><defs><filter id="${fid}" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="${(.035+r()*.03).toFixed(3)}" numOctaves="2" seed="${Math.floor(r()*99)}"/><feDisplacementMap in="SourceGraphic" scale="${(2.4+r()*1.6).toFixed(1)}"/></filter></defs><g filter="url(#${fid})"><g transform="rotate(${tilt} 60 70)">${s}</g>${spat}</g></svg>`;
 }
+// just the head of a portrait, tiny, for badges
+function faceHead(name,cls,seed=0,size=26){return faceSVG(name,cls,size,seed).replace(/viewBox="0 -24 120 164" width="[0-9.]+" height="[0-9.]+"/,`viewBox="10 4 100 100" width="${size}" height="${size}"`).replace('class="face"','class="face facehead"')}
 function renderCreate(el){
  if(canJoinRealm()){el.innerHTML=`<div class="placehead"><p class="eyebrow">New adventurer</p><h2>Join on the map</h2></div><p class="note">Choose a name and class on the map, then set out. Your abilities are rolled the classic way, and you set out at once.</p>`;return}
  const s=draft.stats,C=CLASSES[draft.cls],hp=Math.max(1,C.hd+mod(s[2]));
