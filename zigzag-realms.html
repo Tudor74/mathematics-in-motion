@@ -2266,8 +2266,25 @@ function createLocation(data,pos){
   if(m.loot)appendTo(mid,"contain",itemCell(m.loot));
  }
  for(const v of Object.values(DIRS)){const nb=coord.get(ck(x+v.dx,y+v.dy,z+v.dz));if(!nb)continue;if(v.sign==="+")connect(id,v.dim,nb);else connect(nb,v.dim,id)}
+ if(!z)fixCrossingsNear(x,y,z);
  return id;
 }
+/* Crossings must lead somewhere. A place on the bank beside a ford or bridge always has its side toward
+   the crossing open, and at least one other way out that is not back over the water. */
+function fixCrossing(cid){
+ const C=cell(cid);if(!C||!C.river||!C.river.crossing)return;
+ for(const d of FLAT){const v=DIRS[d],nid=coord.get(ck(C.x+v.dx,C.y+v.dy,0));if(!nid)continue;const N=cell(nid);if(N.river||N.lake)continue;
+  let ch=false;N.exits=N.exits||EX("nsew");
+  if(N.exits[OPP[d]]===false){N.exits[OPP[d]]=true;if(N.walls)delete N.walls[OPP[d]];ch=true}
+  const wet=e=>{const o=coord.get(ck(N.x+DIRS[e].dx,N.y+DIRS[e].dy,0)),O=o&&cell(o);return!!(O&&(O.lake||(O.river&&!O.river.crossing)||O.hole))};
+  const ways=FLAT.filter(e=>e!==OPP[d]&&N.exits[e]!==false&&!wet(e));
+  if(!ways.length){const e=[d,...FLAT.filter(x=>x!==d&&x!==OPP[d])].find(e=>!wet(e));
+   if(e){N.exits[e]=true;if(N.walls)delete N.walls[e];const o=coord.get(ck(N.x+DIRS[e].dx,N.y+DIRS[e].dy,0));
+    if(o){const O=cell(o);if(O.exits&&O.exits[OPP[e]]===false){O.exits[OPP[e]]=true;if(O.walls)delete O.walls[OPP[e]];touch(o)}}ch=true}}
+  if(ch){N.desc=String(N.desc||"").replace(/ ?(The only way in or out is to|You can only come and go to) [^.]*\./,"");touch(nid)}
+ }
+}
+function fixCrossingsNear(x,y,z){if(z)return;for(const d of FLAT){const v=DIRS[d],id=coord.get(ck(x+v.dx,y+v.dy,0));if(id&&cell(id).river&&cell(id).river.crossing)fixCrossing(id)}}
 function markSeen(locId){
  const L=cell(locId),Z=zOf(L);
  for(let dx=-2;dx<=2;dx++)for(let dy=-2;dy<=2;dy++){const id=coord.get(ck(L.x+dx,L.y+dy,Z));if(!id)continue;const c=cell(id);
@@ -2829,7 +2846,7 @@ async function puterAfterSignIn(migrate){
  try{const u=await puter.auth.getUser();puterUser=u&&u.username||"signed in"}catch(e){}
  ai.kind="puter";store.mode="puter";await store.claim();
  const remote=await store.loadPuter();
- if(remote&&remote.root&&(!zz.cells.root||!migrate)){zz.cells=remote;coord.clear();fieldCache.clear();for(const c of Object.values(zz.cells))if(c.k==="loc")coord.set(ck(c.x,c.y,zOf(c)),c.id)}
+ if(remote&&remote.root&&(!zz.cells.root||!migrate)){zz.cells=remote;coord.clear();fieldCache.clear();for(const c of Object.values(zz.cells))if(c.k==="loc")coord.set(ck(c.x,c.y,zOf(c)),c.id);for(const c of Object.values(zz.cells))if(c.k==="loc"&&c.river&&c.river.crossing)fixCrossing(c.id)}
  else if(zz.cells.root){for(const id of Object.keys(zz.cells))touch(id)}
  dailyFragment();store.flush();render();if(mp.on())mpPing();
 }
@@ -3554,7 +3571,7 @@ function joinRealm(cells,meta){
  const keepEnt=cell("root")&&cell("root").ent||draft.ent;
  for(const id of Object.keys(zz.cells))zz.removed.add(id);
  zz.cells=cells;coord.clear();fieldCache.clear();zz.dirty.clear();rounds=[];sound.riverPts=null;
- for(const c of Object.values(zz.cells)){if(c.k==="loc"){coord.set(ck(c.x,c.y,zOf(c)),c.id);if(c.id!==cells.root.home)c.visited=false}touch(c.id)}
+ for(const c of Object.values(zz.cells)){if(c.k==="loc"){coord.set(ck(c.x,c.y,zOf(c)),c.id);if(c.id!==cells.root.home)c.visited=false}touch(c.id)}for(const c of Object.values(zz.cells))if(c.k==="loc"&&c.river&&c.river.crossing)fixCrossing(c.id);
  const r=cell("root");Object.assign(r,{log:[],created:Date.now(),clock:{base:8*60,real:Date.now()},npcT:8*60,ent:keepEnt||null,shared:meta.id,founder:meta.by});mp.realmChecked=true;
  const {ch,extras}=makeCharacter();
  const home=r.home;connect(ch,"at",home);cell(home).visited=true;markSeen(home);
@@ -5476,6 +5493,7 @@ setInterval(()=>{
  const saved=await store.load();
  if(saved){
   zz.cells=saved;for(const c of Object.values(zz.cells))if(c.k==="loc")coord.set(ck(c.x,c.y,zOf(c)),c.id);
+  for(const c of Object.values(zz.cells))if(c.k==="loc"&&c.river&&c.river.crossing)fixCrossing(c.id);
   {const ch=charId()&&cell(charId());if(ch&&ch.lastMeal==null){ch.lastMeal=gameNow();touch(ch.id)}if(!cell("root").rivalry&&towns().length)seedRivalry()}
   const r=cell("root");if(!r.clock){r.clock={base:8*60,real:Date.now()};r.npcT=8*60;r.seed=Math.floor(Math.random()*1e6);touch("root")}
   if(store.mode==="cloud"&&store.from!=="cloud"){for(const id of Object.keys(zz.cells))touch(id)}
