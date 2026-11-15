@@ -4359,7 +4359,7 @@ function renderHud(){
  const R=27,C=2*Math.PI*R,col=f<=.34?"var(--danger)":f<=.67?"var(--amber)":"var(--good)";
  const dial=`<svg class="hpdial" viewBox="0 0 72 72" role="img" aria-label="HP ${hp} of ${max}"><circle cx="36" cy="36" r="34" class="bg"/><circle cx="36" cy="36" r="${R}" class="track"/>
   <circle cx="36" cy="36" r="${R}" class="arc" stroke="${col}" stroke-dasharray="${(C*f).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 36 36)"/>
-  <text x="36" y="35" text-anchor="middle" class="hpv">${hp}</text><text x="36" y="51" text-anchor="middle" class="hpm">/${max}</text></svg>`;
+  <text x="36" y="36" text-anchor="middle" dominant-baseline="central" class="hpv">${hp}</text><title>HP ${hp} of ${max}</title></svg>`;
  const coin=`<span class="gp" title="${sv("GP")} gold pieces"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" class="c1"/><circle cx="12" cy="12" r="6.6" class="c2"/></svg><b>${sv("GP")}</b></span>`;
  const short=hungerLevel()<2?foodShort():null;
  if(short&&!foodShort.said){foodShort.said=true;log(`Your food will not last the ${short.steps} steps to ${short.town.t}. Eat sparingly, forage, or hunt.`,"bad")}if(!short)foodShort.said=false;
