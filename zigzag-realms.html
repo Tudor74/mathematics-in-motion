@@ -56,7 +56,7 @@ header.top .sub{color:var(--faint);font-size:13pt;margin:4px 0 0;max-width:62ch}
 .pill b{color:var(--ink);font-weight:500}
 .pill{max-width:100%}
 @media (max-width:720px){.pill{white-space:normal}}
-#sound-toggle{white-space:normal;text-align:left}
+.soundicon{width:40px;height:40px;min-height:0;padding:0;border-radius:50%;display:grid;place-items:center;background:transparent;border:1px solid var(--rule);color:var(--ink)}.soundicon svg{width:24px;height:24px}.soundicon[aria-pressed="false"]{color:var(--faint)}
 .pill.warn b{color:var(--danger)}
 /* The clock: a little bank of nixie valves on a wooden plinth, glowing orange (a device, so the same in both themes) */
 header.top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align-items:start}
@@ -96,6 +96,7 @@ header.top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align
 /* Map */
 .map svg{display:block;width:100%;height:auto;max-width:100%;aspect-ratio:480/416;background:var(--wash);border-radius:6px}
 .mapwrap{position:relative}
+.panel.map{background:none;border:0;padding:0;border-radius:0;box-shadow:none}.panel.map svg{border-radius:12px;border:1px solid var(--rule)}.panel.map .hud{left:10px;top:10px}.panel.map .mapwx{right:10px;bottom:10px}
 /* The heads-up display: what changes as you play, over the map's top-left corner */
 .hud{position:absolute;left:8px;top:8px;display:grid;gap:4px;padding:7px 9px;border-radius:8px;background:color-mix(in srgb,var(--sheet) 88%,transparent);border:1px solid var(--rule);font-family:var(--mono);font-size:13pt;color:var(--ink);min-width:150px;max-width:calc(100% - 16px);box-shadow:0 2px 8px #0002}
 .mapwx{position:absolute;right:8px;bottom:8px;padding:5px 10px;border-radius:8px;background:color-mix(in srgb,var(--sheet) 88%,transparent);border:1px solid var(--rule);font-family:var(--mono);font-size:13pt;color:var(--ink);max-width:calc(100% - 16px);box-shadow:0 2px 8px #0002;pointer-events:none}.mapwx:empty{display:none}
@@ -424,11 +425,10 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
   <div class="hdr-right">
   <div class="nixie" id="pill-clock" data-night="false">
    <div class="whoami" id="whoami"></div>
-   <div class="segclock" aria-hidden="true"><svg id="segdigits" viewBox="0 0 132 44"></svg><svg id="moon" viewBox="0 0 32 32"></svg></div>
+   <div class="segclock"><button id="sound-toggle" class="soundicon" aria-pressed="true" type="button" aria-label="Sound on"></button><svg aria-hidden="true" id="segdigits" viewBox="0 0 132 44"></svg><svg id="moon" viewBox="0 0 32 32"></svg></div>
    <div class="seasonline" id="seasonline" aria-hidden="true"><span class="sp"></span><span class="su"></span><span class="au"></span><span class="wi"></span><i></i></div>
   </div>
   <div class="pills">
-   <button class="pill" id="sound-toggle" aria-pressed="true" type="button">Sound: <b>on</b></button>
    <button class="pill" id="script-toggle" aria-pressed="false" type="button">Script: <b>Latin</b></button>
    <span class="pill" id="pill-ai">Narrator: <b>connecting…</b></span>
    <span id="account" class="pills"></span>
@@ -4024,8 +4024,8 @@ function renderAccount(){
 let joinArmed=false;
 
 const GLYPH_MON={arch:"M16 35 V21 Q26 6 36 21 V35 M20 35 V22 Q26 12 32 22 V35",stones:"M13 35 V21 M21 35 V15 M29 35 V17 M37 35 V22 M11 35 H41",temple:"M11 20 L26 11 L41 20 Z M14 20 V32 M21 20 V32 M31 20 V32 M38 20 V32 M11 33 H41"};
-const ZOOMS=[2,3,4,5,6,8];let mapZoom=5;try{const z=+localStorage.getItem("zr-zoom2");if(ZOOMS.includes(z))mapZoom=z}catch(e){}
-function setZoom(step){const i=Math.max(0,Math.min(ZOOMS.length-1,ZOOMS.indexOf(mapZoom)+step));mapZoom=ZOOMS[i];try{localStorage.setItem("zr-zoom2",String(mapZoom))}catch(e){}renderMap()}
+const ZOOMS=[2,3,4,5,6,8];let mapZoom=3;try{const z=+localStorage.getItem("zr-zoom3");if(ZOOMS.includes(z))mapZoom=z}catch(e){}
+function setZoom(step){const i=Math.max(0,Math.min(ZOOMS.length-1,ZOOMS.indexOf(mapZoom)+step));mapZoom=ZOOMS[i];try{localStorage.setItem("zr-zoom3",String(mapZoom))}catch(e){}renderMap()}
 document.addEventListener("click",e=>{if(e.target.closest("#zoom-in"))setZoom(-1);else if(e.target.closest("#zoom-out"))setZoom(1)});
 /* The HUD: hit points, level and XP, gold, load, light and hunger, plus a rest button, over the map */
 function renderHud(){
@@ -4134,7 +4134,7 @@ function renderMap(){
    <text class="nn-s" x="210" y="${210-h/2+82+rows.length*30+8}" text-anchor="middle">Dawn in about ${mins} real ${mins===1?"minute":"minutes"}</text></g>`)})();
  }
  else out+=beacons;
- svg.setAttribute("viewBox",VB.map(v=>v.toFixed(1)).join(" "));svg.style.setProperty("--u",bb.width>50?(W/bb.width).toFixed(4):"1");$("zoom-label").textContent=`${Math.round(W/(HW*.75))} × ${2*R+1} hexes`;$("zoom-in").disabled=R<=ZOOMS[0];$("zoom-out").disabled=R>=ZOOMS[ZOOMS.length-1];
+ svg.setAttribute("viewBox",VB.map(v=>v.toFixed(1)).join(" "));{const cw=svg.clientWidth||bb.width;svg.style.setProperty("--u",cw>50?(W/cw*1.003).toFixed(4):"1")}$("zoom-label").textContent=`${Math.round(W/(HW*.75))} × ${2*R+1} hexes`;$("zoom-in").disabled=R<=ZOOMS[0];$("zoom-out").disabled=R>=ZOOMS[ZOOMS.length-1];
  renderHud();
  svg.innerHTML=`<defs><filter id="beaconglow" x="-1" y="-1" width="3" height="3"><feGaussianBlur stdDeviation="4"/></filter></defs>`+out;
  const ew=H.x===0?"0":Math.abs(H.x)+(H.x>0?" E":" W"),ns=H.y===0?"0":Math.abs(H.y)+(H.y>0?" N":" S");
@@ -4322,7 +4322,7 @@ function renderPlace(){
  html+=items.length?`<ul class="items">${items.map(id=>itemRow(id,"here")).join("")}</ul>`:`<p class="empty">Nothing here to pick up. Anything you put down stays here for when you return.</p>`;
  const dims=[["d.x","x"],["d.y","y"],["d.z","z"],["d.river","river"],["d.residents","residents"],["d.occupant","occupant"],["d.at","at"],["d.contain","contain"]];
  const rows=dims.map(([label,dim])=>`<tr><th>${label}</th><td>${esc(zname(step(here,dim,"-")))}</td><td class="mid">${esc(here)}</td><td>${esc(zname(step(here,dim,"+")))}</td></tr>`).join("");
- html+=`<details class="zz" id="zz-details"${zzOpen?" open":""}><summary>ZigZag view of this place (cell ${esc(here)})</summary><div class="zztable"><table><thead><tr><th>Dimension</th><th>− negward</th><th>this cell</th><th>+ posward</th></tr></thead><tbody>${rows}</tbody></table></div>
+ html+=`<details class="zz" id="zz-details"${zzOpen?" open":""}><summary>ZigZag view of this place</summary><div class="zztable"><table><thead><tr><th>Dimension</th><th>− negward</th><th>this cell</th><th>+ posward</th></tr></thead><tbody>${rows}</tbody></table></div>
  <p class="zzhelp">Each place is one cell. Walking east follows <span class="mono">d.x+</span>, north <span class="mono">d.y+</span>, and climbing up <span class="mono">d.z+</span>. The river is twenty cells chained along <span class="mono">d.river</span>, from source to hole. Each town heads a rank of its townsfolk along <span class="mono">d.residents</span>. An anomaly hangs off its place along <span class="mono">d.occupant</span>. The store here is a rank along <span class="mono">d.contain</span>: <span class="mono">${esc([here].concat(items).join(" → "))}</span>.</p></details>`;
  el.innerHTML=html;
 }
@@ -4842,7 +4842,11 @@ sound.init();
 // Browsers only allow sound after the first click or key press, so the soundtrack starts then
 for(const ev of ["pointerdown","keydown"])document.addEventListener(ev,()=>{if(sound.on&&!sound.started)sound.start();else if(sound.started&&sound.ctx.state==="suspended"&&sound.on)sound.ctx.resume()},{capture:true});
 setInterval(()=>sound.tick(),1000);
-function renderSoundButton(){const b=$("sound-toggle");if(!b)return;b.setAttribute("aria-pressed",String(sound.on));b.innerHTML=sound.on?`Sound: <b>on</b>${sound.started?(sound.scapeName?` · ${esc(sound.scapeName)}, ${Math.round(sound.vol*100)}%, reverb ${Math.round(sound.revF*100)}%, pitch ${Math.round(sound.pitch*100)}%`:""):" (click anywhere to start)"}`:"Sound: <b>off</b>"}
+function renderSoundButton(){const b=$("sound-toggle");if(!b)return;b.setAttribute("aria-pressed",String(sound.on));
+ const spk='<path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor" stroke="none"/>';
+ b.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">${spk}${sound.on?'<path d="M16 9.5a3.5 3.5 0 0 1 0 5M18.5 7a7 7 0 0 1 0 10"/>':'<path d="M16.5 9.5l5 5M21.5 9.5l-5 5"/>'}</svg>`;
+ const tip=sound.on?`Sound on${sound.started?(sound.scapeName?`: ${sound.scapeName}, ${Math.round(sound.vol*100)}%, reverb ${Math.round(sound.revF*100)}%, pitch ${Math.round(sound.pitch*100)}%`:""):" (click anywhere to start)"}. Click to turn off.`:"Sound off. Click to turn on.";
+ b.title=tip;b.setAttribute("aria-label",sound.on?"Sound on":"Sound off")}
 
 /* ============================================================
    Events and start-up
