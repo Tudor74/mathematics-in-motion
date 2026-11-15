@@ -1,5 +1,5 @@
 <title>Zigzag Realms</title>
-<meta name="application-version" content="0.4">
+<meta name="application-version" content="0.6">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -58,7 +58,25 @@ header.top .sub{color:var(--faint);font-size:15px;margin:4px 0 0;max-width:62ch}
 @media (max-width:720px){.pill{white-space:normal}}
 #sound-toggle{white-space:normal;text-align:left}
 .pill.warn b{color:var(--danger)}
-.pill.clock{display:inline-flex;align-items:center;gap:7px}
+/* The clock: a little bank of nixie valves on a wooden plinth, glowing orange (a device, so the same in both themes) */
+header.top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align-items:start}
+.hdr-right{display:contents}
+.nixie{display:grid;justify-items:end;gap:4px;grid-column:2;grid-row:1}
+.hdr-right>.pills{grid-column:1 / -1;grid-row:2}
+.nixie .plinth{display:flex;align-items:center;gap:5px;padding:7px 10px 9px;border-radius:10px;background:linear-gradient(#5a3a22,#3a2414);box-shadow:inset 0 1px 0 #8a6040,0 3px 0 #24160c,0 6px 14px #0004}
+.nixie .tube{position:relative;width:30px;height:46px;border-radius:15px 15px 5px 5px;background:radial-gradient(ellipse at 50% 35%,#2a1a10 0%,#120a06 70%,#050302 100%);border:1px solid #b88a6044;box-shadow:inset 0 0 8px #000,inset 3px 0 6px #ffffff10;display:grid;place-items:center;overflow:hidden}
+.nixie .tube::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(60deg,#ffffff07 0 1px,transparent 1px 4px),repeating-linear-gradient(-60deg,#ffffff07 0 1px,transparent 1px 4px);pointer-events:none}
+.nixie .tube::before{content:"8";position:absolute;font:400 33px/1 "IBM Plex Mono",ui-monospace,monospace;color:#ff8c3a14}
+.nixie .tube b{position:relative;font:400 33px/1 "IBM Plex Mono",ui-monospace,monospace;color:#ffc27a;text-shadow:0 0 2px #fff3,0 0 5px #ff8a1f,0 0 12px #ff6a00,0 0 22px #ff5a00aa;animation:nixflicker 7s infinite}
+.nixie .colon{display:grid;gap:9px;padding:0 1px}
+.nixie .colon i{width:6px;height:6px;border-radius:50%;background:#ffb35c;box-shadow:0 0 4px #ff8a1f,0 0 10px #ff6a00;animation:nixblink 2s steps(1) infinite}
+.nixie .lamp{width:12px;height:12px;border-radius:50%;margin-left:4px;background:#ffd27a;box-shadow:0 0 5px #ffb000,0 0 12px #ff9a00;border:1px solid #00000066}
+.nixie[data-night="true"] .lamp{background:#9cc8ff;box-shadow:0 0 5px #6aa8ff,0 0 12px #3a7cff}
+.nixie[data-night="true"] .tube b{color:#ffad6a;text-shadow:0 0 2px #fff2,0 0 5px #ff7a1f,0 0 10px #ff5a00}
+.nixie-label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+@keyframes nixblink{0%{opacity:1}50%{opacity:.25}}
+@keyframes nixflicker{0%,96%,100%{opacity:1}97%{opacity:.82}98%{opacity:1}99%{opacity:.9}}
+@media (max-width:720px){header.top{grid-template-columns:minmax(0,1fr)}.nixie{grid-column:1;grid-row:2;justify-items:start}.hdr-right>.pills{grid-row:3}}
 .orb{width:11px;height:11px;border-radius:50%;background:var(--amber);flex:0 0 11px}
 .pill.clock[data-night="true"] .orb{background:transparent;box-shadow:inset -4px -1px 0 0 var(--water)}
 
@@ -297,6 +315,10 @@ button.pill[aria-pressed="false"] b{color:var(--faint)}
 .realmevent{border:1px solid var(--magic);border-left-width:4px;border-radius:6px;padding:8px 12px;background:var(--wash);display:grid;gap:2px}
 .realmevent p{margin:0;font-size:15px}.realmevent .eyebrow{color:var(--magic)}
 .map .evmark{fill:var(--magic);font-size:18px;pointer-events:auto}
+.map .friendpath{fill:var(--amber);opacity:.35;filter:url(#beaconglow);animation:friendglow 2.4s ease-in-out infinite}
+@keyframes friendglow{0%,100%{opacity:.18}50%{opacity:.6}}
+.map .friendname,.map .friendring text{font-family:var(--mono);font-size:11px;fill:var(--ink);paint-order:stroke;stroke:var(--sheet);stroke-width:3px}
+.map .friendring circle{fill:none;stroke:var(--good);stroke-width:3}
 .map .footprint{fill:var(--magic);opacity:.45;pointer-events:auto}
 label.check{display:flex;gap:8px;align-items:flex-start;font-size:14px}label.check input{margin-top:3px}
 .codex .frag{color:var(--faint)}
@@ -356,12 +378,16 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
 <div class="wrap">
  <header class="top">
   <div>
-   <p class="eyebrow">A map that writes itself · v0.4</p>
+   <p class="eyebrow">A map that writes itself · v0.6</p>
    <h1>Zigzag Realms</h1>
    <p class="sub">A river with three towns, a woodland and its magical grove, a mountain with lakes, a waterfall and caves, and a desert are laid out when your journey begins, with townsfolk and creatures living among them. Claude writes everything else one step ahead of you. Every place is kept as a cell in a ZigZag structure, so you can find your way back.</p>
   </div>
+  <div class="hdr-right">
+  <div class="nixie" id="pill-clock" data-night="false">
+   <div class="plinth" aria-hidden="true"><span class="tube"><b id="nx0">0</b></span><span class="tube"><b id="nx1">8</b></span><span class="colon"><i></i><i></i></span><span class="tube"><b id="nx2">0</b></span><span class="tube"><b id="nx3">0</b></span><span class="lamp" title="day or night"></span></div>
+   <div class="nixie-label" id="clock-text">Day 1 · 08:00</div>
+  </div>
   <div class="pills">
-   <span class="pill clock" id="pill-clock" data-night="false"><span class="orb" aria-hidden="true"></span><span id="clock-text">Day 1 · 08:00</span></span>
    <span class="pill" id="pill-weather">Weather: <b>—</b></span>
    <button class="pill" id="sound-toggle" aria-pressed="true" type="button">Sound: <b>on</b></button>
    <button class="pill" id="script-toggle" aria-pressed="false" type="button">Script: <b>Latin</b></button>
@@ -370,6 +396,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
    <span class="pill" id="pill-save">World: <b>loading…</b></span>
    <span class="pill" id="pill-cells">Cells: <b>0</b></span>
    <button class="pill" id="layout-reset" type="button" hidden>Reset layout</button>
+  </div>
   </div>
  </header>
 
@@ -1751,7 +1778,7 @@ function gainXP(n){
  }
 }
 function enter(locId,first){
- if(mp.on())mpSoon();
+ if(mp.on()){mpSoon();const T=cell(locId);if(T&&T.town)maybeIntroduce(T)}
  const ch=charId(),prev=hereId();if(prev&&prev!==locId){cell(ch).prevAt=prev;touch(ch)}
  connect(ch,"at",locId);const L=cell(locId);lastHazard=null;rounds=[];
  if(!L.visited){L.visited=true;touch(locId);gainXP(L.town&&!L.town.of?25:10);if(L.town&&!L.town.of)log(`You reach ${L.t}, a ${TOWN_SIZES[L.town.size].label} on the ${riverName()}.`,"good")}
@@ -2945,8 +2972,8 @@ async function mpPing(say){
  if(mp.busy){if(say)mp.queued=say;return}
  const L=cell(hereId()),ch=cell(charId());mp.busy=true;
  try{
-  const r=await mp.call("/presence",{x:L.x,y:L.y,z:zOf(L),name:ch.t,cls:ch.cls,lvl:sv("LVL"),say:say||undefined});
-  mp.you=r.you;mp.online=r.players.length;mp.players=r.players.filter(p=>p.u!==r.you);mp.ground=r.ground||[];mp.ev=r.ev||null;evTick();mp.groundKey=sqk({x:L.x,y:L.y,z:zOf(L)});mp.status="";
+  const r=await mp.call("/presence",Object.assign({x:L.x,y:L.y,z:zOf(L),name:ch.t,cls:ch.cls,lvl:sv("LVL"),say:say||undefined},mpExtras()));
+  mp.you=r.you;mp.online=r.players.length;mp.players=r.players.filter(p=>p.u!==r.you);mp.ground=r.ground||[];mp.ev=r.ev||null;evTick();applyThefts(r.thefts);meetPlayers(L);mp.groundKey=sqk({x:L.x,y:L.y,z:zOf(L)});mp.status="";
   if(say)log(`You say: “${say}”`,"talk");
   const here=new Set();
   for(const p of mp.players){
@@ -2954,7 +2981,7 @@ async function mpPing(say){
    if(p.say&&p.say.t>(mp.heard[p.u]||0)){mp.heard[p.u]=p.say.t;if(Date.now()-p.say.t<120e3&&mpDist(p.say,L)<=MP_NEAR)log(`${p.name} says: “${p.say.text}”`,"talk")}
   }
   mp.met=here;
- }catch(e){mp.status=e.status===401?"sign in to see others":e.status===429?mp.status:"realm unreachable"}
+ }catch(e){mp.status=e.status===401?"sign in to see others":e.status===429?mp.status:"realm unreachable";mp.packSig=null}
  finally{mp.busy=false}
  const sig=JSON.stringify([mp.players.map(p=>[p.u,p.x,p.y,p.z,p.say&&p.say.t]),mp.ground.map(g=>g.id),mp.status,mp.ev]);
  if(sig!==mp.sig){mp.sig=sig;store.flush();render()}
@@ -2989,7 +3016,9 @@ function renderTravellers(L){
  const near=mpNear(),key=sqk({x:L.x,y:L.y,z:zOf(L)}),ground=mp.groundKey===key?mp.ground:[];
  const said=near.filter(p=>p.say&&Date.now()-p.say.t<300e3).sort((a,b)=>b.say.t-a.say.t).slice(0,4);
  let h=`<div class="sectionhead"><h3>Other travellers</h3><span class="mono" style="font-size:12px;color:var(--faint)">${mp.status?esc(mp.status):mp.online==null?"connecting…":`${mp.online} in the realm`}</span></div>`;
- h+=near.length?`<ul class="quests">${near.map(p=>`<li><b>${esc(p.name)}</b> · ${esc(p.cls||"traveller")}, level ${p.lvl||1} · ${esc(bearing(p,L))}</li>`).join("")}</ul>`:`<p class="note">No one else is within ${MP_NEAR} squares. Their footprints show on the map when they pass.</p>`;
+ const myPoss=possessions(),fr=friends();
+ h+=near.length?`<ul class="quests">${near.map(p=>{const here=bearing(p,L)==="here",canSteal=here&&p.poss>2*myPoss&&!(mp.stoleFrom&&mp.stoleFrom[p.u]&&Date.now()-mp.stoleFrom[p.u]<864e5);
+  return`<li><b>${esc(p.name)}</b>${fr[p.u]?" (friend)":""} · ${esc(p.cls||"traveller")}, level ${p.lvl||1} · ${esc(bearing(p,L))}${canSteal?` <button class="small" data-act="steal" data-id="${esc(p.u)}" title="They carry ${p.poss} things to your ${myPoss}. One DEX check, once a day; they will know if you fail.">Try to lift one item</button>`:""}</li>`}).join("")}</ul>`:`<p class="note">No one else is within ${MP_NEAR} squares. Their footprints show on the map when they pass.</p>`;
  if(said.length)h+=`<ul class="quests">${said.map(p=>`<li>${esc(p.name)}: “${esc(p.say.text)}”</li>`).join("")}</ul>`;
  h+=`<form class="note-form" data-say><label for="say-in">Say something to travellers within ${MP_NEAR} squares</label><div class="btnrow"><input id="say-in" maxlength="160" placeholder="Hello, traveller…"><button class="small" type="submit">Say</button></div></form>`;
  if(ground.length)h+=`<div class="sectionhead"><h3>Left by other travellers</h3></div><ul class="items">${ground.map(g=>`<li><span><span class="nm">${esc(g.item.name)}</span><span class="meta">${esc(g.item.kind)}${g.item.magic?" · magic":""} · left by ${esc(g.by===mp.you?"you":g.by)}</span>${g.item.desc?`<span class="about">${esc(g.item.desc)}</span>`:""}</span><span class="acts"><button class="small" data-act="takeleft" data-id="${esc(g.id)}">Take</button></span></li>`).join("")}</ul>`;
@@ -3146,6 +3175,77 @@ function memoryLine(n){const k=n.knows;if(!k||!k.met)return"";const last=k.notes
  return`<span class="meta">Remembers you · met ${k.met} ${k.met===1?"time":"times"}${last?` · “${esc(last.s)}”`:""}</span>`}
 
 /* ============================================================
+   Friends (shared realm). In a town, a townsperson may tell you about another traveller, often
+   a stranger: "You should meet Fred, you'll get on famously." A lit path on the map leads toward
+   them until you meet. Once you have met someone, wherever they are a faint glowing ring pulses
+   on your map, accurate only to about seven hexes. Players cannot hurt one another; but you may
+   try to lift one item from someone standing with you who carries more than twice what you do.
+   ============================================================ */
+const friends=()=>{const r=cell("root");return r?(r.friends=r.friends||{}):{}};
+const possessions=()=>packIds().length;
+function packForServer(){return packIds().map(cell).filter(it=>!it.worn&&!it.wielded&&!it.forSale).slice(0,40).map(it=>({id:it.id,name:it.t,desc:it.desc,kind:it.kind,weight:it.weight,value:it.value,heal:it.heal,ac:it.ac,dmg:it.dmg,finesse:it.finesse,light:it.light,magic:it.magic}))}
+function mpExtras(){
+ const pack=packForServer(),sig=pack.map(i=>i.id).join(",");
+ const o={poss:possessions()};if(sig!==mp.packSig){o.pack=pack;mp.packSig=sig}
+ return o;
+}
+// Thefts reported by the server: take the item out of the pack, and say so
+function applyThefts(list){
+ for(const th of list||[]){
+  if(th.failed){log(`${th.thief} tried to pick your pocket, but you caught their hand.`,"bad");continue}
+  const id=packIds().find(i=>i===th.id)||packIds().find(i=>cell(i).t===th.name);
+  if(id){excise(id,"contain");destroy(id)}
+  log(`${th.thief} stole ${th.name} from you while you were not looking.`,"bad");
+ }
+}
+async function trySteal(u){
+ const p=mp.players.find(x=>x.u===u);if(!p)return;
+ try{const r=await mp.call("/steal",{target:u,dex:mod(sv("DEX"))});
+  if(r.ok){const g=r.item,nid=itemCell(normItem({name:g.name,description:g.desc,kind:g.kind,weight:g.weight,value:g.value,heal:g.heal,ac:g.ac,damage:g.dmg,finesse:g.finesse,light:g.light}));
+   if(g.magic)cell(nid).magic=true;appendTo(charId(),"contain",nid);log(`DEX check ${r.roll} → ${r.total}: you lift ${g.name} from ${r.from} unseen.`,"good")}
+  else log(r.empty?`You find nothing worth taking on ${p.name}.`:`DEX check ${r.roll} → ${r.total}: ${p.name} catches your hand. They will remember that.`,"bad");
+ }catch(e){flash=e.message}
+ mp.stoleFrom=Object.assign(mp.stoleFrom||{},{[u]:Date.now()});store.flush();render();
+}
+// Met: standing on the same hex as another player makes you friends
+function meetPlayers(L){
+ const fr=friends(),r=cell("root");let changed=false;
+ for(const p of mp.players){if(p.x!==L.x||p.y!==L.y||p.z!==zOf(L))continue;
+  if(!fr[p.u]){fr[p.u]={name:p.name,met:Date.now()};log(`You meet ${p.name} the ${p.cls||"traveller"}. From now on you will have a rough idea where they are.`,"good");changed=true}
+  if(r.intro&&r.intro.u===p.u){log(`So this is ${p.name}. ${r.intro.by} was right.`,"good");delete r.intro;changed=true}}
+ if(changed)touch("root");
+}
+// Introductions happen in towns
+function maybeIntroduce(L){
+ if(!mp.on()||!L.town)return;const r=cell("root");if(r.intro&&mp.players.some(p=>p.u===r.intro.u))return;
+ const fr=friends(),cands=mp.players.filter(p=>!fr[p.u]);if(!cands.length)return;
+ const T=L.town.of?cell(L.town.of):L,folk=npcs().filter(n=>!n.wild&&n.home===T.id),who=folk.length?pick(folk):null;
+ const p=pick(cands),by=who?who.t:"Someone at the inn";
+ r.intro={u:p.u,name:p.name,by,t:Date.now()};touch("root");
+ log(`${by} leans in: "You should meet ${p.name}, the ${p.cls||"traveller"}. I have a feeling you two would get on famously." A path seems to light up before you.`,"npc");
+}
+// The fuzzy ring for a friend: centred within three hexes of them, moving each game hour
+function friendRingCentre(p){const h=Math.floor(gameNow()/60),a=h32(p.u.split("").reduce((s,c)=>s*31+c.charCodeAt(0)|0,7)+h);return{x:p.x+Math.round((a-.5)*6),y:p.y+Math.round((h32(Math.floor(a*1e6)+3)-.5)*6),z:p.z}}
+function mapFriends(H,R,Z,P,V){
+ if(!mp.on())return"";let out="";const fr=friends(),r=cell("root");
+ // The lit path toward someone you were told about
+ const intro=r&&r.intro&&mp.players.find(p=>p.u===r.intro.u);
+ if(intro){const dx=wrapC(intro.x-H.x),dy=wrapC(intro.y-H.y),n=Math.max(Math.abs(dx),Math.abs(dy));
+  for(let k=1;k<=Math.min(n,R+2);k++){const qx=Math.round(dx*k/n),qy=Math.round(dy*k/n),[px,py]=P(qx,qy);
+   out+=`<circle class="friendpath" cx="${px+30}" cy="${py+30}" r="${k===n?10:6}" style="animation-delay:${(k*.18).toFixed(2)}s"/>`}
+  const [tx,ty]=P(Math.max(-R-1,Math.min(R+1,dx)),Math.max(-R,Math.min(R,dy)));
+  out+=`<text class="friendname" x="${tx+30}" y="${ty+12}" text-anchor="middle">${esc(intro.name)} · ${n}</text>`}
+ // Rings for friends you have met
+ for(const p of mp.players){if(!fr[p.u]||(intro&&intro.u===p.u))continue;const c=friendRingCentre(p);if(c.z!==Z)continue;
+  const dx=wrapC(c.x-H.x),dy=wrapC(c.y-H.y),[px,py]=P(dx,dy),cx=px+30,cy=py+30,inView=Math.abs(dx)<=R+1&&Math.abs(dy)<=R;
+  if(inView)out+=`<g class="friendring" pointer-events="none"><circle cx="${cx}" cy="${cy}" r="20"><animate attributeName="r" from="16" to="${7*48*.55}" dur="3.6s" repeatCount="indefinite"/><animate attributeName="opacity" from=".55" to="0" dur="3.6s" repeatCount="indefinite"/></circle><text x="${cx}" y="${cy+4}" text-anchor="middle">${esc(p.name)}</text></g>`;
+  else{const vx=cx-210,vy=cy-210,k=Math.min(V*.43/Math.abs(vx||1e-9),V*.43/Math.abs(vy||1e-9)),ex=210+vx*k,ey=210+vy*k;
+   out+=`<g class="friendring far" pointer-events="none"><circle cx="${ex}" cy="${ey}" r="10"><animate attributeName="r" from="6" to="26" dur="3.6s" repeatCount="indefinite"/><animate attributeName="opacity" from=".7" to="0" dur="3.6s" repeatCount="indefinite"/></circle><text x="${ex}" y="${ey+(ey>210?-14:22)}" text-anchor="middle">${esc(p.name)} ~${Math.max(Math.abs(dx),Math.abs(dy))}</text></g>`}
+ }
+ return out;
+}
+
+/* ============================================================
    Rendering
    ============================================================ */
 const $=id=>document.getElementById(id);
@@ -3163,7 +3263,10 @@ function linkify(text){
 function renderClock(){
  const t=gameNow(),night=isNight(t),p=$("pill-clock");
  p.dataset.night=String(night);
- $("clock-text").textContent=`${seasonOf(t)[0].toUpperCase()+seasonOf(t).slice(1)} · ${fmtClock(t)} · ${night?`night, dawn in ${Math.max(1,Math.ceil(realMinutesToDawn(t)))} min`:"day"}`;
+ const mm=Math.floor(((t%1440)+1440)%1440),hh=String(Math.floor(mm/60)).padStart(2,"0")+String(mm%60).padStart(2,"0");
+ for(let i=0;i<4;i++){const d=$("nx"+i);if(d&&d.textContent!==hh[i])d.textContent=hh[i]}
+ $("clock-text").textContent=`${seasonOf(t)} · day ${dayOf(t)} · ${night?`night, dawn in ${Math.max(1,Math.ceil(realMinutesToDawn(t)))} min`:"day"}`;
+ p.setAttribute("aria-label",`${fmtClock(t)}, ${seasonOf(t)}, ${night?"night":"day"}`);p.setAttribute("role","timer");
  p.title=`The world clock runs at ${CLOCK_RATE}× real time by day and ${NIGHT_RATE}× at night, so night (20:00 to 06:00) lasts about twenty real minutes. Each step takes half an hour.`;
  const H=hereId()&&cell(hereId()),w=H&&weatherAt(H.x,H.y,zOf(H),t);
  $("pill-weather").innerHTML=w?`Weather: <b>${esc(w.label)}</b>`:"Weather: <b>—</b>";
@@ -3261,7 +3364,7 @@ function renderMap(){
  for(const m of marks().filter(m=>!m.done).map(m=>({x:m.x,y:m.y,label:`Map mark: ${m.label}`})).concat(rumours().filter(r=>!r.found&&cell(r.cell)).map(r=>({x:cell(r.cell).x,y:cell(r.cell).y,label:`Rumour: ${r.text}`})))){
   if(Z!==0)break;const dx=wrapC(m.x-H.x),dy=wrapC(m.y-H.y);if(Math.abs(dx)>R||Math.abs(dy)>R||(!dx&&!dy))continue;const [qx,qy]=P(dx,dy);
   out+=`<text class="markstar" x="${qx+48}" y="${qy+19}" text-anchor="middle"><title>${esc(m.label)}</title>★</text>`}
- out+=mapTravellers(H,R,Z,P)+mapRealmEvent(H,R,Z,P);
+ out+=mapTravellers(H,R,Z,P)+mapRealmEvent(H,R,Z,P)+mapFriends(H,R,Z,P,V);
  /* Beacons: the nearest sanctuaries and cave entrances shine from far off. In view they glow on their
     hex; beyond the map they show at its edge, in their direction, with how many squares away. */
  let beacons="";
@@ -4017,7 +4120,7 @@ document.addEventListener("click",e=>{
   trade:i=>{openTrade=openTrade===i?null:i;openChat=null;armedAttack=null;render()},
   buyfood:buyFood,sell:v=>{const [n,it]=v.split("|");sellTo(n,it)},quest:i=>{offerQuest(cell(i));passTime(5);store.flush();render()},
   give:giveFood,arm:i=>{armedAttack=armedAttack===i?null:i;render()},hit:attackAgent,
-  craft,deposit,withdraw,rent:rentCottage,leave:leaveForOthers,takeleft:takeLeft,train:takeTrain})[b.dataset.act](id);return}
+  craft,deposit,withdraw,rent:rentCottage,leave:leaveForOthers,takeleft:takeLeft,train:takeTrain,steal:trySteal})[b.dataset.act](id);return}
  const d=e.target.closest("#compass button[data-dir]");if(d){move(d.dataset.dir);return}
  const g=e.target.closest("#map g");if(g){if(g.dataset.dir)move(g.dataset.dir);else if(g.dataset.loc){const id=g.dataset.loc,H=cell(hereId()),C=cell(id);
   const dir=H&&C?Object.keys(DIRS).find(k=>coord.get(ck(H.x+DIRS[k].dx,H.y+DIRS[k].dy,zOf(H)+DIRS[k].dz))===id):null;

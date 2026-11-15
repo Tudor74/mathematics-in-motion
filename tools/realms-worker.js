@@ -130,11 +130,17 @@ router.post("/presence", async ({ request, user }) => {
   const last = trail[trail.length - 1];
   if (!last || last.x !== x || last.y !== y || last.z !== z) trail.push({ x, y, z, t: now });
   const me_ = { u, name: str(b.name, 40) || u, cls: str(b.cls, 20), lvl: num(b.lvl, 1, 30, 1) | 0, x, y, z, t: now, trail: trail.slice(-8),
-    say: prev && prev.say || null, exp: prev && prev.exp || 0 };
+    say: prev && prev.say || null, exp: prev && prev.exp || 0,
+    poss: b.poss != null ? num(b.poss, 0, 999) | 0 : (prev && prev.poss) || 0 };
   const refresh = now - me_.exp > 300e3; if (refresh) me_.exp = now;
   const said = str(b.say, 160);
   if (said) me_.say = { text: said, t: now, x, y, z };
   await me.puter.kv.set(P + "pl:" + u, me_);
+  // What could be stolen from you: sent only when it changes, kept apart from the public list
+  if (Array.isArray(b.pack)) await me.puter.kv.set(P + "pk:" + u, b.pack.slice(0, 40).map(it => Object.assign(cleanItem(it) || {}, { id: str(it.id, 20) })).filter(it => it.name));
+  // Thefts from you since your last ping, for your game to take out of your pack
+  let thefts = await me.puter.kv.get(P + "th:" + u);
+  if (thefts && thefts.length) await me.puter.kv.del(P + "th:" + u); else thefts = [];
   if (refresh) { try { await me.puter.kv.expire(P + "pl:" + u, 3600) } catch (e) {} }   // forgotten players fall out of the list
   let online = await me.puter.kv.get(P + "online");
   if (!online || now - online.at > LIST_EVERY) {
@@ -152,7 +158,7 @@ router.post("/presence", async ({ request, user }) => {
   online.players[u] = me_;
   const ground = await me.puter.kv.get(P + "gi:" + sqKey(x, y, z)) || [];
   const ev = await evState(evSlot(now), u);
-  return { you: u, now, players: Object.values(online.players).filter(p => now - p.t < ONLINE_TTL), ground, ev };
+  return { you: u, now, players: Object.values(online.players).filter(p => now - p.t < ONLINE_TTL), ground, ev, thefts };
 });
 
 // ---------- items left on the ground for other players ----------
@@ -216,6 +222,33 @@ router.post("/event/claim", async ({ request, user }) => {
   const first = await me.puter.kv.incr(P + "ev:" + slot + ":claimed:" + u);
   if (first !== 1) return json({ ok: false, error: "Already claimed." }, 409);
   return { ok: true, share: st.mine / st.dmg, fighters: st.n, mine: st.mine };
+});
+
+// ---------- stealing: players cannot hurt each other, but may try to lift one item from someone
+// standing with them who carries more than twice what they do. Once a day for each pair. ----------
+router.post("/steal", async ({ request, user }) => {
+  const [u, err] = await guard(request, user); if (err) return err;
+  const b = await body(request), target = str(b.target, 60), now = Date.now();
+  if (!target || target === u) return bad("There is no one to steal from.");
+  const [mine, theirs] = [await me.puter.kv.get(P + "pl:" + u), await me.puter.kv.get(P + "pl:" + target)];
+  if (!mine || !theirs || now - theirs.t > ONLINE_TTL) return bad("They are not here.", 409);
+  if (mine.x !== theirs.x || mine.y !== theirs.y || mine.z !== theirs.z) return bad("They are not here.", 409);
+  if (!(theirs.poss > 2 * mine.poss)) return bad("They carry no more than twice what you do; there is nothing to gain.", 409);
+  const tries = await me.puter.kv.incr(P + "st:" + u + ":" + target + ":" + Math.floor(now / 86400e3));
+  if (tries > 1) return bad("You have already tried today. They are watching you now.", 409);
+  const roll = 1 + Math.floor(Math.random() * 20), dex = num(b.dex, -5, 5) | 0, total = roll + dex;
+  if (total < 12) {
+    const th = (await me.puter.kv.get(P + "th:" + target)) || [];
+    th.push({ thief: mine.name || u, failed: true, t: now }); await me.puter.kv.set(P + "th:" + target, th.slice(-10));
+    return { ok: false, roll, total };
+  }
+  const pack = (await me.puter.kv.get(P + "pk:" + target)) || [];
+  if (!pack.length) return { ok: false, roll, total, empty: true };
+  const i = Math.floor(Math.random() * pack.length), item = pack[i];
+  pack.splice(i, 1); await me.puter.kv.set(P + "pk:" + target, pack);
+  const th = (await me.puter.kv.get(P + "th:" + target)) || [];
+  th.push({ thief: mine.name || u, id: item.id, name: item.name, t: now }); await me.puter.kv.set(P + "th:" + target, th.slice(-10));
+  return { ok: true, roll, total, item, from: theirs.name || target };
 });
 
 router.get("/health", async () => ({ ok: true, at: Date.now() }));
