@@ -66,9 +66,9 @@ header.top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align
 .hdr-right>.pills{grid-column:1;grid-row:1;align-self:center}
 .segclock{display:flex;align-items:center;gap:10px}
 #segdigits{width:132px;height:44px;overflow:visible}
-#segdigits .on{fill:#ffb35c;filter:drop-shadow(0 0 .8px #ff8a1f) drop-shadow(0 0 2.2px #ff6a00aa)}
+#segdigits .on{fill:var(--seg,#ffb35c);filter:drop-shadow(0 0 .8px rgba(255,138,31,var(--glow,1))) drop-shadow(0 0 2.2px rgba(255,106,0,calc(var(--glow,1)*.67)))}
 #segdigits .off{fill:currentColor;opacity:.07}
-#segdigits .dot{fill:#ffb35c;filter:drop-shadow(0 0 1.5px #ff6a00);animation:nixblink 2s steps(1) infinite}
+#segdigits .dot{fill:var(--seg,#ffb35c);filter:drop-shadow(0 0 1.5px rgba(255,106,0,var(--glow,1)));animation:nixblink 2s steps(1) infinite}
 #moon{width:40px;height:40px;overflow:visible;flex:0 0 auto}#moon .dark{fill:currentColor;opacity:.12}#moon .lit{fill:#f4ecd2;filter:drop-shadow(0 0 3px #fff6d8aa)}#moon .rim{fill:none;stroke:currentColor;stroke-opacity:.25}
 .seasonline{position:relative;display:flex;gap:2px;width:100%;height:5px;margin-top:2px}
 .seasonline span{flex:1;border-radius:3px;opacity:.28}
@@ -3978,6 +3978,13 @@ function moonPhase(t){
 function renderClock(){
  const t=gameNow(),night=isNight(t),p=$("pill-clock");
  p.dataset.night=String(night);
+ // The valves dim as night comes on: orange by day, greying from two hours before dusk, a very dark grey at the
+ // middle of the night, then warming again through dawn
+ {const h=hourOf(t),dusk=duskH(t),dawn=dawnH(t),len=24-dusk+dawn,since=((h-dusk)+24)%24,mid=len/2;let g;
+  if(since<len)g=since<mid?.6+.4*since/mid:1-.6*(since-mid)/mid;   // night: .6 → 1 → .4
+  else{const toDusk=dusk-h,afterDawn=h-dawn;g=toDusk>=0&&toDusk<2?.6*(1-toDusk/2):afterDawn>=0&&afterDawn<1.5?.4*(1-afterDawn/1.5):0}
+  const mix=(a,b)=>Math.round(a+(b-a)*g),seg=`rgb(${mix(255,52)},${mix(179,52)},${mix(92,54)})`,dg=$("segdigits");
+  dg.style.setProperty("--seg",seg);dg.style.setProperty("--glow",(1-g).toFixed(2))}
  const mm=Math.floor(((t%1440)+1440)%1440),hh=String(Math.floor(mm/60)).padStart(2,"0")+String(mm%60).padStart(2,"0");
  const sig=hh+"|"+Math.floor(t/90);
  if(p.dataset.sig!==sig){p.dataset.sig=sig;$("segdigits").innerHTML=segDigits(hh);$("moon").innerHTML=moonPhase(t);
