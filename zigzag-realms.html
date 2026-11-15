@@ -115,6 +115,9 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .map .side{stroke-linecap:round;pointer-events:none}.map .side.shut{stroke:var(--ink);stroke-width:5;opacity:.85}.map .side.shut.mine{stroke-width:6.5;opacity:1}
 .map .side.open.mine{stroke:var(--good);stroke-width:3.5;opacity:.8;stroke-dasharray:6 5}
 .map .side.pulse{animation:sidepulse .7s ease 3}@keyframes sidepulse{0%,100%{stroke:var(--ink)}50%{stroke:var(--danger);stroke-width:9}}
+.exploring{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;z-index:6;opacity:0;transition:opacity .35s ease;background:color-mix(in srgb,var(--paper) 35%,transparent);border-radius:12px}
+.exploring.show{opacity:1}.exploring span{padding:10px 22px;border-radius:99px;background:var(--sheet);border:1px solid var(--rule);box-shadow:0 4px 18px #0003;font-family:var(--display);font-size:20px;letter-spacing:.03em;animation:breathe 2.4s ease-in-out infinite}
+@keyframes breathe{0%,100%{opacity:.75}50%{opacity:1}}@media (prefers-reduced-motion:reduce){.exploring span{animation:none}}
 .blockflash{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;z-index:7;opacity:0}
 .blockflash.show{animation:bflash 2.2s ease forwards}@keyframes bflash{0%{opacity:0;transform:scale(.85)}12%{opacity:1;transform:scale(1.04)}22%{transform:scale(1)}80%{opacity:1}100%{opacity:0}}
 .bf-hex{width:230px;height:200px;display:grid;place-content:center;gap:6px;text-align:center;padding:0 34px;background:var(--ink);color:var(--sheet);clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);box-shadow:0 6px 24px #0005}
@@ -487,7 +490,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
    <section class="panel map" aria-label="Map">
     <span id="coords" hidden></span>
     <div class="mapwrap"><svg id="map" viewBox="0 0 480 416" role="img" aria-label="Map of explored places on your current level"></svg>
-<div class="blockflash" id="blockflash" aria-live="assertive"></div><div class="zoomslider"><button class="small iconbtn" id="map-key-btn" type="button" aria-label="Map key" title="Map key">?</button><span aria-hidden="true">+</span><input type="range" id="zoom" min="0" max="5" step="1" aria-label="Zoom" title="Zoom"><span aria-hidden="true">−</span></div><div class="mapkey" id="mapkey" hidden></div><div class="arrive" id="arrive" aria-live="polite"></div><div class="gate" id="gate" hidden></div></div>
+<div class="blockflash" id="blockflash" aria-live="assertive"></div><div class="exploring" id="exploring" role="status" aria-live="polite"><span>Exploring, stand by</span></div><div class="zoomslider"><button class="small iconbtn" id="map-key-btn" type="button" aria-label="Map key" title="Map key">?</button><span aria-hidden="true">+</span><input type="range" id="zoom" min="0" max="5" step="1" aria-label="Zoom" title="Zoom"><span aria-hidden="true">−</span></div><div class="mapkey" id="mapkey" hidden></div><div class="arrive" id="arrive" aria-live="polite"></div><div class="gate" id="gate" hidden></div></div>
     <div class="layerbar" id="layerbar" role="img" aria-label="Layers"></div>
    </section>
  </div>
@@ -4514,7 +4517,6 @@ function renderPlace(){
   }}
  let html="";
  html+=renderRealmEvent(L);
- if(busy)html+=`<p class="mapping">${busy.dir==="look"?"The narrator is writing what you can see from here":busy.dir==="up"?"The narrator is mapping what lies above":busy.dir==="down"?"The narrator is mapping what lies below":"The narrator is mapping the way "+busy.dir}</p>`;
  if(narratorNote&&!busy)html+=`<p class="note">${esc(narratorNote)}</p>`;
  if(flash)html+=`<p class="flash">${esc(flash)}</p>`;
  // (the description is shown above the map; see renderPlace's map heading)
@@ -4738,10 +4740,10 @@ function faceSVG(name,cls,size=96,seed=0){
  return`<svg class="face" viewBox="0 -24 120 164" width="${size}" height="${Math.round(size*164/120)}" role="img" aria-label="Portrait of ${esc(name)}"><defs><filter id="${fid}" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="${(.035+r()*.03).toFixed(3)}" numOctaves="2" seed="${Math.floor(r()*99)}"/><feDisplacementMap in="SourceGraphic" scale="${(2.4+r()*1.6).toFixed(1)}"/></filter></defs><g filter="url(#${fid})"><g transform="rotate(${tilt} 60 70)">${s}</g>${spat}</g></svg>`;
 }
 // just the head of a portrait, tiny, for badges
-function faceHead(name,cls,seed=0,size=26){return faceSVG(name,cls,size,seed).replace(/<rect x="2" y="-22"[^>]*\/>/,"").replace(/<path d="[^"]*" fill="none" stroke="[^"]*" stroke-width="2.4" opacity=".55"\/>/g,"").replace(/viewBox="0 -24 120 164" width="[0-9.]+" height="[0-9.]+"/,`viewBox="10 4 100 100" width="${size}" height="${size}"`).replace('class="face"','class="face facehead"')}
+function faceHead(name,cls,seed=0,size=26){return faceSVG(name,cls,size,seed).replace(/<rect x="2" y="-22"[^>]*\/>/,"").replace(/<path d="[^"]*" fill="none" stroke="[^"]*" stroke-width="2.4" opacity=".55"\/>/g,"").replace(/viewBox="0 -24 120 164" width="[0-9.]+" height="[0-9.]+"/,`viewBox="14 22 92 92" width="${size}" height="${size}"`).replace('class="face"','class="face facehead"')}
 // a head placed on the map, centred on (cx,cy)
 function headAt(name,cls,seed,cx,cy,size,title,cls2=""){
- return`<g class="headmark ${cls2}" pointer-events="none"><circle cx="${cx}" cy="${cy}" r="${size/2+1.5}"/>${faceHead(name,cls,seed,size).replace("<svg ",`<svg x="${(cx-size/2).toFixed(1)}" y="${(cy-size/2).toFixed(1)}" `)}<title>${esc(title)}</title></g>`}
+ return`<g class="headmark ${cls2}" pointer-events="none">${faceHead(name,cls,seed,size).replace("<svg ",`<svg x="${(cx-size/2).toFixed(1)}" y="${(cy-size/2).toFixed(1)}" `)}<title>${esc(title)}</title></g>`}
 function renderCreate(el){
  if(canJoinRealm()){el.innerHTML=`<div class="placehead"><p class="eyebrow">New adventurer</p><h2>Join on the map</h2></div><p class="note">Choose a name and class on the map, then set out. Your abilities are rolled the classic way, and you set out at once.</p>`;return}
  const s=draft.stats,C=CLASSES[draft.cls],hp=Math.max(1,C.hd+mod(s[2]));
@@ -4942,7 +4944,7 @@ function renderMapKey(){const k=$("mapkey");if(!k||k.innerHTML)return;
   ${row('<span style="color:var(--magic)">┅</span>',"the magical bridge")}${row("┿","railway")}${row('<span style="color:var(--amber)">●</span>',"a sanctuary, far away")}${row('<span style="color:var(--magic)">●</span>',"a cave entrance, far away")}
   ${row('<span style="color:var(--accent)">◯</span>',"a friend, roughly")}${row("⬡","tap any hex to walk there")}${row("⬢","tap your own hex to see this place")}</ul>`;
  $("mapkey-close").onclick=()=>{k.hidden=true}}
-function render(){renderMapKey();renderGate();renderPills();renderScriptButton();renderMap();renderCompass();renderPlace();renderSheet();renderSocial();renderGarden();renderCodex();renderAlphabet();renderLog();renderVoice();decoratePanels();iconHeads();sound.update();voiceOnRender()}
+function render(){renderMapKey();renderGate();{const x=$("exploring");if(x)x.classList.toggle("show",!!(busy&&charId()&&!isDowned()&&!["realm","founding","river","start"].includes(busy.dir)))}renderPills();renderScriptButton();renderMap();renderCompass();renderPlace();renderSheet();renderSocial();renderGarden();renderCodex();renderAlphabet();renderLog();renderVoice();decoratePanels();iconHeads();sound.update();voiceOnRender()}
 
 /* ============================================================
    Soundtrack: generated live from white, pink and brown noise and a few oscillators.
