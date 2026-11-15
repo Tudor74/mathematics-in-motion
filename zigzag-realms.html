@@ -116,9 +116,17 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .map .side.open.mine{stroke:var(--good);stroke-width:3.5;opacity:.8;stroke-dasharray:6 5}
 .map .side.pulse{animation:sidepulse .7s ease 3}@keyframes sidepulse{0%,100%{stroke:var(--ink)}50%{stroke:var(--danger);stroke-width:9}}
 .encounter{position:absolute;inset:0;display:grid;place-items:center;padding:0;pointer-events:none;z-index:5}.encounter:not(.show){display:none}
-.encounter .card{pointer-events:auto;width:80%;height:80%;box-sizing:border-box;overflow:auto;background:var(--sheet);border:1px solid var(--danger);border-radius:12px;box-shadow:0 8px 28px #0004;padding:12px 14px;display:grid;gap:8px}
+.encounter .card{pointer-events:auto;width:92%;height:92%;box-sizing:border-box;overflow:auto;background:var(--sheet);border:1px solid var(--danger);border-radius:12px;box-shadow:0 8px 28px #0004;padding:12px 14px;display:grid;gap:8px}
 .foe button.disengage{background:#d9efd2;border-color:#9cc98f;color:#24451c}.foe button.disengage:hover{background:#c9e8bf}
 .encounter .rounds .roll{display:none}
+.encounter .card.split{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:14px;overflow:hidden;align-items:stretch}
+.encounter .pane{min-height:0;overflow:auto}.encounter .foepane{display:grid;gap:8px;align-content:start}
+.encounter .fightlog{border-left:1px solid var(--rule);padding-left:14px;display:flex;flex-direction:column}
+.encounter .fightlog h4{position:sticky;top:0;background:var(--sheet);z-index:1;padding-bottom:4px;margin:0 0 6px;font-family:var(--mono);font-weight:400;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-size:13pt}
+.encounter .fightlog .rounds{margin:auto 0 0;padding:0;list-style:none;display:grid;gap:6px}
+.encounter .fightlog .rounds li{padding:4px 0 4px 10px;border-left:3px solid var(--rule);opacity:.72}
+.encounter .fightlog .rounds li.fresh{opacity:1}.encounter .fightlog .rounds li.good{border-left-color:var(--good)}.encounter .fightlog .rounds li.bad{border-left-color:var(--danger)}.encounter .fightlog .rounds li.lesson{border-left-color:var(--water)}
+@media (max-width:700px){.encounter .card.split{grid-template-columns:1fr;grid-template-rows:auto auto;overflow:auto;align-content:start}.encounter .foepane{overflow:visible;min-height:auto}.encounter .foe .note,.encounter .foe .filehead{display:none}.encounter .fightlog{min-height:110px}.encounter .fightlog{border-left:0;border-top:1px solid var(--rule);padding:0;max-height:150px;overflow:auto}.encounter .fightlog h4{padding-top:8px}.encounter .foepane .notes,.encounter .foepane>.note{display:none}}
 .encounter .card .foe{margin:0}
 .starve{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:5;width:min(460px,calc(100% - 90px));pointer-events:none}.starve:not(.show){display:none}
 .starve .card{pointer-events:auto;display:grid;gap:6px;padding:12px 16px;border-radius:12px;background:var(--sheet);border:2px solid var(--danger);box-shadow:0 6px 24px #0004;text-align:center}
@@ -2345,7 +2353,7 @@ function removeAgent(n,msg){
 let busy=null,lastHazard=null,deleteArmed=false,rounds=[],flash=null;
 const talkLines={};
 function log(text,kind,rolltext){const r=cell("root");if(!r)return;r.log=(r.log||[]).concat([{text,kind:kind||"",roll:rolltext||"",t:Date.now()}]).slice(-60);touch("root")}
-function say(text,kind,rolltext){rounds.push({text,kind:kind||"",roll:rolltext||""});rounds=rounds.slice(-6);log(text,kind,rolltext)}
+function say(text,kind,rolltext){rounds.push({text,kind:kind||"",roll:rolltext||""});rounds=rounds.slice(-40);log(text,kind,rolltext)}
 function anomDesc(d){const ss=String(d||"").match(/[^.!?]+[.!?]+["”’]?/g)||[String(d||"")];return(ss.length>2?ss[0].trim()+" "+ss[ss.length-1].trim():ss.join(" ").trim())}
 function itemCell(it){return newCell("item",{t:it.name,desc:it.desc,kind:it.kind,weight:it.weight,value:it.value,heal:it.heal,ac:it.ac,dmg:it.dmg,finesse:it.finesse,light:!!it.light,worn:false,wielded:false,shroom:it.shroom||null})}
 
@@ -4462,7 +4470,10 @@ function renderEncounter(){
  const el=$("encounter");if(!el)return;const f=charId()&&hereId()&&!isDowned()?foeId():null;
  if(f&&sound.started&&sound.on&&sound.ctx){if(!sound._dread)sound.dread()}else if(sound._dread)sound.stopDread();dreadFor=f||null;
  el.classList.toggle("show",!!f);if(!f){el.innerHTML="";return}
- el.innerHTML=`<div class="card">${renderFoe(f)}<p class="note">Disengage to stay in this hex without fighting, or flee by a way on the rose or a hex at the edge of the map.</p></div>`;
+ {const n=rounds.length;
+  el.innerHTML=`<div class="card split"><div class="pane foepane">${renderFoe(f,true)}<p class="note">Disengage to stay in this hex without fighting, or flee by a way on the rose or a hex at the edge of the map.</p></div>
+  <section class="pane fightlog" aria-label="The fight so far" aria-live="polite"><h4>The fight</h4>${n?`<ol class="rounds">${rounds.map((r,i)=>`<li class="${r.kind}${i>=n-2?" fresh":""}">${esc(r.text)}</li>`).join("")}</ol>`:`<p class="note">Nothing yet. Make the first move.</p>`}</section></div>`;
+  const lg=el.querySelector(".fightlog");if(lg)lg.scrollTop=lg.scrollHeight}
  requestAnimationFrame(()=>{const me=document.querySelector("#map .headmark.me"),w=el.getBoundingClientRect();if(me&&w.width){const r=me.getBoundingClientRect(),right=(r.x+r.width/2)>w.x+w.width/2;el.classList.toggle("dock-left",right);el.classList.toggle("dock-right",!right)}});
 }
 // Enough food to reach a town? Each item is a day (rations say how many); you can go two days without before starving
@@ -4691,7 +4702,7 @@ function itemRow(id,where){
  return`<li><span><span class="nm">${ic(kindI,it.kind)} ${esc(it.t)}</span><span class="meta icons">${facts.join("")}</span>${it.desc?`<span class="about">${esc(it.desc)}</span>`:""}</span><span class="acts">${acts}</span></li>`;
 }
 
-function renderFoe(f){
+function renderFoe(f,split){
  const F=cell(f),ch=cell(charId()),oc=(F.objectClass||"Euclid").toLowerCase(),pct=Math.max(0,F.hp/F.maxhp*100);
  const opts=attackOptions();
  const wind=ch.cls==="Fighter"?`<button data-act="wind" ${ch.windUsed||busy?"disabled":""} title="Once per rest. Does not give it a turn.">Second Wind</button>`:"";
@@ -4702,7 +4713,7 @@ function renderFoe(f){
   <div><div class="hprow"><span>Integrity</span></div><div class="hpbar"><span style="width:${pct}%"></span></div></div>
   <div class="fight">${opts.map((o,i)=>`<button class="${i===0?"primary":""}" data-act="attack" data-id="${i}" ${busy?"disabled":""} title="Your ${o.stat} against its guard; damage ${o.dice}${o.addMod?" "+sgn(mod(sv(o.stat))):""}${o.sneak?" + "+o.sneak+"d6 sneak":""}">${esc(o.label)}</button>`).join("")}${wind}<button class="disengage" data-act="disengage" ${busy?"disabled":""} title="Step back and stay here: a DEX check. Fail and it strikes.">Disengage</button></div>
   <p class="note">Each direction is now an attempt to flee: a DEX check. Fail and it strikes. Drinking a potion also gives it a turn.</p>
-  ${rounds.length?`<ol class="rounds">${rounds.map(r=>`<li class="${r.kind}">${esc(r.text)}${r.roll?`<span class="roll">${esc(r.roll)}</span>`:""}</li>`).join("")}</ol>`:""}
+  ${!split&&rounds.length?`<ol class="rounds">${rounds.slice(-6).map(r=>`<li class="${r.kind}">${esc(r.text)}${r.roll?`<span class="roll">${esc(r.roll)}</span>`:""}</li>`).join("")}</ol>`:""}
  </article>`;
 }
 function renderPeople(L){
