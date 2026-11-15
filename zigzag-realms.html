@@ -4101,6 +4101,14 @@ function renderHud(){
  el.innerHTML=`${dial}<div class="hudside">${coin}${warn.map(w=>`<span class="hudwarn">${w}</span>`).join("")}</div>`;
 }
 let lastMapShape="";window.addEventListener("resize",()=>{const b=$("map").getBoundingClientRect(),sh=Math.round(b.width/Math.max(1,b.height)*20);if(String(sh)!==lastMapShape){lastMapShape=String(sh);renderMap()}});
+let mapCam=null;
+const easeBack=t=>{const c1=1.3,c2=c1*1.525;return t<.5?(Math.pow(2*t,2)*((c2+1)*2*t-c2))/2:(Math.pow(2*t-2,2)*((c2+1)*(t*2-2)+c2)+2)/2};
+function camNow(){const a=mapCam&&mapCam.anim;if(!a)return mapCam?{x:mapCam.x,y:mapCam.y}:{x:0,y:0};
+ const t=Math.min(1,(performance.now()-a.t0)/a.dur),e=easeBack(t);return{x:a.fx+(mapCam.x-a.fx)*e,y:a.fy+(mapCam.y-a.fy)*e}}
+function camBox(){const f=mapCam.frame,c=camNow();return[210+(c.x-f.hx)-f.W/2,210+(c.y-f.hy)-f.V/2,f.W,f.V]}
+function stepMapCam(){if(!mapCam||!mapCam.anim)return;const svg=$("map");if(!svg)return;
+ svg.setAttribute("viewBox",camBox().map(v=>v.toFixed(1)).join(" "));
+ if(performance.now()-mapCam.anim.t0<mapCam.anim.dur)requestAnimationFrame(stepMapCam);else{mapCam.anim=null;renderMap()}}
 function renderMap(){
  const svg=$("map"),here=hereId();
  if(!here){renderHud();$("mapplace").dataset.sig="";$("mapplace").innerHTML=`<div class="sectionhead"><h3 id="map-h">Survey map</h3></div>`;svg.innerHTML=`<text x="210" y="215" text-anchor="middle" class="axis">The map starts when your character sets out.</text>`;$("coords").textContent="";return}
@@ -4112,13 +4120,25 @@ function renderMap(){
     P gives the top-left of a 60×60 box centred on the hex, so everything drawn at +30,+30 is centred. */
  const HW=64,HH=HW*Math.sqrt(3)/2,odd=x=>((x%2)+2)%2===1,shift=x=>(odd(x)?HH/2:0)-(odd(H.x)?HH/2:0);
  const C=(dx,dy)=>[210+dx*HW*.75,210-dy*HH+shift(H.x+dx)],P=(dx,dy)=>{const [cx,cy]=C(dx,dy);return[cx-30,cy-30]};
- const inView=(dx,dy)=>{const [cx,cy]=C(dx,dy);return cx>VB[0]-8&&cx<VB[0]+W+8&&cy>VB[1]-8&&cy<VB[1]+V+8},DXR=Math.ceil(W/2/(HW*.75))+1;
+ /* The camera stays put while you walk, until you come within a few hexes of the edge; then it glides to
+    centre you again, overshooting a little at each end. Positions here are in world pixels. */
+ const WPX=x=>x*HW*.75,WPY=(x,y)=>-y*HH+(odd(x)?HH/2:0),hx0=WPX(H.x),hy0=WPY(H.x,H.y),shape=Math.round(ASP*20);
+ if(!mapCam||mapCam.z!==Z||mapCam.R!==R||mapCam.shape!==shape||Math.abs(hx0-mapCam.x)>W*2||Math.abs(hy0-mapCam.y)>V*2)mapCam={x:hx0,y:hy0,z:Z,R,shape,anim:null};
+ else{const limX=Math.max(1,Math.min(7,Math.floor(W/2/(HW*.75))-2))*HW*.75,limY=Math.max(0,R-1)*HH;
+  if(Math.abs(hx0-mapCam.x)>limX+1||Math.abs(hy0-mapCam.y)>limY+1){const cur=camNow();mapCam.anim={fx:cur.x,fy:cur.y,t0:performance.now(),dur:matchMedia("(prefers-reduced-motion: reduce)").matches?1:750};mapCam.x=hx0;mapCam.y=hy0;requestAnimationFrame(stepMapCam)}}
+ mapCam.frame={hx:hx0,hy:hy0,W,V};
+ VB[0]=210+(mapCam.x-hx0)-W/2;VB[1]=210+(mapCam.y-hy0)-V/2;
+ // what to draw: the final view, plus where the glide starts
+ const BX=[VB[0],VB[1],VB[0]+W,VB[1]+V];if(mapCam.anim){const sx=210+(mapCam.anim.fx-hx0),sy=210+(mapCam.anim.fy-hy0);BX[0]=Math.min(BX[0],sx-W/2);BX[1]=Math.min(BX[1],sy-V/2);BX[2]=Math.max(BX[2],sx+W/2);BX[3]=Math.max(BX[3],sy+V/2)}
+ const inView=(dx,dy)=>{const [cx,cy]=C(dx,dy);return cx>VB[0]-8&&cx<VB[0]+W+8&&cy>VB[1]-8&&cy<VB[1]+V+8};
+ const inBox=(dx,dy)=>{const [cx,cy]=C(dx,dy);return cx>BX[0]-HW&&cx<BX[2]+HW&&cy>BX[1]-HH&&cy<BX[3]+HH};
+ const DX0=Math.floor((BX[0]-210)/(HW*.75))-2,DX1=Math.ceil((BX[2]-210)/(HW*.75))+2,DY0=Math.floor((210-BX[3])/HH)-2,DY1=Math.ceil((210-BX[1])/HH)+2;
  const hex=(cx,cy,k=1)=>[0,60,120,180,240,300].map(a=>{const r=a*Math.PI/180;return`${(cx+Math.cos(r)*HW/2*k).toFixed(1)},${(cy+Math.sin(r)*HW/2*k).toFixed(1)}`}).join(" ");
  let out="";
- for(let dx=-DXR;dx<=DXR;dx++)for(let dy=-R-2;dy<=R+2;dy++){const [cx,cy]=C(dx,dy);if(cy<VB[1]-HH||cy>VB[1]+V+HH||cx<VB[0]-HW||cx>VB[0]+W+HW)continue;out+=`<polygon class="gridline hexgrid" points="${hex(cx,cy)}"/>`}
+ for(let dx=DX0;dx<=DX1;dx++)for(let dy=DY0;dy<=DY1;dy++){const [cx,cy]=C(dx,dy);if(!inBox(dx,dy))continue;out+=`<polygon class="gridline hexgrid" points="${hex(cx,cy)}"/>`}
  /* Every layer at once: the mountain above you is always painted, each layer as a faint hex, so the
     layers stack up darker toward the peak; lower slopes and caves you have walked show beneath, dashed. */
- for(let dx=-DXR;dx<=DXR;dx++)for(let dy=-R-1;dy<=R+1;dy++){const [cx,cy]=C(dx,dy);if(!inView(dx,dy))continue;
+ for(let dx=DX0;dx<=DX1;dx++)for(let dy=DY0;dy<=DY1;dy++){const [cx,cy]=C(dx,dy);if(!inBox(dx,dy))continue;
   for(let z=-ZMAX;z<=ZMAX;z++){const id=coord.get(ck(H.x+dx,H.y+dy,z));if(!id)continue;const c=cell(id),gap=Math.abs(z-Z);
    if(z===Z){if(c.massif&&!visible(c))out+=`<polygon class="ghost up" points="${hex(cx,cy,.95)}" style="opacity:.16"/>`;continue}
    if(z>Z&&c.massif)out+=`<polygon class="ghost up" points="${hex(cx,cy,.95-.04*Math.min(gap,6))}" style="opacity:${(.32/Math.sqrt(gap)).toFixed(3)}"><title>${esc(c.t)}, ${z-Z} ${z-Z===1?"layer":"layers"} above</title></polygon>`;
@@ -4126,7 +4146,7 @@ function renderMap(){
    else if(z<Z&&c.visited)out+=`<polygon class="ghost down" points="${hex(cx,cy,.8)}" style="opacity:${(.55/gap).toFixed(3)}"><title>${esc(c.t)}, ${Z-z} ${Z-z===1?"layer":"layers"} below</title></polygon>`;
    else if(z>Z&&c.visited)out+=`<polygon class="ghost down" points="${hex(cx,cy,.8)}" style="opacity:${(.4/gap).toFixed(3)}"/>`;
   }}
- const vis=new Map();for(let dx=-DXR;dx<=DXR;dx++)for(let dy=-R-1;dy<=R+1;dy++){if(!inView(dx,dy))continue;const id=coord.get(ck(H.x+dx,H.y+dy,Z));if(id&&visible(cell(id)))vis.set(id,[dx,dy])}
+ const vis=new Map();for(let dx=DX0;dx<=DX1;dx++)for(let dy=DY0;dy<=DY1;dy++){if(!inBox(dx,dy))continue;const id=coord.get(ck(H.x+dx,H.y+dy,Z));if(id&&visible(cell(id)))vis.set(id,[dx,dy])}
  const walkable=a=>{const c=cell(a);return!(c.river&&!c.river.crossing)&&!c.lake};
  for(const [id,[dx,dy]] of vis){const c=cell(id),[px,py]=P(dx,dy);
   const e=coord.get(ck(c.x+1,c.y,Z)),n=coord.get(ck(c.x,c.y+1,Z));
@@ -4171,9 +4191,9 @@ function renderMap(){
    const what=b.kind==="sanctuary"?"Sanctuary":b.kind==="festival"?"Festival today":"Cave entrance",tip=`${what}: ${b.c.t}, ${bearing({x:b.c.x,y:b.c.y,z:0},H)}`;
    if(inView(b.dx,b.dy)){const [cx,cy]=C(b.dx,b.dy);
     beacons+=`<g class="beacon ${b.kind}" pointer-events="none"><circle class="halo" cx="${cx}" cy="${cy}" r="27"/><polygon class="ring" points="${hex(cx,cy,.98)}"/></g>`;continue}
-   const [tx,ty]=C(b.dx,b.dy),vx=tx-210,vy=ty-210,k=Math.min(W*.45/Math.abs(vx||1e-9),V*.43/Math.abs(vy||1e-9)),ex=210+vx*k,ey=210+vy*k;
+   const [tx,ty]=C(b.dx,b.dy),mx=VB[0]+W/2,my=VB[1]+V/2,vx=tx-mx,vy=ty-my,k=Math.min(W*.45/Math.abs(vx||1e-9),V*.43/Math.abs(vy||1e-9)),ex=mx+vx*k,ey=my+vy*k;
    const icon=b.kind==="festival"?`<path d="M${ex} ${ey-8} l2.4 5 5.4 .6 -4 3.7 1.1 5.4 -4.9 -2.8 -4.9 2.8 1.1 -5.4 -4 -3.7 5.4 -.6 Z"/>`:b.kind==="sanctuary"?`<path d="M${ex-7} ${ey+6} V${ey-1} L${ex} ${ey-7} L${ex+7} ${ey-1} V${ey+6} Z M${ex} ${ey-3} V${ey+4} M${ex-3} ${ey} H${ex+3}"/>`:`<path d="M${ex-7} ${ey-5} H${ex+7} L${ex} ${ey+6} Z"/>`;
-   beacons+=`<g class="beacon ${b.kind} far" data-loc="${b.c.id}"><circle class="halo" cx="${ex}" cy="${ey}" r="14"/>${icon}<text x="${ex}" y="${ey+(ey>210?-(10+16*U):(12+22*U))}" text-anchor="middle">${b.d}</text><title>${esc(tip)}</title></g>`;
+   beacons+=`<g class="beacon ${b.kind} far" data-loc="${b.c.id}"><circle class="halo" cx="${ex}" cy="${ey}" r="14"/>${icon}<text x="${ex}" y="${ey+(ey>my?-(10+16*U):(12+22*U))}" text-anchor="middle">${b.d}</text><title>${esc(tip)}</title></g>`;
   }
  }
  const [hx,hy]=P(0,0);
@@ -4195,7 +4215,7 @@ function renderMap(){
    <text class="nn-s" x="210" y="${210-h/2+82+rows.length*30+8}" text-anchor="middle">Dawn in about ${mins} real ${mins===1?"minute":"minutes"}</text></g>`)})();
  }
  else out+=beacons;
- svg.setAttribute("viewBox",VB.map(v=>v.toFixed(1)).join(" "));{const cw=svg.clientWidth||bb.width;svg.style.setProperty("--u",cw>50?(W/cw*1.003).toFixed(4):"1")}$("zoom-label").textContent=`${Math.round(W/(HW*.75))} × ${2*R+1} hexes`;$("zoom-in").disabled=R<=ZOOMS[0];$("zoom-out").disabled=R>=ZOOMS[ZOOMS.length-1];
+ svg.setAttribute("viewBox",(mapCam.anim?camBox():VB).map(v=>v.toFixed(1)).join(" "));{const cw=svg.clientWidth||bb.width;svg.style.setProperty("--u",cw>50?(W/cw*1.003).toFixed(4):"1")}$("zoom-label").textContent=`${Math.round(W/(HW*.75))} × ${2*R+1} hexes`;$("zoom-in").disabled=R<=ZOOMS[0];$("zoom-out").disabled=R>=ZOOMS[ZOOMS.length-1];
  renderHud();
  svg.innerHTML=`<defs><filter id="beaconglow" x="-1" y="-1" width="3" height="3"><feGaussianBlur stdDeviation="4"/></filter></defs>`+out;
  const ew=H.x===0?"0":Math.abs(H.x)+(H.x>0?" E":" W"),ns=H.y===0?"0":Math.abs(H.y)+(H.y>0?" N":" S");
