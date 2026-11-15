@@ -88,9 +88,9 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .maprow{display:grid}
 @media (min-width:1041px){
  .maprow{grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:16px;align-items:start}
- .maprow .map{grid-column:1;grid-row:1}.maprow .mapside{grid-column:2;grid-row:1;height:382px;overflow:hidden;padding-block:0}
+ .maprow .map{grid-column:1;grid-row:1}.maprow .mapside{grid-column:2;grid-row:1;height:496px;overflow:hidden;padding-block:0}
  .maprow .mapside .mapplace{height:100%;overflow:hidden}.maprow .mapside .card{padding-block:14px}
- .maprow .map svg#map{aspect-ratio:auto;height:380px}}
+ .maprow .map svg#map{aspect-ratio:auto;height:494px}}
 .mapside:has(.mapplace:empty){display:none}
 .ic{width:1.2em;height:1.2em;vertical-align:-.22em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto;overflow:visible}
 .icv{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
@@ -139,7 +139,7 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .col{display:grid;gap:16px;min-width:0;align-content:start}
 
 /* Map */
-.map svg#map{display:block;width:100%;height:auto;max-width:100%;aspect-ratio:480/416;background:var(--wash);border-radius:6px}
+.map svg#map{display:block;width:100%;height:auto;max-width:100%;aspect-ratio:480/541;background:var(--wash);border-radius:6px}
 .mapwrap{position:relative}
 .panel.map{background:none;border:0;padding:0;border-radius:0;box-shadow:none}.panel.map svg#map{border-radius:12px;border:1px solid var(--rule)}.panel.map .mapwx{right:10px;bottom:10px}
 /* The heads-up display: what changes as you play, over the map's top-left corner */
@@ -177,8 +177,9 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .map .tile{stroke:var(--ink);stroke-opacity:.35;stroke-width:1;stroke-linejoin:round;cursor:pointer}
 .map .hexgrid{fill:transparent;pointer-events:all;cursor:pointer;stroke-linejoin:round}
 .map .rail{stroke:var(--ink);stroke-width:2.2;opacity:.75;pointer-events:none}.map .sleepers{stroke:var(--ink);stroke-width:8;stroke-dasharray:1.6 5;opacity:.5;pointer-events:none}
-.zoomrow{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:-4px}
-.zoomrow button{min-width:40px;font-size:18px;line-height:1}.zoomrow span{font-size:13pt;color:var(--faint);min-width:9em;text-align:center}
+.zoomslider{position:absolute;right:10px;top:10px;bottom:10px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 6px;border-radius:99px;background:color-mix(in srgb,var(--sheet) 88%,transparent);border:1px solid var(--rule);box-shadow:0 2px 8px #0002;z-index:3}
+.zoomslider span{font-family:var(--mono);font-size:13pt;line-height:1;color:var(--faint)}.zoomslider .iconbtn{min-width:34px;min-height:34px;padding:0;border-radius:50%}
+.zoomslider input{flex:1;min-height:0;width:26px;margin:0;writing-mode:vertical-lr;direction:rtl;accent-color:var(--accent);cursor:pointer}
 .map .ghost.up{fill:var(--t-mountain);stroke:var(--ink);stroke-width:1;stroke-linejoin:round}
 .map .ghost.flank{fill:var(--t-mountain)}
 .map .ghost.down{fill:none;stroke:var(--ink);stroke-width:1.4;stroke-dasharray:4 3;stroke-linejoin:round}
@@ -486,8 +487,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
    <section class="panel map" aria-label="Map">
     <span id="coords" hidden></span>
     <div class="mapwrap"><svg id="map" viewBox="0 0 480 416" role="img" aria-label="Map of explored places on your current level"></svg>
-<div class="blockflash" id="blockflash" aria-live="assertive"></div><div class="mapkey" id="mapkey" hidden></div><div class="arrive" id="arrive" aria-live="polite"></div><div class="gate" id="gate" hidden></div></div>
-    <div class="zoomrow"><button class="small" id="zoom-out" type="button" aria-label="Zoom out">−</button><span class="mono" id="zoom-label">zoom</span><button class="small" id="zoom-in" type="button" aria-label="Zoom in">+</button><button class="small iconbtn" id="map-key-btn" type="button" aria-label="Map key" title="Map key">?</button></div>
+<div class="blockflash" id="blockflash" aria-live="assertive"></div><div class="zoomslider"><button class="small iconbtn" id="map-key-btn" type="button" aria-label="Map key" title="Map key">?</button><span aria-hidden="true">+</span><input type="range" id="zoom" min="0" max="5" step="1" aria-label="Zoom" title="Zoom"><span aria-hidden="true">−</span></div><div class="mapkey" id="mapkey" hidden></div><div class="arrive" id="arrive" aria-live="polite"></div><div class="gate" id="gate" hidden></div></div>
     <div class="layerbar" id="layerbar" role="img" aria-label="Layers"></div>
    </section>
  </div>
@@ -4166,7 +4166,8 @@ function renderGate(){
 const GLYPH_MON={arch:"M16 35 V21 Q26 6 36 21 V35 M20 35 V22 Q26 12 32 22 V35",stones:"M13 35 V21 M21 35 V15 M29 35 V17 M37 35 V22 M11 35 H41",temple:"M11 20 L26 11 L41 20 Z M14 20 V32 M21 20 V32 M31 20 V32 M38 20 V32 M11 33 H41"};
 const ZOOMS=[2,3,4,5,6,8];let mapZoom=3;try{const z=+localStorage.getItem("zr-zoom3");if(ZOOMS.includes(z))mapZoom=z}catch(e){}
 function setZoom(step){const i=Math.max(0,Math.min(ZOOMS.length-1,ZOOMS.indexOf(mapZoom)+step));mapZoom=ZOOMS[i];try{localStorage.setItem("zr-zoom3",String(mapZoom))}catch(e){}renderMap()}
-document.addEventListener("click",e=>{if(e.target.closest("#zoom-in"))setZoom(-1);else if(e.target.closest("#zoom-out"))setZoom(1);else if(e.target.closest("#map-key-btn")){const k=$("mapkey");k.hidden=!k.hidden}});
+document.addEventListener("click",e=>{if(e.target.closest("#map-key-btn")){const k=$("mapkey");k.hidden=!k.hidden}});
+document.addEventListener("input",e=>{if(e.target.id!=="zoom")return;const i=ZOOMS.length-1-(+e.target.value);mapZoom=ZOOMS[Math.max(0,Math.min(ZOOMS.length-1,i))];try{localStorage.setItem("zr-zoom3",String(mapZoom))}catch(e){}renderMap()});
 document.addEventListener("keydown",e=>{const p=e.target.closest&&e.target.closest(".petal[data-go]");if(p&&(e.key==="Enter"||e.key===" ")){e.preventDefault();move(p.dataset.go)}});
 /* The HUD: hit points, level and XP, gold, load, light and hunger, plus a rest button, over the map */
 function renderHud(){
@@ -4323,7 +4324,7 @@ function renderMap(){
    <text class="nn-s" x="210" y="${210-h/2+82+rows.length*30+8}" text-anchor="middle">Dawn in about ${mins} real ${mins===1?"minute":"minutes"}</text></g>`)})();
  }
  else out+=beacons;
- svg.setAttribute("viewBox",(mapCam.anim?camBox():VB).map(v=>v.toFixed(1)).join(" "));{const cw=svg.clientWidth||bb.width;svg.style.setProperty("--u",cw>50?(W/cw*1.003).toFixed(4):"1")}$("zoom-label").textContent=`${Math.round(W/(HW*.75))} × ${2*R+1} hexes`;$("zoom-in").disabled=R<=ZOOMS[0];$("zoom-out").disabled=R>=ZOOMS[ZOOMS.length-1];
+ svg.setAttribute("viewBox",(mapCam.anim?camBox():VB).map(v=>v.toFixed(1)).join(" "));{const cw=svg.clientWidth||bb.width;svg.style.setProperty("--u",cw>50?(W/cw*1.003).toFixed(4):"1")}{const zs=$("zoom"),lab=`${Math.round(W/(HW*.75))} × ${2*R+1} hexes`;if(zs){zs.max=String(ZOOMS.length-1);zs.value=String(ZOOMS.length-1-ZOOMS.indexOf(R));zs.setAttribute("aria-valuetext",lab);zs.title=`Zoom: ${lab}`}}
  renderHud();
  svg.innerHTML=`<defs><filter id="beaconglow" x="-1" y="-1" width="3" height="3"><feGaussianBlur stdDeviation="4"/></filter></defs>`+out;
  const ew=H.x===0?"0":Math.abs(H.x)+(H.x>0?" E":" W"),ns=H.y===0?"0":Math.abs(H.y)+(H.y>0?" N":" S");
