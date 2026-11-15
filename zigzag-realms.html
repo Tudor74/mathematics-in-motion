@@ -90,6 +90,22 @@ header.top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align
  .maprow .map{grid-column:1;grid-row:2}.maprow .mapside{grid-column:1;grid-row:1}
  .maprow .map svg#map{aspect-ratio:auto;height:380px}}
 .mapside:has(.mapplace:empty){display:none}
+.ic{width:1.2em;height:1.2em;vertical-align:-.22em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto;overflow:visible}
+.icv{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.chipi{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:99px;background:var(--wash);border:1px solid var(--rule);font-size:13pt}
+.lgauge{display:inline-flex;gap:2px;align-items:center;padding:3px 8px;border-radius:99px;background:var(--wash);border:1px solid var(--rule)}.lgauge i{width:5px;height:12px;border-radius:2px;background:var(--rule)}.lgauge i.on{background:var(--ink)}.lgauge i.g{background:var(--faint)}
+.herelist .herechip{display:inline-flex;align-items:center;gap:6px}.herechip b{font-family:var(--mono)}
+.rose{display:block;width:100%;max-width:300px;margin:0 auto}.rose .petal{cursor:pointer}.rose .petal polygon{fill:var(--wash);stroke:var(--rule);stroke-width:1.5}.rose .petal:hover polygon,.rose .petal:focus polygon{stroke:var(--accent);stroke-width:2.5}
+.rose .petal.shut{cursor:not-allowed;opacity:.45}.rose .petal .ic{stroke:var(--ink)}.rose .me polygon{fill:var(--sheet);stroke:var(--accent);stroke-width:3}.rose text{font-family:var(--mono);font-size:13pt;fill:var(--faint)}
+.rosevert{display:flex;justify-content:center;gap:10px;margin-top:6px}.rosevert button{display:inline-flex;align-items:center;gap:6px}
+.iconbtn{display:inline-grid;place-items:center;min-width:40px;min-height:36px;padding:4px 8px}.iconbtn .ic{width:1.35em;height:1.35em}
+.items .meta.icons{display:flex;flex-wrap:wrap;gap:4px 12px;font-family:var(--mono);font-size:13pt;color:var(--faint)}
+.sectionhead h3 .ic{margin-right:8px;color:var(--accent)}
+.log li .ic.lk{margin-right:8px;color:var(--faint)}.log li.good .ic.lk{color:var(--good)}.log li.bad .ic.lk{color:var(--danger)}
+.abil .k .ic{margin-right:4px}.mapkey{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:6;max-width:min(560px,calc(100% - 24px));max-height:calc(100% - 24px);overflow:auto;padding:12px 16px;border-radius:12px;background:var(--sheet);border:1px solid var(--rule);box-shadow:0 6px 24px #0003}
+.mapkey[hidden]{display:none}.mapkey ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px 14px;font-size:13pt}.mapkey li{display:flex;align-items:center;gap:8px}
+.mapkey .sw{display:inline-block;width:1.1em;text-align:center}
+.wxbadge{display:inline-flex;align-items:center;gap:8px}
 .maprow .mapside{display:none!important}
 .maprealm{position:absolute;right:10px;top:10px;pointer-events:none}.maprealm:empty{display:none}
 .maprealm>span{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;background:color-mix(in srgb,var(--sheet) 88%,transparent);border:1px solid var(--rule);box-shadow:0 2px 8px #0002;font-family:var(--mono);font-size:13pt;color:var(--ink)}
@@ -189,7 +205,7 @@ header.top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align
 .legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13pt;color:var(--faint);margin:0}
 .legend .r{color:var(--danger)}.legend .p{color:var(--water)}.legend .m{color:var(--magic)}
 
-.compass{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-areas:"nw n ne" "w c e" "sw s se" "u . d";gap:6px}
+.compass.rosebox{display:block}.compass{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-areas:"nw n ne" "w c e" "sw s se" "u . d";gap:6px}
 .compass[data-hex="even"] .se,.compass[data-hex="even"] .sw,.compass[data-hex="odd"] .ne,.compass[data-hex="odd"] .nw{display:none}
 .compass[data-hex="even"] .e{grid-area:se}.compass[data-hex="even"] .w{grid-area:sw}.compass[data-hex="odd"] .e{grid-area:ne}.compass[data-hex="odd"] .w{grid-area:nw}
 .compass .nw{grid-area:nw}.compass .ne{grid-area:ne}.compass .sw{grid-area:sw}.compass .se{grid-area:se}
@@ -257,7 +273,7 @@ button.dirlink:hover:not(:disabled){color:var(--accent);text-decoration-style:so
 .items .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
 .empty{color:var(--faint);font-size:13pt;font-style:italic;margin:0}
 .sectionhead{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-.sectionhead{min-width:0}.sectionhead>.mono{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:0 1 auto}.sectionhead>h3{flex:0 0 auto}.sectionhead .fold{flex:0 0 auto}
+.sectionhead{min-width:0}.sectionhead>.mono{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:0 1 auto}.sectionhead>h3{flex:0 0 auto;white-space:nowrap}.sectionhead>*{min-width:0}.sectionhead .fold{flex:0 0 auto}
 .sectionhead h3{font-size:19px}
 
 /* ZigZag inspector */
@@ -334,7 +350,7 @@ details.standing[open]{gap:10px}
 .sees button.go:hover:not(:disabled) .what{text-decoration-color:var(--rule)}
 .sees button.go:hover:not(:disabled) .arrow{color:var(--accent);transform:translateX(3px)}
 /* Social graph */
-.social svg{display:block;width:100%;height:auto;max-width:100%;aspect-ratio:1/1}
+.social svg#social{display:block;width:100%;height:auto;max-width:100%;aspect-ratio:1/1}
 .social .edge{fill:none;stroke-linecap:round}
 .social .edge.pos{stroke:var(--water)}.social .edge.neg{stroke:var(--danger)}
 .social .node{stroke:var(--sheet);stroke-width:1.5}
@@ -442,6 +458,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
   <div class="btnrow"><button class="primary" id="nudge-ok" type="button">I'm back</button><label class="nudge-off" for="nudge-never"><input type="checkbox" id="nudge-never"> Don't remind me at nightfall</label></div>
  </div>
 </div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="inkbrush" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency=".11" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="1.4"/></filter></svg>
 <div class="wrap">
  <header class="top">
   <h1 class="sr">Zigzag Realms</h1>
@@ -466,10 +483,9 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
    <div class="segclock"><svg id="moon" viewBox="3.5 3.5 25 25"></svg><button id="sound-toggle" class="soundicon" aria-pressed="true" type="button" aria-label="Sound on"></button><svg aria-hidden="true" id="segdigits" viewBox="0 0 132 44"></svg></div>
    <div class="seasonline" id="seasonline" aria-hidden="true"><span class="sp"></span><span class="su"></span><span class="au"></span><span class="wi"></span><i></i></div>
   </div>
-<div class="maprealm" id="maprealm"></div><div class="arrive" id="arrive" aria-live="polite"></div><div class="gate" id="gate" hidden></div><div class="mapwx" id="mapwx" aria-label="Weather here"></div></div>
-    <div class="zoomrow"><button class="small" id="zoom-out" type="button" aria-label="Zoom out">−</button><span class="mono" id="zoom-label">zoom</span><button class="small" id="zoom-in" type="button" aria-label="Zoom in">+</button></div>
+<div class="maprealm" id="maprealm"></div><div class="mapkey" id="mapkey" hidden></div><div class="arrive" id="arrive" aria-live="polite"></div><div class="gate" id="gate" hidden></div><div class="mapwx" id="mapwx" aria-label="Weather here"></div></div>
+    <div class="zoomrow"><button class="small" id="zoom-out" type="button" aria-label="Zoom out">−</button><span class="mono" id="zoom-label">zoom</span><button class="small" id="zoom-in" type="button" aria-label="Zoom in">+</button><button class="small iconbtn" id="map-key-btn" type="button" aria-label="Map key" title="Map key">?</button></div>
     <div class="layerbar" id="layerbar" role="img" aria-label="Layers"></div>
-    <p class="legend"><span>▲ way up</span><span>▼ way down</span><span class="r">◆ anomaly</span><span class="p">● townsfolk</span><span style="color:var(--good)">● creatures</span><span class="m">┅ magical bridge</span><span>┿ railway</span><span style="color:var(--amber)">● sanctuary beacon</span><span class="m">● cave entrance</span></p>
    </section>
  </div>
  <div class="grid">
@@ -489,7 +505,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
      <button class="se diag" id="go-southeast" data-dir="southeast"><span class="dir">SE</span><span class="to"></span></button>
      <button class="d vert" id="go-down" data-dir="down"><span class="dir">Down</span><span class="to"></span></button>
     </div>
-    <p class="keys">Keys: arrows or W A S D to walk; Y U B N (or 7 9 1 3) to cut across a corner north-west, north-east, south-west or south-east, which takes 45 minutes; E or Page Up to climb, Q or Page Down to descend, F to attack, R to make camp or take a room. Each step takes half an hour. Without a lantern you cannot travel at night or go underground.</p>
+    <p class="keys">Tap a petal, or any hex on the map. Keys: arrows or W A S D; Y U B N (7 9 1 3) for the diagonal neighbours; E and Q to climb and descend; F to attack; R to rest. Each step takes half an hour.</p>
    </section>
    <section class="panel social" aria-labelledby="soc-h" data-fold="social">
     <div class="sectionhead"><h3 id="soc-h">Who knows whom</h3><span class="mono" id="soc-count" style="font-size:13pt;color:var(--faint)"></span></div>
@@ -3407,7 +3423,7 @@ function renderCraft(){
  const rows=RECIPES.map((r,i)=>({r,i,ok:!!haveFor(r)&&(!r.smith||smithHere())})).filter(x=>x.ok||!x.r.smith);
  const can=rows.filter(x=>x.ok);
  return`<div class="sectionhead"><h3>Craft</h3><span class="mono" style="font-size:13pt;color:var(--faint)">${can.length} possible</span></div>`+
-  `<ul class="items">${rows.map(({r,i,ok})=>`<li><span><span class="nm">${esc(r.name)}</span><span class="meta">${r.smith?"15 gp of treasure, with a smith":r.needs.join(" + ")}</span></span><span class="acts"><button class="small" data-act="craft" data-id="${i}" ${ok?"":"disabled"}>Make</button></span></li>`).join("")}</ul>`;
+  `<ul class="items">${rows.map(({r,i,ok})=>`<li><span><span class="nm">${esc(r.name)}</span><span class="meta">${r.smith?"15 gp of treasure, with a smith":r.needs.join(" + ")}</span></span><span class="acts"><button class="small iconbtn" data-act="craft" data-id="${i}" ${ok?"":"disabled"} aria-label="Make ${esc(r.name)}" title="Make ${esc(r.name)}">${ic("craft","Make")}</button></span></li>`).join("")}</ul>`;
 }
 
 /* ============================================================
@@ -4046,7 +4062,9 @@ function renderClock(){
  p.setAttribute("aria-label",`${fmtClock(t)}, ${seasonOf(t)}, ${night?"night":"day"}`);p.setAttribute("role","timer");
  p.title=`The world clock runs at ${CLOCK_RATE}× real time by day and ${NIGHT_RATE}× at night, so a night lasts about ten real minutes. Each step takes half an hour.`;
  const H=hereId()&&cell(hereId()),w=H&&weatherAt(H.x,H.y,zOf(H),t);
- $("mapwx").textContent=w?w.label:"";
+ {const el=$("mapwx");if(!w){el.innerHTML=""}else{const ws=wxState(),night=isNight(t),k=w.short==="underground"?"under":/storm|blizzard/.test(w.short||"")?"storm":/snow/.test(w.short||"")?"snow":/rain|drizzle/.test(w.short||"")?"rain":/fog|mist/.test(w.short||"")?"fog":/cold/.test(w.short||"")?"cold":w.cloud>.6?"cloud":night?"night":"sun";
+  const ang=ws&&ws.wind?Math.atan2(-ws.wind.y,ws.wind.x)*180/Math.PI:0,strong=w.wind>.9?"strong":w.wind>.4?"":"light";
+  el.innerHTML=`<span class="wxbadge" title="${esc(w.label)}">${ic(k,w.label)}<span>${w.temp}°</span>${w.wind>.15?`<span style="display:inline-flex;transform:rotate(${ang.toFixed(0)}deg)">${ic("wind",`wind ${strong}`)}</span>`:""}</span>`}}
 }
 function renderPills(){
  $("pill-ai").innerHTML=`Narrator: <b>${esc(ai.label())}</b>`;
@@ -4119,7 +4137,8 @@ function renderGate(){
 const GLYPH_MON={arch:"M16 35 V21 Q26 6 36 21 V35 M20 35 V22 Q26 12 32 22 V35",stones:"M13 35 V21 M21 35 V15 M29 35 V17 M37 35 V22 M11 35 H41",temple:"M11 20 L26 11 L41 20 Z M14 20 V32 M21 20 V32 M31 20 V32 M38 20 V32 M11 33 H41"};
 const ZOOMS=[2,3,4,5,6,8];let mapZoom=3;try{const z=+localStorage.getItem("zr-zoom3");if(ZOOMS.includes(z))mapZoom=z}catch(e){}
 function setZoom(step){const i=Math.max(0,Math.min(ZOOMS.length-1,ZOOMS.indexOf(mapZoom)+step));mapZoom=ZOOMS[i];try{localStorage.setItem("zr-zoom3",String(mapZoom))}catch(e){}renderMap()}
-document.addEventListener("click",e=>{if(e.target.closest("#zoom-in"))setZoom(-1);else if(e.target.closest("#zoom-out"))setZoom(1)});
+document.addEventListener("click",e=>{if(e.target.closest("#zoom-in"))setZoom(-1);else if(e.target.closest("#zoom-out"))setZoom(1);else if(e.target.closest("#map-key-btn")){const k=$("mapkey");k.hidden=!k.hidden}});
+document.addEventListener("keydown",e=>{const p=e.target.closest&&e.target.closest(".petal[data-go]");if(p&&(e.key==="Enter"||e.key===" ")){e.preventDefault();move(p.dataset.go)}});
 /* The HUD: hit points, level and XP, gold, load, light and hunger, plus a rest button, over the map */
 function renderHud(){
  const el=$("hud");if(!el)return;if(!charId()||!hereId()){el.innerHTML="";return}
@@ -4271,26 +4290,24 @@ function viewToward(here,d){
  return{text,open:!block,why:block,weather:wa&&wa.short,id};
 }
 function renderCompass(){
- const here=hereId(),fighting=!!foeId();
- for(const [d,v] of Object.entries(DIRS)){
-  const b=$("go-"+d),to=b.querySelector(".to");
-  if(!here||isDowned()){b.disabled=true;to.textContent="";continue}
-  const view=viewToward(here,d);
-  if(!view){b.disabled=true;b.hidden=false;to.textContent="no way";b.title=d==="up"?"There is no way up from here.":"There is no way down from here.";continue}
-  b.disabled=!!busy||!view.open;
-  to.textContent=fighting&&view.open?"Try to flee":view.text;
-  b.title=view.why||(fighting?`Try to flee ${d}: a DEX check, and it strikes if you fail`:`You can see ${view.text}`);
+ const box=$("compass");if(!box)return;box.classList.add("rosebox");const here=hereId();
+ if(!here||isDowned()){box.innerHTML="";return}
+ const H=cell(here),ev=evenCol(H.x),fighting=!!foeId(),R=34,cx=150,cy=112,S3=Math.sqrt(3);
+ const hexp=(x,y,r)=>[0,60,120,180,240,300].map(a=>{const q=a*Math.PI/180;return`${(x+Math.cos(q)*r).toFixed(1)},${(y+Math.sin(q)*r).toFixed(1)}`}).join(" ");
+ const tIcon=c=>!c?"unknown":c.sanctuary?"sanctuary":c.town?"village":c.river&&!c.river.crossing?"water":c.hole?"cave":TERRAIN_ICON(c.terrain);
+ const petals=[["north","north",0,-1],["south","south",0,1],[ev?"northeast":"east","north-east",1,-.5],[ev?"east":"southeast","south-east",1,.5],[ev?"northwest":"west","north-west",-1,-.5],[ev?"west":"southwest","south-west",-1,.5]];
+ let g="";
+ for(const [d,lab,px,py] of petals){
+  const D=DIRS[d]||DIAG[d],view=DIRS[d]?viewToward(here,d):diagView(here,d),T=coord.get(ck(H.x+D.dx,H.y+D.dy,zOf(H)));const Tc=T&&cell(T);
+  const open=!!(view&&view.open&&!busy),x=cx+px*1.5*R,y=cy+py*S3*R;
+  const tip=`${lab[0].toUpperCase()+lab.slice(1)}: ${view?view.text:"no way"}${view&&view.why?`. ${view.why}`:fighting&&open?". Try to flee: a DEX check":""}`;
+  g+=`<g class="petal${open?"":" shut"}"${open?` data-go="${d}" role="button" tabindex="0"`:""} aria-label="${esc(tip)}"><title>${esc(tip)}</title><polygon points="${hexp(x,y,R*.94)}"/>
+   <svg x="${x-15}" y="${y-15}" width="30" height="30" viewBox="0 0 24 24" class="ic"><path d="${ICON[tIcon(Tc&&visible(Tc)?Tc:null)]}" filter="url(#inkbrush)"/>${open?"":`<path d="${ICON.slash}" filter="url(#inkbrush)"/>`}</svg></g>`;
  }
- if(here){const Hc=cell(here),ev=evenCol(Hc.x);$("compass").dataset.hex=ev?"even":"odd";
-  $("go-east").querySelector(".dir").textContent=ev?"SE":"NE";$("go-west").querySelector(".dir").textContent=ev?"SW":"NW"}
- for(const d of Object.keys(DIAG)){
-  const b=$("go-"+d),to=b.querySelector(".to");
-  const view=here&&!isDowned()?diagView(here,d):null;
-  if(!view){b.disabled=true;to.textContent="";b.title=`No way ${DIAG[d].label} that you can see`;continue}
-  b.disabled=!!busy||!view.open;to.textContent=fighting&&view.open?"Try to flee":view.text;
-  b.title=view.why||`Go ${DIAG[d].label}: ${view.text}`;
- }
- $("compass-c").innerHTML=here?`${coord.size} places<br>${esc(depthName(zOf(cell(here))))}`:"—";
+ g+=`<g class="me"><title>${esc(H.t)}</title><polygon points="${hexp(cx,cy,R*.94)}"/><svg x="${cx-15}" y="${cy-15}" width="30" height="30" viewBox="0 0 24 24" class="ic"><path d="${ICON[tIcon(H)]}" filter="url(#inkbrush)"/></svg></g>`;
+ const vert=["up","down"].map(d=>{const v=viewToward(here,d);if(!v)return"";const lab=d==="up"?"Climb up":"Go down",tip=`${lab}: ${v.text}${v.why?`. ${v.why}`:""}`;
+  return`<button class="small iconbtn" data-go="${d}" ${busy||!v.open?"disabled":""} aria-label="${esc(tip)}" title="${esc(tip)}">${ic(d,lab)}</button>`}).join("");
+ box.innerHTML=`<svg class="rose" viewBox="40 0 220 224" role="group" aria-label="Ways from here">${g}</svg>${vert?`<div class="rosevert">${vert}</div>`:""}`;
 }
 function renderSees(here){
  const rows=[];
@@ -4311,22 +4328,26 @@ function renderSees(here){
 }
 
 function itemRow(id,where){
- const it=cell(id),inHand=where==="pack"&&it.kind==="weapon"&&weapon()===it;
- const bits=[it.kind,`${fmtW(+it.weight||0)} lb`];if(it.value&&!it.forSale)bits.push(`${it.value} gp`);if(it.heal)bits.push(`heals ${it.heal}`);if(it.ac)bits.push(`AC +${it.ac}`);if(it.dmg)bits.push(`${it.dmg}${it.finesse?" finesse":""}`);if(it.light)bits.push("light");if(it.magic)bits.push("magic");if(it.worn)bits.push("worn");if(inHand)bits.push("in hand");
+ const it=cell(id),inHand=where==="pack"&&it.kind==="weapon"&&weapon()===it,kindI=it.kind==="mushroom"?"mushroom":it.mapOf?"map":ICON[it.kind]?it.kind:"junk";
+ const facts=[icv("weight","weight",`${fmtW(+it.weight||0)} lb`)];
+ if(it.value&&!it.forSale)facts.push(icv("coin","value",`${it.value}`));if(it.heal)facts.push(icv("hp","heals",it.heal));if(it.ac)facts.push(icv("shield","armour",`+${it.ac}`));
+ if(it.dmg)facts.push(icv("weapon",it.finesse?"damage, finesse":"damage",`${it.dmg}${it.finesse?" ƒ":""}`));if(it.light)facts.push(icv("lantern","gives light",""));if(it.magic)facts.push(icv("magic","magic",""));
+ if(it.worn)facts.push(icv("armor","worn","on"));if(inHand)facts.push(icv("weapon","in hand","in hand"));
+ const B=(act,icon,label,extra="")=>`<button class="small iconbtn" data-act="${act}" data-id="${id}" aria-label="${esc(label)}" title="${esc(label)}" ${extra}>${ic(icon,label)}</button>`;
  let acts="";
- if(where==="here")acts=it.forSale?`<button class="small" data-act="take" data-id="${id}" ${busy||sv("GP")<it.value?"disabled":""} title="${sv("GP")<it.value?"You cannot afford it":"Buy it"}">Buy · ${it.value} gp</button>`:`<button class="small" data-act="take" data-id="${id}" ${busy||foeId()?"disabled":""}>Take</button>`;
+ if(where==="here")acts=it.forSale?`<button class="small" data-act="take" data-id="${id}" ${busy||sv("GP")<it.value?"disabled":""} aria-label="Buy for ${it.value} gold" title="${sv("GP")<it.value?"You cannot afford it":"Buy it"}">${ic("coin","Buy")} ${it.value}</button>`:B("take","take","Take",busy||foeId()?"disabled":"");
  else{
-  if(it.heal)acts+=`<button class="small" data-act="use" data-id="${id}">${it.kind==="food"?"Eat":"Drink"}</button>`;
-  if(it.kind==="mushroom")acts+=`<button class="small" data-act="use" data-id="${id}" title="${esc(it.desc||"")}">Eat</button>`;
-  if(it.mapOf)acts+=`<button class="small" data-act="use" data-id="${id}">Read</button>`;
-  if(atCottage())acts+=`<button class="small" data-act="deposit" data-id="${id}" title="Keep it safe in your chest">Store</button>`;
-  if(it.kind==="treasure")acts+=`<button class="small" data-act="use" data-id="${id}">Pocket</button>`;
-  if(it.kind==="armor")acts+=`<button class="small" data-act="wear" data-id="${id}">${it.worn?"Take off":"Wear"}</button>`;
-  if(it.kind==="weapon"&&!inHand)acts+=`<button class="small" data-act="wield" data-id="${id}">Wield</button>`;
-  acts+=`<button class="small" data-act="drop" data-id="${id}" ${busy?"disabled":""}>Drop</button>`;
-  if(mp.on())acts+=`<button class="small" data-act="leave" data-id="${id}" ${busy?"disabled":""} title="Leave it on the ground for another player to find">Leave for others</button>`;
+  if(it.heal)acts+=B("use",it.kind==="food"?"eat":"potion",it.kind==="food"?"Eat":"Drink");
+  if(it.kind==="mushroom")acts+=B("use","eat",`Eat. ${it.desc||""}`);
+  if(it.mapOf)acts+=B("use","read","Read");
+  if(atCottage())acts+=B("deposit","store","Store in your chest");
+  if(it.kind==="treasure")acts+=B("use","coin","Put in your purse");
+  if(it.kind==="armor")acts+=B("wear","armor",it.worn?"Take off":"Wear");
+  if(it.kind==="weapon"&&!inHand)acts+=B("wield","weapon","Wield");
+  acts+=B("drop","drop","Drop",busy?"disabled":"");
+  if(mp.on())acts+=B("leave","leave","Leave it on the ground for another player to find",busy?"disabled":"");
  }
- return`<li><span><span class="nm">${esc(it.t)}</span><span class="meta">${esc(bits.join(" · "))}</span>${it.desc?`<span class="about">${esc(it.desc)}</span>`:""}</span><span class="acts">${acts}</span></li>`;
+ return`<li><span><span class="nm">${ic(kindI,it.kind)} ${esc(it.t)}</span><span class="meta icons">${facts.join("")}</span>${it.desc?`<span class="about">${esc(it.desc)}</span>`:""}</span><span class="acts">${acts}</span></li>`;
 }
 
 function renderFoe(f){
@@ -4403,18 +4424,24 @@ function renderPlace(){
   const mem=memoryText(L),descText=(L.river&&L.river.crossing==="magic"&&magic&&L.descPresent?L.descPresent:L.desc)+(mem?" "+mem:""),hideDesc=voice.on()&&voice.hide;
   const descHtml=hideDesc?`<p class="note">The description is being read aloud. <button class="small" data-voice="read">Read it again</button></p>`:`<p class="desc mapdesc${busy?" busy":""}">${linkify(descText)}</p>`;
   // What is here, at a glance: an anomaly, people, things lying about, other travellers, and the place's own nature
+  const kindLabel=chips[0].replace(/<[^>]+>/g,""),Zl=zOf(L);
+  let iconChips=`<span class="chipi" title="${esc(kindLabel)}">${ic(L.sanctuary?"sanctuary":L.town?"village":L.river&&!L.river.crossing?"water":TERRAIN_ICON(L.terrain),kindLabel)}<span>${esc(kindLabel)}</span></span>`;
+  iconChips+=`<span class="lgauge" role="img" aria-label="${esc(depthName(Zl))}" title="${esc(depthName(Zl))}">${Array.from({length:2*ZMAX+1},(_,k)=>`<i class="${k-ZMAX===Zl?"on":k===ZMAX?"g":""}"></i>`).join("")}</span>`;
+  if(L.river&&L.river.crossing==="magic")iconChips+=`<span class="chipi">${ic("magic",magic?"The magical bridge is here":"The magical bridge is absent")}</span>`;
+  if(L.town)iconChips+=`<span class="chipi" title="${esc(L.town.side)} bank of the ${esc(riverName())}">${ic("bank",`${L.town.side} bank of the ${riverName()}`)}<span>${esc(L.town.side)}</span></span>`;
   const here_=[],folk=npcsAt(L.x,L.y).filter(n=>zOf(L)===0||n.z===zOf(L)),things=storeIds(here),others=(mp.on()?mp.players:[]).filter(p=>p.x===L.x&&p.y===L.y&&p.z===zOf(L));
   const few=(arr,f)=>arr.slice(0,3).map(f).join(", ")+(arr.length>3?` and ${arr.length-3} more`:"");
-  if(f){const F=cell(f);here_.push(`<span class="herechip danger">⚔ ${esc(F.designation||"")} ${esc(F.t)}</span>`)}
-  if(folk.length)here_.push(`<span class="herechip">☺ ${esc(few(folk,n=>n.t))}</span>`);
-  if(others.length)here_.push(`<span class="herechip">✦ ${esc(few(others,p=>p.name))}</span>`);
-  if(things.length)here_.push(`<span class="herechip">◆ ${esc(few(things,id=>cell(id).t))}</span>`);
-  if(L.sanctuary)here_.push(`<span class="herechip">✚ sanctuary: rest heals fully</span>`);
-  if(L.station)here_.push(`<span class="herechip">⊞ railway station</span>`);
-  const hereHtml=here_.length?`<div class="herelist">${here_.join("")}</div>`:`<p class="note">Nothing and no one else here.</p>`;
+  const hc=(icon,label,n,cls="")=>`<span class="herechip ${cls}" title="${esc(label)}">${ic(icon,label)}${n!=null?`<b>${n}</b>`:""}</span>`;
+  if(f){const F=cell(f);here_.push(hc("anomaly",`${F.designation||""} ${F.t}`.trim(),null,"danger")+`<span class="herechip danger">${esc(F.t)}</span>`)}
+  if(folk.length)here_.push(hc("people",few(folk,n=>n.t),folk.length));
+  if(others.length)here_.push(hc("traveller",few(others,p=>p.name),others.length));
+  if(things.length)here_.push(hc("item",few(things,id=>cell(id).t),things.length));
+  if(L.sanctuary)here_.push(hc("sanctuary","Sanctuary: rest heals fully, and nobody may fight here"));
+  if(L.station)here_.push(hc("station","Railway station"));
+  const hereHtml=here_.length?`<div class="herelist">${here_.join("")}</div>`:"";
   const sig=items+L.t+descHtml+hereHtml+here,el=$("arrive");
   if(el&&el.dataset.sig!==sig){const fresh=el.dataset.here!==here;el.dataset.sig=sig;el.dataset.here=here;
-   el.innerHTML=`<div class="veil"></div><div class="card"><div class="chips">${items}</div><div class="titlerow"><h2 id="map-h">${esc(L.t)}</h2>${voice.on()?`<button class="small" data-voice="read" title="Read this place aloud with your ElevenLabs voice">Read aloud</button>`:""}</div>${descHtml}${hereHtml}</div>`;
+   el.innerHTML=`<div class="veil"></div><div class="card"><div class="chips">${iconChips}</div><div class="titlerow"><h2 id="map-h">${esc(L.t)}</h2>${voice.on()?`<button class="small" data-voice="read" title="Read this place aloud with your ElevenLabs voice">Read aloud</button>`:""}</div>${descHtml}${hereHtml}</div>`;
    const card=el.querySelector(".card");card.onmouseenter=()=>clearTimeout(arriveTimer);card.onmouseleave=()=>{clearTimeout(arriveTimer);arriveTimer=setTimeout(hideArrive,2500)};
    if(fresh||el.classList.contains("show"))showArrive()}}
  let html="";
@@ -4440,7 +4467,6 @@ function renderPlace(){
  if(L.hazard&&L.outcome){const o=L.outcome;html+=`<div class="hazard${o.ok?" passed":""}"><b>${esc(L.hazard.name)}.</b> ${esc(L.hazard.text)} ${o.ok?"You get through unharmed.":`You take ${o.dmg} damage.`}${here===lastHazard?`<span class="roll">${esc(o.roll)}</span>`:""}</div>`}
  if(f)html+=renderFoe(f);
  else if(L.defeated)html+=`<p class="neutral">${esc(L.defeated.designation)} ${esc(L.defeated.name)} was neutralised here${L.defeated.by?` by ${esc(L.defeated.by)}, who left treasure and food behind`:""}.</p>`;
- html+=renderSees(here);
  html+=renderPeople(L);
  const rp=reputation(),items=storeIds(here).filter(id=>!(cell(id).forSale&&cell(id).magic&&rp<cell(id).minRep));
  const withheld=storeIds(here).length-items.length;
@@ -4456,6 +4482,100 @@ function renderPlace(){
  el.innerHTML=html;
 }
 let zzOpen=false;
+
+/* ============================================================
+   Icons, drawn as brushed ink (one shared roughening filter, the same feel as the portraits). Every icon
+   carries an accessible name and a tooltip, so nothing becomes unreadable; words stay for places, speech
+   and reasons.
+   ============================================================ */
+const ICON={
+ forest:"M12 3 L6 13 h4 l-3 5 h10 l-3-5 h4 Z M12 18 v3",
+ plains:"M3 19 h18 M6 19 q0-5 -2-8 M9 19 q0-6 2-9 M14 19 q0-5 3-8 M18 19 q0-4 2-6",
+ water:"M3 9 q3-3 6 0 t6 0 t6 0 M3 14 q3-3 6 0 t6 0 t6 0 M3 19 q3-3 6 0 t6 0 t6 0",
+ mountain:"M2 20 L9 7 L13 14 L16 10 L22 20 Z M7.5 10 l1.5 1.5 1.5-1.5",
+ cave:"M3 20 v-6 a9 9 0 0 1 18 0 v6 M8 20 v-5 a4 4 0 0 1 8 0 v5",
+ dungeon:"M5 21 V8 l7-5 7 5 v13 M9 21 V10 M12 21 V8 M15 21 V10 M5 14 h14",
+ village:"M4 11 L12 4 L20 11 M6 10 v10 h12 V10 M10 20 v-5 h4 v5",
+ ruin:"M5 21 h14 M8 21 V9 l2-2 M16 21 V12 l-2-2 M6 9 h5 M13 12 h5",
+ swamp:"M3 19 q3-2 6 0 t6 0 t6 0 M8 17 V8 M12 17 V5 M16 17 V9 M12 5 a1.5 2.5 0 0 0 0 4",
+ road:"M8 21 L11 3 M16 21 L13 3 M12 7 v2 M12 12 v2 M12 17 v2",
+ desert:"M2 18 q5-6 10 0 q5-5 10 0 M17 4 a2.5 2.5 0 1 0 .01 0",
+ grove:"M12 3 a3 3 0 1 0 .01 0 M6 9 a3 3 0 1 0 .01 0 M18 9 a3 3 0 1 0 .01 0 M12 9 v12 M6 15 v6 M18 15 v6",
+ sky:"M7 18 h10 a4 4 0 0 0 0-8 a6 6 0 0 0 -11 1 a3.5 3.5 0 0 0 1 7 Z",
+ unknown:"M9 9 a3 3 0 1 1 4 3 c-1 .5 -1 1 -1 2 M12 17.5 v.5",
+ slash:"M4 4 L20 20",
+ layer:"M12 4 L21 9 L12 14 L3 9 Z M3 13 l9 5 9-5 M3 17 l9 5 9-5",
+ up:"M12 20 V5 M6 11 l6-6 6 6",down:"M12 4 v15 M6 13 l6 6 6-6",
+ bank:"M3 17 q4-3 8 0 t8 0 M14 4 v9 M14 4 l5 3 -5 2",
+ anomaly:"M4 4 L14 14 M20 4 L10 14 M6 16 l2 2 M18 16 l-2 2 M12 16 l-4 4 M12 16 l4 4",
+ people:"M9 5 a3 3 0 1 0 .01 0 M3 20 a6 6 0 0 1 12 0 M17 7 a2.5 2.5 0 1 0 .01 0 M15 20 h6 a4.5 4.5 0 0 0 -6 -4",
+ traveller:"M12 3 a2 2 0 1 0 .01 0 M12 7 l-1 6 2 3 v5 M11 13 l-3 8 M12 9 l3 2 M18 6 v15",
+ item:"M12 3 L20 12 L12 21 L4 12 Z",
+ sanctuary:"M12 3 a9 9 0 1 0 .01 0 M12 7 v10 M7 12 h10",
+ station:"M6 3 h12 v12 a3 3 0 0 1 -3 3 H9 a3 3 0 0 1 -3 -3 Z M6 10 h12 M9 21 l1-3 M15 21 l-1-3",
+ STR:"M7 11 V7 a1.5 1.5 0 0 1 3 0 v3 M10 9 V6 a1.5 1.5 0 0 1 3 0 v4 M13 9 V7 a1.5 1.5 0 0 1 3 0 v4 M16 10 a1.5 1.5 0 0 1 3 0 v3 a7 7 0 0 1 -7 7 h-1 a5 5 0 0 1 -5 -5 v-3 l2 -1",
+ DEX:"M20 4 C10 4 6 10 5 19 M20 4 C19 12 13 17 6 18 M9 15 l4-1 M11 12 l5-1 M13 9 l4-1",
+ CON:"M12 20 C4 14 3 9 6 6.5 C8.5 4.5 11 6 12 8 C13 6 15.5 4.5 18 6.5 C21 9 20 14 12 20 Z",
+ INT:"M2 12 C6 6 18 6 22 12 C18 18 6 18 2 12 Z M12 9.5 a2.5 2.5 0 1 0 .01 0",
+ WIS:"M6 5 l3 3 h6 l3-3 v9 a6 6 0 0 1 -12 0 Z M10 11 a1.5 1.5 0 1 0 .01 0 M14 11 a1.5 1.5 0 1 0 .01 0 M11 15 l1 1.5 1-1.5",
+ CHA:"M4 7 C8 5 16 5 20 7 C20 13 17 18 12 18 C7 18 4 13 4 7 Z M8 10 q1.5-1 3 0 M13 10 q1.5-1 3 0 M9 14 q3 2 6 0",
+ hp:"M12 20 C4 14 3 9 6 6.5 C8.5 4.5 11 6 12 8 C13 6 15.5 4.5 18 6.5 C21 9 20 14 12 20 Z",
+ shield:"M12 3 L20 6 v6 c0 5 -4 8 -8 9 c-4 -1 -8 -4 -8 -9 V6 Z",
+ coin:"M12 3 a9 9 0 1 0 .01 0 M12 7 a5 5 0 1 0 .01 0",
+ xp:"M12 3 l2.6 5.6 6 .7 -4.5 4.1 1.2 6 -5.3 -3 -5.3 3 1.2 -6 -4.5 -4.1 6 -.7 Z",
+ level:"M4 20 h4 v-5 h4 v-5 h4 v-5 h4",
+ hunger:"M3 11 h18 a9 7 0 0 1 -18 0 Z M8 8 q1-2 0-4 M12 8 q1-2 0-4 M16 8 q1-2 0-4",
+ lantern:"M9 4 h6 M10 4 V2 h4 v2 M7 7 h10 l-1 11 H8 Z M12 10 v4 M8 21 h8",
+ weight:"M6 9 h12 l3 11 H3 Z M9 9 a3 3 0 0 1 6 0",
+ sun:"M12 8 a4 4 0 1 0 .01 0 M12 2 v2 M12 20 v2 M2 12 h2 M20 12 h2 M5 5 l1.5 1.5 M17.5 17.5 L19 19 M5 19 l1.5-1.5 M17.5 6.5 L19 5",
+ cloud:"M7 18 h10 a4 4 0 0 0 0-8 a6 6 0 0 0 -11 1 a3.5 3.5 0 0 0 1 7 Z",
+ rain:"M7 14 h10 a4 4 0 0 0 0-8 a6 6 0 0 0 -11 1 a3.5 3.5 0 0 0 1 7 Z M8 17 l-1 3 M12 17 l-1 3 M16 17 l-1 3",
+ snow:"M7 14 h10 a4 4 0 0 0 0-8 a6 6 0 0 0 -11 1 a3.5 3.5 0 0 0 1 7 Z M8 18 v.5 M12 20 v.5 M16 18 v.5",
+ storm:"M7 13 h10 a4 4 0 0 0 0-8 a6 6 0 0 0 -11 1 a3.5 3.5 0 0 0 1 7 Z M12 14 l-2 4 h3 l-2 4",
+ fog:"M3 8 h18 M5 12 h14 M3 16 h18 M7 20 h10",
+ night:"M15 3 a9 9 0 1 0 6 13 a7 7 0 0 1 -6 -13 Z",
+ cold:"M12 3 v18 M4 7.5 l16 9 M4 16.5 l16-9",
+ under:"M3 20 v-6 a9 9 0 0 1 18 0 v6 M3 20 h18",
+ wind:"M3 12 h14 M13 8 l4 4 -4 4",
+ weapon:"M4 20 L15 9 M13 7 l4 4 M15 5 l4 4 -2 2 -4-4 Z M6 15 l3 3 M3 21 l2-2",
+ armor:"M7 4 h10 l3 4 -3 2 v10 H7 V10 L4 8 Z",
+ potion:"M10 3 h4 M10 3 v5 l-5 9 a3 3 0 0 0 3 4 h8 a3 3 0 0 0 3 -4 l-5 -9 V3 M7 14 h10",
+ treasure:"M12 3 a9 9 0 1 0 .01 0 M12 7 a5 5 0 1 0 .01 0",
+ tool:"M4 20 L14 10 M12 5 l7 7 M13 4 l2-1 6 6 -1 2",
+ food:"M4 13 a8 6 0 0 1 16 0 v5 H4 Z M8 10 l1 2 M12 9 v2 M16 10 l-1 2",
+ junk:"M5 8 h14 l-1 13 H6 Z M3 8 h18 M9 5 h6",
+ mushroom:"M3 12 a9 7 0 0 1 18 0 Z M9 12 v6 a3 3 0 0 0 6 0 v-6 M8 9 h.1 M14 8 h.1",
+ map:"M3 6 l6-2 6 2 6-2 v14 l-6 2 -6-2 -6 2 Z M9 4 v14 M15 6 v14",
+ magic:"M12 2 l1.5 5 5 1.5 -5 1.5 -1.5 5 -1.5-5 -5-1.5 5-1.5 Z M18 15 l.8 2.2 2.2 .8 -2.2 .8 -.8 2.2 -.8-2.2 -2.2-.8 2.2-.8 Z",
+ take:"M12 16 V4 M8 8 l4-4 4 4 M4 20 h16",
+ drop:"M12 4 v12 M8 12 l4 4 4-4 M4 20 h16",
+ eat:"M3 11 h18 a9 7 0 0 1 -18 0 Z M8 8 q1-2 0-4 M12 8 q1-2 0-4 M16 8 q1-2 0-4",
+ store:"M3 9 h18 v11 H3 Z M3 9 l2-4 h14 l2 4 M11 13 h2",
+ read:"M4 5 h6 a2 2 0 0 1 2 2 v13 a2 2 0 0 0 -2 -2 H4 Z M20 5 h-6 a2 2 0 0 0 -2 2 v13 a2 2 0 0 1 2 -2 h6 Z",
+ leave:"M12 3 v8 M8 7 l4 4 4-4 M5 14 h14 v6 H5 Z",
+ compass:"M12 2 l3 10 -3 10 -3-10 Z M2 12 l10-3 10 3 -10 3 Z",
+ ties:"M6 6 a2 2 0 1 0 .01 0 M18 6 a2 2 0 1 0 .01 0 M12 18 a2 2 0 1 0 .01 0 M7.5 7.5 L11 16.5 M16.5 7.5 L13 16.5 M8 6 h8",
+ garden:"M12 10 a2 2 0 1 0 .01 0 M12 8 c-3-6 3-6 0 0 M14 10 c6-3 6 3 0 0 M12 12 c3 6 -3 6 0 0 M10 10 c-6 3 -6-3 0 0 M12 14 v8",
+ codex:"M5 4 h11 a3 3 0 0 1 3 3 v14 H8 a3 3 0 0 1 -3-3 Z M5 18 a3 3 0 0 1 3-3 h11 M9 8 h6",
+ script:"M5 19 L12 4 L19 19 M8 13 h8",
+ journal:"M6 4 h11 a2 2 0 0 1 2 2 v14 H8 a2 2 0 0 1 -2-2 Z M9 9 h7 M9 13 h7 M9 17 h4",
+ pack:"M6 8 h12 l2 13 H4 Z M9 8 V6 a3 3 0 0 1 6 0 v2",
+ voice:"M4 9 h4 l5-4 v14 l-5-4 H4 Z M16 9 a4 4 0 0 1 0 6 M18.5 7 a7 7 0 0 1 0 10",
+ craft:"M4 20 L14 10 M12 5 l7 7 M13 4 l2-1 6 6 -1 2",
+ rumour:"M8 9 a5 5 0 0 1 10 0 c0 4 -4 5 -4 9 a3 3 0 0 1 -6 0 M11 9 a2 2 0 0 1 4 0",
+ quest:"M5 21 V4 M5 4 h12 l-3 4 3 4 H5",
+ home:"M4 11 L12 4 L20 11 M6 10 v10 h12 V10 M10 20 v-5 h4 v5",
+ good:"M5 12 l4 4 10-10",bad:"M12 4 v10 M12 18 v.5",npc:"M4 5 h16 v10 H9 l-5 4 Z",time:"M7 3 h10 M7 21 h10 M8 3 c0 6 8 6 8 9 c0 3 -8 3 -8 9 M16 3 c0 6 -8 6 -8 9",
+ step:"M8 4 a2 3 0 1 0 .01 0 M16 10 a2 3 0 1 0 .01 0 M8 11 v2 M16 17 v2",
+ help:"M12 2 a10 10 0 1 0 .01 0 M9 9 a3 3 0 1 1 4 3 c-1 .5 -1 1 -1 2 M12 17.5 v.5",
+ close:"M6 6 L18 18 M18 6 L6 18"
+};
+// one icon: an inline svg with its own accessible name and tooltip
+function ic(name,label,cls=""){const d=ICON[name]||ICON.item,t=label!=null?label:name;
+ return`<svg class="ic ${cls}" viewBox="0 0 24 24" ${t?`role="img" aria-label="${esc(t)}"`:'aria-hidden="true"'}>${t?`<title>${esc(t)}</title>`:""}<path d="${d}" filter="url(#inkbrush)"/></svg>`}
+// an icon with a value beside it: "♥ 12"
+const icv=(name,label,val,cls="")=>`<span class="icv ${cls}" title="${esc(label)}">${ic(name,label)}<span>${val}</span></span>`;
+const TERRAIN_ICON=t=>ICON[t]?t:"plains";
 
 /* ============================================================
    Faces. Each character's portrait is assembled from small pieces, like the place descriptions:
@@ -4578,10 +4698,10 @@ function renderSheet(){
  const ch=cell(charId()),hp=sv("HP"),max=sv("MAXHP"),pct=Math.max(0,Math.min(100,hp/max*100)),w=weapon(),L=hereId()&&cell(hereId()),e=entitlement();
  const restBlocked=busy||foeId()||isDowned();
  el.innerHTML=`<div class="who"><span class="facebox" title="A new portrait may become a small paid extra.">${faceSVG(ch.t,ch.cls,72,ch.faceSeed||0)}</span><h2>${esc(ch.t)}</h2><span class="mono" style="font-size:13pt;color:var(--faint)">Level ${sv("LVL")} ${esc(ch.cls)}</span></div>
- <button type="button" class="statfold" data-statfold aria-expanded="${statsOpen}" aria-controls="stat-details"><span class="lbl">Abilities</span><span class="sum mono">${statsOpen?"":`${hungerLevel()>=2?"starving · ":hungerLevel()>=1?"hungry · ":""}AC ${armourClass()} · XP ${sv("XP")}/${sv("LVL")*100} · ${sv("GP")} gp${STATS.some(k=>boonFor(k))?" · ✦ boon":""}`}</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6 8 10.5 12.5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+ <button type="button" class="statfold" data-statfold aria-expanded="${statsOpen}" aria-controls="stat-details"><span class="lbl">Abilities</span><span class="sum mono">${statsOpen?"":`${hungerLevel()>=1?icv("hunger",hungerLevel()>=2?"starving":"hungry",""):""}${icv("shield","armour class",armourClass())} ${icv("xp","experience",`${sv("XP")}/${sv("LVL")*100}`)} ${icv("coin","gold",sv("GP"))}${STATS.some(k=>boonFor(k))?" ✦":""}`}</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6 8 10.5 12.5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <div class="statbody" id="stat-details"${statsOpen?"":" hidden"}>
- <div class="abil">${STATS.map(k=>`<div${boonFor(k)?` class="boon" title="Effect: ${boonFor(k)>0?"+":""}${boonFor(k)} until ${(ch.boons||[]).filter(b=>b.stat===k).map(b=>fmtClock(b.until)).join(", ")}"`:""}><span class="k">${k}${boonFor(k)?" ✦":""}</span><span class="v">${sv(k)}</span><span class="m">${sgn(mod(sv(k)))}</span></div>`).join("")}</div>
- <dl class="facts"><div><dt>Armour class</dt><dd>${armourClass()}</dd></div><div><dt>Proficiency</dt><dd>+${prof()}</dd></div><div><dt>Weapon</dt><dd>${w?esc(w.dmg||"1d6"):"1d2"}</dd></div><div><dt>Light</dt><dd>${hasLight()?"lantern":"none"}</dd></div><div><dt>XP</dt><dd>${sv("XP")} / ${sv("LVL")*100}</dd></div><div><dt>Gold</dt><dd>${sv("GP")} gp</dd></div></dl>
+ <div class="abil">${STATS.map(k=>`<div${boonFor(k)?` class="boon" title="Effect: ${boonFor(k)>0?"+":""}${boonFor(k)} until ${(ch.boons||[]).filter(b=>b.stat===k).map(b=>fmtClock(b.until)).join(", ")}"`:""}><span class="k">${ic(k,{STR:"Strength",DEX:"Dexterity",CON:"Constitution",INT:"Intelligence",WIS:"Wisdom",CHA:"Charisma"}[k])}${k}${boonFor(k)?" ✦":""}</span><span class="v">${sv(k)}</span><span class="m">${sgn(mod(sv(k)))}</span></div>`).join("")}</div>
+ <dl class="facts"><div><dt>${ic("shield","Armour class")}</dt><dd>${armourClass()}</dd></div><div><dt>${ic("level","Proficiency")}</dt><dd>+${prof()}</dd></div><div><dt>${ic("weapon","Weapon damage")}</dt><dd>${w?esc(w.dmg||"1d6"):"1d2"}</dd></div><div><dt>${ic("lantern","Light")}</dt><dd>${hasLight()?"lantern":"none"}</dd></div><div><dt>${ic("xp","Experience")}</dt><dd>${sv("XP")} / ${sv("LVL")*100}</dd></div><div><dt>${ic("coin","Gold")}</dt><dd>${sv("GP")}</dd></div></dl>
  <p class="note">${esc(CLASS_NOTES[ch.cls]||"")}</p>
  <p class="note">Your portrait is drawn from your name. A fresh portrait may later become a small paid extra.</p>
  </div>
@@ -4636,7 +4756,7 @@ function renderCodex(){
 
 function renderLog(){
  const r=cell("root"),entries=(r&&r.log||[]).slice().reverse();
- $("log").innerHTML=entries.length?entries.map(e=>`<li class="${e.kind}">${esc(e.text)}${e.roll?`<br><span class="roll">${esc(e.roll)}</span>`:""}</li>`).join(""):`<li>Your journal fills in as you travel: every step, find, fight, dice roll, storm, and what the townsfolk and creatures get up to nearby.</li>`;
+ $("log").innerHTML=entries.length?entries.map(e=>`<li class="${e.kind}">${ic({good:"good",bad:"bad",npc:"npc",time:"time"}[e.kind]||"step",{good:"good news",bad:"trouble",npc:"someone speaks",time:"time passes"}[e.kind]||"journey","lk")}${esc(e.text)}${e.roll?`<br><span class="roll">${esc(e.roll)}</span>`:""}</li>`).join(""):`<li>Your journal fills in as you travel: every step, find, fight, dice roll, storm, and what the townsfolk and creatures get up to nearby.</li>`;
  const ra=$("reset-area");
  if(!charId()){ra.innerHTML="";return}
  ra.innerHTML=deleteArmed?`<span class="confirm">Erase this world? <button class="small" id="reset-yes">Erase</button><button class="small" id="reset-no">Keep</button></span>`:`<button class="small" id="reset">New world</button>`;
@@ -4737,7 +4857,18 @@ document.addEventListener("keydown",ev=>{
  ev.preventDefault();ev.stopPropagation();if(nudge(g.closest("section.panel"),ev.key))g.focus();
 },true);
 
-function render(){renderGate();renderPills();renderScriptButton();renderMap();renderCompass();renderPlace();renderSheet();renderSocial();renderGarden();renderCodex();renderAlphabet();renderLog();renderVoice();decoratePanels();sound.update();voiceOnRender()}
+const HEAD_ICONS=[[/^Directions/,"compass","Ways"],[/^Who knows whom/,"ties","Ties"],[/^The garden/,"garden","Garden"],[/^Codex/,"codex","Codex"],[/^The realm script/,"script","Script"],[/^Journal/,"journal","Journal"],
+ [/^Pack/,"pack","Pack"],[/^Narration/,"voice","Voice"],[/^Railway station/,"station","Station"],[/^Craft/,"craft","Craft"],[/^Other travellers/,"traveller","Travellers"],[/^Left by other/,"leave","Left for you"],
+ [/^Who is here/,"people","Here"],[/^Your cottage/,"home","Cottage"],[/^Lying here and for sale/,"coin","For sale"],[/^Lying here/,"item","Lying here"],[/^Rumours/,"rumour","Rumours"],[/^Quests/,"quest","Quests"]];
+function iconHeads(){for(const h of document.querySelectorAll(".sectionhead h3:not([data-ic])")){const t=h.textContent.trim(),m=HEAD_ICONS.find(([re])=>re.test(t));h.dataset.ic="1";if(!m)continue;h.innerHTML=`${ic(m[1],t)}<span>${esc(m[2])}</span>`;h.title=t}}
+function renderMapKey(){const k=$("mapkey");if(!k||k.innerHTML)return;
+ const row=(sw,label)=>`<li><span class="sw">${sw}</span>${esc(label)}</li>`;
+ k.innerHTML=`<div class="sectionhead"><h3>Map key</h3><button class="small iconbtn" id="mapkey-close" aria-label="Close" title="Close">${ic("close","Close")}</button></div><ul>
+  ${row("▲","a way up")}${row("▼","a way down")}${row('<span style="color:var(--danger)">◆</span>',"an anomaly")}${row('<span style="color:var(--accent)">●</span>',"townsfolk")}${row('<span style="color:var(--good)">●</span>',"creatures")}
+  ${row('<span style="color:var(--magic)">┅</span>',"the magical bridge")}${row("┿","railway")}${row('<span style="color:var(--amber)">●</span>',"a sanctuary, far away")}${row('<span style="color:var(--magic)">●</span>',"a cave entrance, far away")}
+  ${row('<span style="color:var(--accent)">◯</span>',"a friend, roughly")}${row("⬡","tap any hex to walk there")}${row("⬢","tap your own hex for this place")}</ul>`;
+ $("mapkey-close").onclick=()=>{k.hidden=true}}
+function render(){renderMapKey();renderGate();renderPills();renderScriptButton();renderMap();renderCompass();renderPlace();renderSheet();renderSocial();renderGarden();renderCodex();renderAlphabet();renderLog();renderVoice();decoratePanels();iconHeads();sound.update();voiceOnRender()}
 
 /* ============================================================
    Soundtrack: generated live from white, pink and brown noise and a few oscillators.
@@ -5078,7 +5209,7 @@ document.addEventListener("click",e=>{
  if(e.target.closest("button[data-statfold]")){statsOpen=!statsOpen;folds.statsOpen=statsOpen;try{localStorage.setItem("zr-fold",JSON.stringify(folds))}catch(err){}renderSheet();$("sheet").querySelector("button[data-statfold]").focus();return}
  if(e.target.closest("#sound-toggle")){sound.setOn(!sound.on);return}
  if(e.target.closest("#script-toggle")){realm.set(!realm.on);return}
- const g0=e.target.closest("button[data-go]");if(g0){move(g0.dataset.go);return}
+ const g0=e.target.closest("[data-go]");if(g0&&!g0.disabled){move(g0.dataset.go);return}
  const b=e.target.closest("button[data-act]");
  if(b){const id=b.dataset.id;({take,drop,use:useItem,wear,wield,greet,feed,monument:readMonument,attack:i=>attack(+i),wind:secondWind,
   chat:i=>{openChat=openChat===i?null:i;openTrade=null;armedAttack=null;render();const n=cell(i);if(openChat===i&&!(n.chat||[]).length)talk(i)},
