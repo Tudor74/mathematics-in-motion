@@ -4439,8 +4439,10 @@ function disengage(){
  F.truce=gameNow()+120;touch(f);rounds=[];log(`You step back and lower your guard. ${F.t} lets you be, for now.`,"good",txt);store.flush();render();
 }
 // An encounter happens on the map, in a card docked away from you so you can still tap a hex to flee
+let dreadFor=null;
 function renderEncounter(){
  const el=$("encounter");if(!el)return;const f=charId()&&hereId()&&!isDowned()?foeId():null;
+ if(f&&f!==dreadFor&&sound.started&&sound.on&&sound.ctx)sound.dread();dreadFor=f||null;
  el.classList.toggle("show",!!f);if(!f){el.innerHTML="";return}
  el.innerHTML=`<div class="card">${renderFoe(f)}<p class="note">Disengage to stay in this hex without fighting, or flee by a way on the rose or a hex at the edge of the map.</p></div>`;
  requestAnimationFrame(()=>{const me=document.querySelector("#map .headmark.me"),w=el.getBoundingClientRect();if(me&&w.width){const r=me.getBoundingClientRect(),right=(r.x+r.width/2)>w.x+w.width/2;el.classList.toggle("dock-left",right);el.classList.toggle("dock-right",!right)}});
@@ -5471,6 +5473,16 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_EXP:{water:
   o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(Math.max(20,f1),t+dur);
   g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(peak,t+Math.min(.02,dur/4));g.gain.exponentialRampToValueAtTime(.0001,t+dur);
   o.connect(g);g.connect(dest||this.fx||this.master);o.start(t);o.stop(t+dur+.05)},
+ /* Something is coming: a low two-note ostinato a semitone apart, slow at first, then faster and louder,
+    on a growling sawtooth through a lowpass, like double basses sawing in the dark. About five seconds. */
+ dread(){
+  const c=this.ctx;if(!c)return;const out=c.createGain();out.gain.value=1;const lp=this.filt("lowpass",420,.9);lp.connect(out);out.connect(this.master);
+  const lo=41.2,hi=43.65;let at=.05,gap=.95,k=0;
+  const note=(f,a,dur,peak)=>{const t=c.currentTime+a;for(const [type,mul,lvl] of [["sawtooth",1,1],["triangle",2,.5],["sine",.5,.8]]){const o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.setValueAtTime(f*mul,t);
+   g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(peak*lvl,t+.04);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g);g.connect(lp);o.start(t);o.stop(t+dur+.05)}};
+  while(at<5){const p=.07+.13*Math.min(1,at/4.2);note(k%2?hi:lo,at,Math.min(.55,gap*.8),p);at+=gap;gap=Math.max(.16,gap*.8);k++}
+  note(lo,at,1.4,.24);
+ },
  /* A voice: a buzzing sawtooth through two vowel formants, so it reads as speech or song */
  voice(f,at,dur,peak,vowel,vib,dest){
   const c=this.ctx,t=c.currentTime+at,o=c.createOscillator(),g=c.createGain();o.type="sawtooth";o.frequency.setValueAtTime(f,t);
