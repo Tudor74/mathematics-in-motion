@@ -62,7 +62,7 @@ header.top .sub{color:var(--faint);font-size:15px;margin:4px 0 0;max-width:62ch}
 header.top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align-items:start}
 .hdr-right{display:contents}
 .nixie{display:grid;justify-items:end;gap:4px;grid-column:2;grid-row:1}
-.hdr-right>.pills{grid-column:1 / -1;grid-row:2}
+.hdr-right>.pills{grid-column:1;grid-row:1;align-self:center}
 .nixie .plinth{display:flex;align-items:center;gap:5px;padding:7px 10px 9px;border-radius:10px;background:linear-gradient(#5a3a22,#3a2414);box-shadow:inset 0 1px 0 #8a6040,0 3px 0 #24160c,0 6px 14px #0004}
 .nixie .tube{position:relative;width:30px;height:46px;border-radius:15px 15px 5px 5px;background:radial-gradient(ellipse at 50% 35%,#2a1a10 0%,#120a06 70%,#050302 100%);border:1px solid #b88a6044;box-shadow:inset 0 0 8px #000,inset 3px 0 6px #ffffff10;display:grid;place-items:center;overflow:hidden}
 .nixie .tube::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(60deg,#ffffff07 0 1px,transparent 1px 4px),repeating-linear-gradient(-60deg,#ffffff07 0 1px,transparent 1px 4px);pointer-events:none}
@@ -76,7 +76,7 @@ header.top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align
 .nixie-label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
 @keyframes nixblink{0%{opacity:1}50%{opacity:.25}}
 @keyframes nixflicker{0%,96%,100%{opacity:1}97%{opacity:.82}98%{opacity:1}99%{opacity:.9}}
-@media (max-width:720px){header.top{grid-template-columns:minmax(0,1fr)}.nixie{grid-column:1;grid-row:2;justify-items:start}.hdr-right>.pills{grid-row:3}}
+@media (max-width:720px){header.top{grid-template-columns:minmax(0,1fr)}.nixie{grid-column:1;grid-row:1;justify-items:start}.hdr-right>.pills{grid-row:2}}
 .orb{width:11px;height:11px;border-radius:50%;background:var(--amber);flex:0 0 11px}
 .pill.clock[data-night="true"] .orb{background:transparent;box-shadow:inset -4px -1px 0 0 var(--water)}
 
@@ -96,6 +96,10 @@ header.top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align
 .hud .warn{color:var(--danger)}.hud button{min-height:26px;padding:2px 8px;font-size:12px;font-family:var(--body)}
 .mapplace{display:grid;gap:2px;min-width:0}
 .mapplace h2{font-size:21px;line-height:1.15;margin:0}
+.mapplace .titlerow{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.mapplace .mapdesc{font-size:15.5px;line-height:1.55;margin:4px 0 2px}
+/* On wide screens each column scrolls on its own, so the page stays one screen tall */
+@media (min-width:1041px){.col{max-height:calc(100vh - 150px);overflow-y:auto;position:sticky;top:10px;scrollbar-width:thin;padding-right:3px;overscroll-behavior:contain}}
 .ticker{overflow:hidden;white-space:nowrap;mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
 .ticker-track{display:inline-flex;animation:tick 30s linear infinite}
 .ticker:hover .ticker-track,.ticker:focus-within .ticker-track{animation-play-state:paused}
@@ -341,7 +345,7 @@ button.pill[aria-pressed="false"] b{color:var(--faint)}
 .map .friendname,.map .friendring text{font-family:var(--mono);font-size:11px;fill:var(--ink);paint-order:stroke;stroke:var(--sheet);stroke-width:3px}
 .map .friendring circle{fill:none;stroke:var(--good);stroke-width:3}
 .map .footprint{fill:var(--magic);opacity:.45;pointer-events:auto}
-label.check{display:flex;gap:8px;align-items:flex-start;font-size:14px}label.check input{margin-top:3px}
+label.check{display:flex;gap:8px;align-items:flex-start;font-size:14px}label.check input{margin-top:3px;width:auto;flex:0 0 auto}
 .codex .frag{color:var(--faint)}
 .note-form{display:grid;gap:4px}
 .note-form .btnrow{flex-wrap:nowrap}.note-form input{flex:1;min-width:0}
@@ -398,11 +402,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
 </div>
 <div class="wrap">
  <header class="top">
-  <div>
-   <p class="eyebrow">A map that writes itself · v0.6</p>
-   <h1>Zigzag Realms</h1>
-   <p class="sub">A river with three towns, a woodland and its magical grove, a mountain with lakes, a waterfall and caves, and a desert are laid out when your journey begins, with townsfolk and creatures living among them. Claude writes everything else one step ahead of you. Every place is kept as a cell in a ZigZag structure, so you can find your way back.</p>
-  </div>
+  <h1 class="sr">Zigzag Realms</h1>
   <div class="hdr-right">
   <div class="nixie" id="pill-clock" data-night="false">
    <div class="plinth" aria-hidden="true"><span class="tube"><b id="nx0">0</b></span><span class="tube"><b id="nx1">8</b></span><span class="colon"><i></i><i></i></span><span class="tube"><b id="nx2">0</b></span><span class="tube"><b id="nx3">0</b></span><span class="lamp" title="day or night"></span></div>
@@ -475,6 +475,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
     <div class="sectionhead"><h3 id="codex-h">Codex of hidden rules</h3><span class="mono" id="codex-count" style="font-size:12px;color:var(--faint)"></span></div>
     <ol class="codex" id="codex"></ol>
    </section>
+   <section class="panel" id="voice" aria-labelledby="voice-h" data-fold="voice"></section>
    <section class="panel" aria-labelledby="alpha-h" data-fold="script">
     <div class="sectionhead"><h3 id="alpha-h">The realm script</h3><span class="mono" style="font-size:12px;color:var(--faint)">26 letters</span></div>
     <ul class="alphabet" id="alphabet"></ul>
@@ -3268,6 +3269,65 @@ function mapFriends(H,R,Z,P,V,W,inMap){
 }
 
 /* ============================================================
+   Narration with ElevenLabs. The player brings their own ElevenLabs API key: it stays in this
+   browser and is sent only to ElevenLabs, and the speech uses their own ElevenLabs credits.
+   ============================================================ */
+const XI="https://api.elevenlabs.io/v1";
+const voice={key:"",id:"JBFqnCBsd6RMkjVDRZzb",auto:true,hide:false,voices:[],cache:new Map(),audio:null,last:null,status:"",busy:false,
+ load(){try{this.key=localStorage.getItem("zr-xi-key")||"";this.id=localStorage.getItem("zr-xi-voice")||this.id;this.auto=localStorage.getItem("zr-xi-auto")!=="0";this.hide=localStorage.getItem("zr-xi-hide")==="1"}catch(e){}},
+ save(){try{localStorage.setItem("zr-xi-key",this.key);localStorage.setItem("zr-xi-voice",this.id);localStorage.setItem("zr-xi-auto",this.auto?"1":"0");localStorage.setItem("zr-xi-hide",this.hide?"1":"0")}catch(e){}},
+ on(){return!!this.key},
+ async listVoices(){
+  try{const r=await fetch(XI+"/voices",{headers:{"xi-api-key":this.key}});
+   if(r.status===401){this.status="ElevenLabs did not accept that key.";return}
+   const j=await r.json();this.voices=(j.voices||[]).map(v=>({id:v.voice_id,name:v.name})).slice(0,60);this.status="";
+   if(this.voices.length&&!this.voices.some(v=>v.id===this.id)){this.id=this.voices[0].id;this.save()}
+  }catch(e){this.status=window.claude?"Narration works on the Puter site; this page cannot reach ElevenLabs.":"Could not reach ElevenLabs."}
+ },
+ duck(on){if(!sound.started)return;const now=sound.ctx.currentTime;sound.master.gain.setTargetAtTime(on?sound.vol*.3:sound.vol,now,.4)},
+ stop(){if(this.audio){this.audio.pause();this.audio=null}this.duck(false)},
+ async speak(text,cacheKey){
+  if(!this.key||!text)return;this.stop();
+  text=text.replace(/\s+/g," ").trim().slice(0,1200);
+  const k=this.id+"|"+(cacheKey||"")+"|"+text;let url=this.cache.get(k);
+  if(!url){this.busy=true;renderVoice();
+   try{const r=await fetch(`${XI}/text-to-speech/${encodeURIComponent(this.id)}?output_format=mp3_44100_128`,{method:"POST",headers:{"xi-api-key":this.key,"Content-Type":"application/json",Accept:"audio/mpeg"},body:JSON.stringify({text,model_id:"eleven_flash_v2_5"})});
+    if(!r.ok){this.status=r.status===401?"ElevenLabs did not accept that key.":r.status===429?"ElevenLabs is busy or your credits have run out.":`ElevenLabs answered ${r.status}.`;return}
+    url=URL.createObjectURL(await r.blob());this.cache.set(k,url);this.status="";
+   }catch(e){this.status=window.claude?"Narration works on the Puter site; this page cannot reach ElevenLabs.":"Could not reach ElevenLabs.";return}
+   finally{this.busy=false;renderVoice()}}
+  const a=new Audio(url);this.audio=a;this.duck(true);a.onended=()=>{if(this.audio===a){this.audio=null;this.duck(false);renderVoice()}};
+  try{await a.play()}catch(e){this.status="Click anywhere on the page, then try again: the browser blocked the sound.";this.duck(false)}
+  renderVoice();
+ },
+ readHere(){const L=hereId()&&cell(hereId());if(!L)return;const magic=magicPresent(),d=L.river&&L.river.crossing==="magic"&&magic&&L.descPresent?L.descPresent:L.desc;this.last=L.id;this.speak(`${L.t}. ${d||""}`,L.id)}
+};
+voice.load();
+function renderVoice(){
+ const el=$("voice");if(!el)return;
+ const head=`<div class="sectionhead"><h3 id="voice-h">Narration</h3><span class="mono" style="font-size:12px;color:var(--faint)">${voice.on()?(voice.busy?"speaking soon…":voice.audio?"speaking":"ElevenLabs"):"off"}</span></div>`;
+ if(!voice.on()){el.innerHTML=head+`<p class="note">Hear each place read aloud with your own <b>ElevenLabs</b> account. Paste an API key from ElevenLabs (Profile, API keys). It is kept only in this browser, sent only to ElevenLabs, and the speech uses your ElevenLabs credits.</p>
+  <form class="note-form" data-voicekey><label for="xi-key">ElevenLabs API key</label><div class="btnrow"><input id="xi-key" type="password" autocomplete="off" spellcheck="false" placeholder="sk_…"><button class="small" type="submit">Save key</button></div></form>${voice.status?`<p class="flash">${esc(voice.status)}</p>`:""}`;decoratePanels();return}
+ el.innerHTML=head+`<label for="xi-voice">Voice<select id="xi-voice">${(voice.voices.length?voice.voices:[{id:voice.id,name:"Default voice"}]).map(v=>`<option value="${esc(v.id)}"${v.id===voice.id?" selected":""}>${esc(v.name)}</option>`).join("")}</select></label>
+  <label class="check" for="xi-auto"><input type="checkbox" id="xi-auto" ${voice.auto?"checked":""}> Read each new place aloud as you arrive</label>
+  <label class="check" for="xi-hide"><input type="checkbox" id="xi-hide" ${voice.hide?"checked":""}> Hide the written description while narration is on</label>
+  <div class="btnrow"><button class="small" data-voice="read" ${voice.busy?"disabled":""}>Read this place</button><button class="small" data-voice="stop" ${voice.audio?"":"disabled"}>Stop</button><button class="small" data-voice="forget">Forget my key</button></div>
+  ${voice.status?`<p class="flash">${esc(voice.status)}</p>`:`<p class="note">Speech uses your ElevenLabs credits. Places you revisit in this session are not charged again.</p>`}`;
+ decoratePanels();
+}
+document.addEventListener("submit",e=>{const f=e.target.closest("form[data-voicekey]");if(!f)return;e.preventDefault();const k=f.querySelector("input").value.trim();if(!k)return;
+ voice.key=k;voice.save();voice.status="";renderVoice();voice.listVoices().then(()=>{renderVoice();render()})});
+document.addEventListener("click",e=>{const b=e.target.closest("[data-voice]");if(!b)return;const a=b.dataset.voice;
+ if(a==="read")voice.readHere();else if(a==="stop"){voice.stop();renderVoice()}else if(a==="forget"){voice.stop();voice.key="";voice.voices=[];voice.save();try{localStorage.removeItem("zr-xi-key")}catch(err){}renderVoice();render()}});
+document.addEventListener("change",e=>{
+ if(e.target.id==="xi-voice"){voice.id=e.target.value;voice.save()}
+ else if(e.target.id==="xi-auto"){voice.auto=e.target.checked;voice.save()}
+ else if(e.target.id==="xi-hide"){voice.hide=e.target.checked;voice.save();render()}});
+// Read each new place aloud on arrival
+function voiceOnRender(){if(!voice.on()||!voice.auto||busy||!hereId()||isDowned())return;const L=cell(hereId());if(L.id===voice.last||!L.desc)return;voice.readHere()}
+if(voice.on())voice.listVoices().then(renderVoice);
+
+/* ============================================================
    Rendering
    ============================================================ */
 const $=id=>document.getElementById(id);
@@ -3583,9 +3643,11 @@ function renderPlace(){
  chips.push(`<span class="chip">${L.dist?L.dist+" steps from the start":"starting point"}</span>`,`<span class="chip">written by ${L.by==="claude"?esc(ai.kind==="puter"?"AI":"Claude"):"built-in tables"}</span>`);
  // Above the map: one scrolling line of the place's details, then its name; no taller than an over-title and a title
  {const items=[`<span class="tk-lead">You are at</span>`,...chips,`<span class="chip">${esc($("coords").textContent||"")}</span>`].join("");
-  const sig=items+L.t,el=$("mapplace");
+  const descText=L.river&&L.river.crossing==="magic"&&magic&&L.descPresent?L.descPresent:L.desc,hideDesc=voice.on()&&voice.hide;
+  const descHtml=hideDesc?`<p class="note">The description is being read aloud. <button class="small" data-voice="read">Read it again</button></p>`:`<p class="desc mapdesc${busy?" busy":""}">${linkify(descText)}</p>`;
+  const sig=items+L.t+descHtml,el=$("mapplace");
   if(el.dataset.sig!==sig){el.dataset.sig=sig;
-   el.innerHTML=`<div class="ticker" aria-label="${esc(chips.map(c=>c.replace(/<[^>]+>/g,"")).join(", "))}"><div class="ticker-track"><span class="tk-set">${items}</span><span class="tk-set" aria-hidden="true">${items}</span></div></div><h2 id="map-h">${esc(L.t)}</h2>`;
+   el.innerHTML=`<div class="ticker" aria-label="${esc(chips.map(c=>c.replace(/<[^>]+>/g,"")).join(", "))}"><div class="ticker-track"><span class="tk-set">${items}</span><span class="tk-set" aria-hidden="true">${items}</span></div></div><div class="titlerow"><h2 id="map-h">${esc(L.t)}</h2>${voice.on()?`<button class="small" data-voice="read" title="Read this place aloud with your ElevenLabs voice">Read aloud</button>`:""}</div>${descHtml}`;
    const tr=el.querySelector(".ticker-track"),w=tr.scrollWidth/2,box=el.querySelector(".ticker").clientWidth;
    el.querySelector(".ticker").classList.toggle("still",w<=box);tr.style.animationDuration=`${Math.max(12,w/28)}s`}}
  let html="";
@@ -3594,7 +3656,7 @@ function renderPlace(){
  if(busy)html+=`<p class="mapping">${busy.dir==="look"?"The narrator is writing what you can see from here":busy.dir==="up"?"The narrator is mapping what lies above":busy.dir==="down"?"The narrator is mapping what lies below":"The narrator is mapping the way "+busy.dir}</p>`;
  if(narratorNote&&!busy)html+=`<p class="note">${esc(narratorNote)}</p>`;
  if(flash)html+=`<p class="flash">${esc(flash)}</p>`;
- html+=`<p class="desc${busy?" busy":""}">${linkify(L.river&&L.river.crossing==="magic"&&magic&&L.descPresent?L.descPresent:L.desc)}</p>`;
+ // (the description is shown above the map; see renderPlace's map heading)
  if(fireAt(L.x,L.y,zOf(L)))html+=`<p class="flash sharp">This place is burning. Get out before the fire takes you.</p>`;
  else if(fireNear(L.x,L.y)&&zOf(L)===0)html+=`<p class="flash">Smoke drifts across your path: there is a fire close by.</p>`;
  if(isNight(t)&&hasLight()&&!L.town)html+=nightLeft()>0?`<p class="note">Lantern lit: ${nightLeft()/60} hour${nightLeft()===60?"":"s"} (${nightLeft()/STEP_MIN} step${nightLeft()===STEP_MIN?"":"s"}) of night travel left before you must rest.</p>`:`<p class="flash">You have walked as far into the night as your lantern and legs allow. Make camp, or take a room at an inn.</p>`;
@@ -3820,7 +3882,7 @@ document.addEventListener("keydown",ev=>{
  ev.preventDefault();ev.stopPropagation();if(nudge(g.closest("section.panel"),ev.key))g.focus();
 },true);
 
-function render(){renderPills();renderScriptButton();renderMap();renderCompass();renderPlace();renderSheet();renderSocial();renderGarden();renderCodex();renderAlphabet();renderLog();decoratePanels();sound.update()}
+function render(){renderPills();renderScriptButton();renderMap();renderCompass();renderPlace();renderSheet();renderSocial();renderGarden();renderCodex();renderAlphabet();renderLog();renderVoice();decoratePanels();sound.update();voiceOnRender()}
 
 /* ============================================================
    Soundtrack: generated live from white, pink and brown noise and a few oscillators.
