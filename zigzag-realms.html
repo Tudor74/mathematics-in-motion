@@ -4184,14 +4184,15 @@ function flashBlocked(d,why){
  // and pulse the side you tried
  const side=document.querySelector(`#map .side[data-d="${d}"]`);if(side){side.classList.remove("pulse");void side.getBBox();side.classList.add("pulse")}
 }
-let mapCam=null;
+let mapCam=null,mapDownAt=0,mapDownDuringSlide=false;
+document.addEventListener("pointerdown",e=>{if(e.target.closest&&e.target.closest("#map")){mapDownAt=performance.now();mapDownDuringSlide=!!(mapCam&&mapCam.anim)}},true);
 const easeBack=t=>-(Math.cos(Math.PI*t)-1)/2;   // a slow, smooth slide: gentle start, gentle stop
 function camNow(){const a=mapCam&&mapCam.anim;if(!a)return mapCam?{x:mapCam.x,y:mapCam.y}:{x:0,y:0};
  const t=Math.min(1,(performance.now()-a.t0)/a.dur),e=easeBack(t);return{x:a.fx+(mapCam.x-a.fx)*e,y:a.fy+(mapCam.y-a.fy)*e}}
 function camBox(){const f=mapCam.frame,c=camNow();return[210+(c.x-f.hx)-f.W/2,210+(c.y-f.hy)-f.V/2,f.W,f.V]}
 function stepMapCam(){if(!mapCam||!mapCam.anim)return;const svg=$("map");if(!svg)return;
  svg.setAttribute("viewBox",camBox().map(v=>v.toFixed(1)).join(" "));
- if(performance.now()-mapCam.anim.t0<mapCam.anim.dur)requestAnimationFrame(stepMapCam);else{mapCam.anim=null;renderMap()}}
+ if(performance.now()-mapCam.anim.t0<mapCam.anim.dur)requestAnimationFrame(stepMapCam);else{mapCam.anim=null;mapCam.settled=performance.now();renderMap()}}
 function renderMap(){
  const svg=$("map"),here=hereId();
  if(!here){renderHud();$("mapplace").dataset.sig="";$("mapplace").innerHTML="";svg.innerHTML="";$("coords").textContent="";return}
@@ -5258,6 +5259,8 @@ document.addEventListener("click",e=>{
   give:giveFood,arm:i=>{armedAttack=armedAttack===i?null:i;render()},hit:attackAgent,
   craft,deposit,withdraw,rent:rentCottage,leave:leaveForOthers,takeleft:takeLeft,train:takeTrain,steal:trySteal,sharefood:shareFood,rate:rateChat,contest:enterContest,festprize:festivalPrize,throwdart:throwDart})[b.dataset.act](id);return}
  const d=e.target.closest("#compass button[data-dir]");if(d){move(d.dataset.dir);return}
+ // while the map slides (and a moment after), taps on it are ignored, so a moving map never walks you somewhere
+ if(e.target.closest("#map")&&mapCam&&(mapCam.anim||performance.now()-(mapCam.settled||0)<250||mapDownAt>(mapCam.anim?mapCam.anim.t0:mapCam.slideStart||0)&&mapDownDuringSlide))return;
  const g=e.target.closest("#map g");if(g&&g.dataset.loc&&g.dataset.loc===hereId()){$("mapplace").scrollIntoView({behavior:"smooth",block:"nearest"});return}
  if(g&&(g.dataset.dir||g.dataset.loc)){if(g.dataset.dir)move(g.dataset.dir);else if(g.dataset.loc){const id=g.dataset.loc,H=cell(hereId()),C=cell(id);
   const dir=H&&C?Object.keys(DIRS).find(k=>coord.get(ck(H.x+DIRS[k].dx,H.y+DIRS[k].dy,zOf(H)+DIRS[k].dz))===id):null;
