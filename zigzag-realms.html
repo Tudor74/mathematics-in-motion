@@ -115,6 +115,14 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .map .side{stroke-linecap:round;pointer-events:none}.map .side.shut{stroke:#8b8b86;stroke-width:3;opacity:1}.map .side.shut.mine{stroke-width:3.6}.map .side.rough{stroke:#8b8b86;stroke-width:3.4;stroke-dasharray:.1 6;stroke-linecap:round}
 .map .side.open.mine{stroke:var(--good);stroke-width:3.5;opacity:.8;stroke-dasharray:6 5}
 .map .side.pulse{animation:sidepulse .7s ease 3}@keyframes sidepulse{0%,100%{stroke:var(--ink)}50%{stroke:var(--danger);stroke-width:9}}
+.folkflash{position:absolute;left:0;right:0;top:34px;display:flex;justify-content:center;pointer-events:none;z-index:4;opacity:0;transform:translateY(-8px);transition:opacity .35s ease,transform .35s ease}
+.folkflash.show{opacity:1;transform:none;pointer-events:auto}
+.folkflash .ffrow{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:86%}
+.folkflash .ffcard{display:flex;align-items:center;gap:8px;background:var(--sheet);border:1px solid var(--rule);border-radius:12px;box-shadow:0 6px 18px #0003;padding:6px 12px 6px 6px;max-width:300px;cursor:pointer}
+.folkflash .ffface svg{width:56px;height:56px;display:block;border-radius:8px}
+.folkflash .beastface{display:grid;place-items:center;width:56px;height:56px;border-radius:8px;background:var(--paper,#f3efe4)}.folkflash .beastface svg{width:30px;height:30px}
+.folkflash .fftext{display:grid;line-height:1.25}.folkflash .fftext b{font-size:13pt}.folkflash .fftext span{font-size:13pt;color:var(--faint)}
+.folkflash .ffcard.more{padding:6px 12px;color:var(--faint)}
 .encounter{position:absolute;inset:0;display:grid;place-items:center;padding:0;pointer-events:none;z-index:5}.encounter:not(.show){display:none}
 .encounter .card{pointer-events:auto;width:92%;height:92%;box-sizing:border-box;overflow:auto;background:var(--sheet);border:1px solid var(--danger);border-radius:12px;box-shadow:0 8px 28px #0004;padding:12px 14px;display:grid;gap:8px}
 .foe button.disengage{background:#d9efd2;border-color:#9cc98f;color:#24451c}.foe button.disengage:hover{background:#c9e8bf}
@@ -517,7 +525,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
    <section class="panel map" aria-label="Map">
     <span id="coords" hidden></span>
     <div class="mapwrap"><svg id="map" viewBox="0 0 480 416" role="img" aria-label="Map of explored places on your current level"></svg>
-<div class="blockflash" id="blockflash" aria-live="assertive"></div><div class="encounter" id="encounter" aria-live="polite"></div><div class="starve" id="starve" role="alert"></div><div class="dream" id="dream" aria-hidden="true"><div class="track"></div></div><div class="exploring" id="exploring" role="status" aria-live="polite"><span>Exploring, stand by</span></div><div class="zoomslider"><button class="small iconbtn" id="map-key-btn" type="button" aria-label="Map key" title="Map key">?</button><span aria-hidden="true">+</span><input type="range" id="zoom" min="0" max="5" step="1" aria-label="Zoom" title="Zoom"><span aria-hidden="true">−</span></div><div class="mapkey" id="mapkey" hidden></div><div class="arrive" id="arrive" aria-live="polite"></div><div class="gate" id="gate" hidden></div></div>
+<div class="blockflash" id="blockflash" aria-live="assertive"></div><div class="folkflash" id="folkflash" aria-live="polite"></div><div class="encounter" id="encounter" aria-live="polite"></div><div class="starve" id="starve" role="alert"></div><div class="dream" id="dream" aria-hidden="true"><div class="track"></div></div><div class="exploring" id="exploring" role="status" aria-live="polite"><span>Exploring, stand by</span></div><div class="zoomslider"><button class="small iconbtn" id="map-key-btn" type="button" aria-label="Map key" title="Map key">?</button><span aria-hidden="true">+</span><input type="range" id="zoom" min="0" max="5" step="1" aria-label="Zoom" title="Zoom"><span aria-hidden="true">−</span></div><div class="mapkey" id="mapkey" hidden></div><div class="arrive" id="arrive" aria-live="polite"></div><div class="gate" id="gate" hidden></div></div>
     <div class="layerbar" id="layerbar" role="img" aria-label="Layers"></div>
    </section>
  </div>
@@ -2420,10 +2428,30 @@ function ensureWayOut(id,fromId){
  const o=nb(d);if(o){const O=cell(o);O.exits=O.exits||EX("nsew");O.exits[OPP[d]]=true;if(O.walls)delete O.walls[OPP[d]];touch(o)}
  N.desc=String(N.desc||"").replace(/ ?(The only way in or out is to|You can only come and go to) [^.]*\./,"");
 }
+/* Who is here: on entering a hex, the people (and creatures) in it flash up over the map for a few seconds,
+   each with a face, so you notice them. Tap one to dismiss, or wait for it to fade. */
+let folkTimer=null;
+function flashFolk(locId){
+ const el=$("folkflash");if(!el||hereId()!==locId||isDowned())return;const L=cell(locId),Z=zOf(L);
+ const folk=npcsAt(L.x,L.y).filter(n=>Z===0||n.z===Z);
+ const players=(mp.on()?mp.players:[]).filter(p=>p.x===L.x&&p.y===L.y&&(p.z||0)===Z);
+ const wand=Z===0?wanderers().filter(w=>w.x===L.x&&w.y===L.y).map(w=>WANDERERS[w.i]):[];
+ const cards=[];
+ for(const n of folk.filter(n=>!n.wild)){const home=cell(n.home);cards.push({face:faceSVG(n.t,n.role||"",64),name:n.t,what:`${n.role||"townsfolk"}${home&&home.t?" of "+home.t:""}${n.activity?", "+n.activity:""}`})}
+ for(const p of players)cards.push({face:faceSVG(p.name,p.cls||"",64),name:p.name,what:`a traveller like you${p.cls?", "+p.cls.toLowerCase():""}`});
+ for(const w of wand){const [nm,...rest]=w.name.split(", ");cards.push({face:faceSVG(nm,w.kind,64),name:nm,what:rest.join(", ")||w.kind})}
+ for(const n of folk.filter(n=>n.wild))cards.push({face:`<span class="beastface">${ic("npc",n.species)}</span>`,name:n.t,what:`${n.species}, ${n.activity||"watching you"}`});
+ clearTimeout(folkTimer);
+ if(!cards.length){el.classList.remove("show");el.innerHTML="";return}
+ el.innerHTML=`<div class="ffrow">${cards.slice(0,5).map(c=>`<div class="ffcard" role="note"><span class="ffface">${c.face}</span><span class="fftext"><b>${esc(c.name)}</b><span>${esc(c.what)}</span></span></div>`).join("")}${cards.length>5?`<div class="ffcard more">and ${cards.length-5} more</div>`:""}</div>`;
+ el.classList.remove("show");void el.offsetWidth;el.classList.add("show");
+ el.onclick=()=>{el.classList.remove("show")};
+ folkTimer=setTimeout(()=>el.classList.remove("show"),4200+600*Math.min(cards.length,5));
+}
 function enter(locId,first){
  if(mp.on()){mpSoon();const T=cell(locId);if(T&&T.town)maybeIntroduce(T)}
  const ch=charId(),prev=hereId();if(prev&&prev!==locId){cell(ch).prevAt=prev;touch(ch)}
- ensureWayOut(locId,prev);
+ ensureWayOut(locId,prev);if(prev!==locId)setTimeout(()=>flashFolk(locId),80);
  connect(ch,"at",locId);const L=cell(locId);lastHazard=null;rounds=[];
  if(!L.visited){L.visited=true;touch(locId);gainXP(L.town&&!L.town.of?25:10);if(L.town&&!L.town.of)log(`You reach ${L.t}, a ${TOWN_SIZES[L.town.size].label} on the ${riverName()}.`,"good")}
  markSeen(locId);ravenScout(locId);checkRumour(locId);checkMarks(L);
