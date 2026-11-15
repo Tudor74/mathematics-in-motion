@@ -89,6 +89,7 @@ header.top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align
  .maprow{grid-template-columns:minmax(0,1fr);gap:16px;align-items:start}
  .maprow .map{grid-column:1;grid-row:2}.maprow .mapside{grid-column:1;grid-row:1}
  .maprow .map svg#map{aspect-ratio:auto;height:380px}}
+.mapside:has(.mapplace:empty){display:none}
 .mapside .mapdesc{font-size:13pt}
 .panel{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:16px;min-width:0;display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-content:start}
 .col{display:grid;gap:16px;min-width:0;align-content:start}
@@ -435,7 +436,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
  <header class="top">
   <h1 class="sr">Zigzag Realms</h1>
   <div class="hdr-right">
-  <div class="whoami" id="whoami"></div>
+  <div class="whoami" id="whoami" hidden></div>
   <div class="pills">
    <button class="pill" id="script-toggle" aria-pressed="false" type="button" hidden>Script: <b>Latin</b></button>
    <span class="pill" id="pill-ai" hidden>Narrator: <b>connecting…</b></span>
@@ -447,8 +448,8 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
  </header>
 
  <div class="maprow">
-  <section class="panel mapside" aria-label="Where you are"><div class="mapplace" id="mapplace"><div class="sectionhead"><h3 id="map-h">Survey map</h3></div></div></section>
-   <section class="panel map" aria-labelledby="map-h">
+  <section class="panel mapside" aria-label="Where you are"><div class="mapplace" id="mapplace"></div></section>
+   <section class="panel map" aria-label="Map">
     <span id="coords" hidden></span>
     <div class="mapwrap"><svg id="map" viewBox="0 0 480 416" role="img" aria-label="Map of explored places on your current level"></svg><div class="hud" id="hud" aria-live="polite"></div>
   <div class="nixie" id="pill-clock" data-night="false">
@@ -459,7 +460,6 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
     <div class="zoomrow"><button class="small" id="zoom-out" type="button" aria-label="Zoom out">−</button><span class="mono" id="zoom-label">zoom</span><button class="small" id="zoom-in" type="button" aria-label="Zoom in">+</button></div>
     <div class="layerbar" id="layerbar" role="img" aria-label="Layers"></div>
     <p class="legend"><span>▲ way up</span><span>▼ way down</span><span class="r">◆ anomaly</span><span class="p">● townsfolk</span><span style="color:var(--good)">● creatures</span><span class="m">┅ magical bridge</span><span>┿ railway</span><span style="color:var(--amber)">● sanctuary beacon</span><span class="m">● cave entrance</span></p>
-    <p class="mapnote">The map shows the layer you are on, one of fifteen from the deep caves to the peak. Faint stacked hexes are the mountain's higher layers; dashed outlines are places you have walked on other layers. Faded hexes are places you can see but have not visited. Click one next to you to go there, or any mapped square to walk back there. Lines show the ways that are open.</p>
    </section>
  </div>
  <div class="grid">
@@ -4056,7 +4056,7 @@ function renderSaving(){
 function renderAccount(){
  const el=$("account");if(!el)return;
  const signin=puterReady&&store.mode!=="puter"?`<button class="small" id="puter-signin">Sign in to save and use AI</button>`:"";
- {const n=$("whoami");if(n)n.textContent=puterUser||""}
+ 
  const who=(mp.on()?`<span class="pill" title="Players seen in the last three minutes">Shared realm: <b>${mp.status?esc(mp.status):mp.online==null?"connecting…":mp.online+" online"}</b></span>`:"");
  // Players who already have a world of their own can move to the shared realm from here
  const join=canJoinRealm()&&!mp.on()&&charId()?(joinArmed
@@ -4130,7 +4130,7 @@ function stepMapCam(){if(!mapCam||!mapCam.anim)return;const svg=$("map");if(!svg
  if(performance.now()-mapCam.anim.t0<mapCam.anim.dur)requestAnimationFrame(stepMapCam);else{mapCam.anim=null;renderMap()}}
 function renderMap(){
  const svg=$("map"),here=hereId();
- if(!here){renderHud();$("mapplace").dataset.sig="";$("mapplace").innerHTML=`<div class="sectionhead"><h3 id="map-h">Survey map</h3></div>`;svg.innerHTML=`<text x="210" y="215" text-anchor="middle" class="axis">The map starts when your character sets out.</text>`;$("coords").textContent="";return}
+ if(!here){renderHud();$("mapplace").dataset.sig="";$("mapplace").innerHTML="";svg.innerHTML="";$("coords").textContent="";return}
  const H=cell(here),Z=zOf(H),R=mapZoom,magic=magicPresent(),t=gameNow(),ws=wxState();
  // Zoom: the drawing keeps its scale and the view widens; V is the visible width around the centre
  const bb=svg.getBoundingClientRect(),ASP=bb.width>50&&bb.height>50?bb.width/bb.height:480/416,V=420*(R+.6)/3.6,W=V*ASP,U=bb.width>50?W/bb.width:1,VB=[210-W/2,210-V/2,W,V],ui=V/420,UI=s=>`<g transform="translate(${VB[0]+(W-V)/2} ${VB[1]}) scale(${ui})">${s}</g>`;
