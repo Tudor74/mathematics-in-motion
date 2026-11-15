@@ -32,7 +32,7 @@
  color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:13pt;line-height:1.5;margin:0}
 .wrap{max-width:1240px;margin:0 auto;padding-block:18px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:16px}
 button,input,select,textarea{font:inherit;color:inherit}
 button{background:var(--sheet);border:1px solid var(--rule);border-radius:6px;padding:6px 12px;min-height:36px;cursor:pointer;font-weight:500}
@@ -40,19 +40,19 @@ button:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
 button:disabled{opacity:.45;cursor:default}
 button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
 button.primary:hover:not(:disabled){color:var(--accent-ink);filter:brightness(1.07)}
-button.small{min-height:30px;padding:3px 9px;font-size:14px}
+button.small{min-height:30px;padding:3px 9px;font-size:13pt}
 :focus-visible{outline:2px solid var(--water);outline-offset:2px}
 input,select,textarea{background:var(--sheet);border:1px solid var(--rule);border-radius:6px;padding:7px 9px;width:100%}
-label{display:grid;gap:4px;font-size:14px;color:var(--faint)}
+label{display:grid;gap:4px;font-size:13pt;color:var(--faint)}
 h1,h2,h3{font-family:var(--display);font-weight:700;margin:0;text-wrap:balance;letter-spacing:.01em}
-.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:0}
+.eyebrow{font-family:var(--mono);font-size:13pt;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:0}
 .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
 
 header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px 20px;border-bottom:2px solid var(--ink);padding-bottom:10px}
 header.top h1{font-size:clamp(28px,4vw,40px);line-height:1}
-header.top .sub{color:var(--faint);font-size:15px;margin:4px 0 0;max-width:62ch}
+header.top .sub{color:var(--faint);font-size:13pt;margin:4px 0 0;max-width:62ch}
 .pills{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.pill{font-family:var(--mono);font-size:12px;border:1px solid var(--rule);border-radius:99px;padding:3px 10px;color:var(--faint);background:var(--sheet);white-space:nowrap}
+.pill{font-family:var(--mono);font-size:13pt;border:1px solid var(--rule);border-radius:99px;padding:3px 10px;color:var(--faint);background:var(--sheet);white-space:nowrap}
 .pill b{color:var(--ink);font-weight:500}
 .pill{max-width:100%}
 @media (max-width:720px){.pill{white-space:normal}}
@@ -84,31 +84,35 @@ header.top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align
 .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
 /* The map runs the full width on desktop, wide and not too tall */
 .maprow{display:grid}
-@media (min-width:1041px){.maprow .map svg{aspect-ratio:auto;height:min(64vh,620px)}.maprow .map{grid-template-columns:minmax(0,1fr);}}
-.panel{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:16px;min-width:0;display:grid;gap:14px;align-content:start}
+@media (min-width:1041px){
+ .maprow{grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:16px;align-items:start}
+ .maprow .map{grid-column:1;grid-row:1}.maprow .mapside{grid-column:2;grid-row:1;max-height:calc(min(56vh,540px) + 190px);overflow-y:auto}
+ .maprow .map svg{aspect-ratio:2.09/1;height:auto}}
+.mapside .mapdesc{font-size:13pt}
+.panel{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:16px;min-width:0;display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-content:start}
 .col{display:grid;gap:16px;min-width:0;align-content:start}
 
 /* Map */
 .map svg{display:block;width:100%;height:auto;max-width:100%;aspect-ratio:480/416;background:var(--wash);border-radius:6px}
 .mapwrap{position:relative}
 /* The heads-up display: what changes as you play, over the map's top-left corner */
-.hud{position:absolute;left:8px;top:8px;display:grid;gap:4px;padding:7px 9px;border-radius:8px;background:color-mix(in srgb,var(--sheet) 88%,transparent);border:1px solid var(--rule);font-family:var(--mono);font-size:11.5px;color:var(--ink);min-width:150px;max-width:calc(100% - 16px);box-shadow:0 2px 8px #0002}
+.hud{position:absolute;left:8px;top:8px;display:grid;gap:4px;padding:7px 9px;border-radius:8px;background:color-mix(in srgb,var(--sheet) 88%,transparent);border:1px solid var(--rule);font-family:var(--mono);font-size:13pt;color:var(--ink);min-width:150px;max-width:calc(100% - 16px);box-shadow:0 2px 8px #0002}
 .hud:empty{display:none}
 .hud .row{display:flex;justify-content:space-between;gap:10px;align-items:center}
 .hud .bar{height:6px;border-radius:99px;background:var(--wash);border:1px solid var(--rule);overflow:hidden}.hud .bar span{display:block;height:100%;background:var(--good)}
 .hud .bar.low span{background:var(--danger)}.hud .bar.xp span{background:var(--magic)}
-.hud .warn{color:var(--danger)}.hud button{min-height:26px;padding:2px 8px;font-size:12px;font-family:var(--body)}
+.hud .warn{color:var(--danger)}.hud button{min-height:26px;padding:2px 8px;font-size:13pt;font-family:var(--body)}
 .mapplace{display:grid;gap:2px;min-width:0}
 .mapplace h2{font-size:21px;line-height:1.15;margin:0}
 .mapplace .titlerow{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-.mapplace .mapdesc{font-size:15.5px;line-height:1.55;margin:4px 0 2px}
+.mapplace .mapdesc{font-size:13pt;line-height:1.55;margin:4px 0 2px}
 .ticker{overflow:hidden;white-space:nowrap;mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
 .ticker-track{display:inline-flex;animation:tick 30s linear infinite}
 .ticker:hover .ticker-track,.ticker:focus-within .ticker-track{animation-play-state:paused}
 .ticker.still{mask-image:none;-webkit-mask-image:none}.ticker.still .ticker-track{animation:none}.ticker.still .tk-set+.tk-set{display:none}
 .tk-set{display:inline-flex;gap:6px;align-items:center;padding-right:24px}
-.ticker .chip{font-size:11px;padding:1px 6px;line-height:1.5}
-.tk-lead{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+.ticker .chip{font-size:13pt;padding:1px 6px;line-height:1.5}
+.tk-lead{font-family:var(--mono);font-size:13pt;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
 @keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 @media (prefers-reduced-motion:reduce){.ticker{overflow-x:auto}.ticker-track{animation:none}.tk-set+.tk-set{display:none}}
 .map .gridline{stroke:var(--rule);stroke-width:1}
@@ -117,29 +121,29 @@ header.top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align
 .map .hexgrid{fill:none;stroke-linejoin:round}
 .map .rail{stroke:var(--ink);stroke-width:2.2;opacity:.75;pointer-events:none}.map .sleepers{stroke:var(--ink);stroke-width:8;stroke-dasharray:1.6 5;opacity:.5;pointer-events:none}
 .zoomrow{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:-4px}
-.zoomrow button{min-width:40px;font-size:18px;line-height:1}.zoomrow span{font-size:12px;color:var(--faint);min-width:9em;text-align:center}
+.zoomrow button{min-width:40px;font-size:18px;line-height:1}.zoomrow span{font-size:13pt;color:var(--faint);min-width:9em;text-align:center}
 .map .ghost.up{fill:var(--t-mountain);stroke:var(--ink);stroke-width:1;stroke-linejoin:round}
 .map .ghost.flank{fill:var(--t-mountain)}
 .map .ghost.down{fill:none;stroke:var(--ink);stroke-width:1.4;stroke-dasharray:4 3;stroke-linejoin:round}
-.layerbar{display:flex;align-items:center;justify-content:center;gap:3px}.layerbar .mono{font-size:11px;color:var(--faint);margin:0 4px}
+.layerbar{display:flex;align-items:center;justify-content:center;gap:3px}.layerbar .mono{font-size:13pt;color:var(--faint);margin:0 4px}
 .layerbar .lv{width:14px;height:14px;border-radius:3px;background:var(--rule)}.layerbar .lv.up{background:var(--t-mountain)}.layerbar .lv.down{background:var(--t-cave)}
 .layerbar .lv.ground{background:var(--t-plains);outline:1px solid var(--faint)}.layerbar .lv.on{background:var(--accent);outline:2px solid var(--accent);outline-offset:1px}
 .map .layers .bg{fill:var(--sheet);stroke:var(--rule);opacity:.92}
 .map .layers .lv{fill:var(--rule)}.map .layers .lv.ground{fill:var(--faint)}.map .layers .lv.massif{fill:var(--t-mountain)}.map .layers .lv.on{fill:var(--accent)}
-.map .layers text{font-family:var(--mono);font-size:9px;fill:var(--faint)}
+.map .layers text{font-family:var(--mono);font-size:calc(13pt * var(--u,1));fill:var(--faint)}
 .map .beacon .halo{filter:url(#beaconglow);opacity:.75}
 .map .beacon.sanctuary .halo,.map .beacon.festival .halo{fill:var(--amber)}.map .beacon.festival .ring{stroke:var(--amber)}.map .beacon.cave .halo{fill:var(--magic)}
 .map .beacon .ring{fill:none;stroke-width:2.5;stroke-linejoin:round}
 .map .beacon.sanctuary .ring{stroke:var(--amber)}.map .beacon.cave .ring{stroke:var(--magic)}
 .map .beacon.far{cursor:pointer}.map .beacon.far path{fill:var(--sheet);stroke:var(--ink);stroke-width:1.4;stroke-linejoin:round}
-.map .beacon.far text{font-family:var(--mono);font-size:11px;fill:var(--ink);paint-order:stroke;stroke:var(--sheet);stroke-width:3px}
+.map .beacon.far text{font-family:var(--mono);font-size:calc(13pt * var(--u,1));fill:var(--ink);paint-order:stroke;stroke:var(--sheet);stroke-width:3px}
 .map .beacon.sanctuary .halo{animation:beaconpulse 3.2s ease-in-out infinite}.map .beacon.cave .halo{animation:beaconpulse 4.1s ease-in-out infinite}
 @keyframes beaconpulse{0%,100%{opacity:.45}50%{opacity:.9}}
 .map .nightfade{filter:grayscale(1) brightness(.72);opacity:.5}
 .map .nightnote rect{fill:var(--sheet);stroke:var(--water);stroke-width:2;opacity:.95}
-.map .nightnote .nn-h{font-family:var(--display);font-size:30px;font-weight:700;fill:var(--ink)}
-.map .nightnote .nn-t{font-family:var(--body);font-size:14.5px;fill:var(--ink)}
-.map .nightnote .nn-s{font-family:var(--mono);font-size:11.5px;fill:var(--faint)}
+.map .nightnote .nn-h{font-family:var(--display);font-size:calc(22pt * var(--u,1) * var(--k,1));font-weight:700;fill:var(--ink)}
+.map .nightnote .nn-t{font-family:var(--body);font-size:calc(13pt * var(--u,1) * var(--k,1));fill:var(--ink)}
+.map .nightnote .nn-s{font-family:var(--mono);font-size:calc(13pt * var(--u,1) * var(--k,1));fill:var(--faint)}
 .map .here{stroke-linejoin:round}
 .map .tile:hover{stroke-opacity:1;stroke-width:2}
 .map .glyph{fill:none;stroke:var(--ink);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;opacity:.7;pointer-events:none}
@@ -151,95 +155,95 @@ header.top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align
 .map .folk{fill:var(--water);stroke:var(--sheet);stroke-width:1.2;pointer-events:none}
 .map .frontier{fill:transparent;stroke:var(--faint);stroke-dasharray:4 4;stroke-width:1.4;cursor:pointer}
 .map .frontier:hover{stroke:var(--accent)}
-.map .q{fill:var(--faint);font-family:var(--mono);font-size:15px;pointer-events:none}
-.map .axis{fill:var(--faint);font-family:var(--mono);font-size:10px}
+.map .q{fill:var(--faint);font-family:var(--mono);font-size:calc(13pt * var(--u,1));pointer-events:none}
+.map .axis{fill:var(--faint);font-family:var(--mono);font-size:calc(13pt * var(--u,1))}
 .map .stair{fill:var(--ink);opacity:.75;pointer-events:none}
 .map .threat{fill:var(--danger);stroke:var(--sheet);stroke-width:1.5;pointer-events:none}
 .map .veil{fill:var(--veil);opacity:.28;pointer-events:none}
 .t-forest{fill:var(--t-forest)}.t-plains{fill:var(--t-plains)}.t-water{fill:var(--t-water)}.t-mountain{fill:var(--t-mountain)}.t-cave{fill:var(--t-cave)}.t-dungeon{fill:var(--t-dungeon)}.t-village{fill:var(--t-village)}.t-ruin{fill:var(--t-ruin)}.t-swamp{fill:var(--t-swamp)}.t-road{fill:var(--t-road)}.t-sky{fill:var(--t-sky)}.t-desert{fill:var(--t-desert)}.t-grove{fill:var(--t-grove)}.t-other{fill:var(--t-other)}
 .map .unvisited{opacity:.55}
 .map .folk.beast{fill:var(--good)}
-.mapnote{font-size:13px;color:var(--faint);margin:0}
-.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--faint);margin:0}
+.mapnote{font-size:13pt;color:var(--faint);margin:0}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13pt;color:var(--faint);margin:0}
 .legend .r{color:var(--danger)}.legend .p{color:var(--water)}.legend .m{color:var(--magic)}
 
 .compass{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-areas:"nw n ne" "w c e" "sw s se" "u . d";gap:6px}
 .compass .nw{grid-area:nw}.compass .ne{grid-area:ne}.compass .sw{grid-area:sw}.compass .se{grid-area:se}
-.compass button.diag .dir{font-size:15px}
+.compass button.diag .dir{font-size:13pt}
 .compass button{display:grid;gap:0;padding:6px 6px;min-height:58px;text-align:center;line-height:1.2}
-.compass button .dir{font-family:var(--display);font-size:17px;font-weight:700}
-.compass button .to{font-size:12px;color:var(--faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.compass button .dir{font-family:var(--display);font-size:13pt;font-weight:700}
+.compass button .to{font-size:13pt;color:var(--faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
 .compass button.vert{border-style:dashed}
 .compass .n{grid-area:n}.compass .s{grid-area:s}.compass .e{grid-area:e}.compass .w{grid-area:w}.compass .u{grid-area:u}.compass .d{grid-area:d}
-.compass .c{grid-area:c;display:grid;place-items:center;text-align:center;font-family:var(--mono);font-size:12px;color:var(--faint);border:1px dashed var(--rule);border-radius:6px;padding:4px}
-.keys{font-size:12px;color:var(--faint);margin:0}
+.compass .c{grid-area:c;display:grid;place-items:center;text-align:center;font-family:var(--mono);font-size:13pt;color:var(--faint);border:1px dashed var(--rule);border-radius:6px;padding:4px}
+.keys{font-size:13pt;color:var(--faint);margin:0}
 
 /* Location */
 .place h2{font-size:clamp(26px,3.4vw,36px);line-height:1.08}
 .placehead{display:grid;gap:6px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{font-family:var(--mono);font-size:12px;padding:2px 8px;border-radius:4px;background:var(--wash);color:var(--faint)}
+.chip{font-family:var(--mono);font-size:13pt;padding:2px 8px;border-radius:4px;background:var(--wash);color:var(--faint)}
 .chip.terrain{color:var(--ink)}
 .chip.magic{color:var(--magic)}
 .desc{font-size:18px;line-height:1.6;max-width:62ch;margin:0;white-space:pre-line}
 .desc.busy{opacity:.45}
 button.dirlink{display:inline;appearance:none;min-height:0;padding:0 1px;margin:0;border:0;border-radius:2px;background:none;font:inherit;color:var(--water);font-weight:500;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:.18em;cursor:pointer}
 button.dirlink:hover:not(:disabled){color:var(--accent);text-decoration-style:solid}
-.mapping{font-family:var(--mono);font-size:13px;color:var(--accent);margin:0}
+.mapping{font-family:var(--mono);font-size:13pt;color:var(--accent);margin:0}
 .mapping::after{content:"";display:inline-block;width:1.4em;text-align:left;animation:dots 1.2s steps(4) infinite}
 @keyframes dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
-.hazard{border-left:3px solid var(--danger);padding:6px 12px;background:var(--wash);border-radius:0 6px 6px 0;font-size:15px}
+.hazard{border-left:3px solid var(--danger);padding:6px 12px;background:var(--wash);border-radius:0 6px 6px 0;font-size:13pt}
 .hazard.passed{border-left-color:var(--good)}
 .hazard b{font-family:var(--display)}
-.hazard .roll{font-family:var(--mono);font-size:12.5px;color:var(--faint);display:block;margin-top:2px}
-.flash{font-size:15px;margin:0;padding:6px 12px;border-radius:6px;background:var(--wash)}
+.hazard .roll{font-family:var(--mono);font-size:13pt;color:var(--faint);display:block;margin-top:2px}
+.flash{font-size:13pt;margin:0;padding:6px 12px;border-radius:6px;background:var(--wash)}
 
 /* Anomaly file */
 .foe{background:var(--file);border:1px solid var(--file-rule);border-radius:4px;padding:14px 16px 14px;display:grid;gap:10px;position:relative}
 .foe::before{content:"";position:absolute;inset:0 auto 0 0;width:5px;background:var(--oc,var(--amber))}
 .foe[data-class="safe"]{--oc:var(--good)}.foe[data-class="euclid"]{--oc:var(--amber)}.foe[data-class="keter"]{--oc:var(--danger)}
-.filehead{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 12px;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);border-bottom:1px solid var(--file-rule);padding-bottom:6px}
+.filehead{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 12px;font-family:var(--mono);font-size:13pt;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);border-bottom:1px solid var(--file-rule);padding-bottom:6px}
 .filehead .oc{color:var(--oc,var(--amber));font-weight:500}
 .foe h3{font-size:24px;line-height:1.1}
-.foe .notes{margin:0;font-size:15.5px;line-height:1.55;max-width:62ch}
-.foe .stats{font-family:var(--mono);font-size:12.5px;color:var(--faint);margin:0}
+.foe .notes{margin:0;font-size:13pt;line-height:1.55;max-width:62ch}
+.foe .stats{font-family:var(--mono);font-size:13pt;color:var(--faint);margin:0}
 .foe .hpbar span{background:var(--oc,var(--amber))}
-.rounds{list-style:none;margin:0;padding:8px 0 0;border-top:1px dashed var(--file-rule);display:grid;gap:4px;font-size:14px}
+.rounds{list-style:none;margin:0;padding:8px 0 0;border-top:1px dashed var(--file-rule);display:grid;gap:4px;font-size:13pt}
 .rounds li.bad{color:var(--danger)}.rounds li.good{color:var(--good)}
-.rounds .roll{font-family:var(--mono);font-size:12px;color:var(--faint);display:block}
+.rounds .roll{font-family:var(--mono);font-size:13pt;color:var(--faint);display:block}
 .fight{display:flex;flex-wrap:wrap;gap:8px}
 .fight button.primary{min-width:150px}
-.neutral{font-size:14px;color:var(--faint);border-left:3px solid var(--rule);padding:2px 10px;margin:0}
+.neutral{font-size:13pt;color:var(--faint);border-left:3px solid var(--rule);padding:2px 10px;margin:0}
 
 /* People */
 .people{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .people li{border:1px solid var(--rule);border-radius:8px;padding:9px 11px;display:grid;gap:4px}
 .people .top{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap}
 .people .nm{font-weight:700}
-.people .meta{font-family:var(--mono);font-size:11.5px;color:var(--faint)}
-.people .doing{font-size:14px;color:var(--faint)}
-.people .said{font-size:15px;font-style:italic;margin:2px 0 0;border-left:2px solid var(--water);padding-left:9px}
+.people .meta{font-family:var(--mono);font-size:13pt;color:var(--faint)}
+.people .doing{font-size:13pt;color:var(--faint)}
+.people .said{font-size:13pt;font-style:italic;margin:2px 0 0;border-left:2px solid var(--water);padding-left:9px}
 
 .items{list-style:none;margin:0;padding:0;display:grid;gap:0}
 .items li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:9px 0;border-top:1px solid var(--rule)}
 .items li:first-child{border-top:0}
 .items .nm{font-weight:700}
-.items .meta{font-family:var(--mono);font-size:11.5px;color:var(--faint);display:block}
-.items .about{font-size:14px;color:var(--faint);display:block}
+.items .meta{font-family:var(--mono);font-size:13pt;color:var(--faint);display:block}
+.items .about{font-size:13pt;color:var(--faint);display:block}
 .items .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
-.empty{color:var(--faint);font-size:14px;font-style:italic;margin:0}
+.empty{color:var(--faint);font-size:13pt;font-style:italic;margin:0}
 .sectionhead{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .sectionhead h3{font-size:19px}
 
 /* ZigZag inspector */
 details.zz{border-top:1px solid var(--rule);padding-top:10px}
-details.zz summary{cursor:pointer;font-family:var(--mono);font-size:13px;color:var(--faint)}
+details.zz summary{cursor:pointer;font-family:var(--mono);font-size:13pt;color:var(--faint)}
 .zztable{overflow-x:auto;margin-top:8px}
-.zztable table{border-collapse:collapse;font-family:var(--mono);font-size:12px;width:100%;min-width:420px}
+.zztable table{border-collapse:collapse;font-family:var(--mono);font-size:13pt;width:100%;min-width:420px}
 .zztable th,.zztable td{border-bottom:1px solid var(--rule);padding:5px 6px;text-align:left;vertical-align:top}
 .zztable th{color:var(--faint);font-weight:500}
 .zztable td.mid{color:var(--accent)}
-.zzhelp{font-size:13px;color:var(--faint);margin:8px 0 0;max-width:70ch}
+.zzhelp{font-size:13pt;color:var(--faint);margin:8px 0 0;max-width:70ch}
 
 /* Character */
 .who{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
@@ -248,54 +252,54 @@ details.zz summary{cursor:pointer;font-family:var(--mono);font-size:13px;color:v
 .hpbar.thin{height:6px}
 .hpbar span{display:block;height:100%;background:var(--good);transition:width .3s}
 .hpbar.low span{background:var(--danger)}
-.hprow{display:flex;justify-content:space-between;font-family:var(--mono);font-size:13px}
+.hprow{display:flex;justify-content:space-between;font-family:var(--mono);font-size:13pt}
 .abil{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
 .abil div{border:1px solid var(--rule);border-radius:6px;text-align:center;padding:5px 2px;display:grid;line-height:1.15}
-.abil .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--faint)}
+.abil .k{font-family:var(--mono);font-size:13pt;letter-spacing:.1em;color:var(--faint)}
 .abil .v{font-family:var(--display);font-size:22px;font-weight:700}
-.abil .m{font-family:var(--mono);font-size:12px;color:var(--faint)}
+.abil .m{font-family:var(--mono);font-size:13pt;color:var(--faint)}
 .abil .boon{border-color:var(--amber);box-shadow:inset 0 0 0 1px var(--amber)}
-.statfold{display:flex;align-items:center;gap:8px;width:100%;min-height:36px;padding:4px 8px;margin:-2px 0;border-radius:6px;border-color:var(--rule);background:transparent;font-weight:600;font-size:14px;text-align:left}
+.statfold{display:flex;align-items:center;gap:8px;width:100%;min-height:36px;padding:4px 8px;margin:-2px 0;border-radius:6px;border-color:var(--rule);background:transparent;font-weight:600;font-size:13pt;text-align:left}
 .statfold .lbl{white-space:nowrap}
-.statfold .sum{margin-left:auto;font-size:12px;font-weight:400;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.statfold .sum{margin-left:auto;font-size:13pt;font-weight:400;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .statfold svg{width:16px;height:16px;flex:0 0 16px;color:var(--faint);transition:transform .2s}
 .statfold[aria-expanded="false"] svg{transform:rotate(-90deg)}
 .statbody{display:grid;gap:14px}
 .abil .boon .k{color:var(--amber)}
 .facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 12px;margin:0}
-.facts div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dotted var(--rule);padding:3px 0;font-size:14px}
+.facts div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dotted var(--rule);padding:3px 0;font-size:13pt}
 .facts dt{color:var(--faint)}
-details.standing{border-top:1px solid var(--rule);padding-top:8px;display:grid;gap:10px}details.standing summary{cursor:pointer;font-size:14px;font-weight:600}
+details.standing{border-top:1px solid var(--rule);padding-top:8px;display:grid;gap:10px}details.standing summary{cursor:pointer;font-size:13pt;font-weight:600}
 details.standing[open]{gap:10px}
 .facts>div{min-width:0}.facts dd{text-align:right;overflow-wrap:anywhere;min-width:0}
-.facts.towns{grid-template-columns:minmax(0,1fr)}.facts dd{margin:0;font-family:var(--mono);font-size:13px}
+.facts.towns{grid-template-columns:minmax(0,1fr)}.facts dd{margin:0;font-family:var(--mono);font-size:13pt}
 
 /* Log */
-.log ol{list-style:none;margin:0;padding:0;display:grid;gap:4px;max-height:280px;overflow:auto;font-size:14px}
+.log ol{list-style:none;margin:0;padding:0;display:grid;gap:4px;max-height:280px;overflow:auto;font-size:13pt}
 .log li{padding-left:12px;border-left:2px solid var(--rule)}
 .log li.bad{border-left-color:var(--danger)}.log li.good{border-left-color:var(--good)}.log li.npc{border-left-color:var(--water)}.log li.time{border-left-color:var(--amber)}
-.log .roll{font-family:var(--mono);font-size:12px;color:var(--faint)}
+.log .roll{font-family:var(--mono);font-size:13pt;color:var(--faint)}
 
 /* Creation */
 .create{display:grid;gap:14px}
 .create .row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .rolled{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
 .rolled div{border:1px solid var(--rule);border-radius:6px;text-align:center;padding:6px 2px;display:grid}
-.rolled .k{font-family:var(--mono);font-size:11px;color:var(--faint)}
+.rolled .k{font-family:var(--mono);font-size:13pt;color:var(--faint)}
 .rolled .v{font-family:var(--display);font-size:24px;font-weight:700}
 .btnrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.note{font-size:14px;color:var(--faint);margin:0;max-width:65ch}
-.confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:14px}
+.note{font-size:13pt;color:var(--faint);margin:0;max-width:65ch}
+.confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13pt}
 
 /* What you can see */
 .sees{list-style:none;margin:0 -7px;padding:0;display:grid;gap:2px}
-.sees li{font-size:15px}
+.sees li{font-size:13pt}
 .sees li.shut{display:grid;grid-template-columns:6.4em minmax(0,1fr);gap:10px;align-items:baseline}
 .sees .dname{font-family:var(--display);font-weight:700;text-transform:capitalize}
 .sees .dname button.dirlink{font-family:var(--display);font-weight:700;text-transform:capitalize}
-.sees .why{display:block;font-size:12.5px;color:var(--faint)}
+.sees .why{display:block;font-size:13pt;color:var(--faint)}
 .sees li.shut{color:var(--faint);padding:4px 7px}
-.sees button.go{display:grid;grid-template-columns:6.4em minmax(0,1fr) auto;gap:10px;align-items:baseline;width:100%;min-height:36px;padding:4px 7px;text-align:left;font-weight:400;font-size:15px;background:transparent;border:1px solid transparent;border-radius:6px;color:var(--ink)}
+.sees button.go{display:grid;grid-template-columns:6.4em minmax(0,1fr) auto;gap:10px;align-items:baseline;width:100%;min-height:36px;padding:4px 7px;text-align:left;font-weight:400;font-size:13pt;background:transparent;border:1px solid transparent;border-radius:6px;color:var(--ink)}
 .sees button.go .dname{color:var(--water);text-decoration:underline;text-decoration-style:dotted;text-underline-offset:.2em}
 .sees button.go .what{text-decoration:underline;text-decoration-color:transparent;text-underline-offset:.2em}
 .sees button.go .arrow{color:var(--faint);transition:transform .15s}
@@ -309,22 +313,22 @@ details.standing[open]{gap:10px}
 .social .edge.pos{stroke:var(--water)}.social .edge.neg{stroke:var(--danger)}
 .social .node{stroke:var(--sheet);stroke-width:1.5}
 .social .node.human{fill:var(--accent)}.social .node.beast{fill:var(--good)}.social .node.you{fill:var(--magic)}
-.social text{font-family:var(--mono);font-size:8.5px;fill:var(--faint)}
+.social text{font-family:var(--mono);font-size:calc(13pt * var(--u,1));fill:var(--faint)}
 .social text.you{fill:var(--magic);font-weight:500}
-.ties{list-style:none;margin:0;padding:0;font-size:13px;display:grid;gap:3px}
+.ties{list-style:none;margin:0;padding:0;font-size:13pt;display:grid;gap:3px}
 .ties li{display:flex;justify-content:space-between;gap:8px}
-.ties .w{font-family:var(--mono);font-size:12px}
+.ties .w{font-family:var(--mono);font-size:13pt}
 .ties .w.pos{color:var(--water)}.ties .w.neg{color:var(--danger)}
 .sharp{color:var(--danger)}
 /* Nightfall reminder */
 .nudge{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:color-mix(in srgb,var(--veil) 55%,transparent)}
 .nudge-card{background:var(--sheet);color:var(--ink);border:1px solid var(--rule);border-radius:14px;padding:22px 22px 18px;max-width:440px;width:100%;display:grid;gap:12px;box-shadow:0 18px 60px #0004}
 .nudge-card h2{font-size:26px}
-.nudge-card p{margin:0;font-size:17px;line-height:1.55}
+.nudge-card p{margin:0;font-size:13pt;line-height:1.55}
 .nudge-moon{width:40px;height:40px;fill:var(--amber)}
 .nudge-list{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
-.nudge-list li{font-family:var(--mono);font-size:12px;padding:3px 9px;border-radius:99px;background:var(--wash);color:var(--faint)}
-.nudge-off{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--faint);margin-left:auto}
+.nudge-list li{font-family:var(--mono);font-size:13pt;padding:3px 9px;border-radius:99px;background:var(--wash);color:var(--faint)}
+.nudge-off{display:flex;align-items:center;gap:6px;font-size:13pt;color:var(--faint);margin-left:auto}
 .nudge-off input{width:auto}
 button.pill{min-height:0;cursor:pointer;font-weight:400}
 button.pill[aria-pressed="false"] b{color:var(--faint)}
@@ -333,14 +337,14 @@ button.pill[aria-pressed="false"] b{color:var(--faint)}
 .map .flame{fill:var(--danger);stroke:var(--amber);stroke-width:1.5;pointer-events:none}
 .map .stormring{fill:var(--veil);fill-opacity:.12;stroke:var(--magic);stroke-width:1.5;stroke-dasharray:6 5;pointer-events:none}
 .inscription{border:1px solid var(--amber);border-radius:4px;padding:12px 14px;background:var(--file);display:grid;gap:6px}
-.inscription p{margin:0;font-family:var(--display);font-size:17px;line-height:1.5;max-width:60ch}
-.codex{margin:0;padding-left:20px;display:grid;gap:8px;font-size:14px}
+.inscription p{margin:0;font-family:var(--display);font-size:13pt;line-height:1.5;max-width:60ch}
+.codex{margin:0;padding-left:20px;display:grid;gap:8px;font-size:13pt}
 .codex b{font-family:var(--display)}
-.map .markstar{fill:var(--amber);font-size:15px;pointer-events:auto}
+.map .markstar{fill:var(--amber);font-size:calc(14pt * var(--u,1));pointer-events:auto}
 .map .notemark{fill:var(--water);pointer-events:auto}
 .map .traveller circle{fill:var(--pc,var(--magic))}.map .traveller path{fill:none;stroke:var(--pc,var(--magic));stroke-width:2.4;stroke-linecap:round}.map .traveller{pointer-events:auto}
 .realmevent{border:1px solid var(--magic);border-left-width:4px;border-radius:6px;padding:8px 12px;background:var(--wash);display:grid;gap:2px}
-.realmevent p{margin:0;font-size:15px}
+.realmevent p{margin:0;font-size:13pt}
 .contest{display:grid;gap:8px;justify-items:center}
 .contest .target{width:180px;height:180px}
 .contest .ring{stroke:var(--ink);stroke-width:1}.contest .r0{fill:#d4402f}.contest .r1{fill:#f0bd3e}.contest .r2{fill:#4f8fd1}.contest .r3{fill:#2b2b2b}.contest .r4{fill:#f3efe2}
@@ -348,26 +352,26 @@ button.pill[aria-pressed="false"] b{color:var(--faint)}
 .contest .track{position:relative;width:100%;max-width:300px;height:40px;border-radius:20px;background:var(--wash);border:1px solid var(--rule)}
 .contest .track::after{content:"";position:absolute;left:50%;top:4px;bottom:4px;width:2px;background:var(--danger);opacity:.5}
 .contest #throw-btn{position:absolute;top:3px;width:68px;min-height:32px;padding:0;border-radius:16px;background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}.realmevent.festival{border-color:var(--amber)}.realmevent.festival .eyebrow{color:var(--amber)}.realmevent .eyebrow{color:var(--magic)}
-.map .evmark{fill:var(--magic);font-size:18px;pointer-events:auto}
-.rate{display:inline-flex;gap:3px;margin-left:4px}.rate button{min-height:22px;padding:0 6px;font-size:11.5px}
+.map .evmark{fill:var(--magic);font-size:calc(16pt * var(--u,1));pointer-events:auto}
+.rate{display:inline-flex;gap:3px;margin-left:4px}.rate button{min-height:22px;padding:0 6px;font-size:13pt}
 .map .hintdot{opacity:.55;pointer-events:auto}
 .map .friendpath{fill:var(--amber);opacity:.35;filter:url(#beaconglow);animation:friendglow 2.4s ease-in-out infinite}
 @keyframes friendglow{0%,100%{opacity:.18}50%{opacity:.6}}
-.map .friendname,.map .friendring text{font-family:var(--mono);font-size:11px;fill:var(--ink);paint-order:stroke;stroke:var(--sheet);stroke-width:3px}
+.map .friendname,.map .friendring text{font-family:var(--mono);font-size:calc(13pt * var(--u,1));fill:var(--ink);paint-order:stroke;stroke:var(--sheet);stroke-width:3px}
 .map .friendring circle{fill:none;stroke:var(--good);stroke-width:3}
 .map .cairn{fill:var(--ink);opacity:.7}.map .cragmark{stroke:var(--danger);stroke-width:1.6;opacity:.7}
 .map .footprint{fill:var(--magic);opacity:.45;pointer-events:auto}
-label.check{display:flex;gap:8px;align-items:flex-start;font-size:14px}label.check input{margin-top:3px;width:auto;flex:0 0 auto}
+label.check{display:flex;gap:8px;align-items:flex-start;font-size:13pt}label.check input{margin-top:3px;width:auto;flex:0 0 auto}
 .codex .frag{color:var(--faint)}
 .note-form{display:grid;gap:4px}
 .note-form .btnrow{flex-wrap:nowrap}.note-form input{flex:1;min-width:0}
 .garden canvas{display:block;width:100%;max-width:100%;aspect-ratio:1/.72;border-radius:6px;background:var(--wash)}
 .chat,.trade{border-top:1px dashed var(--rule);margin-top:6px;padding-top:8px;display:grid;gap:8px}
-.chat ol{list-style:none;margin:0;padding:0;display:grid;gap:5px;max-height:220px;overflow:auto;font-size:14.5px}
+.chat ol{list-style:none;margin:0;padding:0;display:grid;gap:5px;max-height:220px;overflow:auto;font-size:13pt}
 .chat li.you{color:var(--faint)}.chat li.them{border-left:2px solid var(--water);padding-left:8px}
 .chat form{display:flex;gap:6px}.chat input{flex:1;min-width:0}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-.quests{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-size:13.5px}
+.quests{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-size:13pt}
 .quests li{border-left:2px solid var(--amber);padding-left:8px}
 .quests li.done{border-left-color:var(--good);color:var(--faint)}.quests li.failed{border-left-color:var(--danger);color:var(--faint);text-decoration:line-through}
 .people .btnrow{gap:5px}
@@ -391,15 +395,15 @@ body.is-dragging,body.is-dragging *{cursor:grabbing!important;user-select:none}
 .alphabet{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px}
 .alphabet li{display:grid;justify-items:center;gap:1px;border:1px solid var(--rule);border-radius:6px;padding:6px 2px 5px;text-align:center}
 .alphabet .gl{color:var(--ink);line-height:0}
-.alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12px;color:var(--accent)}
-.alphabet .src{font-size:10.5px;line-height:1.2;color:var(--faint)}
+.alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:13pt;color:var(--accent)}
+.alphabet .src{font-size:13pt;line-height:1.2;color:var(--faint)}
 /* With the realm script on, every letter on the page is drawn in it; digits and punctuation stay as they are */
 html.realm{--display:"Realm Script","Alegreya SC",Georgia,serif;--body:"Realm Script","Alegreya Sans",system-ui,sans-serif;--mono:"Realm Script","IBM Plex Mono",ui-monospace,monospace}
 html.realm body{font-size:17.5px;letter-spacing:.02em;word-spacing:.12em}
 html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
 
 @media (max-width:1040px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.col.right{grid-column:1 / -1;grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:720px){.grid{grid-template-columns:minmax(0,1fr)}.col.right{grid-template-columns:minmax(0,1fr)}.col.center{order:-1}.create .row{grid-template-columns:1fr}.rolled{grid-template-columns:repeat(3,minmax(0,1fr))}.desc{font-size:17px}}
+@media (max-width:720px){.grid{grid-template-columns:minmax(0,1fr)}.col.right{grid-template-columns:minmax(0,1fr)}.col.center{order:-1}.create .row{grid-template-columns:1fr}.rolled{grid-template-columns:repeat(3,minmax(0,1fr))}.desc{font-size:13pt}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -434,8 +438,8 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
  </header>
 
  <div class="maprow">
+  <section class="panel mapside" aria-label="Where you are"><div class="mapplace" id="mapplace"><div class="sectionhead"><h3 id="map-h">Survey map</h3></div></div></section>
    <section class="panel map" aria-labelledby="map-h">
-    <div class="mapplace" id="mapplace"><div class="sectionhead"><h3 id="map-h">Survey map</h3></div></div>
     <span id="coords" hidden></span>
     <div class="mapwrap"><svg id="map" viewBox="0 0 480 416" role="img" aria-label="Map of explored places on your current level"></svg><div class="hud" id="hud" aria-live="polite"></div></div>
     <div class="zoomrow"><button class="small" id="zoom-out" type="button" aria-label="Zoom out">−</button><span class="mono" id="zoom-label">zoom</span><button class="small" id="zoom-in" type="button" aria-label="Zoom in">+</button></div>
@@ -464,16 +468,16 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
     <p class="keys">Keys: arrows or W A S D to walk; Y U B N (or 7 9 1 3) to cut across a corner north-west, north-east, south-west or south-east, which takes 45 minutes; E or Page Up to climb, Q or Page Down to descend, F to attack, R to make camp or take a room. Each step takes half an hour. Without a lantern you cannot travel at night or go underground.</p>
    </section>
    <section class="panel social" aria-labelledby="soc-h" data-fold="social">
-    <div class="sectionhead"><h3 id="soc-h">Who knows whom</h3><span class="mono" id="soc-count" style="font-size:12px;color:var(--faint)"></span></div>
+    <div class="sectionhead"><h3 id="soc-h">Who knows whom</h3><span class="mono" id="soc-count" style="font-size:13pt;color:var(--faint)"></span></div>
     <svg id="social" viewBox="0 0 340 340" role="img" aria-label="Social graph of townsfolk, creatures and you"></svg>
     <p class="legend"><span style="color:var(--accent)">● townsfolk</span><span style="color:var(--good)">● creatures</span><span class="m">● you</span><span class="p">— friendly</span><span class="r">— wary</span></p>
     <ol class="ties" id="ties"></ol>
     <p class="mapnote">Ties grow when people and creatures spend time together, share food or face danger side by side, and fade when they are apart. Friends of friends drift closer. People and creatures move toward those they like and away from those they distrust.</p>
    </section>
    <section class="panel garden" aria-labelledby="garden-h" data-fold="garden">
-    <div class="sectionhead"><h3 id="garden-h">The garden</h3><span class="mono" id="garden-state" style="font-size:12px;color:var(--faint)"></span></div>
+    <div class="sectionhead"><h3 id="garden-h">The garden</h3><span class="mono" id="garden-state" style="font-size:13pt;color:var(--faint)"></span></div>
     <canvas id="garden" role="img" aria-label="Flowers grown from the social graph"></canvas>
-    <p class="mono" id="garden-facts" style="font-size:11.5px;color:var(--faint);margin:0"></p>
+    <p class="mono" id="garden-facts" style="font-size:13pt;color:var(--faint);margin:0"></p>
     <p class="mapnote">Each flower is a group held together by friendly ties. More members means more petals; tighter circles of friends grow more layers; stronger ties grow longer petals; a blooming graph fills the seed heads. When ties sour the flowers droop, shed petals and grow thorns.</p>
    </section>
   </div>
@@ -486,12 +490,12 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
    <section class="panel" id="sheet" aria-label="Character sheet"></section>
    <section class="panel" id="pack" aria-label="Your pack" data-fold="pack"></section>
    <section class="panel" aria-labelledby="codex-h" data-fold="codex">
-    <div class="sectionhead"><h3 id="codex-h">Codex of hidden rules</h3><span class="mono" id="codex-count" style="font-size:12px;color:var(--faint)"></span></div>
+    <div class="sectionhead"><h3 id="codex-h">Codex of hidden rules</h3><span class="mono" id="codex-count" style="font-size:13pt;color:var(--faint)"></span></div>
     <ol class="codex" id="codex"></ol>
    </section>
    <section class="panel" id="voice" aria-labelledby="voice-h" data-fold="voice"></section>
    <section class="panel" aria-labelledby="alpha-h" data-fold="script">
-    <div class="sectionhead"><h3 id="alpha-h">The realm script</h3><span class="mono" style="font-size:12px;color:var(--faint)">26 letters</span></div>
+    <div class="sectionhead"><h3 id="alpha-h">The realm script</h3><span class="mono" style="font-size:13pt;color:var(--faint)">26 letters</span></div>
     <ul class="alphabet" id="alphabet"></ul>
     <p class="mapnote">English, written in letters grown from their ancient pictographs: ox, house, door, hand, water, eye, mouth, head, tooth, mark. Each letter's shape, sound, ancestral meaning and frequency were reduced to three principal components that set its strokes, and a search kept frequent letters light and hard to confuse. Hover a letter for its origin. Switch the whole page to it with the Script button.</p>
    </section>
@@ -907,6 +911,90 @@ TABLES.desert={names:["Cracked Flats","Scorched Reach","The Pale Waste"],lines:[
 TABLES.grove=TABLES.forest;
 LOOT.desert=[["Sun-bleached skull","Smooth as porcelain.","junk",1,2],["Desert glass","A lump of green glass fused by some old heat.","treasure",0.3,15]];
 HAZARDS.desert=["Blistering heat","CON","1d6"];
+/* ============================================================
+   The sentence constructor. Built-in descriptions are assembled from small elemental pieces for
+   each kind of ground: a way (what you walk on, how it runs, where to), a feature (something to
+   look at), a sense (light, air, sound, smell) and a sign of life. The pieces are chosen by a
+   generator seeded from the place's position, so everyone who visits a place reads the same words.
+   ============================================================ */
+const LEX={
+ forest:{way:["a deer path","a mossy ride","a sunken track between roots","a carpet of beech mast","a trail of soft leaf mould","a narrow way through holly"],
+  run:["winds","threads","wanders","pushes on"],to:["between old oaks","under hazel and holly","through bracken waist-high","past a fallen beech","toward a stream you can hear but not see","into deeper shade"],
+  feat:["a ring of toadstools circles an old stump","an ash lies where a storm dropped it, its roots in the air","ivy has swallowed a woodcutter's hut","someone has cut a mark into the bark of a tall oak","a woodpecker's hollow scars a dead birch","moss has made a green hill of a fallen wall"],
+  sense:["light falls in coins through the canopy","the air is green and damp and smells of leaf rot","it is quiet enough to hear leaves land","woodsmoke drifts from somewhere you cannot see","resin scents the still air"],
+  life:["a jay scolds you from above","something heavy moves off through the undergrowth","a squirrel freezes, then pours itself up a trunk","midges dance in a shaft of light","a robin follows you from branch to branch"]},
+ plains:{way:["a sheep track","a line of trodden grass","a farm lane","a worn path","an old drove road"],
+  run:["crosses","runs over","rolls across","cuts across"],to:["open grassland","a low rise of turf","fields grazed short","a meadow loud with crickets","country that opens in every direction"],
+  feat:["a lone thorn tree leans away from the wind","a cairn of field stones marks a boundary","a broken cart wheel lies half sunk in the grass","a dew pond shines in a hollow","a hawthorn hedge runs off toward the horizon"],
+  sense:["the wind combs the grass into silver waves","larks sing so high they cannot be seen","the sky feels very large here","the grass smells of clover and warm earth"],
+  life:["a hare sits up, then bolts","sheep watch you without interest","a kestrel hangs on the wind, then drops","rooks walk the furrows like old men"]},
+ water:{way:["a muddy bank","a shingle shore","a line of stepping stones","a reedy margin","a strip of wet sand"],
+  run:["follows","edges","borders","runs beside"],to:["slow brown water","a pool as still as glass","a chattering stream","water that is deeper than it looks"],
+  feat:["an old boat rots among the reeds","a heron's feathers lie on the stones","a willow trails its fingers in the current","a drowned fence post leans out of the water","a mill race once ran here; its channel is dry now"],
+  sense:["the water talks to itself over the stones","the air smells of mud and mint","light wobbles on the undersides of the leaves","a cold breath rises off the water"],
+  life:["a fish rises, leaving rings","dragonflies stitch the air above the reeds","a moorhen hurries for cover","frogs fall silent as you pass"]},
+ mountain:{way:["a ledge of bare rock","a slope of loose scree","a shelf of short turf","a path of cairns","a stony step"],
+  run:["climbs","clings to","zigzags up","traverses"],to:["the flank of the mountain","a face of grey crag","a hollow full of old snow","a ridge that falls away on both sides"],
+  feat:["a cairn leans where some climber built it","a twisted rowan grows from a crack in the rock","a black tarn lies in a corrie below","lichen paints the boulders orange and grey","a fallen block the size of a cottage blocks half the way"],
+  sense:["the wind is cold and never stops","the valley below is a green map","your breath comes short in the thin air","cloud tears past close enough to touch"],
+  life:["ravens tumble in the updraught","a goat watches you from an impossible ledge","an eagle turns slowly far above","a stoat flickers between the rocks"]},
+ crag:{way:["sheer rock","a slab of rotten stone","a scree chute","a ledge no wider than a boot"],
+  run:["drops away","tilts","crumbles","overhangs"],to:["above a long fall","toward nothing","over a gulf of air","into cloud"],
+  feat:["there is no path here","loose stones skitter away under your weight","a hold you trusted comes away in your hand","ice glazes every crack"],
+  sense:["the drop below pulls at you","the wind shoves at your back","your hands are cold and your heart is loud"],
+  life:["a raven watches to see if you fall","pebbles rattle down and do not land for a long time"]},
+ cave:{way:["a passage of wet rock","a low crawl","a gallery of dripstone","a chamber floored with fine sand","a fissure barely wide enough to pass"],
+  run:["leads","winds","narrows","opens"],to:["into the dark","toward the sound of water","deeper under the mountain","into a hall your light cannot fill"],
+  feat:["stalactites hang like a rack of teeth","a pool lies perfectly still, holding your light","old bones are heaped in a corner","crystals glitter in the wall","a rope ladder, long rotten, hangs from a shaft"],
+  sense:["water drips somewhere, slow as a clock","the air is cold and tastes of stone","every sound comes back twice","the dark seems to lean in around your light"],
+  life:["bats shift and whisper overhead","pale blind fish turn in the water","something small scuttles out of the light"]},
+ dungeon:{way:["a passage of dressed stone","a flight of worn steps","a vaulted corridor","a flagged floor slick with damp"],
+  run:["runs","descends","turns","leads"],to:["beneath the castle","past barred doors","into older stone","toward a draught from somewhere below"],
+  feat:["iron rings are set into the walls","a rusted gate hangs off one hinge","scratches on the wall count days no one wanted to count","a cracked brazier holds old ash","a niche holds the stub of a candle"],
+  sense:["the air smells of rust and wet straw","your footsteps sound like someone else's","it is colder here than it should be"],
+  life:["a rat watches you with bright eyes","something drips, or breathes","a draught moves the dust at your feet"]},
+ ruin:{way:["a broken floor","a fallen colonnade","a courtyard of cracked flags","a line of toppled stones"],
+  run:["spreads","lies","stretches","climbs"],to:["among nettles and elder","under the sky where a roof once was","toward a doorway that leads nowhere","around a dry well"],
+  feat:["a carved face stares from a fallen lintel","one arch still stands, holding up nothing","a hearth is cold under a drift of leaves","an inscription is worn past reading","a stair climbs three steps and stops"],
+  sense:["wind whistles through the empty windows","the stones are warm where the sun touches them","it feels as if someone left in a hurry"],
+  life:["jackdaws argue on the wall","a lizard sunning on a stone does not move","owls have nested in the tower"]},
+ swamp:{way:["a causeway of rotten logs","a strip of firm ground","a path of tussocks","a sunken boardwalk"],
+  run:["picks across","threads through","wobbles over","sinks into"],to:["black water","reeds taller than you","a mire that sucks at your boots","pools covered in green scum"],
+  feat:["a dead tree stands white in the water","marsh lights flicker and go out","a boot is stuck in the mud, empty","bubbles rise from the mud with a sound like a sigh"],
+  sense:["the air is thick and smells of rot","mist lies on the water like a sheet","every step makes a wet sound"],
+  life:["frogs creak in chorus","a bittern booms somewhere","mosquitoes find you at once"]},
+ road:{way:["a rutted road","a cobbled stretch","a worn highway","a cart track"],
+  run:["runs","bends","climbs","straightens"],to:["between hedges","past a milestone","toward the next rise","beside a ditch of meadowsweet"],
+  feat:["a milestone gives a distance in a forgotten unit","a wayside shrine holds dead flowers","a gallows stands empty at the crossroads","a fingerpost points three ways, all faded"],
+  sense:["wheel ruts are full of rain","the dust is soft underfoot","you can see a long way along the road"],
+  life:["a carter's dog barks somewhere ahead","crows lift from the verge","a pedlar's tracks lead the same way"]},
+ desert:{way:["a crust of salt","a slope of fine sand","a plain of cracked clay","a ridge of wind-carved stone"],
+  run:["stretches","shimmers","runs","rises"],to:["toward a white horizon","under a hard sky","between dunes like sleeping animals","into the glare"],
+  feat:["bones lie bleached and sorted by the wind","a cairn marks a well that may be dry","glass glitters where sand once melted","a buried wall shows only its top course"],
+  sense:["heat comes off the ground in waves","the silence rings in your ears","the wind hisses with sand"],
+  life:["a beetle trudges across the sand","a vulture circles, patient","tracks of something with too many legs cross your path"]},
+ grove:{way:["a ring of silver trees","a carpet of pale moss","a path of white stones"],
+  run:["circles","leads","opens"],to:["around a still pool","into a hush","toward a soft humming"],
+  feat:["the trees lean together like friends","the pool reflects stars even by day","small lights drift between the trunks"],
+  sense:["the air hums gently","wounds feel lighter here","time seems to slow"],life:["a wisp drifts close, then away","birds sing very quietly"]},
+ village:{way:["a lane","a muddy street","a cobbled alley","a green"],
+  run:["runs","winds","opens","slopes"],to:["between thatched cottages","past the smithy","down toward the water","around the well"],
+  feat:["washing flaps on a line","a painted sign creaks over a door","a cat sleeps on a warm step","a cart waits with its shafts down"],
+  sense:["bread and smoke scent the air","voices drift from an open door","a hammer rings at a forge"],life:["children chase a hoop","geese hiss at you","a dog trots past on business of its own"]},
+ rail:{way:["the iron road","a line of rails on tarred sleepers","a cinder embankment","a cutting through the hill"],
+  run:["runs","sweeps","curves","stretches"],to:["toward the next town","between signal posts","over a little bridge","as straight as a ruler"],
+  feat:["a signal arm stands at danger","a water tower drips onto the ballast","a platelayers' hut has a kettle on its stove","a level crossing gate stands open"],
+  sense:["the rails hum before a train comes","coal smoke hangs in the cutting","the rails are bright where the wheels run"],life:["sparrows bathe in the cinders","a fox crosses the line without looking"]}
+};
+function seededRng(x,y,z,salt=0){let a=(h32((x*73856093)^(y*19349663)^((z+11)*83492791)^(salt*2654435761))*4294967296)>>>0;return()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296}}
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+function compose(kind,x,y,z,salt=0){
+ const L=LEX[kind]||LEX.plains,r=seededRng(x|0,y|0,z|0,salt),pk=a=>a[Math.floor(r()*a.length)];
+ const way=`${cap(pk(L.way))} ${pk(L.run)} ${pk(L.to)}.`,feat=`${cap(pk(L.feat))}.`,sense=`${cap(pk(L.sense))}.`,life=`${cap(pk(L.life))}.`;
+ const shapes=[[way,feat],[way,sense],[way,feat,life],[feat,way],[way,life],[way,sense,feat]];
+ return pk(shapes).join(" ");
+}
+
 function tableLocation(from,dir,pos){
  const dz=DIRS[dir]?.dz||0;
  let terrain;
@@ -916,7 +1004,7 @@ function tableLocation(from,dir,pos){
  else{const ok=TERRAINS.filter(t=>!["cave","dungeon","sky","village","grove","desert"].includes(t));terrain=from&&Math.random()<.55&&ok.includes(from.terrain)?from.terrain:pick(ok)}
  const T=TABLES[terrain]||TABLES.plains;
  const lead=!from?"":dz>0?`You climb up from ${from.t}. `:dz<0?`You go down from ${from.t}. `:`You go ${dir} from ${from.t}. `;
- const lines=shuffle(T.lines),text=lines[0]+(Math.random()<.6?" "+lines[1]:"");
+ const text=compose(LEX[terrain]?terrain:"plains",pos.x,pos.y,pos.z);
  const items=[];if(LOOT[terrain]&&Math.random()<.6)items.push(pick(LOOT[terrain]));
  const hz=HAZARDS[terrain]&&from&&Math.random()<.25?HAZARDS[terrain]:null;
  let monster=null;
@@ -1208,7 +1296,7 @@ function buildMountain(){
   const band=MOUNT_BANDS.find(b=>z<=b.top)||MOUNT_BANDS[2],onTrail=trail.has(key3(x,y,z)),crag=z>=2&&!onTrail;
   const ex={north:true,south:true,east:true,west:true,up:stairUp,down:stairDown||!!(sp&&sp.down)};
   const name=sp?sp.n:crag?pick(["Sheer Crag","Loose Scree","Overhang","Ice Slab","Rotten Rock"]):pick(band.names);
-  const desc=sp?sp.d:crag?"There is no path here: the rock is sheer and loose, and the drop below is long. One careless step and you will fall.":pick(band.lines)+(stairUp?" Cairns mark a steep stair climbing to the next ledge.":stairDown?" A steep stair leads back down to the ledge below.":onTrail&&z>0?" A path marked with small cairns winds on round the mountain.":"");
+  const desc=sp?sp.d:crag?"No path crosses this crag. "+compose("crag",x,y,z):compose("mountain",x,y,z)+(stairUp?" Cairns mark a steep stair climbing to the next ledge.":stairDown?" A steep stair leads back down to the ledge below.":onTrail&&z>0?" A path marked with small cairns winds on round the mountain.":"");
   const id=createLocation({name,desc,terrain:sp&&sp.t||"mountain",items:[],hazard:null,monster:null,by:"tables",exits:ex,glimpse:z?`${name}, ${z} ${z===1?"ledge":"ledges"} up the mountain`:`${name}, at the mountain's foot`},{x,y,z,dist:Math.abs(x)+Math.abs(y)+z});
   Object.assign(cell(id),{planned:true,written:false,seen:false,massif:true,trail:onTrail||undefined,crag:crag||undefined},sp&&sp.p||{});
  }
@@ -1245,7 +1333,7 @@ function digCaves(x,y,top,bottom,o={}){
    const linked=isSide?[side.from]:[path[i-1],path[i+1]].filter(Boolean).concat(side&&side.from[0]===px&&side.from[1]===py?[side.at]:[]);
    for(const [qx,qy] of linked){const d=FLAT.find(d=>DIRS[d].dx===qx-px&&DIRS[d].dy===qy-py);if(d)ex[d]=true}
    const nm=i===0&&z===top&&o.firstName?o.firstName:last&&z===bottom&&o.deepName?o.deepName:pick(band);
-   const desc=pick(T.lines)+(ex.down?" A shaft drops away into deeper dark.":"")+(ex.up?" A way leads back up.":"");
+   const desc=compose(LEX[terrain]?terrain:"cave",px,py,z)+(ex.down?" A shaft drops away into deeper dark.":"")+(ex.up?" A way leads back up.":"");
    const id=createLocation({name:nm,desc,terrain,items:[],hazard:null,monster:null,by:"tables",exits:ex,glimpse:`${nm}, ${depth} ${depth===1?"level":"levels"} down`},{x:px,y:py,z,dist:Math.abs(px)+Math.abs(py)+depth*2});
    Object.assign(cell(id),{planned:true,written:false,seen:false,cavern:true});ids.push(id);made.push(id);if(last)end=id;
   });
@@ -1278,7 +1366,7 @@ function buildRailways(){
   if(path.length>26)continue;
   const line={from:A.id,to:B.id,len:path.length-1};
   for(const [x,y] of path.slice(1,-1)){if(coord.get(ck(x,y,0)))continue;
-   const nm=pick(RAIL_NAMES),id=createLocation({name:nm,desc:pick(RAIL_DESC),terrain:"road",items:[],hazard:null,monster:null,by:"tables",exits:EX("nsew"),glimpse:`${nm}, on the railway`},{x,y,z:0,dist:Math.abs(x)+Math.abs(y)});
+   const nm=pick(RAIL_NAMES),id=createLocation({name:nm,desc:compose("rail",x,y,0),terrain:"road",items:[],hazard:null,monster:null,by:"tables",exits:EX("nsew"),glimpse:`${nm}, on the railway`},{x,y,z:0,dist:Math.abs(x)+Math.abs(y)});
    Object.assign(cell(id),{planned:true,written:false,seen:false,rail:true})}
   for(const [x,y] of path){const id=coord.get(ck(x,y,0));if(id){const c=cell(id);c.rails=(c.rails||[]).concat(lines.length);touch(id)}}
   for(const S of [A,B]){S.station=(S.station||[]).concat([{line:lines.length,to:S===A?B.id:A.id,len:line.len}]);touch(S.id)}
@@ -1302,7 +1390,7 @@ function takeTrain(destId){
 function renderStation(L){
  if(!L.station||!L.station.length)return"";
  const night=isNight(gameNow());
- return`<div class="sectionhead"><h3>Railway station</h3><span class="mono" style="font-size:12px;color:var(--faint)">${night?"closed until dawn":"trains by day"}</span></div><ul class="items">${L.station.map(s=>{const D=cell(s.to),fare=trainFare(s.len);return`<li><span><span class="nm">Train to ${esc(D.t)}</span><span class="meta">${s.len} squares by rail · about ${Math.max(15,s.len*8)} minutes · ${fare} gp</span></span><span class="acts"><button class="small" data-act="train" data-id="${s.to}" ${night||busy||sv("GP")<fare?"disabled":""}>Take the train</button></span></li>`}).join("")}</ul>`;
+ return`<div class="sectionhead"><h3>Railway station</h3><span class="mono" style="font-size:13pt;color:var(--faint)">${night?"closed until dawn":"trains by day"}</span></div><ul class="items">${L.station.map(s=>{const D=cell(s.to),fare=trainFare(s.len);return`<li><span><span class="nm">Train to ${esc(D.t)}</span><span class="meta">${s.len} squares by rail · about ${Math.max(15,s.len*8)} minutes · ${fare} gp</span></span><span class="acts"><button class="small" data-act="train" data-id="${s.to}" ${night||busy||sv("GP")<fare?"disabled":""}>Take the train</button></span></li>`}).join("")}</ul>`;
 }
 /* Festivals: four a year, one in each season, on the fourth day of the season, in every town. Each has a
    contest tied to one ability. Win it once per festival and choose a permanent +1 to that ability or a
@@ -3058,7 +3146,7 @@ function craft(i){
 function renderCraft(){
  const rows=RECIPES.map((r,i)=>({r,i,ok:!!haveFor(r)&&(!r.smith||smithHere())})).filter(x=>x.ok||!x.r.smith);
  const can=rows.filter(x=>x.ok);
- return`<div class="sectionhead"><h3>Craft</h3><span class="mono" style="font-size:12px;color:var(--faint)">${can.length} possible</span></div>`+
+ return`<div class="sectionhead"><h3>Craft</h3><span class="mono" style="font-size:13pt;color:var(--faint)">${can.length} possible</span></div>`+
   `<ul class="items">${rows.map(({r,i,ok})=>`<li><span><span class="nm">${esc(r.name)}</span><span class="meta">${r.smith?"15 gp of treasure, with a smith":r.needs.join(" + ")}</span></span><span class="acts"><button class="small" data-act="craft" data-id="${i}" ${ok?"":"disabled"}>Make</button></span></li>`).join("")}</ul>`;
 }
 
@@ -3229,7 +3317,7 @@ function renderTravellers(L){
  if(!mp.on())return"";
  const near=mpNear(),key=sqk({x:L.x,y:L.y,z:zOf(L)}),ground=mp.groundKey===key?mp.ground:[];
  const said=near.filter(p=>p.say&&Date.now()-p.say.t<300e3).sort((a,b)=>b.say.t-a.say.t).slice(0,4);
- let h=`<div class="sectionhead"><h3>Other travellers</h3><span class="mono" style="font-size:12px;color:var(--faint)">${mp.status?esc(mp.status):mp.online==null?"connecting…":`${mp.online} in the realm`}</span></div>`;
+ let h=`<div class="sectionhead"><h3>Other travellers</h3><span class="mono" style="font-size:13pt;color:var(--faint)">${mp.status?esc(mp.status):mp.online==null?"connecting…":`${mp.online} in the realm`}</span></div>`;
  const myPoss=possessions(),fr=friends();
  h+=near.length?`<ul class="quests">${near.map(p=>{const here=bearing(p,L)==="here",canSteal=here&&p.poss>2*myPoss&&!(mp.stoleFrom&&mp.stoleFrom[p.u]&&Date.now()-mp.stoleFrom[p.u]<864e5);
   return`<li><b>${esc(p.name)}</b>${bondName(fr[p.u])?` (${bondName(fr[p.u])})`:""} · ${esc(p.cls||"traveller")}, level ${p.lvl||1} · ${esc(bearing(p,L))}${here&&packIds().some(i=>cell(i).kind==="food")?` <button class="small" data-act="sharefood" data-id="${esc(p.u)}" title="Give them some of your food; shared food goes twice as far">Share food</button>`:""}${canSteal?` <button class="small" data-act="steal" data-id="${esc(p.u)}" title="They carry ${p.poss} things to your ${myPoss}. One DEX check, once a day; they will know if you fail.">Try to lift one item</button>`:""}</li>`}).join("")}</ul>`:`<p class="note">No one else is within ${MP_NEAR} squares. Their footprints show on the map when they pass.</p>`;
@@ -3507,7 +3595,7 @@ function mapFriends(H,R,Z,P,V,W,inMap){
   const dx=wrapC(c.x-H.x),dy=wrapC(c.y-H.y),[px,py]=P(dx,dy),cx=px+30,cy=py+30,shown=inMap(dx,dy);
   if(shown)out+=`<g class="friendring" pointer-events="none"><circle cx="${cx}" cy="${cy}" r="20"><animate attributeName="r" from="16" to="${7*48*.55}" dur="3.6s" repeatCount="indefinite"/><animate attributeName="opacity" from=".55" to="0" dur="3.6s" repeatCount="indefinite"/></circle><text x="${cx}" y="${cy+4}" text-anchor="middle">${esc(p.name)}</text></g>`;
   else{const vx=cx-210,vy=cy-210,k=Math.min(W*.45/Math.abs(vx||1e-9),V*.43/Math.abs(vy||1e-9)),ex=210+vx*k,ey=210+vy*k;
-   out+=`<g class="friendring far" pointer-events="none"><circle cx="${ex}" cy="${ey}" r="10"><animate attributeName="r" from="6" to="26" dur="3.6s" repeatCount="indefinite"/><animate attributeName="opacity" from=".7" to="0" dur="3.6s" repeatCount="indefinite"/></circle><text x="${ex}" y="${ey+(ey>210?-14:22)}" text-anchor="middle">${esc(p.name)} ~${Math.max(Math.abs(dx),Math.abs(dy))}</text></g>`}
+   out+=`<g class="friendring far" pointer-events="none"><circle cx="${ex}" cy="${ey}" r="10"><animate attributeName="r" from="6" to="26" dur="3.6s" repeatCount="indefinite"/><animate attributeName="opacity" from=".7" to="0" dur="3.6s" repeatCount="indefinite"/></circle><text x="${ex}" y="${ey+(ey>210?-(10+16*U):(12+22*U))}" text-anchor="middle">${esc(p.name)} ~${Math.max(Math.abs(dx),Math.abs(dy))}</text></g>`}
  }
  return out;
 }
@@ -3556,7 +3644,7 @@ const voice={key:"",id:"JBFqnCBsd6RMkjVDRZzb",tenseId:"",auto:true,hide:false,vo
 voice.load();
 function renderVoice(){
  const el=$("voice");if(!el)return;
- const head=`<div class="sectionhead"><h3 id="voice-h">Narration</h3><span class="mono" style="font-size:12px;color:var(--faint)">${voice.on()?(voice.busy?"speaking soon…":voice.audio?"speaking":"ElevenLabs"):"off"}</span></div>`;
+ const head=`<div class="sectionhead"><h3 id="voice-h">Narration</h3><span class="mono" style="font-size:13pt;color:var(--faint)">${voice.on()?(voice.busy?"speaking soon…":voice.audio?"speaking":"ElevenLabs"):"off"}</span></div>`;
  if(!voice.on()){el.innerHTML=head+`<p class="note">Hear each place read aloud with your own <b>ElevenLabs</b> account. Paste an API key from ElevenLabs (Profile, API keys). It is kept only in this browser, sent only to ElevenLabs, and the speech uses your ElevenLabs credits.</p>
   <form class="note-form" data-voicekey><label for="xi-key">ElevenLabs API key</label><div class="btnrow"><input id="xi-key" type="password" autocomplete="off" spellcheck="false" placeholder="sk_…"><button class="small" type="submit">Save key</button></div></form>${voice.status?`<p class="flash">${esc(voice.status)}</p>`:""}`;decoratePanels();return}
  el.innerHTML=head+`<label for="xi-voice">Voice<select id="xi-voice">${(voice.voices.length?voice.voices:[{id:voice.id,name:"Default voice"}]).map(v=>`<option value="${esc(v.id)}"${v.id===voice.id?" selected":""}>${esc(v.name)}</option>`).join("")}</select></label>
@@ -3730,8 +3818,8 @@ function renderAccount(){
 let joinArmed=false;
 
 const GLYPH_MON={arch:"M16 35 V21 Q26 6 36 21 V35 M20 35 V22 Q26 12 32 22 V35",stones:"M13 35 V21 M21 35 V15 M29 35 V17 M37 35 V22 M11 35 H41",temple:"M11 20 L26 11 L41 20 Z M14 20 V32 M21 20 V32 M31 20 V32 M38 20 V32 M11 33 H41"};
-const ZOOMS=[2,3,4,5,6,8];let mapZoom=3;try{const z=+localStorage.getItem("zr-zoom");if(ZOOMS.includes(z))mapZoom=z}catch(e){}
-function setZoom(step){const i=Math.max(0,Math.min(ZOOMS.length-1,ZOOMS.indexOf(mapZoom)+step));mapZoom=ZOOMS[i];try{localStorage.setItem("zr-zoom",String(mapZoom))}catch(e){}renderMap()}
+const ZOOMS=[2,3,4,5,6,8];let mapZoom=5;try{const z=+localStorage.getItem("zr-zoom2");if(ZOOMS.includes(z))mapZoom=z}catch(e){}
+function setZoom(step){const i=Math.max(0,Math.min(ZOOMS.length-1,ZOOMS.indexOf(mapZoom)+step));mapZoom=ZOOMS[i];try{localStorage.setItem("zr-zoom2",String(mapZoom))}catch(e){}renderMap()}
 document.addEventListener("click",e=>{if(e.target.closest("#zoom-in"))setZoom(-1);else if(e.target.closest("#zoom-out"))setZoom(1)});
 /* The HUD: hit points, level and XP, gold, load, light and hunger, plus a rest button, over the map */
 function renderHud(){
@@ -3751,7 +3839,7 @@ function renderMap(){
  if(!here){renderHud();$("mapplace").dataset.sig="";$("mapplace").innerHTML=`<div class="sectionhead"><h3 id="map-h">Survey map</h3></div>`;svg.innerHTML=`<text x="210" y="215" text-anchor="middle" class="axis">The map starts when your character sets out.</text>`;$("coords").textContent="";return}
  const H=cell(here),Z=zOf(H),R=mapZoom,magic=magicPresent(),t=gameNow(),ws=wxState();
  // Zoom: the drawing keeps its scale and the view widens; V is the visible width around the centre
- const bb=svg.getBoundingClientRect(),ASP=bb.width>50&&bb.height>50?bb.width/bb.height:480/416,V=420*(R+.6)/3.6,W=V*ASP,VB=[210-W/2,210-V/2,W,V],ui=V/420,UI=s=>`<g transform="translate(${VB[0]+(W-V)/2} ${VB[1]}) scale(${ui})">${s}</g>`;
+ const bb=svg.getBoundingClientRect(),ASP=bb.width>50&&bb.height>50?bb.width/bb.height:480/416,V=420*(R+.6)/3.6,W=V*ASP,U=bb.width>50?W/bb.width:1,VB=[210-W/2,210-V/2,W,V],ui=V/420,UI=s=>`<g transform="translate(${VB[0]+(W-V)/2} ${VB[1]}) scale(${ui})">${s}</g>`;
  /* Flat-topped hexagons in staggered columns: odd columns (by world x) sit half a hex lower, so each
     place touches six others. The world is still a square grid underneath; only the drawing changes.
     P gives the top-left of a 60×60 box centred on the hex, so everything drawn at +30,+30 is centred. */
@@ -3818,13 +3906,13 @@ function renderMap(){
     beacons+=`<g class="beacon ${b.kind}" pointer-events="none"><circle class="halo" cx="${cx}" cy="${cy}" r="27"/><polygon class="ring" points="${hex(cx,cy,.98)}"/></g>`;continue}
    const [tx,ty]=C(b.dx,b.dy),vx=tx-210,vy=ty-210,k=Math.min(W*.45/Math.abs(vx||1e-9),V*.43/Math.abs(vy||1e-9)),ex=210+vx*k,ey=210+vy*k;
    const icon=b.kind==="festival"?`<path d="M${ex} ${ey-8} l2.4 5 5.4 .6 -4 3.7 1.1 5.4 -4.9 -2.8 -4.9 2.8 1.1 -5.4 -4 -3.7 5.4 -.6 Z"/>`:b.kind==="sanctuary"?`<path d="M${ex-7} ${ey+6} V${ey-1} L${ex} ${ey-7} L${ex+7} ${ey-1} V${ey+6} Z M${ex} ${ey-3} V${ey+4} M${ex-3} ${ey} H${ex+3}"/>`:`<path d="M${ex-7} ${ey-5} H${ex+7} L${ex} ${ey+6} Z"/>`;
-   beacons+=`<g class="beacon ${b.kind} far" data-loc="${b.c.id}"><circle class="halo" cx="${ex}" cy="${ey}" r="14"/>${icon}<text x="${ex}" y="${ey+(ey>210?-14:22)}" text-anchor="middle">${b.d}</text><title>${esc(tip)}</title></g>`;
+   beacons+=`<g class="beacon ${b.kind} far" data-loc="${b.c.id}"><circle class="halo" cx="${ex}" cy="${ey}" r="14"/>${icon}<text x="${ex}" y="${ey+(ey>210?-(10+16*U):(12+22*U))}" text-anchor="middle">${b.d}</text><title>${esc(tip)}</title></g>`;
   }
  }
  const [hx,hy]=P(0,0);
  out+=`<polygon class="here" points="${hex(hx+30,hy+30,1.02)}" pointer-events="none"/><circle class="pawn" cx="${hx+44}" cy="${hy+44}" r="6"/>`;
  if(ws&&ws.storm&&Z>=0){const sx=wrapC(Math.round(ws.storm.x)-H.x),sy=wrapC(Math.round(ws.storm.y)-H.y);const [qx,qy]=P(sx,sy);out+=`<circle class="stormring" cx="${qx+30}" cy="${qy+30}" r="${ws.storm.r*HW*.6}"/>`}
- out+=`<text class="axis" x="${VB[0]+W-6*ui}" y="${VB[1]+14*ui}" text-anchor="end" style="font-size:${10*ui}px">N ↑</text>`;
+ out+=`<text class="axis" x="${VB[0]+W-6*ui}" y="${VB[1]+14*ui}" text-anchor="end">N ↑</text>`;
  // The fifteen layers, deepest on the left, the peak on the right; yours is marked
  $("layerbar").innerHTML=`<span class="mono">−${ZMAX}</span>${Array.from({length:2*ZMAX+1},(_,i)=>{const z=i-ZMAX;return`<span class="lv${z===Z?" on":z===0?" ground":z>0?" up":" down"}" title="${z===0?"ground level":z>0?`${z} above ground`:`${-z} below ground`}${z===Z?" (you are here)":""}"></span>`}).join("")}<span class="mono">+${ZMAX}</span>`;
  $("layerbar").setAttribute("aria-label",`Layer ${Z>0?"+"+Z:Z} of fifteen, from −${ZMAX} to +${ZMAX}`);
@@ -3833,14 +3921,14 @@ function renderMap(){
   const mins=Math.max(1,Math.round(realMinutesToDawn(t))),steps=Math.floor(nightLeft()/STEP_MIN);
   const line=!hasLight()?"Too dark to travel without a lantern. Make camp, or take a room at an inn."
    :steps>0?`Your lantern has ${steps} ${steps===1?"step":"steps"} left tonight.`:"Your lantern is spent. Make camp, or take a room at an inn.";
-  out=`<g class="nightfade">${out}</g>${beacons}`+UI(`<g class="nightnote" pointer-events="none"><rect x="40" y="150" width="340" height="120" rx="12"/>
-   <text class="nn-h" x="210" y="196" text-anchor="middle">Night</text>
-   <text class="nn-t" x="210" y="226" text-anchor="middle">${esc(line.length>52?line.slice(0,line.lastIndexOf(" ",52)):line)}</text>
-   ${line.length>52?`<text class="nn-t" x="210" y="244" text-anchor="middle">${esc(line.slice(line.lastIndexOf(" ",52)+1))}</text>`:""}
-   <text class="nn-s" x="210" y="${line.length>52?262:248}" text-anchor="middle">Dawn in about ${mins} real ${mins===1?"minute":"minutes"}</text></g>`);
+  out=`<g class="nightfade">${out}</g>${beacons}`+(()=>{const words=line.split(" "),rows=[];let cur="";for(const w of words){if((cur+" "+w).trim().length>38&&cur){rows.push(cur);cur=w}else cur=(cur+" "+w).trim()}if(cur)rows.push(cur);
+   const h=110+rows.length*30;return UI(`<g class="nightnote" pointer-events="none" style="--k:${(1/ui).toFixed(4)}"><rect x="14" y="${210-h/2}" width="392" height="${h}" rx="12"/>
+   <text class="nn-h" x="210" y="${210-h/2+46}" text-anchor="middle">Night</text>
+   ${rows.map((r,i)=>`<text class="nn-t" x="210" y="${210-h/2+82+i*30}" text-anchor="middle">${esc(r)}</text>`).join("")}
+   <text class="nn-s" x="210" y="${210-h/2+82+rows.length*30+8}" text-anchor="middle">Dawn in about ${mins} real ${mins===1?"minute":"minutes"}</text></g>`)})();
  }
  else out+=beacons;
- svg.setAttribute("viewBox",VB.map(v=>v.toFixed(1)).join(" "));$("zoom-label").textContent=`${Math.round(W/(HW*.75))} × ${2*R+1} hexes`;$("zoom-in").disabled=R<=ZOOMS[0];$("zoom-out").disabled=R>=ZOOMS[ZOOMS.length-1];
+ svg.setAttribute("viewBox",VB.map(v=>v.toFixed(1)).join(" "));svg.style.setProperty("--u",bb.width>50?(W/bb.width).toFixed(4):"1");$("zoom-label").textContent=`${Math.round(W/(HW*.75))} × ${2*R+1} hexes`;$("zoom-in").disabled=R<=ZOOMS[0];$("zoom-out").disabled=R>=ZOOMS[ZOOMS.length-1];
  renderHud();
  svg.innerHTML=`<defs><filter id="beaconglow" x="-1" y="-1" width="3" height="3"><feGaussianBlur stdDeviation="4"/></filter></defs>`+out;
  const ew=H.x===0?"0":Math.abs(H.x)+(H.x>0?" E":" W"),ns=H.y===0?"0":Math.abs(H.y)+(H.y>0?" N":" S");
@@ -3963,7 +4051,7 @@ function renderPeople(L){
   ${q?`<span class="meta">Asked you to ${esc(q.desc)} · ${q.gold} gp</span>`:""}
   ${said&&openChat!==n.id?`<p class="said">${said==="…"?"…":esc(said)}</p>`:""}${extra}</li>`;
  };
- return`<div class="sectionhead"><h3>Who is here</h3><span class="mono" style="font-size:12px;color:var(--faint)">${folk.length}</span></div><ul class="people">${folk.map(row).join("")}</ul>`;
+ return`<div class="sectionhead"><h3>Who is here</h3><span class="mono" style="font-size:13pt;color:var(--faint)">${folk.length}</span></div><ul class="people">${folk.map(row).join("")}</ul>`;
 }
 function renderDowned(){
  const ch=cell(charId()),L=cell(ch.downed),e=entitlement(),home=cell(cell("root").home);
@@ -4009,7 +4097,7 @@ function renderPlace(){
  const P=paladin();if(P){const d=Math.abs(wrapC(P.x-L.x))+Math.abs(wrapC(P.y-L.y));html+=`<p class="flash sharp">${esc(P.t)}, a paladin from ${esc(P.from)}, is hunting you, about ${d} square${d===1?"":"s"} away, moving two squares for each of yours. When they reach you, they will take your magic items.</p>`}
  if(L.monument)html+=renderMonument(L);
  if(L.town){const C=cottage();
-  if(C&&C.town===L.id){const chest=rank(C.id,"contain");html+=`<div class="sectionhead"><h3>Your cottage</h3><span class="mono" style="font-size:12px;color:var(--faint)">${chest.length} in the chest</span></div><p class="note">Sleep here free. Use <b>Store</b> in your pack to put things in the chest; what is in the chest is safe from paladins and falls.</p>${chest.length?`<ul class="items">${chest.map(id=>{const it=cell(id);return`<li><span><span class="nm">${esc(it.t)}</span><span class="meta">${esc(it.kind)}${it.magic?" · magic":""}</span></span><span class="acts"><button class="small" data-act="withdraw" data-id="${id}">Take out</button></span></li>`}).join("")}</ul>`:""}`}
+  if(C&&C.town===L.id){const chest=rank(C.id,"contain");html+=`<div class="sectionhead"><h3>Your cottage</h3><span class="mono" style="font-size:13pt;color:var(--faint)">${chest.length} in the chest</span></div><p class="note">Sleep here free. Use <b>Store</b> in your pack to put things in the chest; what is in the chest is safe from paladins and falls.</p>${chest.length?`<ul class="items">${chest.map(id=>{const it=cell(id);return`<li><span><span class="nm">${esc(it.t)}</span><span class="meta">${esc(it.kind)}${it.magic?" · magic":""}</span></span><span class="acts"><button class="small" data-act="withdraw" data-id="${id}">Take out</button></span></li>`}).join("")}</ul>`:""}`}
   else html+=`<div class="btnrow"><button class="small" data-act="rent" ${sv("GP")<COTTAGE_RENT?"disabled":""}>${C?"Move your cottage here":"Rent a cottage here"} · ${COTTAGE_RENT} gp</button><span class="note">A home with a chest the paladin cannot touch.</span></div>`;
  }
  html+=renderTravellers(L);
@@ -4023,7 +4111,7 @@ function renderPlace(){
  const rp=reputation(),items=storeIds(here).filter(id=>!(cell(id).forSale&&cell(id).magic&&rp<cell(id).minRep));
  const withheld=storeIds(here).length-items.length;
  if(L.sanctuary)html+=`<p class="note">Nobody may fight here. Rest is free, and heals you fully. Those who are beaten are brought here to recover.</p>`;
- html+=`<div class="sectionhead"><h3>${L.town?"Lying here and for sale":"Lying here"}</h3><span class="mono" style="font-size:12px;color:var(--faint)">${items.length} ${items.length===1?"item":"items"}</span></div>`;
+ html+=`<div class="sectionhead"><h3>${L.town?"Lying here and for sale":"Lying here"}</h3><span class="mono" style="font-size:13pt;color:var(--faint)">${items.length} ${items.length===1?"item":"items"}</span></div>`;
  if(f&&items.length)html+=`<p class="note">You cannot pick anything up while ${esc(cell(f).t)} is here.</p>`;
  if(withheld)html+=`<p class="note">The merchants keep ${withheld} magic item${withheld>1?"s":""} under the counter until your reputation recovers.</p>`;
  html+=items.length?`<ul class="items">${items.map(id=>itemRow(id,"here")).join("")}</ul>`:`<p class="empty">Nothing here to pick up. Anything you put down stays here for when you return.</p>`;
@@ -4045,7 +4133,7 @@ function renderCreate(el){
  <label for="f-theme">World theme (the narrator keeps every place in this spirit)<textarea id="f-theme" rows="3" maxlength="400">${esc(draft.theme)}</textarea></label>
  ${canJoinRealm()?`<label class="check" for="f-shared"><input type="checkbox" id="f-shared" ${draft.shared?"checked":""}> Join the shared realm: one world for every player, where you can see other travellers, talk to them and leave things for them. You keep your own character and save. ${draft.shared?"The realm's founder already chose its theme.":""}</label>`:""}
  <div class="rolled">${STATS.map((k,i)=>`<div><span class="k">${k}</span><span class="v">${s[i]}</span><span class="k">${sgn(mod(s[i]))}</span></div>`).join("")}</div>
- <p class="note mono" style="font-size:13px">Hit die d${C.hd} · starting HP ${hp} · AC ${10+mod(s[1])+(C.kit.find(k=>k[2]==="armor")?.[6]||0)} · carry ${s[0]*15} lb</p>
+ <p class="note mono" style="font-size:13pt">Hit die d${C.hd} · starting HP ${hp} · AC ${10+mod(s[1])+(C.kit.find(k=>k[2]==="armor")?.[6]||0)} · carry ${s[0]*15} lb</p>
  <p class="note">${esc(CLASS_NOTES[draft.cls])}</p>
  <div class="btnrow"><button id="f-reroll" ${busy?"disabled":""}>Reroll abilities</button><button class="primary" id="f-begin" ${busy?"disabled":""}>Set out</button>${waiting}</div></div>`;
  $("f-name").oninput=e=>draft.name=e.target.value;
@@ -4063,7 +4151,7 @@ function renderSheet(){
  if(!charId()){el.innerHTML=`<div class="who"><h2>No character yet</h2></div><p class="empty">Roll a character to see their sheet here: abilities, hit points, armour class and level.</p>`;pk.innerHTML=`<div class="sectionhead"><h3 id="pack-h">Pack</h3></div><p class="empty">Your class kit, a healing potion and three random items go here when you set out.</p>`;return}
  const ch=cell(charId()),hp=sv("HP"),max=sv("MAXHP"),pct=Math.max(0,Math.min(100,hp/max*100)),w=weapon(),L=hereId()&&cell(hereId()),e=entitlement();
  const restBlocked=busy||foeId()||isDowned();
- el.innerHTML=`<div class="who"><h2>${esc(ch.t)}</h2><span class="mono" style="font-size:13px;color:var(--faint)">Level ${sv("LVL")} ${esc(ch.cls)}</span></div>
+ el.innerHTML=`<div class="who"><h2>${esc(ch.t)}</h2><span class="mono" style="font-size:13pt;color:var(--faint)">Level ${sv("LVL")} ${esc(ch.cls)}</span></div>
  <button type="button" class="statfold" data-statfold aria-expanded="${statsOpen}" aria-controls="stat-details"><span class="lbl">Abilities</span><span class="sum mono">${statsOpen?"":`${hungerLevel()>=2?"starving · ":hungerLevel()>=1?"hungry · ":""}AC ${armourClass()} · XP ${sv("XP")}/${sv("LVL")*100} · ${sv("GP")} gp${STATS.some(k=>boonFor(k))?" · ✦ boon":""}`}</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6 8 10.5 12.5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <div class="statbody" id="stat-details"${statsOpen?"":" hidden"}>
  <div class="abil">${STATS.map(k=>`<div${boonFor(k)?` class="boon" title="Boon: +${boonFor(k)} until ${(ch.boons||[]).filter(b=>b.stat===k).map(b=>fmtClock(b.until)).join(", ")}"`:""}><span class="k">${k}${boonFor(k)?" ✦":""}</span><span class="v">${sv(k)}</span><span class="m">${sgn(mod(sv(k)))}</span></div>`).join("")}</div>
@@ -4076,19 +4164,19 @@ function renderSheet(){
  <details class="standing"><summary>Reputation, towns and plan</summary>
  <dl class="facts towns">${towns().map(T=>{const v=townStanding(T.id);return`<div><dt>${esc(T.t)}</dt><dd>${repTier(v)} ${v>=0?"+":"−"}${Math.abs(v).toFixed(2)}</dd></div>`}).join("")}</dl>
  ${(()=>{const T=towns(),rel=[];for(let i=0;i<T.length;i++)for(let j=i+1;j<T.length;j++)rel.push(`${esc(T[i].t)} and ${esc(T[j].t)}: ${relationName(rivalry(T[i].id,T[j].id))}`);return rel.length?`<p class="note">${rel.join(" · ")}. Helping one town is noticed by its rivals.</p>`:""})()}
- ${rumours().filter(r=>!r.found).length?`<div class="sectionhead"><h3>Rumours</h3><span class="mono" style="font-size:12px;color:var(--faint)">${rumours().filter(r=>!r.found).length} unproven</span></div><ul class="quests">${rumours().filter(r=>!r.found).slice(-6).reverse().map(r=>`<li>${esc(r.from)}: ${esc(r.text)}</li>`).join("")}</ul>`:""}
+ ${rumours().filter(r=>!r.found).length?`<div class="sectionhead"><h3>Rumours</h3><span class="mono" style="font-size:13pt;color:var(--faint)">${rumours().filter(r=>!r.found).length} unproven</span></div><ul class="quests">${rumours().filter(r=>!r.found).slice(-6).reverse().map(r=>`<li>${esc(r.from)}: ${esc(r.text)}</li>`).join("")}</ul>`:""}
  <dl class="facts"><div><dt>Reputation</dt><dd>${repTier()} ${reputation()>=0?"+":"−"}${Math.abs(reputation()).toFixed(2)}</dd></div><div><dt>Standing</dt><dd>${ordinal(Math.round(standingPercentile()))} pct</dd></div><div><dt>Magic offered</dt><dd>${reputation()>=.5?"rare and common":reputation()>=.25?"common":"none"}</dd></div></dl>
  </details>
- ${quests().length?`<div class="sectionhead"><h3>Quests</h3><span class="mono" style="font-size:12px;color:var(--faint)">${quests().filter(q=>!q.done).length} open</span></div><ul class="quests">${quests().slice(-8).reverse().map(q=>`<li class="${q.done?(q.failed?"failed":"done"):""}">${q.done?(q.failed?"Failed: ":"Done: "):""}${esc(q.giverName)} asked you to ${esc(q.desc)} · ${q.gold} gp</li>`).join("")}</ul>`:""}`;
+ ${quests().length?`<div class="sectionhead"><h3>Quests</h3><span class="mono" style="font-size:13pt;color:var(--faint)">${quests().filter(q=>!q.done).length} open</span></div><ul class="quests">${quests().slice(-8).reverse().map(q=>`<li class="${q.done?(q.failed?"failed":"done"):""}">${q.done?(q.failed?"Failed: ":"Done: "):""}${esc(q.giverName)} asked you to ${esc(q.desc)} · ${q.gold} gp</li>`).join("")}</ul>`:""}`;
  $("rest").onclick=rest;
  const ids=packIds();
- pk.innerHTML=`<div class="sectionhead"><h3 id="pack-h">Pack</h3><span class="mono" style="font-size:12px;color:${carried()>capacity()*.9?"var(--danger)":"var(--faint)"}">${fmtW(carried())} / ${capacity()} lb</span></div>`+
+ pk.innerHTML=`<div class="sectionhead"><h3 id="pack-h">Pack</h3><span class="mono" style="font-size:13pt;color:${carried()>capacity()*.9?"var(--danger)":"var(--faint)"}">${fmtW(carried())} / ${capacity()} lb</span></div>`+
   (ids.length?`<ul class="items">${ids.map(id=>itemRow(id,"pack")).join("")}</ul>`:`<p class="empty">Your pack is empty.</p>`)+renderCraft();
 }
 let planInfoOpen=false;
 
 function renderSocial(){
- const svg=$("social");if(!svg)return;
+ const svg=$("social");if(!svg)return;{const b=svg.getBoundingClientRect();svg.style.setProperty("--u",b.width>50?(340/b.width).toFixed(4):"1")}
  const folk=npcs().slice().sort((a,b)=>(a.wild?1:0)-(b.wild?1:0)||String(a.home||a.species).localeCompare(String(b.home||b.species)));
  const me=charId()&&cell(charId());
  const nodes=me?folk.concat([me]):folk;
