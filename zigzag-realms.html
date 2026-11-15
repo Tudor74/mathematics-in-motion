@@ -80,12 +80,21 @@ header.top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align
 .orb{width:11px;height:11px;border-radius:50%;background:var(--amber);flex:0 0 11px}
 .pill.clock[data-night="true"] .orb{background:transparent;box-shadow:inset -4px -1px 0 0 var(--water)}
 
-.grid{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr) minmax(0,330px);gap:16px;align-items:start}
+.grid{display:grid;grid-template-columns:minmax(0,480px) minmax(0,1fr) minmax(0,330px);gap:16px;align-items:start}
 .panel{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:16px;min-width:0;display:grid;gap:14px;align-content:start}
 .col{display:grid;gap:16px;min-width:0;align-content:start}
 
 /* Map */
-.map svg{display:block;width:100%;height:auto;max-width:100%;aspect-ratio:1/1;background:var(--wash);border-radius:6px}
+.map svg{display:block;width:100%;height:auto;max-width:100%;aspect-ratio:480/416;background:var(--wash);border-radius:6px}
+.mapwrap{position:relative}
+/* The heads-up display: what changes as you play, over the map's top-left corner */
+.hud{position:absolute;left:8px;top:8px;display:grid;gap:4px;padding:7px 9px;border-radius:8px;background:color-mix(in srgb,var(--sheet) 88%,transparent);border:1px solid var(--rule);font-family:var(--mono);font-size:11.5px;color:var(--ink);min-width:150px;max-width:calc(100% - 16px);box-shadow:0 2px 8px #0002}
+.hud:empty{display:none}
+.hud .row{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.hud .bar{height:6px;border-radius:99px;background:var(--wash);border:1px solid var(--rule);overflow:hidden}.hud .bar span{display:block;height:100%;background:var(--good)}
+.hud .bar.low span{background:var(--danger)}.hud .bar.xp span{background:var(--magic)}
+.hud .warn{color:var(--danger)}.hud button{min-height:26px;padding:2px 8px;font-size:12px;font-family:var(--body)}
+.mapplace h2{font-size:21px;line-height:1.15}.mapplace .chips{gap:4px}.mapplace .chip{font-size:11px;padding:1px 6px}.mapplace .eyebrow{font-size:10px}
 .map .gridline{stroke:var(--rule);stroke-width:1}
 .map .link{stroke:var(--ink);stroke-width:3;stroke-linecap:round;opacity:.55}
 .map .tile{stroke:var(--ink);stroke-opacity:.35;stroke-width:1;stroke-linejoin:round;cursor:pointer}
@@ -240,6 +249,8 @@ details.zz summary{cursor:pointer;font-family:var(--mono);font-size:13px;color:v
 .facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 12px;margin:0}
 .facts div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dotted var(--rule);padding:3px 0;font-size:14px}
 .facts dt{color:var(--faint)}
+details.standing{border-top:1px solid var(--rule);padding-top:8px;display:grid;gap:10px}details.standing summary{cursor:pointer;font-size:14px;font-weight:600}
+details.standing[open]{gap:10px}
 .facts>div{min-width:0}.facts dd{text-align:right;overflow-wrap:anywhere;min-width:0}
 .facts.towns{grid-template-columns:minmax(0,1fr)}.facts dd{margin:0;font-family:var(--mono);font-size:13px}
 
@@ -361,7 +372,7 @@ html.realm{--display:"Realm Script","Alegreya SC",Georgia,serif;--body:"Realm Sc
 html.realm body{font-size:17.5px;letter-spacing:.02em;word-spacing:.12em}
 html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
 
-@media (max-width:1040px){.grid{grid-template-columns:minmax(0,300px) minmax(0,1fr)}.col.right{grid-column:1 / -1;grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:1040px){.grid{grid-template-columns:minmax(0,420px) minmax(0,1fr)}.col.right{grid-column:1 / -1;grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:720px){.grid{grid-template-columns:minmax(0,1fr)}.col.right{grid-template-columns:minmax(0,1fr)}.col.center{order:-1}.create .row{grid-template-columns:1fr}.rolled{grid-template-columns:repeat(3,minmax(0,1fr))}.desc{font-size:17px}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -403,8 +414,9 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
  <div class="grid">
   <div class="col left" data-col="left">
    <section class="panel map" aria-labelledby="map-h">
-    <div class="sectionhead"><h3 id="map-h">Survey map</h3><span class="mono" id="coords" style="font-size:12px;color:var(--faint)"></span></div>
-    <svg id="map" viewBox="0 0 420 420" role="img" aria-label="Map of explored places on your current level"></svg>
+    <div class="mapplace" id="mapplace"><div class="sectionhead"><h3 id="map-h">Survey map</h3></div></div>
+    <span class="mono" id="coords" style="font-size:12px;color:var(--faint)"></span>
+    <div class="mapwrap"><svg id="map" viewBox="0 0 480 416" role="img" aria-label="Map of explored places on your current level"></svg><div class="hud" id="hud" aria-live="polite"></div></div>
     <div class="zoomrow"><button class="small" id="zoom-out" type="button" aria-label="Zoom out">−</button><span class="mono" id="zoom-label">zoom</span><button class="small" id="zoom-in" type="button" aria-label="Zoom in">+</button></div>
     <div class="layerbar" id="layerbar" role="img" aria-label="Layers"></div>
     <p class="legend"><span>▲ way up</span><span>▼ way down</span><span class="r">◆ anomaly</span><span class="p">● townsfolk</span><span style="color:var(--good)">● creatures</span><span class="m">┅ magical bridge</span><span>┿ railway</span><span style="color:var(--amber)">● sanctuary beacon</span><span class="m">● cave entrance</span></p>
@@ -3226,20 +3238,20 @@ function maybeIntroduce(L){
 }
 // The fuzzy ring for a friend: centred within three hexes of them, moving each game hour
 function friendRingCentre(p){const h=Math.floor(gameNow()/60),a=h32(p.u.split("").reduce((s,c)=>s*31+c.charCodeAt(0)|0,7)+h);return{x:p.x+Math.round((a-.5)*6),y:p.y+Math.round((h32(Math.floor(a*1e6)+3)-.5)*6),z:p.z}}
-function mapFriends(H,R,Z,P,V){
+function mapFriends(H,R,Z,P,V,W,inMap){
  if(!mp.on())return"";let out="";const fr=friends(),r=cell("root");
  // The lit path toward someone you were told about
  const intro=r&&r.intro&&mp.players.find(p=>p.u===r.intro.u);
  if(intro){const dx=wrapC(intro.x-H.x),dy=wrapC(intro.y-H.y),n=Math.max(Math.abs(dx),Math.abs(dy));
-  for(let k=1;k<=Math.min(n,R+2);k++){const qx=Math.round(dx*k/n),qy=Math.round(dy*k/n),[px,py]=P(qx,qy);
+  for(let k=1;k<=n;k++){if(!inMap(Math.round(dx*k/n),Math.round(dy*k/n)))break;const qx=Math.round(dx*k/n),qy=Math.round(dy*k/n),[px,py]=P(qx,qy);
    out+=`<circle class="friendpath" cx="${px+30}" cy="${py+30}" r="${k===n?10:6}" style="animation-delay:${(k*.18).toFixed(2)}s"/>`}
-  const [tx,ty]=P(Math.max(-R-1,Math.min(R+1,dx)),Math.max(-R,Math.min(R,dy)));
+  let tk=n;while(tk>1&&!inMap(Math.round(dx*tk/n),Math.round(dy*tk/n)))tk--;const [tx,ty]=P(Math.round(dx*tk/n),Math.round(dy*tk/n));
   out+=`<text class="friendname" x="${tx+30}" y="${ty+12}" text-anchor="middle">${esc(intro.name)} · ${n}</text>`}
  // Rings for friends you have met
  for(const p of mp.players){if(!fr[p.u]||(intro&&intro.u===p.u))continue;const c=friendRingCentre(p);if(c.z!==Z)continue;
-  const dx=wrapC(c.x-H.x),dy=wrapC(c.y-H.y),[px,py]=P(dx,dy),cx=px+30,cy=py+30,inView=Math.abs(dx)<=R+1&&Math.abs(dy)<=R;
-  if(inView)out+=`<g class="friendring" pointer-events="none"><circle cx="${cx}" cy="${cy}" r="20"><animate attributeName="r" from="16" to="${7*48*.55}" dur="3.6s" repeatCount="indefinite"/><animate attributeName="opacity" from=".55" to="0" dur="3.6s" repeatCount="indefinite"/></circle><text x="${cx}" y="${cy+4}" text-anchor="middle">${esc(p.name)}</text></g>`;
-  else{const vx=cx-210,vy=cy-210,k=Math.min(V*.43/Math.abs(vx||1e-9),V*.43/Math.abs(vy||1e-9)),ex=210+vx*k,ey=210+vy*k;
+  const dx=wrapC(c.x-H.x),dy=wrapC(c.y-H.y),[px,py]=P(dx,dy),cx=px+30,cy=py+30,shown=inMap(dx,dy);
+  if(shown)out+=`<g class="friendring" pointer-events="none"><circle cx="${cx}" cy="${cy}" r="20"><animate attributeName="r" from="16" to="${7*48*.55}" dur="3.6s" repeatCount="indefinite"/><animate attributeName="opacity" from=".55" to="0" dur="3.6s" repeatCount="indefinite"/></circle><text x="${cx}" y="${cy+4}" text-anchor="middle">${esc(p.name)}</text></g>`;
+  else{const vx=cx-210,vy=cy-210,k=Math.min(W*.45/Math.abs(vx||1e-9),V*.43/Math.abs(vy||1e-9)),ex=210+vx*k,ey=210+vy*k;
    out+=`<g class="friendring far" pointer-events="none"><circle cx="${ex}" cy="${ey}" r="10"><animate attributeName="r" from="6" to="26" dur="3.6s" repeatCount="indefinite"/><animate attributeName="opacity" from=".7" to="0" dur="3.6s" repeatCount="indefinite"/></circle><text x="${ex}" y="${ey+(ey>210?-14:22)}" text-anchor="middle">${esc(p.name)} ~${Math.max(Math.abs(dx),Math.abs(dy))}</text></g>`}
  }
  return out;
@@ -3311,23 +3323,36 @@ const GLYPH_MON={arch:"M16 35 V21 Q26 6 36 21 V35 M20 35 V22 Q26 12 32 22 V35",s
 const ZOOMS=[2,3,4,5,6,8];let mapZoom=3;try{const z=+localStorage.getItem("zr-zoom");if(ZOOMS.includes(z))mapZoom=z}catch(e){}
 function setZoom(step){const i=Math.max(0,Math.min(ZOOMS.length-1,ZOOMS.indexOf(mapZoom)+step));mapZoom=ZOOMS[i];try{localStorage.setItem("zr-zoom",String(mapZoom))}catch(e){}renderMap()}
 document.addEventListener("click",e=>{if(e.target.closest("#zoom-in"))setZoom(-1);else if(e.target.closest("#zoom-out"))setZoom(1)});
+/* The HUD: hit points, level and XP, gold, load, light and hunger, plus a rest button, over the map */
+function renderHud(){
+ const el=$("hud");if(!el)return;if(!charId()||!hereId()){el.innerHTML="";return}
+ const hp=sv("HP"),max=sv("MAXHP"),pct=Math.max(0,Math.min(100,hp/max*100)),lvl=sv("LVL"),xp=sv("XP"),L=cell(hereId()),night=isNight(gameNow());
+ const steps=Math.floor(nightLeft()/STEP_MIN),light=!hasLight()?(night||zOf(L)<0?'<span class="warn">no light</span>':"no lantern"):night?`lantern · ${steps} ${steps===1?"step":"steps"}`:"lantern";
+ const hunger=hungerLevel()>=2?'<span class="warn">starving</span>':hungerLevel()>=1?'<span class="warn">hungry</span>':"fed";
+ const restBlocked=busy||foeId()||isDowned();
+ el.innerHTML=`<div class="row"><span>HP ${hp}/${max}</span><span>${sv("GP")} gp</span></div><div class="bar${pct<=34?" low":""}"><span style="width:${pct}%"></span></div>
+  <div class="row"><span>Level ${lvl}</span><span>XP ${xp}/${lvl*100}</span></div><div class="bar xp"><span style="width:${Math.min(100,xp/(lvl*100)*100)}%"></span></div>
+  <div class="row"><span>${light}</span><span>${hunger}</span></div><div class="row"><span>${fmtW(carried())}/${capacity()} lb</span><button type="button" id="hud-rest" ${restBlocked?"disabled":""}>${L.town?"Room · 2 gp":"Camp"}</button></div>`;
+ $("hud-rest").onclick=rest;
+}
 function renderMap(){
  const svg=$("map"),here=hereId();
- if(!here){svg.innerHTML=`<text x="210" y="215" text-anchor="middle" class="axis">The map starts when your character sets out.</text>`;$("coords").textContent="";return}
+ if(!here){renderHud();$("mapplace").innerHTML=`<div class="sectionhead"><h3 id="map-h">Survey map</h3></div>`;svg.innerHTML=`<text x="210" y="215" text-anchor="middle" class="axis">The map starts when your character sets out.</text>`;$("coords").textContent="";return}
  const H=cell(here),Z=zOf(H),R=mapZoom,magic=magicPresent(),t=gameNow(),ws=wxState();
  // Zoom: the drawing keeps its scale and the view widens; V is the visible width around the centre
- const V=420*(R+.6)/3.6,VB=[210-V/2,210-V/2,V,V],ui=V/420,UI=s=>`<g transform="translate(${VB[0]} ${VB[1]}) scale(${ui})">${s}</g>`;
+ const ASP=480/416,V=420*(R+.6)/3.6,W=V*ASP,VB=[210-W/2,210-V/2,W,V],ui=V/420,UI=s=>`<g transform="translate(${VB[0]+(W-V)/2} ${VB[1]}) scale(${ui})">${s}</g>`;
  /* Flat-topped hexagons in staggered columns: odd columns (by world x) sit half a hex lower, so each
     place touches six others. The world is still a square grid underneath; only the drawing changes.
     P gives the top-left of a 60×60 box centred on the hex, so everything drawn at +30,+30 is centred. */
  const HW=64,HH=HW*Math.sqrt(3)/2,odd=x=>((x%2)+2)%2===1,shift=x=>(odd(x)?HH/2:0)-(odd(H.x)?HH/2:0);
  const C=(dx,dy)=>[210+dx*HW*.75,210-dy*HH+shift(H.x+dx)],P=(dx,dy)=>{const [cx,cy]=C(dx,dy);return[cx-30,cy-30]};
+ const inView=(dx,dy)=>{const [cx,cy]=C(dx,dy);return cx>VB[0]-8&&cx<VB[0]+W+8&&cy>VB[1]-8&&cy<VB[1]+V+8},DXR=Math.ceil(W/2/(HW*.75))+1;
  const hex=(cx,cy,k=1)=>[0,60,120,180,240,300].map(a=>{const r=a*Math.PI/180;return`${(cx+Math.cos(r)*HW/2*k).toFixed(1)},${(cy+Math.sin(r)*HW/2*k).toFixed(1)}`}).join(" ");
  let out="";
- for(let dx=-R-3;dx<=R+3;dx++)for(let dy=-R-2;dy<=R+2;dy++){const [cx,cy]=C(dx,dy);if(cy<VB[1]-HH||cy>VB[1]+V+HH||cx<VB[0]-HW||cx>VB[0]+V+HW)continue;out+=`<polygon class="gridline hexgrid" points="${hex(cx,cy)}"/>`}
+ for(let dx=-DXR;dx<=DXR;dx++)for(let dy=-R-2;dy<=R+2;dy++){const [cx,cy]=C(dx,dy);if(cy<VB[1]-HH||cy>VB[1]+V+HH||cx<VB[0]-HW||cx>VB[0]+W+HW)continue;out+=`<polygon class="gridline hexgrid" points="${hex(cx,cy)}"/>`}
  /* Every layer at once: the mountain above you is always painted, each layer as a faint hex, so the
     layers stack up darker toward the peak; lower slopes and caves you have walked show beneath, dashed. */
- for(let dx=-R-2;dx<=R+2;dx++)for(let dy=-R-1;dy<=R+1;dy++){const [cx,cy]=C(dx,dy);
+ for(let dx=-DXR;dx<=DXR;dx++)for(let dy=-R-1;dy<=R+1;dy++){const [cx,cy]=C(dx,dy);if(!inView(dx,dy))continue;
   for(let z=-ZMAX;z<=ZMAX;z++){const id=coord.get(ck(H.x+dx,H.y+dy,z));if(!id)continue;const c=cell(id),gap=Math.abs(z-Z);
    if(z===Z){if(c.massif&&!visible(c))out+=`<polygon class="ghost up" points="${hex(cx,cy,.95)}" style="opacity:.16"/>`;continue}
    if(z>Z&&c.massif)out+=`<polygon class="ghost up" points="${hex(cx,cy,.95-.04*Math.min(gap,6))}" style="opacity:${(.32/Math.sqrt(gap)).toFixed(3)}"><title>${esc(c.t)}, ${z-Z} ${z-Z===1?"layer":"layers"} above</title></polygon>`;
@@ -3335,7 +3360,7 @@ function renderMap(){
    else if(z<Z&&c.visited)out+=`<polygon class="ghost down" points="${hex(cx,cy,.8)}" style="opacity:${(.55/gap).toFixed(3)}"><title>${esc(c.t)}, ${Z-z} ${Z-z===1?"layer":"layers"} below</title></polygon>`;
    else if(z>Z&&c.visited)out+=`<polygon class="ghost down" points="${hex(cx,cy,.8)}" style="opacity:${(.4/gap).toFixed(3)}"/>`;
   }}
- const vis=new Map();for(let dx=-R-1;dx<=R+1;dx++)for(let dy=-R;dy<=R;dy++){const id=coord.get(ck(H.x+dx,H.y+dy,Z));if(id&&visible(cell(id)))vis.set(id,[dx,dy])}
+ const vis=new Map();for(let dx=-DXR;dx<=DXR;dx++)for(let dy=-R-1;dy<=R+1;dy++){if(!inView(dx,dy))continue;const id=coord.get(ck(H.x+dx,H.y+dy,Z));if(id&&visible(cell(id)))vis.set(id,[dx,dy])}
  const walkable=a=>{const c=cell(a);return!(c.river&&!c.river.crossing)&&!c.lake};
  for(const [id,[dx,dy]] of vis){const c=cell(id),[px,py]=P(dx,dy);
   const e=coord.get(ck(c.x+1,c.y,Z)),n=coord.get(ck(c.x,c.y+1,Z));
@@ -3364,7 +3389,7 @@ function renderMap(){
  for(const m of marks().filter(m=>!m.done).map(m=>({x:m.x,y:m.y,label:`Map mark: ${m.label}`})).concat(rumours().filter(r=>!r.found&&cell(r.cell)).map(r=>({x:cell(r.cell).x,y:cell(r.cell).y,label:`Rumour: ${r.text}`})))){
   if(Z!==0)break;const dx=wrapC(m.x-H.x),dy=wrapC(m.y-H.y);if(Math.abs(dx)>R||Math.abs(dy)>R||(!dx&&!dy))continue;const [qx,qy]=P(dx,dy);
   out+=`<text class="markstar" x="${qx+48}" y="${qy+19}" text-anchor="middle"><title>${esc(m.label)}</title>★</text>`}
- out+=mapTravellers(H,R,Z,P)+mapRealmEvent(H,R,Z,P)+mapFriends(H,R,Z,P,V);
+ out+=mapTravellers(H,R,Z,P)+mapRealmEvent(H,R,Z,P)+mapFriends(H,R,Z,P,V,W,inView);
  /* Beacons: the nearest sanctuaries and cave entrances shine from far off. In view they glow on their
     hex; beyond the map they show at its edge, in their direction, with how many squares away. */
  let beacons="";
@@ -3375,9 +3400,9 @@ function renderMap(){
    const dx=wrapC(c.x-H.x),dy=wrapC(c.y-H.y),d=Math.max(Math.abs(dx),Math.abs(dy));if(d<=20)found[kind].push({c,dx,dy,d,kind})}
   for(const b of [...found.sanctuary.sort((a,b)=>a.d-b.d).slice(0,3),...found.cave.sort((a,b)=>a.d-b.d).slice(0,3)]){
    const what=b.kind==="sanctuary"?"Sanctuary":"Cave entrance",tip=`${what}: ${b.c.t}, ${bearing({x:b.c.x,y:b.c.y,z:0},H)}`;
-   if(Math.abs(b.dx)<=R+1&&Math.abs(b.dy)<=R){const [cx,cy]=C(b.dx,b.dy);
+   if(inView(b.dx,b.dy)){const [cx,cy]=C(b.dx,b.dy);
     beacons+=`<g class="beacon ${b.kind}" pointer-events="none"><circle class="halo" cx="${cx}" cy="${cy}" r="27"/><polygon class="ring" points="${hex(cx,cy,.98)}"/></g>`;continue}
-   const [tx,ty]=C(b.dx,b.dy),vx=tx-210,vy=ty-210,k=Math.min(V*.43/Math.abs(vx||1e-9),V*.43/Math.abs(vy||1e-9)),ex=210+vx*k,ey=210+vy*k;
+   const [tx,ty]=C(b.dx,b.dy),vx=tx-210,vy=ty-210,k=Math.min(W*.45/Math.abs(vx||1e-9),V*.43/Math.abs(vy||1e-9)),ex=210+vx*k,ey=210+vy*k;
    const icon=b.kind==="sanctuary"?`<path d="M${ex-7} ${ey+6} V${ey-1} L${ex} ${ey-7} L${ex+7} ${ey-1} V${ey+6} Z M${ex} ${ey-3} V${ey+4} M${ex-3} ${ey} H${ex+3}"/>`:`<path d="M${ex-7} ${ey-5} H${ex+7} L${ex} ${ey+6} Z"/>`;
    beacons+=`<g class="beacon ${b.kind} far" data-loc="${b.c.id}"><circle class="halo" cx="${ex}" cy="${ey}" r="14"/>${icon}<text x="${ex}" y="${ey+(ey>210?-14:22)}" text-anchor="middle">${b.d}</text><title>${esc(tip)}</title></g>`;
   }
@@ -3385,7 +3410,7 @@ function renderMap(){
  const [hx,hy]=P(0,0);
  out+=`<polygon class="here" points="${hex(hx+30,hy+30,1.02)}" pointer-events="none"/><circle class="pawn" cx="${hx+44}" cy="${hy+44}" r="6"/>`;
  if(ws&&ws.storm&&Z>=0){const sx=wrapC(Math.round(ws.storm.x)-H.x),sy=wrapC(Math.round(ws.storm.y)-H.y);const [qx,qy]=P(sx,sy);out+=`<circle class="stormring" cx="${qx+30}" cy="${qy+30}" r="${ws.storm.r*HW*.6}"/>`}
- out+=UI(`<text class="axis" x="414" y="14" text-anchor="end">N ↑</text>`);
+ out+=`<text class="axis" x="${VB[0]+W-6*ui}" y="${VB[1]+14*ui}" text-anchor="end" style="font-size:${10*ui}px">N ↑</text>`;
  // The fifteen layers, deepest on the left, the peak on the right; yours is marked
  $("layerbar").innerHTML=`<span class="mono">−${ZMAX}</span>${Array.from({length:2*ZMAX+1},(_,i)=>{const z=i-ZMAX;return`<span class="lv${z===Z?" on":z===0?" ground":z>0?" up":" down"}" title="${z===0?"ground level":z>0?`${z} above ground`:`${-z} below ground`}${z===Z?" (you are here)":""}"></span>`}).join("")}<span class="mono">+${ZMAX}</span>`;
  $("layerbar").setAttribute("aria-label",`Layer ${Z>0?"+"+Z:Z} of fifteen, from −${ZMAX} to +${ZMAX}`);
@@ -3401,7 +3426,8 @@ function renderMap(){
    <text class="nn-s" x="210" y="${line.length>52?262:248}" text-anchor="middle">Dawn in about ${mins} real ${mins===1?"minute":"minutes"}</text></g>`);
  }
  else out+=beacons;
- svg.setAttribute("viewBox",VB.map(v=>v.toFixed(1)).join(" "));$("zoom-label").textContent=`${2*R+1} hexes across`;$("zoom-in").disabled=R<=ZOOMS[0];$("zoom-out").disabled=R>=ZOOMS[ZOOMS.length-1];
+ svg.setAttribute("viewBox",VB.map(v=>v.toFixed(1)).join(" "));$("zoom-label").textContent=`${Math.round(W/(HW*.75))} × ${2*R+1} hexes`;$("zoom-in").disabled=R<=ZOOMS[0];$("zoom-out").disabled=R>=ZOOMS[ZOOMS.length-1];
+ renderHud();
  svg.innerHTML=`<defs><filter id="beaconglow" x="-1" y="-1" width="3" height="3"><feGaussianBlur stdDeviation="4"/></filter></defs>`+out;
  const ew=H.x===0?"0":Math.abs(H.x)+(H.x>0?" E":" W"),ns=H.y===0?"0":Math.abs(H.y)+(H.y>0?" N":" S");
  $("coords").textContent=`${ew}, ${ns} · level ${Z>0?"+"+Z:Z===0?"0":"−"+(-Z)}`;
@@ -3545,7 +3571,8 @@ function renderPlace(){
  if(L.river&&L.river.crossing==="magic")chips.push(`<span class="chip magic">${magic?"bridge present":"bridge absent"}</span>`);
  if(L.town)chips.push(`<span class="chip">${esc(L.town.side)} bank of the ${esc(riverName())}</span>`);
  chips.push(`<span class="chip">${L.dist?L.dist+" steps from the start":"starting point"}</span>`,`<span class="chip">written by ${L.by==="claude"?esc(ai.kind==="puter"?"AI":"Claude"):"built-in tables"}</span>`);
- let html=`<div class="placehead"><p class="eyebrow">You are at</p><h2>${esc(L.t)}</h2><div class="chips">${chips.join("")}</div></div>`;
+ $("mapplace").innerHTML=`<div class="placehead"><p class="eyebrow">You are at</p><h2 id="map-h">${esc(L.t)}</h2><div class="chips">${chips.join("")}</div></div>`;
+ let html="";
  html+=renderRealmEvent(L);
  if(canJoinRealm()&&!mp.on()&&puterUser&&!store.stale)html+=`<div class="realmevent"><span class="eyebrow">Shared realm</span><p>You are playing in a world of your own. Use <b>Join the shared realm</b> at the top of the page to roll a character in the world other players share.</p></div>`;
  if(busy)html+=`<p class="mapping">${busy.dir==="look"?"The narrator is writing what you can see from here":busy.dir==="up"?"The narrator is mapping what lies above":busy.dir==="down"?"The narrator is mapping what lies below":"The narrator is mapping the way "+busy.dir}</p>`;
@@ -3616,7 +3643,6 @@ function renderSheet(){
  const ch=cell(charId()),hp=sv("HP"),max=sv("MAXHP"),pct=Math.max(0,Math.min(100,hp/max*100)),w=weapon(),L=hereId()&&cell(hereId()),e=entitlement();
  const restBlocked=busy||foeId()||isDowned();
  el.innerHTML=`<div class="who"><h2>${esc(ch.t)}</h2><span class="mono" style="font-size:13px;color:var(--faint)">Level ${sv("LVL")} ${esc(ch.cls)}</span></div>
- <div><div class="hprow"><span>Hit points</span><span>${hp} / ${max}</span></div><div class="hpbar${pct<=34?" low":""}"><span style="width:${pct}%"></span></div></div>
  <button type="button" class="statfold" data-statfold aria-expanded="${statsOpen}" aria-controls="stat-details"><span class="lbl">Abilities</span><span class="sum mono">${statsOpen?"":`${hungerLevel()>=2?"starving · ":hungerLevel()>=1?"hungry · ":""}AC ${armourClass()} · XP ${sv("XP")}/${sv("LVL")*100} · ${sv("GP")} gp${STATS.some(k=>boonFor(k))?" · ✦ boon":""}`}</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6 8 10.5 12.5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <div class="statbody" id="stat-details"${statsOpen?"":" hidden"}>
  <div class="abil">${STATS.map(k=>`<div${boonFor(k)?` class="boon" title="Boon: +${boonFor(k)} until ${(ch.boons||[]).filter(b=>b.stat===k).map(b=>fmtClock(b.until)).join(", ")}"`:""}><span class="k">${k}${boonFor(k)?" ✦":""}</span><span class="v">${sv(k)}</span><span class="m">${sgn(mod(sv(k)))}</span></div>`).join("")}</div>
@@ -3626,12 +3652,14 @@ function renderSheet(){
  <div class="btnrow"><button id="rest" ${restBlocked?"disabled":""} title="${L&&L.town?"Pay 2 gp for a room and sleep until dawn (or eight hours): full HP.":"Make camp: sleep until dawn at night, or eight hours by day, for half your HP."}">${L&&L.town?"Take a room at the inn · 2 gp":"Make camp"}</button>${foeId()?'<span class="note">Not while it is here.</span>':""}</div>
  ${hungerLevel()>=1?`<p class="flash${hungerLevel()>=2?" sharp":""}">${hungerLevel()>=2?"Starving: you lose 1 HP every six hours.":"Hungry: −1 STR, −1 CON, and you heal less when you rest."} Eat something.</p>`:""}
  ${companions().length?`<p class="note">Companions: ${companions().map(n=>`<b>${esc(n.t)}</b> (${esc(GIFTS[n.species]||"keeps you company")})`).join("; ")}.</p>`:""}
+ <details class="standing"><summary>Reputation, towns and plan</summary>
  <dl class="facts towns">${towns().map(T=>{const v=townStanding(T.id);return`<div><dt>${esc(T.t)}</dt><dd>${repTier(v)} ${v>=0?"+":"−"}${Math.abs(v).toFixed(2)}</dd></div>`}).join("")}</dl>
  ${(()=>{const T=towns(),rel=[];for(let i=0;i<T.length;i++)for(let j=i+1;j<T.length;j++)rel.push(`${esc(T[i].t)} and ${esc(T[j].t)}: ${relationName(rivalry(T[i].id,T[j].id))}`);return rel.length?`<p class="note">${rel.join(" · ")}. Helping one town is noticed by its rivals.</p>`:""})()}
  ${rumours().filter(r=>!r.found).length?`<div class="sectionhead"><h3>Rumours</h3><span class="mono" style="font-size:12px;color:var(--faint)">${rumours().filter(r=>!r.found).length} unproven</span></div><ul class="quests">${rumours().filter(r=>!r.found).slice(-6).reverse().map(r=>`<li>${esc(r.from)}: ${esc(r.text)}</li>`).join("")}</ul>`:""}
  <dl class="facts"><div><dt>Reputation</dt><dd>${repTier()} ${reputation()>=0?"+":"−"}${Math.abs(reputation()).toFixed(2)}</dd></div><div><dt>Standing</dt><dd>${ordinal(Math.round(standingPercentile()))} pct</dd></div><div><dt>Magic offered</dt><dd>${reputation()>=.5?"rare and common":reputation()>=.25?"common":"none"}</dd></div></dl>
  <dl class="facts"><div><dt>Plan</dt><dd>${e.plan==="supporter"?"supporter":"free explorer"}</dd></div><div><dt>Range</dt><dd>${exploreRange()>=WORLD_R?"whole world":exploreRange()+" squares"}</dd></div><div><dt>Resurrections</dt><dd>${e.tokens}</dd></div></dl>
  <div class="btnrow"><button class="small" id="plan-info">Plans and prices</button></div>
+ </details>
  ${quests().length?`<div class="sectionhead"><h3>Quests</h3><span class="mono" style="font-size:12px;color:var(--faint)">${quests().filter(q=>!q.done).length} open</span></div><ul class="quests">${quests().slice(-8).reverse().map(q=>`<li class="${q.done?(q.failed?"failed":"done"):""}">${q.done?(q.failed?"Failed: ":"Done: "):""}${esc(q.giverName)} asked you to ${esc(q.desc)} · ${q.gold} gp</li>`).join("")}</ul>`:""}
  ${planInfoOpen?`<p class="note">${esc(BILLING.prices.supporter)}. ${esc(BILLING.prices.token)}. Free explorers can travel ${BILLING.freeRange} squares from the start. Payments are not connected yet.</p>`:""}`;
  $("rest").onclick=rest;$("plan-info").onclick=()=>{planInfoOpen=!planInfoOpen;renderSheet()};
