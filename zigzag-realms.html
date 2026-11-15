@@ -97,6 +97,7 @@ header.top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align
 .mapwrap{position:relative}
 /* The heads-up display: what changes as you play, over the map's top-left corner */
 .hud{position:absolute;left:8px;top:8px;display:grid;gap:4px;padding:7px 9px;border-radius:8px;background:color-mix(in srgb,var(--sheet) 88%,transparent);border:1px solid var(--rule);font-family:var(--mono);font-size:13pt;color:var(--ink);min-width:150px;max-width:calc(100% - 16px);box-shadow:0 2px 8px #0002}
+.mapwx{position:absolute;right:8px;bottom:8px;padding:5px 10px;border-radius:8px;background:color-mix(in srgb,var(--sheet) 88%,transparent);border:1px solid var(--rule);font-family:var(--mono);font-size:13pt;color:var(--ink);max-width:calc(100% - 16px);box-shadow:0 2px 8px #0002;pointer-events:none}.mapwx:empty{display:none}
 .hud:empty{display:none}
 .hud .row{display:flex;justify-content:space-between;gap:10px;align-items:center}
 .hud .bar{height:6px;border-radius:99px;background:var(--wash);border:1px solid var(--rule);overflow:hidden}.hud .bar span{display:block;height:100%;background:var(--good)}
@@ -425,7 +426,6 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
    <div class="seasonline" id="seasonline" aria-hidden="true"><span class="sp"></span><span class="su"></span><span class="au"></span><span class="wi"></span><i></i></div>
   </div>
   <div class="pills">
-   <span class="pill" id="pill-weather">Weather: <b>—</b></span>
    <button class="pill" id="sound-toggle" aria-pressed="true" type="button">Sound: <b>on</b></button>
    <button class="pill" id="script-toggle" aria-pressed="false" type="button">Script: <b>Latin</b></button>
    <span class="pill" id="pill-ai">Narrator: <b>connecting…</b></span>
@@ -441,7 +441,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
   <section class="panel mapside" aria-label="Where you are"><div class="mapplace" id="mapplace"><div class="sectionhead"><h3 id="map-h">Survey map</h3></div></div></section>
    <section class="panel map" aria-labelledby="map-h">
     <span id="coords" hidden></span>
-    <div class="mapwrap"><svg id="map" viewBox="0 0 480 416" role="img" aria-label="Map of explored places on your current level"></svg><div class="hud" id="hud" aria-live="polite"></div></div>
+    <div class="mapwrap"><svg id="map" viewBox="0 0 480 416" role="img" aria-label="Map of explored places on your current level"></svg><div class="hud" id="hud" aria-live="polite"></div><div class="mapwx" id="mapwx" aria-label="Weather here"></div></div>
     <div class="zoomrow"><button class="small" id="zoom-out" type="button" aria-label="Zoom out">−</button><span class="mono" id="zoom-label">zoom</span><button class="small" id="zoom-in" type="button" aria-label="Zoom in">+</button></div>
     <div class="layerbar" id="layerbar" role="img" aria-label="Layers"></div>
     <p class="legend"><span>▲ way up</span><span>▼ way down</span><span class="r">◆ anomaly</span><span class="p">● townsfolk</span><span style="color:var(--good)">● creatures</span><span class="m">┅ magical bridge</span><span>┿ railway</span><span style="color:var(--amber)">● sanctuary beacon</span><span class="m">● cave entrance</span></p>
@@ -3983,7 +3983,7 @@ function renderClock(){
  p.setAttribute("aria-label",`${fmtClock(t)}, ${seasonOf(t)}, ${night?"night":"day"}`);p.setAttribute("role","timer");
  p.title=`The world clock runs at ${CLOCK_RATE}× real time by day and ${NIGHT_RATE}× at night, so night (20:00 to 06:00) lasts about twenty real minutes. Each step takes half an hour.`;
  const H=hereId()&&cell(hereId()),w=H&&weatherAt(H.x,H.y,zOf(H),t);
- $("pill-weather").innerHTML=w?`Weather: <b>${esc(w.label)}</b>`:"Weather: <b>—</b>";
+ $("mapwx").textContent=w?w.label:"";
 }
 function renderPills(){
  $("pill-ai").innerHTML=`Narrator: <b>${esc(ai.label())}</b>`;
@@ -4274,12 +4274,10 @@ function renderPlace(){
  const here=hereId(),L=cell(here),f=foeId(here),magic=magicPresent(),t=gameNow(),wa=weatherAt(L.x,L.y,zOf(L),t);
  const tr=TERRAINS.includes(L.terrain)?L.terrain:"other";
  const chips=[`<span class="chip terrain">${L.sanctuary?"sanctuary":L.monument?esc(MONUMENT_KIND[L.monument]):L.town?esc(TOWN_SIZES[L.town.size].label):L.river?(L.river.crossing?esc(CROSSINGS[L.river.crossing]):"river"):tr}</span>`,`<span class="chip">${esc(depthName(zOf(L)))}</span>`];
- if(wa)chips.push(`<span class="chip">${esc(wa.label)}</span>`);
  if(L.river&&L.river.crossing==="magic")chips.push(`<span class="chip magic">${magic?"bridge present":"bridge absent"}</span>`);
  if(L.town)chips.push(`<span class="chip">${esc(L.town.side)} bank of the ${esc(riverName())}</span>`);
- chips.push(`<span class="chip">${L.dist?L.dist+" steps from the start":"starting point"}</span>`,`<span class="chip">written by ${L.by==="claude"?esc(ai.kind==="puter"?"AI":"Claude"):"built-in tables"}</span>`);
  // Above the map: one scrolling line of the place's details, then its name; no taller than an over-title and a title
- {const items=[`<span class="tk-lead">You are at</span>`,...chips,`<span class="chip">${esc($("coords").textContent||"")}</span>`].join("");
+ {const items=chips.join("");
   const mem=memoryText(L),descText=(L.river&&L.river.crossing==="magic"&&magic&&L.descPresent?L.descPresent:L.desc)+(mem?" "+mem:""),hideDesc=voice.on()&&voice.hide;
   const descHtml=hideDesc?`<p class="note">The description is being read aloud. <button class="small" data-voice="read">Read it again</button></p>`:`<p class="desc mapdesc${busy?" busy":""}">${linkify(descText)}</p>`;
   const sig=items+L.t+descHtml,el=$("mapplace");
