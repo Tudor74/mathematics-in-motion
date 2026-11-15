@@ -72,6 +72,7 @@ header.top .sub{color:var(--faint);font-size:15px;margin:4px 0 0;max-width:62ch}
 .map .link{stroke:var(--ink);stroke-width:3;stroke-linecap:round;opacity:.55}
 .map .tile{stroke:var(--ink);stroke-opacity:.35;stroke-width:1;stroke-linejoin:round;cursor:pointer}
 .map .hexgrid{fill:none;stroke-linejoin:round}
+.map .rail{stroke:var(--ink);stroke-width:2.2;opacity:.75;pointer-events:none}.map .sleepers{stroke:var(--ink);stroke-width:8;stroke-dasharray:1.6 5;opacity:.5;pointer-events:none}
 .zoomrow{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:-4px}
 .zoomrow button{min-width:40px;font-size:18px;line-height:1}.zoomrow span{font-size:12px;color:var(--faint);min-width:9em;text-align:center}
 .map .ghost.up{fill:var(--t-mountain);stroke:var(--ink);stroke-width:1;stroke-linejoin:round}
@@ -379,7 +380,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
     <svg id="map" viewBox="0 0 420 420" role="img" aria-label="Map of explored places on your current level"></svg>
     <div class="zoomrow"><button class="small" id="zoom-out" type="button" aria-label="Zoom out">−</button><span class="mono" id="zoom-label">zoom</span><button class="small" id="zoom-in" type="button" aria-label="Zoom in">+</button></div>
     <div class="layerbar" id="layerbar" role="img" aria-label="Layers"></div>
-    <p class="legend"><span>▲ way up</span><span>▼ way down</span><span class="r">◆ anomaly</span><span class="p">● townsfolk</span><span style="color:var(--good)">● creatures</span><span class="m">┅ magical bridge</span><span style="color:var(--amber)">● sanctuary beacon</span><span class="m">● cave entrance</span></p>
+    <p class="legend"><span>▲ way up</span><span>▼ way down</span><span class="r">◆ anomaly</span><span class="p">● townsfolk</span><span style="color:var(--good)">● creatures</span><span class="m">┅ magical bridge</span><span>┿ railway</span><span style="color:var(--amber)">● sanctuary beacon</span><span class="m">● cave entrance</span></p>
     <p class="mapnote">The map shows the layer you are on, one of fifteen from the deep caves to the peak. Faint stacked hexes are the mountain's higher layers; dashed outlines are places you have walked on other layers. Faded hexes are places you can see but have not visited. Click one next to you to go there, or any mapped square to walk back there. Lines show the ways that are open.</p>
    </section>
    <section class="panel" aria-labelledby="moves-h" data-fold="moves">
@@ -1169,6 +1170,53 @@ function digCaves(x,y,top,bottom,o={}){
  // The prize waits in the last chamber of the deepest level dug
  if(end&&o.prize){placeAnomaly(end,-bottom,true);appendTo(end,"contain",magicItem(pick(MAGIC_ITEMS),false))}
  return made;
+}
+/* Railways: lines of track between some of the towns, laid on dry land (they may use the stone
+   bridge, never a ford). Each town on a line has a station; a train ride costs a few coins and takes
+   a fraction of the walking time. Trains do not run at night. */
+const RAIL_NAMES=["Railway Cutting","Embankment","Level Crossing","Signal Box","Goods Siding","Water Tower","Platelayers' Hut","Iron Road"];
+const RAIL_DESC=["Iron rails on tarred sleepers run straight across the land, polished bright by the trains.","The line runs along a raised embankment of cinders. A signal arm clanks up somewhere ahead.","A gated crossing where a cart track meets the railway. The gatekeeper's hut smells of coal smoke.","A water tower on iron legs stands beside the track, dripping into a puddle black with soot."];
+function buildRailways(){
+ const T=towns(),lines=[];if(T.length<2)return;
+ const pairs=[];for(let i=0;i<T.length;i++)for(let j=i+1;j<T.length;j++)pairs.push([T[i],T[j]]);
+ pairs.sort((a,b)=>(Math.abs(a[0].x-a[1].x)+Math.abs(a[0].y-a[1].y))-(Math.abs(b[0].x-b[1].x)+Math.abs(b[0].y-b[1].y)));
+ for(const [A,B] of pairs){
+  if(lines.length>=2)break;
+  const ok=(x,y)=>{if(Math.abs(x)>WORLD_R||Math.abs(y)>WORLD_R||inMountain(x,y))return false;const id=coord.get(ck(x,y,0));if(!id)return true;const c=cell(id);
+   return c.id===B.id||(c.town&&(c.town.of===A.id||c.town.of===B.id))||(c.river&&c.river.crossing==="bridge")||c.rail};
+  const key=(x,y)=>x+","+y,prev={[key(A.x,A.y)]:null},q=[[A.x,A.y]];let found=false;
+  for(let h=0;h<q.length&&q.length<6000;h++){const [x,y]=q[h];if(x===B.x&&y===B.y){found=true;break}
+   for(const d of FLAT){const nx=x+DIRS[d].dx,ny=y+DIRS[d].dy,k=key(nx,ny);if(k in prev||!ok(nx,ny))continue;prev[k]=[x,y];q.push([nx,ny])}}
+  if(!found)continue;
+  const path=[];for(let p=[B.x,B.y];p;p=prev[key(...p)])path.unshift(p);
+  if(path.length>26)continue;
+  const line={from:A.id,to:B.id,len:path.length-1};
+  for(const [x,y] of path.slice(1,-1)){if(coord.get(ck(x,y,0)))continue;
+   const nm=pick(RAIL_NAMES),id=createLocation({name:nm,desc:pick(RAIL_DESC),terrain:"road",items:[],hazard:null,monster:null,by:"tables",exits:EX("nsew"),glimpse:`${nm}, on the railway`},{x,y,z:0,dist:Math.abs(x)+Math.abs(y)});
+   Object.assign(cell(id),{planned:true,written:false,seen:false,rail:true})}
+  for(const [x,y] of path){const id=coord.get(ck(x,y,0));if(id){const c=cell(id);c.rails=(c.rails||[]).concat(lines.length);touch(id)}}
+  for(const S of [A,B]){S.station=(S.station||[]).concat([{line:lines.length,to:S===A?B.id:A.id,len:line.len}]);touch(S.id)}
+  lines.push(line);
+ }
+ cell("root").railways=lines;touch("root");
+}
+const trainFare=len=>Math.max(2,Math.round(len/3));
+function takeTrain(destId){
+ const H=cell(hereId()),D=cell(destId);if(!H||!D||!H.station||busy||isDowned()||foeId())return;
+ const st=H.station.find(s=>s.to===destId);if(!st)return;
+ if(isNight(gameNow())){flash="The trains do not run at night. The first leaves at dawn.";render();return}
+ const fare=trainFare(st.len);if(sv("GP")<fare){flash=`A ticket to ${D.t} costs ${fare} gp; you have ${sv("GP")} gp.`;render();return}
+ setStat("GP",sv("GP")-fare);
+ for(const c of Object.values(zz.cells))if(c.k==="loc"&&c.rails&&c.rails.includes(st.line)&&c.seen===false){c.seen=true;touch(c.id)}
+ const mins=Math.max(15,st.len*8);
+ log(`You buy a ticket for ${fare} gp and ride the train to ${D.t}. The journey takes ${mins} minutes, with the country rattling past the window.`,"good");
+ if(sound.started&&sound.on){sound.tone(880,860,.5,.05,0,"square");sound.tone(660,650,.8,.05,.55,"square");for(let i=0;i<10;i++)sound.burst("bandpass",900,500,1.5,.06,.12,1.4+i*.28)}
+ enter(destId,!D.visited);shunPlayer();if(!isDowned())passTime(mins);store.flush();render();if(!isDowned())ensureNeighbours(hereId());
+}
+function renderStation(L){
+ if(!L.station||!L.station.length)return"";
+ const night=isNight(gameNow());
+ return`<div class="sectionhead"><h3>Railway station</h3><span class="mono" style="font-size:12px;color:var(--faint)">${night?"closed until dawn":"trains by day"}</span></div><ul class="items">${L.station.map(s=>{const D=cell(s.to),fare=trainFare(s.len);return`<li><span><span class="nm">Train to ${esc(D.t)}</span><span class="meta">${s.len} squares by rail · about ${Math.max(15,s.len*8)} minutes · ${fare} gp</span></span><span class="acts"><button class="small" data-act="train" data-id="${s.to}" ${night||busy||sv("GP")<fare?"disabled":""}>Take the train</button></span></li>`}).join("")}</ul>`;
 }
 function freeSpot(minR,maxR,pad=1){
  for(let t=0;t<5000;t++){const x=pick([-1,1])*rnd(maxR),y=pick([-1,1])*rnd(maxR);if(Math.max(Math.abs(x),Math.abs(y))<minR)continue;
@@ -2088,6 +2136,7 @@ async function begin(opts={}){
  buildRiverWorld(riverPlan,w);
  buildRegion();
  buildMountain();
+ buildRailways();
  placeCastles();
  placeCaveMouths();
  placeMonuments();
@@ -3188,7 +3237,10 @@ function renderMap(){
  for(const [id,[dx,dy]] of vis){const c=cell(id),[px,py]=P(dx,dy);
   const e=coord.get(ck(c.x+1,c.y,Z)),n=coord.get(ck(c.x,c.y+1,Z));
   if(e&&vis.has(e)&&walkable(id)&&walkable(e)&&exitOpen(c,"east")&&exitOpen(cell(e),"west")){const [qx,qy]=P(dx+1,dy);out+=`<line class="link" x1="${px+30}" y1="${py+30}" x2="${qx+30}" y2="${qy+30}"/>`}
-  if(n&&vis.has(n)&&walkable(id)&&walkable(n)&&exitOpen(c,"north")&&exitOpen(cell(n),"south")){const [qx,qy]=P(dx,dy+1);out+=`<line class="link" x1="${px+30}" y1="${py+30}" x2="${qx+30}" y2="${qy+30}"/>`}}
+  if(n&&vis.has(n)&&walkable(id)&&walkable(n)&&exitOpen(c,"north")&&exitOpen(cell(n),"south")){const [qx,qy]=P(dx,dy+1);out+=`<line class="link" x1="${px+30}" y1="${py+30}" x2="${qx+30}" y2="${qy+30}"/>`}
+  // Railway track: a dark line with sleepers between neighbouring hexes of the same line
+  if(c.rails)for(const [nb,ddx,ddy] of [[e,1,0],[n,0,1]]){if(!nb||!vis.has(nb))continue;const N=cell(nb);if(!N.rails||!N.rails.some(l=>c.rails.includes(l)))continue;const [qx,qy]=P(dx+ddx,dy+ddy);
+   out+=`<line class="rail" x1="${px+30}" y1="${py+30}" x2="${qx+30}" y2="${qy+30}"/><line class="sleepers" x1="${px+30}" y1="${py+30}" x2="${qx+30}" y2="${qy+30}"/>`}}
  for(const [id,[dx,dy]] of vis){const c=cell(id),[px,py]=P(dx,dy),tr=TERRAINS.includes(c.terrain)?c.terrain:"other",f=foeId(id);
   const glyph=c.sanctuary?"M14 34 V22 L26 13 L38 22 V34 Z M26 19 V31 M20 25 H32":c.monument?GLYPH_MON[c.monument]:c.castle?"M13 35 V19 h5 v4 h4 v-4 h5 v4 h4 v-4 h5 v16 Z M23 35 v-6 a3 3 0 0 1 6 0 v6":c.cavemouth?GLYPH.cave:c.town?(c.town.of?GLYPH.village:GLYPH["town_"+c.town.size]):c.falls?GLYPH.falls:GLYPH[tr]||GLYPH.other;
   const label=c.town?`${c.t}, ${TOWN_SIZES[c.town.size].label}`:c.hole?`${c.t}, where the river falls into the hole`:c.river?(c.river.crossing?`${c.t}, ${CROSSINGS[c.river.crossing]}${c.river.crossing==="magic"&&!magic?" (absent now)":""}`:`${c.t}, the river`):c.lake?`${c.t}, a lake`:c.t;
@@ -3409,6 +3461,7 @@ function renderPlace(){
   else html+=`<div class="btnrow"><button class="small" data-act="rent" ${sv("GP")<COTTAGE_RENT?"disabled":""}>${C?"Move your cottage here":"Rent a cottage here"} · ${COTTAGE_RENT} gp</button><span class="note">A home with a chest the paladin cannot touch.</span></div>`;
  }
  html+=renderTravellers(L);
+ html+=renderStation(L);
  if(L.spring)html+=`<p class="note">A healing spring rises here.</p>`;
  html+=`<form class="note-form" data-note><label for="note-in">Your note on this place</label><div class="btnrow"><input id="note-in" maxlength="200" value="${esc(L.note||"")}" placeholder="Leave yourself a note…"><button class="small" type="submit">Save note</button></div></form>`;
  if(L.hazard&&L.outcome){const o=L.outcome;html+=`<div class="hazard${o.ok?" passed":""}"><b>${esc(L.hazard.name)}.</b> ${esc(L.hazard.text)} ${o.ok?"You get through unharmed.":`You take ${o.dmg} damage.`}${here===lastHazard?`<span class="roll">${esc(o.roll)}</span>`:""}</div>`}
@@ -3964,7 +4017,7 @@ document.addEventListener("click",e=>{
   trade:i=>{openTrade=openTrade===i?null:i;openChat=null;armedAttack=null;render()},
   buyfood:buyFood,sell:v=>{const [n,it]=v.split("|");sellTo(n,it)},quest:i=>{offerQuest(cell(i));passTime(5);store.flush();render()},
   give:giveFood,arm:i=>{armedAttack=armedAttack===i?null:i;render()},hit:attackAgent,
-  craft,deposit,withdraw,rent:rentCottage,leave:leaveForOthers,takeleft:takeLeft})[b.dataset.act](id);return}
+  craft,deposit,withdraw,rent:rentCottage,leave:leaveForOthers,takeleft:takeLeft,train:takeTrain})[b.dataset.act](id);return}
  const d=e.target.closest("#compass button[data-dir]");if(d){move(d.dataset.dir);return}
  const g=e.target.closest("#map g");if(g){if(g.dataset.dir)move(g.dataset.dir);else if(g.dataset.loc){const id=g.dataset.loc,H=cell(hereId()),C=cell(id);
   const dir=H&&C?Object.keys(DIRS).find(k=>coord.get(ck(H.x+DIRS[k].dx,H.y+DIRS[k].dy,zOf(H)+DIRS[k].dz))===id):null;
