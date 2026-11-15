@@ -117,6 +117,8 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .map .side.pulse{animation:sidepulse .7s ease 3}@keyframes sidepulse{0%,100%{stroke:var(--ink)}50%{stroke:var(--danger);stroke-width:9}}
 .encounter{position:absolute;inset:0;display:grid;place-items:center;padding:0;pointer-events:none;z-index:5}.encounter:not(.show){display:none}
 .encounter .card{pointer-events:auto;width:80%;height:80%;box-sizing:border-box;overflow:auto;background:var(--sheet);border:1px solid var(--danger);border-radius:12px;box-shadow:0 8px 28px #0004;padding:12px 14px;display:grid;gap:8px}
+.foe button.disengage{background:#d9efd2;border-color:#9cc98f;color:#24451c}.foe button.disengage:hover{background:#c9e8bf}
+.encounter .rounds .roll{display:none}
 .encounter .card .foe{margin:0}
 .starve{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:5;width:min(460px,calc(100% - 90px));pointer-events:none}.starve:not(.show){display:none}
 .starve .card{pointer-events:auto;display:grid;gap:6px;padding:12px 16px;border-radius:12px;background:var(--sheet);border:2px solid var(--danger);box-shadow:0 6px 24px #0004;text-align:center}
@@ -1367,7 +1369,7 @@ function buildPrompt(fromId,dir,pos){
  "description: 2 to 4 sentences, second person, present tense, concrete and sensory. Hint at what lies in one or two other directions using the words north, south, east, west, above or below.",
  "items: 0 to 3 things lying here that can be picked up. Weights in pounds, values in gold pieces. Potions and food may heal with a dice expression such as \"2d4+2\". Armour and shields give an ac bonus of 1 to 5. Weapons have damage such as \"1d8\" and finesse true for light blades. Treasure is rare near the start.",
  "hazard: in about one location in four, a hazard the traveller makes a saving throw against when they first arrive. Otherwise null.",
- `monster: in about one location in three (more often underground and at night, never at the start), an anomaly is here and will fight. Invent an original one; never use real SCP numbers, names or characters. Give it a designation of the form AE-#### and an object class: Safe (weak), Euclid (moderate) or Keter (dangerous; only far from the start or deep underground). Its description is 2 to 3 sentences in the clinical voice of a containment file, ending with what it is doing right now. For this level ${sv("LVL")} traveller: hp about ${6+4*sv("LVL")+pos.dist}, ac 10 to 16, attack +2 to +${3+sv("LVL")}, damage of one or two dice. special is one of: none, regenerate, phasing, frenzy. loot is an item it leaves behind when destroyed, or null. Otherwise monster is null.`,
+ `monster: in about one location in three (more often underground and at night, never at the start), an anomaly is here and will fight. Invent an original one; never use real SCP numbers, names or characters. Give it a designation of the form AE-#### and an object class: Safe (weak), Euclid (moderate) or Keter (dangerous; only far from the start or deep underground). Its description is 1 or 2 short sentences (under 30 words) in the clinical voice of a containment file, ending with what it is doing right now. For this level ${sv("LVL")} traveller: hp about ${6+4*sv("LVL")+pos.dist}, ac 10 to 16, attack +2 to +${3+sv("LVL")}, damage of one or two dice. special is one of: none, regenerate, phasing, frenzy. loot is an item it leaves behind when destroyed, or null. Otherwise monster is null.`,
  "",
  "Reply with only a JSON object in exactly this shape:",
  '{"name":"Saltreed Meadow","terrain":"plains","description":"...","items":[{"name":"Potion of Healing","description":"A small vial of red liquid.","kind":"potion","weight":0.5,"value":50,"heal":"2d4+2","ac":0,"damage":null,"finesse":false}],"hazard":{"name":"Hidden ditch","text":"Long grass hides a deep drainage ditch.","stat":"DEX","dc":12,"damage":"1d6"},"monster":{"designation":"AE-0417","name":"The Patient Ferryman","objectClass":"Euclid","description":"...","hp":14,"ac":12,"attack":4,"damage":"1d8","special":"none","loot":null}}',
@@ -1504,7 +1506,7 @@ function batchPrompt(locId,need){
   "For a NEW place give: name; terrain; glimpse (what the traveller can see of it from where they stand, under 12 words, as seen by day or by night as fits the time); description (2 to 3 sentences, second person, present tense, as experienced on arrival; mention what can be seen in other directions using the words north, south, east, west, above or below); exits (true or false for north, south, east, west, up, down: open ground usually has all four horizontal ways open; cliffs, deep water, thorn walls or rock close some; up and down only for real features such as stairs, a tree to climb, a cave mouth, a well or a ledge; underground passages usually have one to three ways; the way back toward the traveller must be open); walls (for each closed horizontal way, a short phrase of what blocks it); items (0 to 3, as below); hazard (about one in four, else null); monster (about one in three underground or at night, one in five otherwise, else null).",
   `Items: objects lying there. kind is one of ${KINDS.join(", ")}. weight in pounds, value in gold. Potions and food may heal with a dice expression such as "2d4+2"; armour gives ac 1 to 5; weapons have damage such as "1d8" and finesse true for light blades.`,
   `Hazards: {"name","text","stat" (one of ${STATS.join(", ")}),"dc" 10 to 16,"damage" such as "1d6"}.`,
-  `Monsters are original anomalies (never real SCP numbers or names): {"designation":"AE-####","name","objectClass":"Safe|Euclid|Keter","description" (clinical, 2 to 3 sentences, ending with what it is doing now),"hp" about ${6+4*sv("LVL")},"ac" 10 to 16,"attack" 2 to ${3+sv("LVL")},"damage" one or two dice,"special":"none|regenerate|phasing|frenzy","loot" an item or null}. Keter only far from the start or deep underground.`,
+  `Monsters are original anomalies (never real SCP numbers or names): {"designation":"AE-####","name","objectClass":"Safe|Euclid|Keter","description" (clinical, 1 or 2 short sentences under 30 words, ending with what it is doing now),"hp" about ${6+4*sv("LVL")},"ac" 10 to 16,"attack" 2 to ${3+sv("LVL")},"damage" one or two dice,"special":"none|regenerate|phasing|frenzy","loot" an item or null}. Keter only far from the start or deep underground.`,
   `terrain is one of: ${TERRAINS.filter(x=>x!=="village"&&x!=="grove").join(", ")}.`,
   "",
   "Reply with only a JSON object of this shape, with one entry per direction listed above:",
@@ -2248,6 +2250,7 @@ let busy=null,lastHazard=null,deleteArmed=false,rounds=[],flash=null;
 const talkLines={};
 function log(text,kind,rolltext){const r=cell("root");if(!r)return;r.log=(r.log||[]).concat([{text,kind:kind||"",roll:rolltext||"",t:Date.now()}]).slice(-60);touch("root")}
 function say(text,kind,rolltext){rounds.push({text,kind:kind||"",roll:rolltext||""});rounds=rounds.slice(-6);log(text,kind,rolltext)}
+function anomDesc(d){const ss=String(d||"").match(/[^.!?]+[.!?]+["”’]?/g)||[String(d||"")];return(ss.length>2?ss[0].trim()+" "+ss[ss.length-1].trim():ss.join(" ").trim())}
 function itemCell(it){return newCell("item",{t:it.name,desc:it.desc,kind:it.kind,weight:it.weight,value:it.value,heal:it.heal,ac:it.ac,dmg:it.dmg,finesse:it.finesse,light:!!it.light,worn:false,wielded:false,shroom:it.shroom||null})}
 
 function createLocation(data,pos){
@@ -4275,7 +4278,7 @@ function disengage(){
 function renderEncounter(){
  const el=$("encounter");if(!el)return;const f=charId()&&hereId()&&!isDowned()?foeId():null;
  el.classList.toggle("show",!!f);if(!f){el.innerHTML="";return}
- el.innerHTML=`<div class="card">${renderFoe(f)}<div class="btnrow"><button data-act="disengage" ${busy?"disabled":""} title="Step back and stay here: a DEX check against DC ${10+Math.floor(cell(f).atk/2)}. Fail and it strikes.">Disengage</button></div><p class="note">Disengage to stay in this hex without fighting, or flee by a way on the rose or a hex at the edge of the map.</p></div>`;
+ el.innerHTML=`<div class="card">${renderFoe(f)}<p class="note">Disengage to stay in this hex without fighting, or flee by a way on the rose or a hex at the edge of the map.</p></div>`;
  requestAnimationFrame(()=>{const me=document.querySelector("#map .headmark.me"),w=el.getBoundingClientRect();if(me&&w.width){const r=me.getBoundingClientRect(),right=(r.x+r.width/2)>w.x+w.width/2;el.classList.toggle("dock-left",right);el.classList.toggle("dock-right",!right)}});
 }
 // Enough food to reach a town? Each item is a day (rations say how many); you can go two days without before starving
@@ -4508,11 +4511,10 @@ function renderFoe(f){
  return`<article class="foe" data-class="${oc}" aria-label="Anomaly ${esc(F.designation)}">
   <div class="filehead"><span>Item ${esc(F.designation)}</span><span class="oc">Object class: ${esc(F.objectClass)}</span></div>
   <h3>${esc(F.t)}</h3>
-  <p class="notes">${esc(F.desc)}</p>
-  <div><div class="hprow"><span>Integrity</span><span>${Math.max(0,F.hp)} / ${F.maxhp}</span></div><div class="hpbar"><span style="width:${pct}%"></span></div></div>
-  <p class="stats">AC ${F.ac} · attack +${F.atk} · damage ${esc(F.dmg)}${F.special!=="none"?" · "+esc(SPECIALS[F.special]):""} · ${F.spread?"spreads if left alone":F.roam?"roams":"stays put"}</p>
-  <div class="fight">${opts.map((o,i)=>`<button class="${i===0?"primary":""}" data-act="attack" data-id="${i}" ${busy?"disabled":""} title="d20 ${sgn(mod(sv(o.stat)))} ${o.stat} +${prof()} against AC ${F.ac}; damage ${o.dice}${o.addMod?" "+sgn(mod(sv(o.stat))):""}${o.sneak?" + "+o.sneak+"d6 sneak":""}">${esc(o.label)}</button>`).join("")}${wind}</div>
-  <p class="note">Each direction is now an attempt to flee: a DEX check against DC ${10+Math.floor(F.atk/2)}. Fail and it strikes. Drinking a potion also gives it a turn.</p>
+  <p class="notes">${esc(anomDesc(F.desc))}</p>
+  <div><div class="hprow"><span>Integrity</span></div><div class="hpbar"><span style="width:${pct}%"></span></div></div>
+  <div class="fight">${opts.map((o,i)=>`<button class="${i===0?"primary":""}" data-act="attack" data-id="${i}" ${busy?"disabled":""} title="Your ${o.stat} against its guard; damage ${o.dice}${o.addMod?" "+sgn(mod(sv(o.stat))):""}${o.sneak?" + "+o.sneak+"d6 sneak":""}">${esc(o.label)}</button>`).join("")}${wind}<button class="disengage" data-act="disengage" ${busy?"disabled":""} title="Step back and stay here: a DEX check. Fail and it strikes.">Disengage</button></div>
+  <p class="note">Each direction is now an attempt to flee: a DEX check. Fail and it strikes. Drinking a potion also gives it a turn.</p>
   ${rounds.length?`<ol class="rounds">${rounds.map(r=>`<li class="${r.kind}">${esc(r.text)}${r.roll?`<span class="roll">${esc(r.roll)}</span>`:""}</li>`).join("")}</ol>`:""}
  </article>`;
 }
