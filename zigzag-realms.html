@@ -107,7 +107,7 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .mapkey[hidden]{display:none}.mapkey ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px 14px;font-size:13pt}.mapkey li{display:flex;align-items:center;gap:8px}
 .mapkey .sw{display:inline-block;width:1.1em;text-align:center}
 .wxbadge{display:inline-flex;align-items:center;gap:8px}
-.maprow .mapside{display:none!important}
+.mapside .card{display:grid;gap:6px}.mapside .chips{display:flex;flex-wrap:wrap;gap:4px}.mapside h2{margin:0;font-size:22px}.mapside .desc{margin:0;max-width:none}
 .maprealm{position:absolute;right:10px;top:10px;pointer-events:none}.maprealm:empty{display:none}
 .maprealm>span{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;background:color-mix(in srgb,var(--sheet) 88%,transparent);border:1px solid var(--rule);box-shadow:0 2px 8px #0002;font-family:var(--mono);font-size:13pt;color:var(--ink)}
 .maprealm .facehead{display:block;border-radius:50%;background:var(--sheet)}.maprealm .live .facehead{box-shadow:0 0 0 2px var(--good)}
@@ -4445,11 +4445,10 @@ function renderPlace(){
   if(L.sanctuary)here_.push(hc("sanctuary","Sanctuary: rest heals fully, and nobody may fight here"));
   if(L.station)here_.push(hc("station","Railway station"));
   const hereHtml=here_.length?`<div class="herelist">${here_.join("")}</div>`:"";
-  const sig=items+L.t+descHtml+hereHtml+here,el=$("arrive");
-  if(el&&el.dataset.sig!==sig){const fresh=el.dataset.here!==here;el.dataset.sig=sig;el.dataset.here=here;
-   el.innerHTML=`<div class="veil"></div><div class="card"><div class="chips">${iconChips}</div><div class="titlerow"><h2 id="map-h">${esc(L.t)}</h2>${voice.on()?`<button class="small" data-voice="read" title="Read this place aloud with your ElevenLabs voice">Read aloud</button>`:""}</div>${descHtml}${hereHtml}</div>`;
-   const card=el.querySelector(".card");card.onmouseenter=()=>clearTimeout(arriveTimer);card.onmouseleave=()=>{clearTimeout(arriveTimer);arriveTimer=setTimeout(hideArrive,2500)};
-   if(fresh||el.classList.contains("show"))showArrive()}}
+  const sig=items+L.t+descHtml+hereHtml+here,el=$("mapplace");
+  if(el&&el.dataset.sig!==sig){el.dataset.sig=sig;el.dataset.here=here;
+   el.innerHTML=`<div class="card"><div class="chips">${iconChips}</div><div class="titlerow"><h2 id="map-h">${esc(L.t)}</h2>${voice.on()?`<button class="small" data-voice="read" title="Read this place aloud with your ElevenLabs voice">Read aloud</button>`:""}</div>${descHtml}${hereHtml}</div>`;
+  }}
  let html="";
  html+=renderRealmEvent(L);
  if(busy)html+=`<p class="mapping">${busy.dir==="look"?"The narrator is writing what you can see from here":busy.dir==="up"?"The narrator is mapping what lies above":busy.dir==="down"?"The narrator is mapping what lies below":"The narrator is mapping the way "+busy.dir}</p>`;
@@ -4875,7 +4874,7 @@ function renderMapKey(){const k=$("mapkey");if(!k||k.innerHTML)return;
  k.innerHTML=`<div class="sectionhead"><h3>Map key</h3><button class="small iconbtn" id="mapkey-close" aria-label="Close" title="Close">${ic("close","Close")}</button></div><ul>
   ${row("▲","a way up")}${row("▼","a way down")}${row('<span style="color:var(--danger)">◆</span>',"an anomaly")}${row('<span style="color:var(--accent)">●</span>',"townsfolk")}${row('<span style="color:var(--good)">●</span>',"creatures")}
   ${row('<span style="color:var(--magic)">┅</span>',"the magical bridge")}${row("┿","railway")}${row('<span style="color:var(--amber)">●</span>',"a sanctuary, far away")}${row('<span style="color:var(--magic)">●</span>',"a cave entrance, far away")}
-  ${row('<span style="color:var(--accent)">◯</span>',"a friend, roughly")}${row("⬡","tap any hex to walk there")}${row("⬢","tap your own hex for this place")}</ul>`;
+  ${row('<span style="color:var(--accent)">◯</span>',"a friend, roughly")}${row("⬡","tap any hex to walk there")}${row("⬢","tap your own hex to see this place")}</ul>`;
  $("mapkey-close").onclick=()=>{k.hidden=true}}
 function render(){renderMapKey();renderGate();renderPills();renderScriptButton();renderMap();renderCompass();renderPlace();renderSheet();renderSocial();renderGarden();renderCodex();renderAlphabet();renderLog();renderVoice();decoratePanels();iconHeads();sound.update();voiceOnRender()}
 
@@ -5227,7 +5226,7 @@ document.addEventListener("click",e=>{
   give:giveFood,arm:i=>{armedAttack=armedAttack===i?null:i;render()},hit:attackAgent,
   craft,deposit,withdraw,rent:rentCottage,leave:leaveForOthers,takeleft:takeLeft,train:takeTrain,steal:trySteal,sharefood:shareFood,rate:rateChat,contest:enterContest,festprize:festivalPrize,throwdart:throwDart})[b.dataset.act](id);return}
  const d=e.target.closest("#compass button[data-dir]");if(d){move(d.dataset.dir);return}
- const g=e.target.closest("#map g");if(g&&g.dataset.loc&&g.dataset.loc===hereId()){showArrive(12000);return}
+ const g=e.target.closest("#map g");if(g&&g.dataset.loc&&g.dataset.loc===hereId()){$("mapplace").scrollIntoView({behavior:"smooth",block:"nearest"});return}
  if(g&&(g.dataset.dir||g.dataset.loc)){if(g.dataset.dir)move(g.dataset.dir);else if(g.dataset.loc){const id=g.dataset.loc,H=cell(hereId()),C=cell(id);
   const dir=H&&C?Object.keys(DIRS).find(k=>coord.get(ck(H.x+DIRS[k].dx,H.y+DIRS[k].dy,zOf(H)+DIRS[k].dz))===id):null;
   const dg=!dir&&H&&C&&zOf(C)===zOf(H)?Object.keys(DIAG).find(k=>coord.get(ck(H.x+DIAG[k].dx,H.y+DIAG[k].dy,zOf(H)))===id&&!diagCheck(hereId(),k).block):null;
