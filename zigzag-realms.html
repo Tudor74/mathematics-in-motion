@@ -129,7 +129,7 @@ header.top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align
 .map .gridline{stroke:var(--rule);stroke-width:1}
 .map .link{stroke:var(--ink);stroke-width:3;stroke-linecap:round;opacity:.55}
 .map .tile{stroke:var(--ink);stroke-opacity:.35;stroke-width:1;stroke-linejoin:round;cursor:pointer}
-.map .hexgrid{fill:none;stroke-linejoin:round}
+.map .hexgrid{fill:transparent;pointer-events:all;cursor:pointer;stroke-linejoin:round}
 .map .rail{stroke:var(--ink);stroke-width:2.2;opacity:.75;pointer-events:none}.map .sleepers{stroke:var(--ink);stroke-width:8;stroke-dasharray:1.6 5;opacity:.5;pointer-events:none}
 .zoomrow{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:-4px}
 .zoomrow button{min-width:40px;font-size:18px;line-height:1}.zoomrow span{font-size:13pt;color:var(--faint);min-width:9em;text-align:center}
@@ -246,6 +246,7 @@ button.dirlink:hover:not(:disabled){color:var(--accent);text-decoration-style:so
 .items .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
 .empty{color:var(--faint);font-size:13pt;font-style:italic;margin:0}
 .sectionhead{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.sectionhead{min-width:0}.sectionhead>.mono{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:0 1 auto}.sectionhead>h3{flex:0 0 auto}.sectionhead .fold{flex:0 0 auto}
 .sectionhead h3{font-size:19px}
 
 /* ZigZag inspector */
@@ -2464,6 +2465,24 @@ function pathTo(target){
    prev[n]=id;q.push(n)}}
  if(!(target in prev))return null;const p=[];for(let c=target;c!==start;c=prev[c])p.unshift(c);return p;
 }
+/* Tap a hex to go there: walk one neighbouring hex at a time, always the step that brings you closest,
+   exploring as you go; stop at anything that blocks the way, a fight, or the night. */
+let walking=false;
+async function walkToward(tx,ty){
+ if(walking||!hereId()||isDowned())return;walking=true;let steps=0;const been=new Set([hereId()]);
+ try{for(;steps<40;steps++){
+  for(let w=0;w<80&&busy;w++)await new Promise(r=>setTimeout(r,100));
+  const here=hereId(),H=cell(here);if(H.x===tx&&H.y===ty)break;if(busy||foeId()||isDowned())break;
+  const now=hexDist(H.x,H.y,tx,ty);
+  const opts=[...FLAT.map(d=>({d,dx:DIRS[d].dx,dy:DIRS[d].dy})),...Object.keys(DIAG).filter(k=>hexDiagOK(H.x,k)).map(k=>({d:k,dx:DIAG[k].dx,dy:DIAG[k].dy}))]
+   .map(o=>({...o,dist:hexDist(H.x+o.dx,H.y+o.dy,tx,ty),id:coord.get(ck(H.x+o.dx,H.y+o.dy,zOf(H)))})).filter(o=>o.dist<=now&&!(o.id&&been.has(o.id))).sort((a,b)=>a.dist-b.dist);
+  const ok=opts.find(o=>DIAG[o.d]?!diagCheck(here,o.d).block:!blockedBy(here,o.d));
+  if(!ok){if(!steps){flash=(opts[0]&&(DIAG[opts[0].d]?diagCheck(here,opts[0].d).block:blockedBy(here,opts[0].d)))||"There is no clear way that direction from here.";render()}else log(`You stop: the way on toward there is blocked.`);break}
+  await (DIAG[ok.d]?moveDiag(ok.d):move(ok.d));
+  if(hereId()===here)break;been.add(hereId());
+  await new Promise(r=>setTimeout(r,140));
+ }}finally{walking=false}
+}
 function travelTo(target){
  if(busy||target===hereId()||isDowned())return;
  if(foeId()){say(`${cell(foeId()).t} stands between you and the way back. Fight, or use a direction to try to flee.`,"bad");store.flush();render();return}
@@ -4124,7 +4143,7 @@ function renderMap(){
     centre you again, overshooting a little at each end. Positions here are in world pixels. */
  const WPX=x=>x*HW*.75,WPY=(x,y)=>-y*HH+(odd(x)?HH/2:0),hx0=WPX(H.x),hy0=WPY(H.x,H.y),shape=Math.round(ASP*20);
  if(!mapCam||mapCam.z!==Z||mapCam.R!==R||mapCam.shape!==shape||Math.abs(hx0-mapCam.x)>W*2||Math.abs(hy0-mapCam.y)>V*2)mapCam={x:hx0,y:hy0,z:Z,R,shape,anim:null};
- else{const limX=Math.max(1,Math.min(7,Math.floor(W/2/(HW*.75))-2))*HW*.75,limY=Math.max(0,R-1)*HH;
+ else{const limX=Math.max(HW*.75,W/2-HW*.6),limY=Math.max(HH*.5,V/2-HH*.6);
   if(Math.abs(hx0-mapCam.x)>limX+1||Math.abs(hy0-mapCam.y)>limY+1){const cur=camNow();mapCam.anim={fx:cur.x,fy:cur.y,t0:performance.now(),dur:matchMedia("(prefers-reduced-motion: reduce)").matches?1:750};mapCam.x=hx0;mapCam.y=hy0;requestAnimationFrame(stepMapCam)}}
  mapCam.frame={hx:hx0,hy:hy0,W,V};
  VB[0]=210+(mapCam.x-hx0)-W/2;VB[1]=210+(mapCam.y-hy0)-V/2;
@@ -4135,7 +4154,7 @@ function renderMap(){
  const DX0=Math.floor((BX[0]-210)/(HW*.75))-2,DX1=Math.ceil((BX[2]-210)/(HW*.75))+2,DY0=Math.floor((210-BX[3])/HH)-2,DY1=Math.ceil((210-BX[1])/HH)+2;
  const hex=(cx,cy,k=1)=>[0,60,120,180,240,300].map(a=>{const r=a*Math.PI/180;return`${(cx+Math.cos(r)*HW/2*k).toFixed(1)},${(cy+Math.sin(r)*HW/2*k).toFixed(1)}`}).join(" ");
  let out="";
- for(let dx=DX0;dx<=DX1;dx++)for(let dy=DY0;dy<=DY1;dy++){const [cx,cy]=C(dx,dy);if(!inBox(dx,dy))continue;out+=`<polygon class="gridline hexgrid" points="${hex(cx,cy)}"/>`}
+ for(let dx=DX0;dx<=DX1;dx++)for(let dy=DY0;dy<=DY1;dy++){const [cx,cy]=C(dx,dy);if(!inBox(dx,dy))continue;out+=`<polygon class="gridline hexgrid" data-hx="${H.x+dx}" data-hy="${H.y+dy}" points="${hex(cx,cy)}"/>`}
  /* Every layer at once: the mountain above you is always painted, each layer as a faint hex, so the
     layers stack up darker toward the peak; lower slopes and caves you have walked show beneath, dashed. */
  for(let dx=DX0;dx<=DX1;dx++)for(let dy=DY0;dy<=DY1;dy++){const [cx,cy]=C(dx,dy);if(!inBox(dx,dy))continue;
@@ -5041,10 +5060,11 @@ document.addEventListener("click",e=>{
   give:giveFood,arm:i=>{armedAttack=armedAttack===i?null:i;render()},hit:attackAgent,
   craft,deposit,withdraw,rent:rentCottage,leave:leaveForOthers,takeleft:takeLeft,train:takeTrain,steal:trySteal,sharefood:shareFood,rate:rateChat,contest:enterContest,festprize:festivalPrize,throwdart:throwDart})[b.dataset.act](id);return}
  const d=e.target.closest("#compass button[data-dir]");if(d){move(d.dataset.dir);return}
- const g=e.target.closest("#map g");if(g){if(g.dataset.dir)move(g.dataset.dir);else if(g.dataset.loc){const id=g.dataset.loc,H=cell(hereId()),C=cell(id);
+ const g=e.target.closest("#map g");if(g&&(g.dataset.dir||g.dataset.loc)){if(g.dataset.dir)move(g.dataset.dir);else if(g.dataset.loc){const id=g.dataset.loc,H=cell(hereId()),C=cell(id);
   const dir=H&&C?Object.keys(DIRS).find(k=>coord.get(ck(H.x+DIRS[k].dx,H.y+DIRS[k].dy,zOf(H)+DIRS[k].dz))===id):null;
   const dg=!dir&&H&&C&&zOf(C)===zOf(H)?Object.keys(DIAG).find(k=>coord.get(ck(H.x+DIAG[k].dx,H.y+DIAG[k].dy,zOf(H)))===id&&!diagCheck(hereId(),k).block):null;
-  if(dir)move(dir);else if(dg)moveDiag(dg);else travelTo(id)}}
+  if(dir)move(dir);else if(dg)moveDiag(dg);else if(zOf(C)===zOf(H)&&!pathTo(id))walkToward(C.x,C.y);else travelTo(id)}return}
+ const gh=e.target.closest("#map polygon.hexgrid")||(e.target.closest("#map")&&document.elementsFromPoint(e.clientX,e.clientY).find(el=>el.matches&&el.matches("#map polygon.hexgrid")));if(gh){walkToward(+gh.dataset.hx,+gh.dataset.hy);return}
 });
 document.addEventListener("toggle",e=>{if(e.target.id==="zz-details")zzOpen=e.target.open},true);
 document.addEventListener("submit",e=>{const sf=e.target.closest("form[data-say]");if(sf){e.preventDefault();const t=sf.querySelector("input").value.trim();if(t){sf.querySelector("input").value="";mpPing(t.slice(0,160))}}});
