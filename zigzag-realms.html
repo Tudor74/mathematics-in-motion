@@ -61,6 +61,7 @@ header.top .sub{color:var(--faint);font-size:13pt;margin:4px 0 0;max-width:62ch}
 /* The clock: a little bank of nixie valves on a wooden plinth, glowing orange (a device, so the same in both themes) */
 header.top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align-items:start}
 .hdr-right{display:contents}
+.whoami{font-family:var(--display);font-size:13pt;font-weight:700;color:var(--ink);line-height:1.1;text-align:right}.whoami:empty{display:none}
 .nixie{display:grid;justify-items:end;gap:4px;grid-column:2;grid-row:1}
 .hdr-right>.pills{grid-column:1;grid-row:1;align-self:center}
 .segclock{display:flex;align-items:center;gap:10px}
@@ -422,6 +423,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
   <h1 class="sr">Zigzag Realms</h1>
   <div class="hdr-right">
   <div class="nixie" id="pill-clock" data-night="false">
+   <div class="whoami" id="whoami"></div>
    <div class="segclock" aria-hidden="true"><svg id="segdigits" viewBox="0 0 132 44"></svg><svg id="moon" viewBox="0 0 32 32"></svg></div>
    <div class="seasonline" id="seasonline" aria-hidden="true"><span class="sp"></span><span class="su"></span><span class="au"></span><span class="wi"></span><i></i></div>
   </div>
@@ -430,8 +432,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
    <button class="pill" id="script-toggle" aria-pressed="false" type="button">Script: <b>Latin</b></button>
    <span class="pill" id="pill-ai">Narrator: <b>connecting…</b></span>
    <span id="account" class="pills"></span>
-   <span class="pill" id="pill-save">World: <b>loading…</b></span>
-   <span class="pill" id="pill-cells">Cells: <b>0</b></span>
+   <span class="pill" id="pill-save" hidden></span>
    <button class="pill" id="layout-reset" type="button" hidden>Reset layout</button>
   </div>
   </div>
@@ -660,15 +661,15 @@ const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(M
    spend time: half an hour a step, eight hours a rest.
    ============================================================ */
 const CLOCK_RATE=4,TICK=30,STEP_MIN=30,REST_MIN=480;
-// By day the clock runs at 4× real time; at night at 30×, so the ten hours of night pass in twenty real minutes.
-const NIGHT_RATE=30;
+// By day the clock runs at 4× real time; at night much faster, so a whole night passes in ten real minutes.
+const NIGHT_RATE=60;
 /* Seasons: a year of 28 days, seven to each season. Days lengthen in summer and shorten in winter;
-   whatever its length, a night still passes in about twenty real minutes. */
+   whatever its length, a night still passes in about ten real minutes. */
 const YEAR_DAYS=28,SEASONS=["spring","summer","autumn","winter"];
 function seasonOf(t){const d=((Math.floor(t/1440)%YEAR_DAYS)+YEAR_DAYS)%YEAR_DAYS;return SEASONS[Math.floor(d/7)]}
 const DAWN={spring:6,summer:5,autumn:6.5,winter:7.5},DUSK={spring:20,summer:21.5,autumn:19,winter:17.5};
 const dawnH=t=>DAWN[seasonOf(t)],duskH=t=>DUSK[seasonOf(t)];
-const nightRate=t=>(24-duskH(t)+dawnH(t))*60/20;
+const nightRate=t=>(24-duskH(t)+dawnH(t))*60/10;
 function nightOrDayEdge(t){const h=((t%1440)+1440)%1440/60;return(h<dawnH(t)?dawnH(t)-h:h>=duskH(t)?24-h+DAWN[seasonOf(t+(24-h)*60)]:duskH(t)-h)*60}
 function advanceClock(t,ms){
  let left=ms;for(let guard=0;left>0&&guard<4000;guard++){
@@ -2641,7 +2642,7 @@ const RULES=[
  {title:"The ZigZag",text:"Every place, person, item and anomaly is a cell. Each cell has at most one neighbour in each direction of each dimension: east and west, north and south, up and down, and the hidden ones, the river's flow, a town's people, a store's contents. Walking is following a link."},
  {title:"The round world",text:`The world is ${2*WORLD_R+1} squares across and closes on itself. Walk ${WORLD_R+1} squares in any direction and you pass through the veil of golden mist to the far side. Its shape is a torus.`},
  {title:"Nothing before sight",text:"No place exists until you can see it. Each time you arrive, the squares you can see are written one step ahead of you, from where you stand, and are never written again."},
- {title:"Four times faster",text:`By day, time here runs ${CLOCK_RATE} times faster than yours; at night, ${NIGHT_RATE} times, so ten hours of darkness pass in twenty of your minutes. A step costs half an hour. The magical bridge stands during about three hours in ten, chosen by the world's seed and the hour, not by chance at the moment.`},
+ {title:"Four times faster",text:`By day, time here runs ${CLOCK_RATE} times faster than yours; at night, ${NIGHT_RATE} times, so ten hours of darkness pass in ten of your minutes. A step costs half an hour. The magical bridge stands during about three hours in ten, chosen by the world's seed and the hour, not by chance at the moment.`},
  {title:"Two hearts of weather",text:"The mountain stores storm energy each afternoon, E ← E + 0.06·sun − 0.03·E, and the desert breathes with the sun. Wind runs from the high to the low between them, and storms are born on the peak and die over the sand."},
  {title:"The lightning tithe",text:"Every half hour in the open, lightning takes one chance in two hundred and fifty, times the square of the storm's strength. On the peak it takes three times as many."},
  {title:"The law of affection",text:"Each half hour together, a tie moves w ← w + 0.08·(h − w) + 0.04·(friends in common). Apart, it fades: w ← 0.997·w. Like seeks like, and friends of friends drift closer."},
@@ -3981,14 +3982,14 @@ function renderClock(){
   $("seasonline").querySelector("i").style.left=`calc(${(yd/YEAR_DAYS*100).toFixed(2)}% - 1px)`;
   $("seasonline").title=`${seasonOf(t)}, day ${Math.floor(yd)%7+1} of 7`}
  p.setAttribute("aria-label",`${fmtClock(t)}, ${seasonOf(t)}, ${night?"night":"day"}`);p.setAttribute("role","timer");
- p.title=`The world clock runs at ${CLOCK_RATE}× real time by day and ${NIGHT_RATE}× at night, so night (20:00 to 06:00) lasts about twenty real minutes. Each step takes half an hour.`;
+ p.title=`The world clock runs at ${CLOCK_RATE}× real time by day and ${NIGHT_RATE}× at night, so a night lasts about ten real minutes. Each step takes half an hour.`;
  const H=hereId()&&cell(hereId()),w=H&&weatherAt(H.x,H.y,zOf(H),t);
  $("mapwx").textContent=w?w.label:"";
 }
 function renderPills(){
  $("pill-ai").innerHTML=`Narrator: <b>${esc(ai.label())}</b>`;
  $("pill-ai").title=ai.kind==="claude"?"New places are written by Claude on your own Claude account.":ai.kind==="puter"?"New places are written by an AI model through Puter, on your own Puter account.":"No AI narrator is available here, so new places come from built-in tables.";
- $("pill-cells").innerHTML=`Cells: <b>${Object.keys(zz.cells).length}</b>`;
+
  renderSaving();renderClock();renderSoundButton();renderAccount();
 }
 function renderSaving(){
@@ -3996,14 +3997,15 @@ function renderSaving(){
  if(store.mode==="none"){p.innerHTML="World: <b>loading…</b>";return}
  p.classList.toggle("warn",!!store.error);
  const where=store.mode==="cloud"?"your Claude account":store.mode==="puter"?"your Puter account":"this browser";
- if(store.stale){p.classList.add("warn");p.innerHTML="World: <b>open elsewhere, not saving here</b>";p.title="Another tab or device opened this world after this page did. Reload to play here.";return}
- p.innerHTML=store.error?"World: <b>save problem</b>":(pending||store.timer)?`World: <b>saving…</b>`:`World: <b>saved in ${where}</b>`;
+ if(store.stale){p.hidden=false;p.classList.add("warn");p.innerHTML="World: <b>open elsewhere, not saving here</b>";p.title="Another tab or device opened this world after this page did. Reload to play here.";return}
+ p.innerHTML=store.error?"World: <b>save problem</b>":(pending||store.timer)?`World: <b>saving…</b>`:`World: <b>saved in ${where}</b>`;p.hidden=!store.error;
  p.title=store.error||`Each place, item, anomaly, townsperson and stat is stored as a ZigZag cell in ${where}.`;
 }
 function renderAccount(){
  const el=$("account");if(!el)return;
  const signin=puterReady&&store.mode!=="puter"?`<button class="small" id="puter-signin">Sign in to save and use AI</button>`:"";
- const who=(puterUser?`<span class="pill">Signed in: <b>${esc(puterUser)}</b></span>`:"")+(mp.on()?`<span class="pill" title="Players seen in the last three minutes">Shared realm: <b>${mp.status?esc(mp.status):mp.online==null?"connecting…":mp.online+" online"}</b></span>`:"");
+ {const n=$("whoami");if(n)n.textContent=puterUser||""}
+ const who=(mp.on()?`<span class="pill" title="Players seen in the last three minutes">Shared realm: <b>${mp.status?esc(mp.status):mp.online==null?"connecting…":mp.online+" online"}</b></span>`:"");
  // Players who already have a world of their own can move to the shared realm from here
  const join=canJoinRealm()&&!mp.on()&&charId()?(joinArmed
   ?`<span class="confirm">Move to the shared realm? You roll a new character there and this world is erased. <button class="small" id="join-yes">Move</button><button class="small" id="join-no">Stay</button></span>`
