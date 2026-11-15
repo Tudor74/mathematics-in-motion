@@ -48,7 +48,7 @@ h1,h2,h3{font-family:var(--display);font-weight:700;margin:0;text-wrap:balance;l
 .eyebrow{font-family:var(--mono);font-size:13pt;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:0}
 .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
 
-header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px 20px;border-bottom:2px solid var(--ink);padding-bottom:10px}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px 20px;}
 header.top h1{font-size:clamp(28px,4vw,40px);line-height:1}
 header.top .sub{color:var(--faint);font-size:13pt;margin:4px 0 0;max-width:62ch}
 .pills{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
@@ -60,6 +60,7 @@ header.top .sub{color:var(--faint);font-size:13pt;margin:4px 0 0;max-width:62ch}
 .pill.warn b{color:var(--danger)}
 /* The clock: a little bank of nixie valves on a wooden plinth, glowing orange (a device, so the same in both themes) */
 header.top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align-items:start}
+header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .hdr-right{display:contents}
 .whoami{font-family:var(--display);font-size:13pt;font-weight:700;color:var(--ink);line-height:1.1;text-align:right;grid-column:2;grid-row:1;align-self:center}.whoami:empty{display:none}
 .nixie{display:grid;justify-items:end;gap:4px;grid-column:2;grid-row:1}
@@ -460,19 +461,6 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
 </div>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="inkbrush" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency=".11" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="1.4"/></filter></svg>
 <div class="wrap">
- <header class="top">
-  <h1 class="sr">Zigzag Realms</h1>
-  <div class="hdr-right">
-  <div class="whoami" id="whoami" hidden></div>
-  <div class="pills">
-   <button class="pill" id="script-toggle" aria-pressed="false" type="button" hidden>Script: <b>Latin</b></button>
-   <span class="pill" id="pill-ai" hidden>Narrator: <b>connecting…</b></span>
-   <span id="account" class="pills"></span>
-   <span class="pill" id="pill-save" hidden></span>
-   <button class="pill" id="layout-reset" type="button" hidden>Reset layout</button>
-  </div>
-  </div>
- </header>
 
  <div class="maprow">
   <section class="panel mapside" aria-label="Where you are"><div class="mapplace" id="mapplace"></div></section>
@@ -488,6 +476,19 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
     <div class="layerbar" id="layerbar" role="img" aria-label="Layers"></div>
    </section>
  </div>
+ <header class="top">
+  <h1 class="sr">Zigzag Realms</h1>
+  <div class="hdr-right">
+  <div class="whoami" id="whoami" hidden></div>
+  <div class="pills">
+   <button class="pill" id="script-toggle" aria-pressed="false" type="button" hidden>Script: <b>Latin</b></button>
+   <span class="pill" id="pill-ai" hidden>Narrator: <b>connecting…</b></span>
+   <span id="account" class="pills"></span>
+   <span class="pill" id="pill-save" hidden></span>
+   <button class="pill" id="layout-reset" type="button" hidden>Reset layout</button>
+  </div>
+  </div>
+ </header>
  <div class="grid">
   <div class="col left" data-col="left">
    <section class="panel" aria-labelledby="moves-h" data-fold="moves">
