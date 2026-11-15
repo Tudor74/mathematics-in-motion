@@ -171,3 +171,22 @@ Check the version in the game source or live build before relying on these featu
   met you, when they last did, and up to eight things you did or said, in their own
   words. The narrator greets you by name, brings the past up, and notices long
   absences. Their card shows "Remembers you".
+
+### v0.6: layers, castles, railways, friends, narration
+
+- **Fifteen layers** from −7 to +7. A 37-hex mountain narrows to a single peak at
+  +7. The Old Mine leads down to the Root of the Mountain at −7, three more cave
+  mouths go 2 to 5 layers down, and two castles each have battlements, a tower and a
+  dungeon with a guarded prize. Large towns cover 7 hexes, villages 3 and hamlets 1.
+- **Hexagon map**: the layers above and below are painted faintly, there is zoom
+  and a layer bar, distant sanctuaries and caves glow as beacons, the map greys out
+  at night with a notice, and a HUD shows HP, XP, gold, light, hunger and load.
+- **Railways** between some towns, with stations, fares and day trains.
+- **Friends** (shared realm): in towns, townsfolk introduce you to other players and
+  a path lights toward them. Friends you have met appear as a ring accurate to about
+  seven hexes. Players cannot hurt each other, but you may try once a day to lift one
+  item from someone carrying more than twice what you do.
+- **Narration** with the player's own ElevenLabs key (kept in their browser).
+- **Clock**: seven-segment digits, a moon in its eight-day phase, and a season line.
+- Only the most recently opened copy of a world saves to Puter, and old shared-realm
+  saves detach when the realm is founded anew.

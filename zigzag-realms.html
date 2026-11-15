@@ -63,17 +63,18 @@ header.top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align
 .hdr-right{display:contents}
 .nixie{display:grid;justify-items:end;gap:4px;grid-column:2;grid-row:1}
 .hdr-right>.pills{grid-column:1;grid-row:1;align-self:center}
-.nixie .plinth{display:flex;align-items:center;gap:5px;padding:7px 10px 9px;border-radius:10px;background:linear-gradient(#5a3a22,#3a2414);box-shadow:inset 0 1px 0 #8a6040,0 3px 0 #24160c,0 6px 14px #0004}
-.nixie .tube{position:relative;width:30px;height:46px;border-radius:15px 15px 5px 5px;background:radial-gradient(ellipse at 50% 35%,#2a1a10 0%,#120a06 70%,#050302 100%);border:1px solid #b88a6044;box-shadow:inset 0 0 8px #000,inset 3px 0 6px #ffffff10;display:grid;place-items:center;overflow:hidden}
-.nixie .tube::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(60deg,#ffffff07 0 1px,transparent 1px 4px),repeating-linear-gradient(-60deg,#ffffff07 0 1px,transparent 1px 4px);pointer-events:none}
-.nixie .tube::before{content:"8";position:absolute;font:400 33px/1 "IBM Plex Mono",ui-monospace,monospace;color:#ff8c3a14}
-.nixie .tube b{position:relative;font:400 33px/1 "IBM Plex Mono",ui-monospace,monospace;color:#ffc27a;text-shadow:0 0 2px #fff3,0 0 5px #ff8a1f,0 0 12px #ff6a00,0 0 22px #ff5a00aa;animation:nixflicker 7s infinite}
-.nixie .colon{display:grid;gap:9px;padding:0 1px}
-.nixie .colon i{width:6px;height:6px;border-radius:50%;background:#ffb35c;box-shadow:0 0 4px #ff8a1f,0 0 10px #ff6a00;animation:nixblink 2s steps(1) infinite}
-.nixie .lamp{width:12px;height:12px;border-radius:50%;margin-left:4px;background:#ffd27a;box-shadow:0 0 5px #ffb000,0 0 12px #ff9a00;border:1px solid #00000066}
-.nixie[data-night="true"] .lamp{background:#9cc8ff;box-shadow:0 0 5px #6aa8ff,0 0 12px #3a7cff}
-.nixie[data-night="true"] .tube b{color:#ffad6a;text-shadow:0 0 2px #fff2,0 0 5px #ff7a1f,0 0 10px #ff5a00}
-.nixie-label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.segclock{display:flex;align-items:center;gap:10px}
+#segdigits{width:132px;height:44px;overflow:visible}
+#segdigits .on{fill:#ffb35c;filter:drop-shadow(0 0 .8px #ff8a1f) drop-shadow(0 0 2.2px #ff6a00aa)}
+#segdigits .off{fill:currentColor;opacity:.07}
+#segdigits .dot{fill:#ffb35c;filter:drop-shadow(0 0 1.5px #ff6a00);animation:nixblink 2s steps(1) infinite}
+#moon{width:30px;height:30px;overflow:visible}#moon .dark{fill:currentColor;opacity:.12}#moon .lit{fill:#f4ecd2;filter:drop-shadow(0 0 3px #fff6d8aa)}#moon .rim{fill:none;stroke:currentColor;stroke-opacity:.25}
+.seasonline{position:relative;display:flex;gap:2px;width:100%;height:5px;margin-top:2px}
+.seasonline span{flex:1;border-radius:3px;opacity:.28}
+.seasonline .sp{background:#6fbf63}.seasonline .su{background:#f0bd3e}.seasonline .au{background:#d4702f}.seasonline .wi{background:#79ace3}
+.seasonline span.on{opacity:1;box-shadow:0 0 6px currentColor,0 0 10px var(--glow)}
+.seasonline i{position:absolute;top:-3px;width:2px;height:11px;border-radius:1px;background:var(--ink);opacity:.8}
+.nixie{color:var(--ink)}
 @keyframes nixblink{0%{opacity:1}50%{opacity:.25}}
 @keyframes nixflicker{0%,96%,100%{opacity:1}97%{opacity:.82}98%{opacity:1}99%{opacity:.9}}
 @media (max-width:720px){header.top{grid-template-columns:minmax(0,1fr)}.nixie{grid-column:1;grid-row:1;justify-items:start}.hdr-right>.pills{grid-row:2}}
@@ -405,8 +406,8 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
   <h1 class="sr">Zigzag Realms</h1>
   <div class="hdr-right">
   <div class="nixie" id="pill-clock" data-night="false">
-   <div class="plinth" aria-hidden="true"><span class="tube"><b id="nx0">0</b></span><span class="tube"><b id="nx1">8</b></span><span class="colon"><i></i><i></i></span><span class="tube"><b id="nx2">0</b></span><span class="tube"><b id="nx3">0</b></span><span class="lamp" title="day or night"></span></div>
-   <div class="nixie-label" id="clock-text">Day 1 · 08:00</div>
+   <div class="segclock" aria-hidden="true"><svg id="segdigits" viewBox="0 0 132 44"></svg><svg id="moon" viewBox="0 0 32 32"></svg></div>
+   <div class="seasonline" id="seasonline" aria-hidden="true"><span class="sp"></span><span class="su"></span><span class="au"></span><span class="wi"></span><i></i></div>
   </div>
   <div class="pills">
    <span class="pill" id="pill-weather">Weather: <b>—</b></span>
@@ -3342,12 +3343,36 @@ function linkify(text){
   const d=DIR_WORDS[w.toLowerCase()];return`<button class="dirlink" data-go="${d}" ${busy?"disabled":""} title="Go ${d}">${w}</button>`});
 }
 
+/* The clock face: four seven-segment digits and a colon, a moon in its phase (an eight-day cycle),
+   and under them a line of the four seasons with the current one lit and a mark for today */
+const SEG={0:"abcdef",1:"bc",2:"abged",3:"abgcd",4:"fgbc",5:"afgcd",6:"afgedc",7:"abc",8:"abcdefg",9:"abcfgd"};
+function segDigits(hh){
+ const w=24,h=40,t=4.2,poly=(x,y,horiz,len)=>horiz?`${x+t/2},${y} ${x+len-t/2},${y} ${x+len},${y+t/2} ${x+len-t/2},${y+t} ${x+t/2},${y+t} ${x},${y+t/2}`:`${x},${y+t/2} ${x+t/2},${y} ${x+t},${y+t/2} ${x+t},${y+len-t/2} ${x+t/2},${y+len} ${x},${y+len-t/2}`;
+ const segs=(ox,oy)=>({a:poly(ox+2,oy,1,w-4),g:poly(ox+2,oy+h/2-t/2,1,w-4),d:poly(ox+2,oy+h-t,1,w-4),f:poly(ox,oy+2,0,h/2-2),b:poly(ox+w-t,oy+2,0,h/2-2),e:poly(ox,oy+h/2,0,h/2-2),c:poly(ox+w-t,oy+h/2,0,h/2-2)});
+ let out="";const xs=[2,32,72,102];
+ for(let i=0;i<4;i++){const on=SEG[hh[i]]||"",S=segs(xs[i],2);for(const k of "abcdefg")out+=`<polygon class="${on.includes(k)?"on":"off"}" points="${S[k]}"/>`}
+ out+=`<circle class="dot" cx="64" cy="15" r="2.6"/><circle class="dot" cx="64" cy="31" r="2.6"/>`;
+ return out;
+}
+const LUNAR_DAYS=8;
+function moonPhase(t){
+ const p=((t/1440)%LUNAR_DAYS+LUNAR_DAYS)%LUNAR_DAYS/LUNAR_DAYS,c=16,r=12,rx=Math.abs(Math.cos(2*Math.PI*p))*r;
+ const wax=p<.5,cres=(p<.25)||(p>.75);
+ const outer=wax?1:0,term=wax?(cres?0:1):(cres?1:0);
+ const lit=p<.02||p>.98?"":`<path class="lit" d="M${c} ${c-r} A${r} ${r} 0 0 ${outer} ${c} ${c+r} A${rx.toFixed(2)} ${r} 0 0 ${term} ${c} ${c-r} Z"/>`;
+ const names=["new moon","waxing crescent","first quarter","waxing gibbous","full moon","waning gibbous","last quarter","waning crescent"];
+ return`<title>${names[Math.round(p*8)%8]}</title><circle class="dark" cx="${c}" cy="${c}" r="${r}"/>${lit}<circle class="rim" cx="${c}" cy="${c}" r="${r}"/>`;
+}
 function renderClock(){
  const t=gameNow(),night=isNight(t),p=$("pill-clock");
  p.dataset.night=String(night);
  const mm=Math.floor(((t%1440)+1440)%1440),hh=String(Math.floor(mm/60)).padStart(2,"0")+String(mm%60).padStart(2,"0");
- for(let i=0;i<4;i++){const d=$("nx"+i);if(d&&d.textContent!==hh[i])d.textContent=hh[i]}
- $("clock-text").textContent=`${seasonOf(t)} · day ${dayOf(t)} · ${night?`night, dawn in ${Math.max(1,Math.ceil(realMinutesToDawn(t)))} min`:"day"}`;
+ const sig=hh+"|"+Math.floor(t/90);
+ if(p.dataset.sig!==sig){p.dataset.sig=sig;$("segdigits").innerHTML=segDigits(hh);$("moon").innerHTML=moonPhase(t);
+  const si=SEASONS.indexOf(seasonOf(t)),yd=((t/1440)%YEAR_DAYS+YEAR_DAYS)%YEAR_DAYS;
+  [...$("seasonline").children].forEach((e,i)=>{if(e.tagName==="SPAN")e.classList.toggle("on",i===si)});
+  $("seasonline").querySelector("i").style.left=`calc(${(yd/YEAR_DAYS*100).toFixed(2)}% - 1px)`;
+  $("seasonline").title=`${seasonOf(t)}, day ${Math.floor(yd)%7+1} of 7`}
  p.setAttribute("aria-label",`${fmtClock(t)}, ${seasonOf(t)}, ${night?"night":"day"}`);p.setAttribute("role","timer");
  p.title=`The world clock runs at ${CLOCK_RATE}× real time by day and ${NIGHT_RATE}× at night, so night (20:00 to 06:00) lasts about twenty real minutes. Each step takes half an hour.`;
  const H=hereId()&&cell(hereId()),w=H&&weatherAt(H.x,H.y,zOf(H),t);
