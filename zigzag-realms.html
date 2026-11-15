@@ -61,7 +61,7 @@ header.top .sub{color:var(--faint);font-size:13pt;margin:4px 0 0;max-width:62ch}
 /* The clock: a little bank of nixie valves on a wooden plinth, glowing orange (a device, so the same in both themes) */
 header.top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align-items:start}
 .hdr-right{display:contents}
-.whoami{font-family:var(--display);font-size:13pt;font-weight:700;color:var(--ink);line-height:1.1;text-align:right}.whoami:empty{display:none}
+.whoami{font-family:var(--display);font-size:13pt;font-weight:700;color:var(--ink);line-height:1.1;text-align:right;grid-column:2;grid-row:1;align-self:center}.whoami:empty{display:none}
 .nixie{display:grid;justify-items:end;gap:4px;grid-column:2;grid-row:1}
 .hdr-right>.pills{grid-column:1;grid-row:1;align-self:center}
 .segclock{display:flex;align-items:center;gap:10px}
@@ -78,7 +78,7 @@ header.top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align
 .nixie{color:var(--ink)}
 @keyframes nixblink{0%{opacity:1}50%{opacity:.25}}
 @keyframes nixflicker{0%,96%,100%{opacity:1}97%{opacity:.82}98%{opacity:1}99%{opacity:.9}}
-@media (max-width:720px){header.top{grid-template-columns:minmax(0,1fr)}.nixie{grid-column:1;grid-row:1;justify-items:start}.hdr-right>.pills{grid-row:2}}
+@media (max-width:720px){header.top{grid-template-columns:minmax(0,1fr)}.nixie{grid-column:1;grid-row:1;justify-items:start}.hdr-right>.pills{grid-row:2}.whoami{grid-column:1;text-align:left}}
 .orb{width:11px;height:11px;border-radius:50%;background:var(--amber);flex:0 0 11px}
 .pill.clock[data-night="true"] .orb{background:transparent;box-shadow:inset -4px -1px 0 0 var(--water)}
 
@@ -86,20 +86,24 @@ header.top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align
 /* The map runs the full width on desktop, wide and not too tall */
 .maprow{display:grid}
 @media (min-width:1041px){
- .maprow{grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:16px;align-items:start}
- .maprow .map{grid-column:1;grid-row:1}.maprow .mapside{grid-column:2;grid-row:1;max-height:calc(min(56vh,540px) + 190px);overflow-y:auto}
- .maprow .map svg{aspect-ratio:2.09/1;height:auto}}
+ .maprow{grid-template-columns:minmax(0,1fr);gap:16px;align-items:start}
+ .maprow .map{grid-column:1;grid-row:2}.maprow .mapside{grid-column:1;grid-row:1}
+ .maprow .map svg#map{aspect-ratio:auto;height:380px}}
 .mapside .mapdesc{font-size:13pt}
 .panel{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:16px;min-width:0;display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-content:start}
 .col{display:grid;gap:16px;min-width:0;align-content:start}
 
 /* Map */
-.map svg{display:block;width:100%;height:auto;max-width:100%;aspect-ratio:480/416;background:var(--wash);border-radius:6px}
+.map svg#map{display:block;width:100%;height:auto;max-width:100%;aspect-ratio:480/416;background:var(--wash);border-radius:6px}
 .mapwrap{position:relative}
-.panel.map{background:none;border:0;padding:0;border-radius:0;box-shadow:none}.panel.map svg{border-radius:12px;border:1px solid var(--rule)}.panel.map .mapwx{right:10px;bottom:10px}
+.panel.map{background:none;border:0;padding:0;border-radius:0;box-shadow:none}.panel.map svg#map{border-radius:12px;border:1px solid var(--rule)}.panel.map .mapwx{right:10px;bottom:10px}
 /* The heads-up display: what changes as you play, over the map's top-left corner */
 .hud{position:absolute;left:10px;top:10px;display:flex;align-items:flex-start;gap:8px;pointer-events:none}
 .hud:empty{display:none}
+.mapwrap .nixie{position:absolute;left:10px;bottom:10px;grid-column:auto;grid-row:auto;justify-items:start;padding:6px 8px;border-radius:12px;background:color-mix(in srgb,var(--sheet) 88%,transparent);border:1px solid var(--rule);box-shadow:0 2px 8px #0002;transform:scale(.8);transform-origin:left bottom}
+.gate{position:absolute;inset:0;display:grid;place-items:center;padding:16px;border-radius:12px;background:color-mix(in srgb,var(--paper) 70%,transparent);backdrop-filter:blur(3px);z-index:5}.gate[hidden]{display:none}
+.gate .card{max-width:460px;display:grid;gap:10px;text-align:center;padding:18px 20px;border-radius:12px;background:var(--sheet);border:1px solid var(--rule);box-shadow:0 6px 24px #0003}
+.gate h2{margin:0;font-size:26px}.gate p{margin:0}
 .mapwx{position:absolute;right:10px;bottom:10px;padding:5px 10px;border-radius:8px;background:color-mix(in srgb,var(--sheet) 88%,transparent);border:1px solid var(--rule);font-family:var(--mono);font-size:13pt;color:var(--ink);max-width:calc(100% - 20px);box-shadow:0 2px 8px #0002;pointer-events:none}.mapwx:empty{display:none}
 .map .hud svg{aspect-ratio:auto;background:none;border:0;border-radius:0;max-width:none}.map .hud .hpdial{width:72px;height:72px}.map .hud .gp svg{width:24px;height:24px}
 .hpdial{width:72px;height:72px;display:block}.hpdial .bg{fill:color-mix(in srgb,var(--sheet) 88%,transparent);stroke:var(--rule)}.hpdial .track{fill:none;stroke:var(--wash);stroke-width:7}
@@ -428,11 +432,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
  <header class="top">
   <h1 class="sr">Zigzag Realms</h1>
   <div class="hdr-right">
-  <div class="nixie" id="pill-clock" data-night="false">
-   <div class="whoami" id="whoami"></div>
-   <div class="segclock"><svg id="moon" viewBox="3.5 3.5 25 25"></svg><button id="sound-toggle" class="soundicon" aria-pressed="true" type="button" aria-label="Sound on"></button><svg aria-hidden="true" id="segdigits" viewBox="0 0 132 44"></svg></div>
-   <div class="seasonline" id="seasonline" aria-hidden="true"><span class="sp"></span><span class="su"></span><span class="au"></span><span class="wi"></span><i></i></div>
-  </div>
+  <div class="whoami" id="whoami"></div>
   <div class="pills">
    <button class="pill" id="script-toggle" aria-pressed="false" type="button" hidden>Script: <b>Latin</b></button>
    <span class="pill" id="pill-ai" hidden>Narrator: <b>connecting…</b></span>
@@ -447,7 +447,12 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
   <section class="panel mapside" aria-label="Where you are"><div class="mapplace" id="mapplace"><div class="sectionhead"><h3 id="map-h">Survey map</h3></div></div></section>
    <section class="panel map" aria-labelledby="map-h">
     <span id="coords" hidden></span>
-    <div class="mapwrap"><svg id="map" viewBox="0 0 480 416" role="img" aria-label="Map of explored places on your current level"></svg><div class="hud" id="hud" aria-live="polite"></div><div class="mapwx" id="mapwx" aria-label="Weather here"></div></div>
+    <div class="mapwrap"><svg id="map" viewBox="0 0 480 416" role="img" aria-label="Map of explored places on your current level"></svg><div class="hud" id="hud" aria-live="polite"></div>
+  <div class="nixie" id="pill-clock" data-night="false">
+   <div class="segclock"><svg id="moon" viewBox="3.5 3.5 25 25"></svg><button id="sound-toggle" class="soundicon" aria-pressed="true" type="button" aria-label="Sound on"></button><svg aria-hidden="true" id="segdigits" viewBox="0 0 132 44"></svg></div>
+   <div class="seasonline" id="seasonline" aria-hidden="true"><span class="sp"></span><span class="su"></span><span class="au"></span><span class="wi"></span><i></i></div>
+  </div>
+<div class="gate" id="gate" hidden></div><div class="mapwx" id="mapwx" aria-label="Weather here"></div></div>
     <div class="zoomrow"><button class="small" id="zoom-out" type="button" aria-label="Zoom out">−</button><span class="mono" id="zoom-label">zoom</span><button class="small" id="zoom-in" type="button" aria-label="Zoom in">+</button></div>
     <div class="layerbar" id="layerbar" role="img" aria-label="Layers"></div>
     <p class="legend"><span>▲ way up</span><span>▼ way down</span><span class="r">◆ anomaly</span><span class="p">● townsfolk</span><span style="color:var(--good)">● creatures</span><span class="m">┅ magical bridge</span><span>┿ railway</span><span style="color:var(--amber)">● sanctuary beacon</span><span class="m">● cave entrance</span></p>
@@ -4036,7 +4041,7 @@ function renderAccount(){
  const join=canJoinRealm()&&!mp.on()&&charId()?(joinArmed
   ?`<span class="confirm">Move to the shared realm? You roll a new character there and this world is erased. <button class="small" id="join-yes">Move</button><button class="small" id="join-no">Stay</button></span>`
   :`<button class="small primary" id="join-realm">Join the shared realm</button>`):"";
- el.innerHTML=`${who}${signin}${join}`;
+ el.innerHTML=`${who}${signin}`;
  const b=$("puter-signin");if(b)b.onclick=puterSignIn;
  if($("join-realm"))$("join-realm").onclick=()=>{joinArmed=true;renderAccount()};
  if($("join-no"))$("join-no").onclick=()=>{joinArmed=false;renderAccount()};
@@ -4048,6 +4053,24 @@ function renderAccount(){
  };
 }
 let joinArmed=false;
+function renderGate(){
+ const g=$("gate");if(!g)return;
+ const need=canJoinRealm()&&!mp.on()&&!(draft.shared&&!charId());
+ g.hidden=!need;if(!need){g.innerHTML="";return}
+ const local=!!charId();
+ g.innerHTML=`<div class="card" role="dialog" aria-modal="true" aria-labelledby="gate-h"><h2 id="gate-h">The shared realm</h2>
+  <p>One world for every player. You will see other travellers on the map, meet them, trade with them and share its townsfolk, creatures and festivals. You keep your own character and save.</p>
+  ${local?(joinArmed?`<p class="note">Moving there erases the world in this browser and you roll a new character.</p><div class="btnrow" style="justify-content:center"><button class="primary" id="gate-yes">Move to the shared realm</button><button id="gate-no">Not yet</button></div>`
+   :`<div class="btnrow" style="justify-content:center"><button class="primary" id="gate-join">Join the shared realm</button></div>`)
+   :`<div class="btnrow" style="justify-content:center"><button class="primary" id="gate-join">Join the shared realm</button></div><p class="note">You will sign in with Puter, then roll your character.</p>`}</div>`;
+ if($("gate-join"))$("gate-join").onclick=()=>{if(local){joinArmed=true;renderGate();return}draft.shared=true;render()};
+ if($("gate-no"))$("gate-no").onclick=()=>{joinArmed=false;renderGate()};
+ if($("gate-yes"))$("gate-yes").onclick=()=>{
+  joinArmed=false;const ch=cell(charId()),keep=cell("root")&&cell("root").ent;
+  draft.name=ch.t;draft.cls=ch.cls;draft.stats=rollStats();draft.ent=keep;draft.shared=true;
+  for(const id of Object.keys(zz.cells))zz.removed.add(id);zz.cells={};coord.clear();fieldCache.clear();zz.dirty.clear();rounds=[];flash=null;
+  store.flush();render();window.scrollTo(0,0)};
+}
 
 const GLYPH_MON={arch:"M16 35 V21 Q26 6 36 21 V35 M20 35 V22 Q26 12 32 22 V35",stones:"M13 35 V21 M21 35 V15 M29 35 V17 M37 35 V22 M11 35 H41",temple:"M11 20 L26 11 L41 20 Z M14 20 V32 M21 20 V32 M31 20 V32 M38 20 V32 M11 33 H41"};
 const ZOOMS=[2,3,4,5,6,8];let mapZoom=3;try{const z=+localStorage.getItem("zr-zoom3");if(ZOOMS.includes(z))mapZoom=z}catch(e){}
@@ -4366,11 +4389,11 @@ function renderCreate(el){
  <div class="row"><label for="f-name">Name<input id="f-name" value="${esc(draft.name)}" maxlength="40"></label>
  <label for="f-cls">Class<select id="f-cls">${Object.keys(CLASSES).map(k=>`<option${k===draft.cls?" selected":""}>${k}</option>`).join("")}</select></label></div>
  <label for="f-theme">World theme (the narrator keeps every place in this spirit)<textarea id="f-theme" rows="3" maxlength="400">${esc(draft.theme)}</textarea></label>
- ${canJoinRealm()?`<label class="check" for="f-shared"><input type="checkbox" id="f-shared" ${draft.shared?"checked":""}> Join the shared realm: one world for every player, where you can see other travellers, talk to them and leave things for them. You keep your own character and save. ${draft.shared?"The realm's founder already chose its theme.":""}</label>`:""}
+ ${canJoinRealm()?(draft.shared?`<p class="note">You are joining the shared realm. Its founder chose the world's theme.</p>`:`<p class="note">Join the shared realm on the map to begin.</p>`):""}
  <div class="rolled">${STATS.map((k,i)=>`<div><span class="k">${k}</span><span class="v">${s[i]}</span><span class="k">${sgn(mod(s[i]))}</span></div>`).join("")}</div>
  <p class="note mono" style="font-size:13pt">Hit die d${C.hd} · starting HP ${hp} · AC ${10+mod(s[1])+(C.kit.find(k=>k[2]==="armor")?.[6]||0)} · carry ${s[0]*15} lb</p>
  <p class="note">${esc(CLASS_NOTES[draft.cls])}</p>
- <div class="btnrow"><button id="f-reroll" ${busy?"disabled":""}>Reroll abilities</button><button class="primary" id="f-begin" ${busy?"disabled":""}>Set out</button>${waiting}</div></div>`;
+ <div class="btnrow"><button id="f-reroll" ${busy?"disabled":""}>Reroll abilities</button><button class="primary" id="f-begin" ${busy||(canJoinRealm()&&!draft.shared)?"disabled":""}>Set out</button>${waiting}</div></div>`;
  $("f-name").oninput=e=>draft.name=e.target.value;
  $("f-theme").oninput=e=>draft.theme=e.target.value;
  $("f-cls").onchange=e=>{draft.cls=e.target.value;renderPlace()};
@@ -4545,7 +4568,7 @@ document.addEventListener("keydown",ev=>{
  ev.preventDefault();ev.stopPropagation();if(nudge(g.closest("section.panel"),ev.key))g.focus();
 },true);
 
-function render(){renderPills();renderScriptButton();renderMap();renderCompass();renderPlace();renderSheet();renderSocial();renderGarden();renderCodex();renderAlphabet();renderLog();renderVoice();decoratePanels();sound.update();voiceOnRender()}
+function render(){renderGate();renderPills();renderScriptButton();renderMap();renderCompass();renderPlace();renderSheet();renderSocial();renderGarden();renderCodex();renderAlphabet();renderLog();renderVoice();decoratePanels();sound.update();voiceOnRender()}
 
 /* ============================================================
    Soundtrack: generated live from white, pink and brown noise and a few oscillators.
