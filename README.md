@@ -1,6 +1,17 @@
 # Mathematics In Motion
 
-Interactive maths page (v0.11). Open `index.html` in a browser.
+This repository contains two browser projects.
+
+| Project | Source entry point | How to open it |
+| --- | --- | --- |
+| Mathematics in Motion (v0.11) | [`index.html`](index.html) | Open the file in a browser. |
+| Zigzag Realms | [`zigzag-realms.html`](zigzag-realms.html) | Open the file in a browser for local play, or visit the [live Puter game](https://zigzag-realms.puter.site/). |
+
+### Zigzag Realms deployment files
+
+- [`zigzag-realms.html`](zigzag-realms.html) is the game source. For Puter hosting, wrap it in a complete HTML document and deploy that document as `index.html` in the Puter site folder. The repository's root `index.html` is the maths project.
+- [`tools/realms-worker.js`](tools/realms-worker.js) is the separate Puter Worker for the shared realm.
+- [`tools/realm-script.mjs`](tools/realm-script.mjs) generates the realm alphabet data. See [The realm script](#the-realm-script) for the command.
 
 ## Zigzag Realms
 
@@ -27,8 +38,7 @@ character sheet, `d.occupant` an anomaly at a place, `d.at` where you stand).
 - The world is 65 squares across and wraps round at the veil of golden mist.
 
 As a Claude artifact it narrates with Claude and saves to the viewer's Claude
-account. Hosted on puter.site (wrap the file in a doctype/html/body shell as
-`index.html`) it uses Puter sign-in, a cheap model through `puter.ai.chat`, and
+account. Hosted on puter.site it uses Puter sign-in, a cheap model through `puter.ai.chat`, and
 Puter KV storage. Opened as a plain file it uses built-in tables and saves in
 the browser.
 
@@ -138,7 +148,9 @@ hard to confuse. Run `node tools/realm-script.mjs` to regenerate.
   80–120 players online at once, fewer while many are exploring new ground.
   KV use is billed to the worker's owner.
 
-### v0.5: diagonals, limited approaches, sound, realm events, townsfolk memory
+### v0.5 design notes
+
+Check the version in the game source or live build before relying on these features.
 
 - **Diagonal moves**: north-east, north-west, south-east and south-west, from the
   compass, Y U B N (or 7 9 1 3), "What you can see", or a click on the map. A
