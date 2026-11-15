@@ -2545,7 +2545,7 @@ function monsterTurn(){
   else{const r=roll(F.dmg,d===20?2:1);txt+=`; damage ${r.text}`;setStat("HP",sv("HP")-r.total);say(d===20?`A critical blow from ${F.t}: ${r.total} damage.`:`${F.t} hits you for ${r.total} damage.`,"bad",txt);if(sv("HP")>0)foeLesson(F)}
  }
  if(F.special==="regenerate"&&F.hp<F.maxhp){const r=roll("1d4");F.hp=Math.min(F.maxhp,F.hp+r.total);touch(f);say(`${F.t} knits itself back together (+${r.total}).`,"",r.text)}
- if(sv("HP")<=0){if(F.objectClass==="Keter")fall(hereId());else woundedRetreat(F)}
+ if(sv("HP")<=0)fall(hereId());   // at 0 HP you fall, to any anomaly (townsfolk only ever beat you, see fightBack)
 }
 /* Each time an anomaly wins a round you learn something useful about it: how hard it is to hit, how
    hard it hits, what it can do, how hurt it is, which of your attacks suits it and how easily you could slip away. */
@@ -4795,7 +4795,7 @@ function renderDowned(){
  return`<div class="placehead"><p class="eyebrow">You have fallen</p><h2>Darkness at ${esc(L.t)}</h2></div>
  <p class="desc">Your hit points are gone. Choose how your story goes on.</p>
  <div class="btnrow"><button class="primary" id="wake">Wake at ${esc(home.t)}</button>${e.tokens>0?`<button id="resurrect">Resurrect with your pack (${e.tokens} token${e.tokens===1?"":"s"})</button>`:""}</div>
- <p class="note">You wake at the start, rested. Your pack stays where you fell, for you to fetch.</p>
+ <p class="note">You wake at the start with 1 HP. Your pack stays where you fell, for you to fetch.</p>
  ${flash?`<p class="flash">${esc(flash)}</p>`:""}`;
 }
 
