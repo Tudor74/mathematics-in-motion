@@ -108,6 +108,13 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .mapkey .sw{display:inline-block;width:1.1em;text-align:center}
 .wxbadge{display:inline-flex;align-items:center;gap:8px}
 .mapside .card{display:grid;gap:6px}.mapside .chips{display:flex;flex-wrap:wrap;gap:4px}.mapside h2{margin:0;font-size:22px}.mapside .desc{margin:0;max-width:none}
+.map .side{stroke-linecap:round;pointer-events:none}.map .side.shut{stroke:var(--ink);stroke-width:5;opacity:.85}.map .side.shut.mine{stroke-width:6.5;opacity:1}
+.map .side.open.mine{stroke:var(--good);stroke-width:3.5;opacity:.8;stroke-dasharray:6 5}
+.map .side.pulse{animation:sidepulse .7s ease 3}@keyframes sidepulse{0%,100%{stroke:var(--ink)}50%{stroke:var(--danger);stroke-width:9}}
+.blockflash{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;z-index:7;opacity:0}
+.blockflash.show{animation:bflash 2.2s ease forwards}@keyframes bflash{0%{opacity:0;transform:scale(.85)}12%{opacity:1;transform:scale(1.04)}22%{transform:scale(1)}80%{opacity:1}100%{opacity:0}}
+.bf-hex{width:230px;height:200px;display:grid;place-content:center;gap:6px;text-align:center;padding:0 34px;background:var(--ink);color:var(--sheet);clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);box-shadow:0 6px 24px #0005}
+.bf-hex b{font-family:var(--display);font-size:22px;letter-spacing:.04em}.bf-hex span{font-size:13pt;line-height:1.3}
 .maprealm{position:absolute;right:10px;top:10px;pointer-events:none}.maprealm:empty{display:none}
 .maprealm>span{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;background:color-mix(in srgb,var(--sheet) 88%,transparent);border:1px solid var(--rule);box-shadow:0 2px 8px #0002;font-family:var(--mono);font-size:13pt;color:var(--ink)}
 .maprealm .facehead{display:block;border-radius:50%;background:var(--sheet)}.maprealm .live .facehead{box-shadow:0 0 0 2px var(--good)}
@@ -472,7 +479,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
    <div class="segclock"><svg id="moon" viewBox="3.5 3.5 25 25"></svg><button id="sound-toggle" class="soundicon" aria-pressed="true" type="button" aria-label="Sound on"></button><svg aria-hidden="true" id="segdigits" viewBox="0 0 132 44"></svg></div>
    <div class="seasonline" id="seasonline" aria-hidden="true"><span class="sp"></span><span class="su"></span><span class="au"></span><span class="wi"></span><i></i></div>
   </div>
-<div class="maprealm" id="maprealm"></div><div class="mapkey" id="mapkey" hidden></div><div class="arrive" id="arrive" aria-live="polite"></div><div class="gate" id="gate" hidden></div><div class="mapwx" id="mapwx" aria-label="Weather here"></div></div>
+<div class="maprealm" id="maprealm"></div><div class="blockflash" id="blockflash" aria-live="assertive"></div><div class="mapkey" id="mapkey" hidden></div><div class="arrive" id="arrive" aria-live="polite"></div><div class="gate" id="gate" hidden></div><div class="mapwx" id="mapwx" aria-label="Weather here"></div></div>
     <div class="zoomrow"><button class="small" id="zoom-out" type="button" aria-label="Zoom out">−</button><span class="mono" id="zoom-label">zoom</span><button class="small" id="zoom-in" type="button" aria-label="Zoom in">+</button><button class="small iconbtn" id="map-key-btn" type="button" aria-label="Map key" title="Map key">?</button></div>
     <div class="layerbar" id="layerbar" role="img" aria-label="Layers"></div>
    </section>
@@ -2381,7 +2388,7 @@ async function move(dir){
  if(busy||!charId()||!hereId()||isDowned())return;
  const here=hereId(),v=DIRS[dir],H=cell(here);
  const block=blockedBy(here,dir)||rangeBlock(H,v);
- if(block){flash=block;render();return}
+ if(block){flash=block;render();flashBlocked(dir,block);return}
  flash=null;
  const f=foeId();
  if(f){
@@ -2451,7 +2458,7 @@ function diagCheck(here,d){
 async function moveDiag(d){
  if(busy||!charId()||!hereId()||isDowned())return;
  const here=hereId(),H=cell(here),D=DIAG[d];let r=diagCheck(here,d);
- if(r.block){flash=r.block;render();return}
+ if(r.block){flash=r.block;render();flashBlocked(d,r.block);return}
  flash=null;
  const f=foeId();
  if(f){
@@ -2505,7 +2512,7 @@ async function walkToward(tx,ty){
   const opts=[...FLAT.map(d=>({d,dx:DIRS[d].dx,dy:DIRS[d].dy})),...Object.keys(DIAG).filter(k=>hexDiagOK(H.x,k)).map(k=>({d:k,dx:DIAG[k].dx,dy:DIAG[k].dy}))]
    .map(o=>({...o,dist:hexDist(H.x+o.dx,H.y+o.dy,tx,ty),id:coord.get(ck(H.x+o.dx,H.y+o.dy,zOf(H)))})).filter(o=>o.dist<=now&&!(o.id&&been.has(o.id))).sort((a,b)=>a.dist-b.dist);
   const ok=opts.find(o=>DIAG[o.d]?!diagCheck(here,o.d).block:!blockedBy(here,o.d));
-  if(!ok){if(!steps){flash=(opts[0]&&(DIAG[opts[0].d]?diagCheck(here,opts[0].d).block:blockedBy(here,opts[0].d)))||"There is no clear way that direction from here.";render()}else log(`You stop: the way on toward there is blocked.`);break}
+  if(!ok){if(!steps){flash=(opts[0]&&(DIAG[opts[0].d]?diagCheck(here,opts[0].d).block:blockedBy(here,opts[0].d)))||"There is no clear way that direction from here.";render();flashBlocked(opts[0]&&opts[0].d,flash)}else log(`You stop: the way on toward there is blocked.`);break}
   await (DIAG[ok.d]?moveDiag(ok.d):move(ok.d));
   if(hereId()===here)break;been.add(hereId());
   await new Promise(r=>setTimeout(r,140));
@@ -4157,6 +4164,26 @@ function renderHud(){
  el.innerHTML=`${dial}<div class="hudside">${coin}${warn.map(w=>`<span class="hudwarn">${w}</span>`).join("")}</div>`;
 }
 let lastMapShape="";window.addEventListener("resize",()=>{const b=$("map").getBoundingClientRect(),sh=Math.round(b.width/Math.max(1,b.height)*20);if(String(sh)!==lastMapShape){lastMapShape=String(sh);renderMap()}});
+/* Hex sides. Flat-topped hexes: side k runs between corners k and k+1 (corner k at k·60°, y down), so
+   side 0 faces south-east, 1 south, 2 south-west, 3 north-west, 4 north, 5 north-east. Each side maps to a
+   move that depends on the column (see hexDiagOK). */
+function sideMoves(x){const ev=evenCol(x);return[ev?"east":"southeast","south",ev?"west":"southwest",ev?"northwest":"west","north",ev?"northeast":"east"]}
+// Is the way across this side open, by the lie of the land (walls, water, closed exits), ignoring night and weather?
+function sideOpen(id,d){
+ const A=cell(id),Z=zOf(A),D=DIRS[d]||DIAG[d],bid=coord.get(ck(A.x+D.dx,A.y+D.dy,Z)),B=bid&&cell(bid);
+ const there=o=>!B||(B.lake?false:riverBlock(bid)?false:o);
+ if(DIRS[d])return exitOpen(A,d)&&there(exitOpen(B,OPP[d]));
+ const [a,b]=DIAG[d].via;return(exitOpen(A,a)||exitOpen(A,b))&&there(exitOpen(B,OPP[a])||exitOpen(B,OPP[b]));
+}
+let blockTimer=null;
+function flashBlocked(d,why){
+ const el=$("blockflash");if(!el)return;
+ el.innerHTML=`<div class="bf-hex"><b>Path blocked</b>${why?`<span>${esc(String(why).replace(/\.$/,""))}</span>`:""}</div>`;
+ el.classList.remove("show");void el.offsetWidth;el.classList.add("show");
+ clearTimeout(blockTimer);blockTimer=setTimeout(()=>el.classList.remove("show"),2200);
+ // and pulse the side you tried
+ const side=document.querySelector(`#map .side[data-d="${d}"]`);if(side){side.classList.remove("pulse");void side.getBBox();side.classList.add("pulse")}
+}
 let mapCam=null;
 const easeBack=t=>-(Math.cos(Math.PI*t)-1)/2;   // a slow, smooth slide: gentle start, gentle stop
 function camNow(){const a=mapCam&&mapCam.anim;if(!a)return mapCam?{x:mapCam.x,y:mapCam.y}:{x:0,y:0};
@@ -4252,8 +4279,13 @@ function renderMap(){
    beacons+=`<g class="beacon ${b.kind} far" data-loc="${b.c.id}"><circle class="halo" cx="${ex}" cy="${ey}" r="14"/>${icon}<text x="${ex}" y="${ey+(ey>my?-(10+16*U):(12+22*U))}" text-anchor="middle">${b.d}</text><title>${esc(tip)}</title></g>`;
   }
  }
+ let mineSides="";{const corner=(cx,cy,k)=>[cx+Math.cos(k*Math.PI/3)*HW/2*.97,cy+Math.sin(k*Math.PI/3)*HW/2*.97];
+  for(const [id,[dx,dy]] of vis){const c=cell(id),moves=sideMoves(c.x),[cx,cy]=C(dx,dy),me=id===here;
+   for(let k=0;k<6;k++){const d=moves[k],open=sideOpen(id,d);if(open&&!me)continue;
+    const [x1,y1]=corner(cx,cy,k),[x2,y2]=corner(cx,cy,k+1);
+    (me?(s_=>mineSides+=s_):(s_=>out+=s_))(`<line class="side ${open?"open":"shut"}${me?" mine":""}"${me?` data-d="${d}"`:""} x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/>`)}}}
  const [hx,hy]=P(0,0);
- out+=`<polygon class="here" points="${hex(hx+30,hy+30,1.02)}" pointer-events="none"/><circle class="pawn" cx="${hx+44}" cy="${hy+44}" r="6"/>`;
+ out+=`<polygon class="here" points="${hex(hx+30,hy+30,1.02)}" pointer-events="none"/><circle class="pawn" cx="${hx+44}" cy="${hy+44}" r="6"/>`;out+=mineSides;
  if(ws&&ws.storm&&Z>=0){const sx=wrapC(Math.round(ws.storm.x)-H.x),sy=wrapC(Math.round(ws.storm.y)-H.y);const [qx,qy]=P(sx,sy);out+=`<circle class="stormring" cx="${qx+30}" cy="${qy+30}" r="${ws.storm.r*HW*.6}"/>`}
  out+=`<text class="axis" x="${VB[0]+W/2}" y="${VB[1]+16*ui}" text-anchor="middle">N ↑</text>`;
  // The fifteen layers, deepest on the left, the peak on the right; yours is marked
