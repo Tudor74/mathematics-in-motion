@@ -115,6 +115,12 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .map .side{stroke-linecap:round;pointer-events:none}.map .side.shut{stroke:var(--ink);stroke-width:5;opacity:.85}.map .side.shut.mine{stroke-width:6.5;opacity:1}
 .map .side.open.mine{stroke:var(--good);stroke-width:3.5;opacity:.8;stroke-dasharray:6 5}
 .map .side.pulse{animation:sidepulse .7s ease 3}@keyframes sidepulse{0%,100%{stroke:var(--ink)}50%{stroke:var(--danger);stroke-width:9}}
+.encounter{position:absolute;inset:0;display:grid;place-items:center;padding:12px 60px 12px 12px;pointer-events:none;z-index:5}.encounter:not(.show){display:none}
+.encounter .card{pointer-events:auto;max-width:min(520px,100%);max-height:100%;overflow:auto;background:var(--sheet);border:1px solid var(--danger);border-radius:12px;box-shadow:0 8px 28px #0004;padding:12px 14px;display:grid;gap:8px}
+.encounter .card .foe{margin:0}@media (min-width:900px){.encounter.dock-left{justify-items:start}.encounter.dock-right{justify-items:end}.encounter .card{max-width:min(520px,46%)}}
+.starve{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:5;width:min(460px,calc(100% - 90px));pointer-events:none}.starve:not(.show){display:none}
+.starve .card{pointer-events:auto;display:grid;gap:6px;padding:12px 16px;border-radius:12px;background:var(--sheet);border:2px solid var(--danger);box-shadow:0 6px 24px #0004;text-align:center}
+.starve b{font-family:var(--display);font-size:22px;color:var(--danger)}.starve p{margin:0}.starve .btnrow{justify-content:center}
 .dream{position:absolute;left:12px;right:66px;bottom:12px;height:2.1em;display:flex;align-items:center;overflow:hidden;border-radius:99px;background:rgba(18,18,30,.62);color:#efe9da;font-family:var(--body);font-style:italic;font-size:13pt;pointer-events:none;opacity:0;transition:opacity 1.2s ease;z-index:4;
  -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
 .dream.show{opacity:1}.dream .track{white-space:nowrap;padding-left:100%;animation:dreamscroll var(--dur,60s) linear infinite}
@@ -217,6 +223,7 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .map .magicarc.gone{opacity:.25}
 .map .here{fill:none;stroke:var(--accent);stroke-width:3.5}
 .map .headmark circle{fill:var(--sheet);stroke:var(--accent);stroke-width:2.5}.map .headmark.other circle{stroke:var(--faint);stroke-width:2}.map .headmark .face{overflow:hidden;clip-path:circle(48%)}
+.map .folk,.map .footprint{display:none}
 .map .pawn{fill:var(--accent);stroke:var(--sheet);stroke-width:2;pointer-events:none}
 .map .folk{fill:var(--water);stroke:var(--sheet);stroke-width:1.2;pointer-events:none}
 .map .frontier{fill:transparent;stroke:var(--faint);stroke-dasharray:4 4;stroke-width:1.4;cursor:pointer}
@@ -494,7 +501,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
    <section class="panel map" aria-label="Map">
     <span id="coords" hidden></span>
     <div class="mapwrap"><svg id="map" viewBox="0 0 480 416" role="img" aria-label="Map of explored places on your current level"></svg>
-<div class="blockflash" id="blockflash" aria-live="assertive"></div><div class="dream" id="dream" aria-hidden="true"><div class="track"></div></div><div class="exploring" id="exploring" role="status" aria-live="polite"><span>Exploring, stand by</span></div><div class="zoomslider"><button class="small iconbtn" id="map-key-btn" type="button" aria-label="Map key" title="Map key">?</button><span aria-hidden="true">+</span><input type="range" id="zoom" min="0" max="5" step="1" aria-label="Zoom" title="Zoom"><span aria-hidden="true">−</span></div><div class="mapkey" id="mapkey" hidden></div><div class="arrive" id="arrive" aria-live="polite"></div><div class="gate" id="gate" hidden></div></div>
+<div class="blockflash" id="blockflash" aria-live="assertive"></div><div class="encounter" id="encounter" aria-live="polite"></div><div class="starve" id="starve" role="alert"></div><div class="dream" id="dream" aria-hidden="true"><div class="track"></div></div><div class="exploring" id="exploring" role="status" aria-live="polite"><span>Exploring, stand by</span></div><div class="zoomslider"><button class="small iconbtn" id="map-key-btn" type="button" aria-label="Map key" title="Map key">?</button><span aria-hidden="true">+</span><input type="range" id="zoom" min="0" max="5" step="1" aria-label="Zoom" title="Zoom"><span aria-hidden="true">−</span></div><div class="mapkey" id="mapkey" hidden></div><div class="arrive" id="arrive" aria-live="polite"></div><div class="gate" id="gate" hidden></div></div>
     <div class="layerbar" id="layerbar" role="img" aria-label="Layers"></div>
    </section>
  </div>
@@ -3031,6 +3038,7 @@ function attackAgent(id){
   for(const q of quests())if(!q.done&&q.giver===n.id){q.done=true;q.failed=true}
   remember(n,"was beaten by the traveller",gameNow());
   log(`${n.t} is beaten. Others carry ${n.wild?"it":"them"} to ${S.t} to recover. From now on ${n.wild?"it keeps":"they keep"} well away from you.`,"bad");
+  if(n.wild){appendTo(hereId(),"contain",itemCell({name:"Fresh meat",desc:"Lean and dark. Cook it if you can; eat it if you must.",kind:"food",weight:2,value:1,heal:"1d6"}));log("It leaves fresh meat behind. Eat it to stave off hunger.","good")}
  }else if(!n.wild&&n.courage>.5&&n.hp>n.maxhp*.3){
   const R=ROLES[n.role]||ROLES.farmer,d2=rnd(20),t2=d2+n.atk,ac=armourClass(),tx=`d20 → ${d2} +${n.atk} = ${t2} against your AC ${ac}`;
   if(t2>=ac){const r=roll(R[5]);setStat("HP",sv("HP")-r.total);log(`${n.t} fights back: ${r.total} damage.`,"bad",tx+"; "+r.text);if(sv("HP")<=0){n.fight="over";woundedRetreat(n)}}
@@ -4187,8 +4195,10 @@ function renderHud(){
   <circle cx="36" cy="36" r="${R}" class="arc" stroke="${col}" stroke-dasharray="${(C*f).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 36 36)"/>
   <text x="36" y="35" text-anchor="middle" class="hpv">${hp}</text><text x="36" y="51" text-anchor="middle" class="hpm">/${max}</text></svg>`;
  const coin=`<span class="gp" title="${sv("GP")} gold pieces"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" class="c1"/><circle cx="12" cy="12" r="6.6" class="c2"/></svg><b>${sv("GP")}</b></span>`;
- const warn=[hungerLevel()>=2?"starving":hungerLevel()>=1?"hungry":"",!hasLight()&&(night||zOf(L)<0)?"no light":""].filter(Boolean);
- el.innerHTML=`${dial}<div class="hudside">${coin}${warn.map(w=>`<span class="hudwarn">${w}</span>`).join("")}</div>`;
+ const short=hungerLevel()<2?foodShort():null;
+ if(short&&!foodShort.said){foodShort.said=true;log(`Your food will not last the ${short.steps} steps to ${short.town.t}. Eat sparingly, forage, or hunt.`,"bad")}if(!short)foodShort.said=false;
+ const warn=[hungerLevel()>=2?"starving":hungerLevel()>=1?"hungry":"",short?"low food":"",!hasLight()&&(night||zOf(L)<0)?"no light":""].filter(Boolean);
+ el.innerHTML=`${dial}<div class="hudside">${coin}${warn.map(w=>`<span class="hudwarn"${w==="low food"&&short?` title="Not enough food to reach ${esc(short.town.t)}, ${short.steps} steps away"`:""}>${w}</span>`).join("")}</div>`;
 }
 let lastMapShape="";window.addEventListener("resize",()=>{const b=$("map").getBoundingClientRect(),sh=Math.round(b.width/Math.max(1,b.height)*20);if(String(sh)!==lastMapShape){lastMapShape=String(sh);renderMap()}});
 /* Hex sides. Flat-topped hexes: side k runs between corners k and k+1 (corner k at k·60°, y down), so
@@ -4243,6 +4253,34 @@ function renderDream(){
  const el=$("dream");if(!el)return;const on=!!(charId()&&hereId()&&!isDowned()&&isNight(gameNow()));el.classList.toggle("show",on);if(!on){return}
  const key=Math.floor((gameNow()+360)/1440)+"|"+charId();if(dreamKey===key)return;dreamKey=key;
  const text=makeDream(),tr=el.querySelector(".track");tr.textContent=text;tr.style.setProperty("--dur",`${Math.max(30,text.length/6).toFixed(0)}s`);
+}
+// An encounter happens on the map, in a card docked away from you so you can still tap a hex to flee
+function renderEncounter(){
+ const el=$("encounter");if(!el)return;const f=charId()&&hereId()&&!isDowned()?foeId(hereId()):null;
+ el.classList.toggle("show",!!f);if(!f){el.innerHTML="";return}
+ el.innerHTML=`<div class="card">${renderFoe(f)}<p class="note">To flee, tap a neighbouring hex or a way on the rose.</p></div>`;
+ requestAnimationFrame(()=>{const me=document.querySelector("#map .headmark.me"),w=el.getBoundingClientRect();if(me&&w.width){const r=me.getBoundingClientRect(),right=(r.x+r.width/2)>w.x+w.width/2;el.classList.toggle("dock-left",right);el.classList.toggle("dock-right",!right)}});
+}
+// Enough food to reach a town? Each item is a day (rations say how many); you can go two days without before starving
+function foodShort(){
+ const ch=charId()&&cell(charId()),L=hereId()&&cell(hereId());if(!ch||!L||L.town)return null;
+ const days=packIds().map(cell).filter(i=>i.kind==="food").reduce((s,i)=>s+(+((/(\d+)\s*days?/i.exec(i.t)||[])[1])||1),0);
+ const t=gameNow(),left=(ch.lastMeal??t)+1440*(days+2)-t;
+ let best=null;for(const T of towns()){const p=pathTo(T.id),steps=p?p.length:Math.round(hexDist(L.x,L.y,T.x,T.y)*1.4)+Math.abs(zOf(L));if(!best||steps<best.steps)best={T,steps}}
+ if(!best)return null;const need=best.steps*STEP_MIN;
+ return need>left?{town:best.T,steps:best.steps,daysLeft:Math.max(0,left/1440)}:null;
+}
+// Starving only once every scrap of food is gone; the way out is a town, or a creature to hunt
+let starveDismissed=null;
+function renderStarving(){
+ const el=$("starve");if(!el)return;const ch=charId()&&cell(charId()),L=hereId()&&cell(hereId());
+ const on=!!(ch&&L&&!isDowned()&&!foeId(hereId())&&!L.town&&hungerLevel()>=2&&!packIds().some(i=>cell(i).kind==="food")&&starveDismissed!==ch.lastMeal);
+ el.classList.toggle("show",on);if(!on){el.innerHTML="";return}
+ const T=towns().slice().sort((a,b)=>hexDist(L.x,L.y,a.x,a.y)-hexDist(L.x,L.y,b.x,b.y))[0];
+ el.innerHTML=`<div class="card"><b>Starving</b><p>Every scrap of food is gone. Find a town, where no one goes hungry, or hunt a creature and eat what it leaves.</p>
+  <div class="btnrow">${T?`<button class="primary" id="starve-go">Head for ${esc(T.t)}</button>`:""}<button id="starve-ok">Later</button></div></div>`;
+ if($("starve-go"))$("starve-go").onclick=()=>{const p=pathTo(T.id);if(p)travelTo(T.id);else walkToward(T.x,T.y)};
+ $("starve-ok").onclick=()=>{starveDismissed=ch.lastMeal;renderStarving()};
 }
 let mapCam=null,mapDownAt=0,mapDownDuringSlide=false;
 document.addEventListener("pointerdown",e=>{if(e.target.closest&&e.target.closest("#map")){mapDownAt=performance.now();mapDownDuringSlide=!!(mapCam&&mapCam.anim)}},true);
@@ -4568,7 +4606,7 @@ function renderPlace(){
  html+=renderFestival(L)+renderStation(L);
  if(L.spring)html+=`<p class="note">A healing spring rises here.</p>`;
  if(L.hazard&&L.outcome){const o=L.outcome;html+=`<div class="hazard${o.ok?" passed":""}"><b>${esc(L.hazard.name)}.</b> ${esc(L.hazard.text)} ${o.ok?"You get through unharmed.":`You take ${o.dmg} damage.`}${here===lastHazard?`<span class="roll">${esc(o.roll)}</span>`:""}</div>`}
- if(f)html+=renderFoe(f);
+ if(f)html+=`<p class="neutral">An encounter is under way: see the map.</p>`;
  else if(L.defeated)html+=`<p class="neutral">${esc(L.defeated.designation)} ${esc(L.defeated.name)} was neutralised here${L.defeated.by?` by ${esc(L.defeated.by)}, who left treasure and food behind`:""}.</p>`;
  html+=renderPeople(L);
  const rp=reputation(),items=storeIds(here).filter(id=>!(cell(id).forSale&&cell(id).magic&&rp<cell(id).minRep));
@@ -4973,11 +5011,11 @@ function iconHeads(){for(const h of document.querySelectorAll(".sectionhead h3:n
 function renderMapKey(){const k=$("mapkey");if(!k||k.innerHTML)return;
  const row=(sw,label)=>`<li><span class="sw">${sw}</span>${esc(label)}</li>`;
  k.innerHTML=`<div class="sectionhead"><h3>Map key</h3><button class="small iconbtn" id="mapkey-close" aria-label="Close" title="Close">${ic("close","Close")}</button></div><ul>
-  ${row("▲","a way up")}${row("▼","a way down")}${row('<span style="color:var(--danger)">◆</span>',"an anomaly")}${row('<span style="color:var(--accent)">●</span>',"townsfolk")}${row('<span style="color:var(--good)">●</span>',"creatures")}
+  ${row("▲","a way up")}${row("▼","a way down")}${row('<span style="color:var(--danger)">◆</span>',"an anomaly")}
   ${row('<span style="color:var(--magic)">┅</span>',"the magical bridge")}${row("┿","railway")}${row('<span style="color:var(--amber)">●</span>',"a sanctuary, far away")}${row('<span style="color:var(--magic)">●</span>',"a cave entrance, far away")}
   ${row('<span style="color:var(--accent)">◯</span>',"a friend, roughly")}${row("⬡","tap any hex to walk there")}${row("⬢","tap your own hex to see this place")}</ul>`;
  $("mapkey-close").onclick=()=>{k.hidden=true}}
-function render(){renderMapKey();renderGate();renderDream();{const x=$("exploring");if(x)x.classList.toggle("show",!!(busy&&charId()&&!isDowned()&&!["realm","founding","river","start"].includes(busy.dir)))}renderPills();renderScriptButton();renderMap();renderCompass();renderPlace();renderSheet();renderSocial();renderGarden();renderCodex();renderAlphabet();renderLog();renderVoice();decoratePanels();iconHeads();sound.update();voiceOnRender()}
+function render(){renderMapKey();renderGate();renderDream();renderEncounter();renderStarving();{const x=$("exploring");if(x)x.classList.toggle("show",!!(busy&&charId()&&!isDowned()&&!["realm","founding","river","start"].includes(busy.dir)))}renderPills();renderScriptButton();renderMap();renderCompass();renderPlace();renderSheet();renderSocial();renderGarden();renderCodex();renderAlphabet();renderLog();renderVoice();decoratePanels();iconHeads();sound.update();voiceOnRender()}
 
 /* ============================================================
    Soundtrack: generated live from white, pink and brown noise and a few oscillators.
