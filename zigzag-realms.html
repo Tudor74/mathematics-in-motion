@@ -81,7 +81,10 @@ header.top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align
 .orb{width:11px;height:11px;border-radius:50%;background:var(--amber);flex:0 0 11px}
 .pill.clock[data-night="true"] .orb{background:transparent;box-shadow:inset -4px -1px 0 0 var(--water)}
 
-.grid{display:grid;grid-template-columns:minmax(0,480px) minmax(0,1fr) minmax(0,330px);gap:16px;align-items:start}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
+/* The map runs the full width on desktop, wide and not too tall */
+.maprow{display:grid}
+@media (min-width:1041px){.maprow .map svg{aspect-ratio:auto;height:min(64vh,620px)}.maprow .map{grid-template-columns:minmax(0,1fr);}}
 .panel{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:16px;min-width:0;display:grid;gap:14px;align-content:start}
 .col{display:grid;gap:16px;min-width:0;align-content:start}
 
@@ -99,8 +102,6 @@ header.top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align
 .mapplace h2{font-size:21px;line-height:1.15;margin:0}
 .mapplace .titlerow{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .mapplace .mapdesc{font-size:15.5px;line-height:1.55;margin:4px 0 2px}
-/* On wide screens each column scrolls on its own, so the page stays one screen tall */
-@media (min-width:1041px){.col{max-height:calc(100vh - 150px);overflow-y:auto;position:sticky;top:10px;scrollbar-width:thin;padding-right:3px;overscroll-behavior:contain}}
 .ticker{overflow:hidden;white-space:nowrap;mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
 .ticker-track{display:inline-flex;animation:tick 30s linear infinite}
 .ticker:hover .ticker-track,.ticker:focus-within .ticker-track{animation-play-state:paused}
@@ -127,7 +128,7 @@ header.top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align
 .map .layers .lv{fill:var(--rule)}.map .layers .lv.ground{fill:var(--faint)}.map .layers .lv.massif{fill:var(--t-mountain)}.map .layers .lv.on{fill:var(--accent)}
 .map .layers text{font-family:var(--mono);font-size:9px;fill:var(--faint)}
 .map .beacon .halo{filter:url(#beaconglow);opacity:.75}
-.map .beacon.sanctuary .halo{fill:var(--amber)}.map .beacon.cave .halo{fill:var(--magic)}
+.map .beacon.sanctuary .halo,.map .beacon.festival .halo{fill:var(--amber)}.map .beacon.festival .ring{stroke:var(--amber)}.map .beacon.cave .halo{fill:var(--magic)}
 .map .beacon .ring{fill:none;stroke-width:2.5;stroke-linejoin:round}
 .map .beacon.sanctuary .ring{stroke:var(--amber)}.map .beacon.cave .ring{stroke:var(--magic)}
 .map .beacon.far{cursor:pointer}.map .beacon.far path{fill:var(--sheet);stroke:var(--ink);stroke-width:1.4;stroke-linejoin:round}
@@ -337,14 +338,24 @@ button.pill[aria-pressed="false"] b{color:var(--faint)}
 .codex b{font-family:var(--display)}
 .map .markstar{fill:var(--amber);font-size:15px;pointer-events:auto}
 .map .notemark{fill:var(--water);pointer-events:auto}
-.map .traveller circle{fill:var(--magic)}.map .traveller path{fill:none;stroke:var(--magic);stroke-width:2.4;stroke-linecap:round}.map .traveller{pointer-events:auto}
+.map .traveller circle{fill:var(--pc,var(--magic))}.map .traveller path{fill:none;stroke:var(--pc,var(--magic));stroke-width:2.4;stroke-linecap:round}.map .traveller{pointer-events:auto}
 .realmevent{border:1px solid var(--magic);border-left-width:4px;border-radius:6px;padding:8px 12px;background:var(--wash);display:grid;gap:2px}
-.realmevent p{margin:0;font-size:15px}.realmevent .eyebrow{color:var(--magic)}
+.realmevent p{margin:0;font-size:15px}
+.contest{display:grid;gap:8px;justify-items:center}
+.contest .target{width:180px;height:180px}
+.contest .ring{stroke:var(--ink);stroke-width:1}.contest .r0{fill:#d4402f}.contest .r1{fill:#f0bd3e}.contest .r2{fill:#4f8fd1}.contest .r3{fill:#2b2b2b}.contest .r4{fill:#f3efe2}
+.contest .dart{fill:var(--sheet);stroke:var(--ink);stroke-width:2}
+.contest .track{position:relative;width:100%;max-width:300px;height:40px;border-radius:20px;background:var(--wash);border:1px solid var(--rule)}
+.contest .track::after{content:"";position:absolute;left:50%;top:4px;bottom:4px;width:2px;background:var(--danger);opacity:.5}
+.contest #throw-btn{position:absolute;top:3px;width:68px;min-height:32px;padding:0;border-radius:16px;background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}.realmevent.festival{border-color:var(--amber)}.realmevent.festival .eyebrow{color:var(--amber)}.realmevent .eyebrow{color:var(--magic)}
 .map .evmark{fill:var(--magic);font-size:18px;pointer-events:auto}
+.rate{display:inline-flex;gap:3px;margin-left:4px}.rate button{min-height:22px;padding:0 6px;font-size:11.5px}
+.map .hintdot{opacity:.55;pointer-events:auto}
 .map .friendpath{fill:var(--amber);opacity:.35;filter:url(#beaconglow);animation:friendglow 2.4s ease-in-out infinite}
 @keyframes friendglow{0%,100%{opacity:.18}50%{opacity:.6}}
 .map .friendname,.map .friendring text{font-family:var(--mono);font-size:11px;fill:var(--ink);paint-order:stroke;stroke:var(--sheet);stroke-width:3px}
 .map .friendring circle{fill:none;stroke:var(--good);stroke-width:3}
+.map .cairn{fill:var(--ink);opacity:.7}.map .cragmark{stroke:var(--danger);stroke-width:1.6;opacity:.7}
 .map .footprint{fill:var(--magic);opacity:.45;pointer-events:auto}
 label.check{display:flex;gap:8px;align-items:flex-start;font-size:14px}label.check input{margin-top:3px;width:auto;flex:0 0 auto}
 .codex .frag{color:var(--faint)}
@@ -387,7 +398,7 @@ html.realm{--display:"Realm Script","Alegreya SC",Georgia,serif;--body:"Realm Sc
 html.realm body{font-size:17.5px;letter-spacing:.02em;word-spacing:.12em}
 html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
 
-@media (max-width:1040px){.grid{grid-template-columns:minmax(0,420px) minmax(0,1fr)}.col.right{grid-column:1 / -1;grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:1040px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.col.right{grid-column:1 / -1;grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:720px){.grid{grid-template-columns:minmax(0,1fr)}.col.right{grid-template-columns:minmax(0,1fr)}.col.center{order:-1}.create .row{grid-template-columns:1fr}.rolled{grid-template-columns:repeat(3,minmax(0,1fr))}.desc{font-size:17px}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -422,8 +433,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
   </div>
  </header>
 
- <div class="grid">
-  <div class="col left" data-col="left">
+ <div class="maprow">
    <section class="panel map" aria-labelledby="map-h">
     <div class="mapplace" id="mapplace"><div class="sectionhead"><h3 id="map-h">Survey map</h3></div></div>
     <span id="coords" hidden></span>
@@ -433,6 +443,9 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
     <p class="legend"><span>▲ way up</span><span>▼ way down</span><span class="r">◆ anomaly</span><span class="p">● townsfolk</span><span style="color:var(--good)">● creatures</span><span class="m">┅ magical bridge</span><span>┿ railway</span><span style="color:var(--amber)">● sanctuary beacon</span><span class="m">● cave entrance</span></p>
     <p class="mapnote">The map shows the layer you are on, one of fifteen from the deep caves to the peak. Faint stacked hexes are the mountain's higher layers; dashed outlines are places you have walked on other layers. Faded hexes are places you can see but have not visited. Click one next to you to go there, or any mapped square to walk back there. Lines show the ways that are open.</p>
    </section>
+ </div>
+ <div class="grid">
+  <div class="col left" data-col="left">
    <section class="panel" aria-labelledby="moves-h" data-fold="moves">
     <div class="sectionhead"><h3 id="moves-h">Directions</h3></div>
     <div class="compass" id="compass">
@@ -1044,16 +1057,18 @@ const WALLS={forest:["a thicket of blackthorn","trees grown close as a fence","a
  dungeon:["a bricked-up arch","a collapsed passage"],village:["a high fence","a locked yard"],ruin:["a heap of fallen masonry","a collapsed wall"],
  swamp:["sucking bog","black water of unknown depth"],road:["a deep ditch and hedge","a steep embankment"],sky:["empty air"],desert:["dunes too steep to climb","a crust of sinking sand"],
  grove:["silver trees grown close as a wall"]};
-function limitApproaches(data,fromDir){
- const e=data.exits,back=fromDir&&OPP[fromDir];
- let r=Math.random(),want=4;for(const [n,p] of APPROACH_ODDS){if(r<p){want=n;break}r-=p}
- const open=FLAT.filter(d=>e[d]);
- const closable=shuffle(open.filter(d=>d!==back));
- while(FLAT.filter(d=>e[d]).length>want&&closable.length)e[closable.pop()]=false;
+// Which flat sides of a new place are open: decided before the narrator writes it, so the text can match
+function rollOpenSides(fromDir){
+ const back=fromDir&&OPP[fromDir];let r=Math.random(),want=4;for(const [n,p] of APPROACH_ODDS){if(r<p){want=n;break}r-=p}
+ const others=shuffle(FLAT.filter(d=>d!==back));return (back?[back]:[]).concat(others.slice(0,want-(back?1:0)));
+}
+function limitApproaches(data,fromDir,open,told){
+ const e=data.exits;open=open||rollOpenSides(fromDir);
+ for(const d of FLAT)e[d]=open.includes(d);
  data.walls=data.walls||{};
  for(const d of FLAT)if(!e[d]&&!data.walls[d])data.walls[d]=pick(WALLS[data.terrain]||["no way through"]);
  const ways=FLAT.filter(d=>e[d]);
- if(ways.length<4&&data.desc&&!/only (way|from)/i.test(data.desc)){
+ if(!told&&ways.length<4&&data.desc&&!/only (way|from)/i.test(data.desc)){
   const list=ways.length===1?`the ${ways[0]}`:`the ${ways.slice(0,-1).join(", ")} and ${ways[ways.length-1]}`;
   data.desc=data.desc.trim()+(ways.length===1?` The only way in or out is to ${list}.`:` You can only come and go to ${list}.`);
  }
@@ -1090,7 +1105,8 @@ function batchPrompt(locId,need){
   const around=[];for(const [d,v] of Object.entries(DIRS)){const nb=coord.get(ck(n.pos.x+v.dx,n.pos.y+v.dy,n.pos.z+v.dz));if(nb&&nb!==locId&&visible(cell(nb)))around.push(`${d}: "${cell(nb).t}" (${cell(nb).terrain})`)}
   const where=`square ${n.pos.x},${n.pos.y} at depth ${n.pos.z}`;
   if(n.planned){const P=cell(n.planned);return`- ${n.dir}: PLANNED "${P.t}" (${P.terrain}, ${where}). Keep the name and terrain. Notes: ${P.desc}${P.exits?` Open ways from it: ${Object.keys(P.exits).filter(k=>P.exits[k]).join(", ")||"none"}.`:""} Write glimpse and description only.`}
-  return`- ${n.dir}: NEW (${where}).${around.length?` Mapped neighbours: ${around.join("; ")}.`:""}${Math.max(Math.abs(n.pos.x),Math.abs(n.pos.y))>=WORLD_R-1?" It lies at the edge of the world, where a veil of golden mist hangs in the air; beyond it the world wraps round to its far side.":""}`;
+  const sides=n.open?(n.open.length===4?" It is open on all four sides.":` It can be entered ONLY from the ${n.open.join(" and ")}; the ${FLAT.filter(d=>!n.open.includes(d)).join(" and ")} ${4-n.open.length===1?"side is":"sides are"} blocked by something solid that suits the ground (a cliff, a thicket, deep water, a wall). The description must say so, must not suggest a way through the blocked sides, and exits must match; give each blocked side a short "walls" phrase.`):"";
+  return`- ${n.dir}: NEW (${where}).${sides}${around.length?` Mapped neighbours: ${around.join("; ")}.`:""}${Math.max(Math.abs(n.pos.x),Math.abs(n.pos.y))>=WORLD_R-1?" It lies at the edge of the world, where a veil of golden mist hangs in the air; beyond it the world wraps round to its far side.":""}`;
  });
  return [
   "You are the narrator of a fantasy tabletop adventure in the style of classic D&D, with a strange undertone: anomalies, uncanny entities documented in the dry voice of containment files, inspired by the SCP Foundation.",
@@ -1125,6 +1141,7 @@ async function ensureNeighbours(locId){
    if(coord.get(ck(n.pos.x,n.pos.y,n.pos.z)))continue;
    const id=createLocation(squareIn(s,L,n),n.pos);cell(id).seen=true}
   const fresh=need.filter(n=>!shared[sqk(n.pos)]);
+  for(const n of fresh)if(!n.planned&&!n.pos.z)n.open=rollOpenSides(n.dir);
   const out=fresh.length?await askClaude(batchPrompt(locId,fresh)):null;
   const places=out&&typeof out.places==="object"&&out.places||{};
   for(const n of fresh){
@@ -1132,7 +1149,7 @@ async function ensureNeighbours(locId){
    if(n.planned){const P=cell(n.planned);if(raw&&typeof raw.description==="string"&&raw.description.trim()){P.desc=raw.description.trim().slice(0,1200);P.by="claude";pub[sqk(n.pos)]=squareOut(P.id,true)}if(raw&&typeof raw.glimpse==="string"&&raw.glimpse.trim())P.glimpse=raw.glimpse.trim().slice(0,100);P.written=true;touch(P.id);continue}
    if(coord.get(ck(n.pos.x,n.pos.y,n.pos.z)))continue;
    const data=raw&&raw.name?Object.assign(normLocation(raw,L.terrain,n.pos),{by:"claude"}):Object.assign(tableLocation(L,n.dir,n.pos),{by:"tables"});
-   data.exits=normExits(raw&&raw.exits,n.dir);data.walls=normWalls(raw&&raw.walls);if(!n.pos.z)limitApproaches(data,n.dir);
+   data.exits=normExits(raw&&raw.exits,n.dir);data.walls=normWalls(raw&&raw.walls);if(!n.pos.z)limitApproaches(data,n.dir,n.open,!!(raw&&raw.name));
    data.glimpse=raw&&typeof raw.glimpse==="string"&&raw.glimpse.trim()?raw.glimpse.trim().slice(0,100):`${data.name}: ${GLIMPSE[data.terrain]||GLIMPSE.other}`;
    const id=createLocation(data,n.pos);cell(id).seen=true;pub[sqk(n.pos)]=squareOut(id);
   }
@@ -1166,16 +1183,30 @@ function buildMountain(){
  const C=MOUNTAIN_C,specials={
   "7,4,0":{n:"Old Mine Mouth",d:"Rotting timbers frame a tunnel into the mountain's western flank. Cold air breathes out of it, and a rusted rail runs down into the dark.",down:true,p:{landmark:true}},
   "8,6,0":{n:"The Falls",t:"water",d:"A mountain stream pours off a cliff in a white curtain into Highmere below. Behind the falling water you glimpse a dark gap in the rock.",down:true,p:{falls:true,landmark:true}},
-  "9,4,3":{n:"The High Shoulder",d:"You stand on a bare shoulder of rock, three ledges above the river country. Far below, the river glints between its towns."},
-  "10,3,5":{n:"The Saddle",d:"A grassy saddle sits between two crags, absurdly green this high up. A last steep scramble leads on toward the summit."},
   [`${C.x},${C.y},${ZMAX}`]:{n:"The Peak",d:"The summit is a crown of shattered rock, seven ledges above the land. The whole world lies below: the river and its towns, the lakes like dropped coins, the dark wood in the west and, far to the south-west, the white glare of the desert.",p:{landmark:true}}};
+ /* The way up: on each layer one stair hex leads to the next, on the upper layer's outer ring and a
+    third of the way further round each time, so the path winds round the mountain. Between the stair
+    you arrive by and the one you leave by runs a cairned path; off it, from the second ledge up, the
+    rock is sheer and a slip can send you down a layer, or worse. */
+ const stairs=[],theta0=Math.random()*Math.PI*2;
+ for(let z=0;z<ZMAX;z++){const r=MOUNT_R[z+1],th=theta0+z*2.1;let best=null,bd=1e9;
+  for(let x=C.x-3;x<=C.x+3;x++)for(let y=C.y-4;y<=C.y+4;y++){if(!inMountain(x,y,z+1)||hexDist(x,y,C.x,C.y)!==r)continue;const a=Math.atan2(y-C.y,x-C.x),dd=Math.abs(Math.atan2(Math.sin(a-th),Math.cos(a-th)));if(dd<bd){bd=dd;best=[x,y]}}
+  stairs.push(best||[C.x,C.y])}
+ const trail=new Set(),key3=(x,y,z)=>`${x},${y},${z}`;
+ const route=(from,to,z)=>{const prev={[from+""]:null},q=[from];for(let h=0;h<q.length;h++){const [x,y]=q[h];if(x===to[0]&&y===to[1])break;for(const d of FLAT){const nx=x+DIRS[d].dx,ny=y+DIRS[d].dy;if(!inMountain(nx,ny,z)||[nx,ny]+"" in prev)continue;prev[[nx,ny]+""]=[x,y];q.push([nx,ny])}}
+  for(let c=to;c;c=prev[c+""])trail.add(key3(c[0],c[1],z))};
+ for(let z=0;z<=ZMAX;z++){const arrive=z===0?[7,4]:stairs[z-1],leave=z<ZMAX?stairs[z]:[C.x,C.y];route(arrive,leave,z)}
+ const named={3:"The High Shoulder",5:"The Saddle"};
  for(let z=0;z<=ZMAX;z++)for(let x=C.x-3;x<=C.x+3;x++)for(let y=C.y-4;y<=C.y+4;y++){
   if(!inMountain(x,y,z)||coord.get(ck(x,y,z)))continue;
-  const sp=specials[`${x},${y},${z}`],band=MOUNT_BANDS.find(b=>z<=b.top)||MOUNT_BANDS[2];
-  const ex={north:true,south:true,east:true,west:true,up:inMountain(x,y,z+1),down:z>0||!!(sp&&sp.down)};
-  const name=sp?sp.n:pick(band.names),desc=sp?sp.d:pick(band.lines)+(z===ZMAX?"":ex.up?" The mountain climbs on above you.":" Above you there is only sky.");
-  const id=createLocation({name,desc,terrain:sp&&sp.t||"mountain",items:[],hazard:z>=2&&!sp&&Math.random()<.22?{name:"Loose scree",text:"The stones shift under your boots.",stat:"DEX",dc:9+z,damage:"1d6"}:null,monster:null,by:"tables",exits:ex,glimpse:z?`${name}, ${z} ${z===1?"ledge":"ledges"} up the mountain`:`${name}, at the mountain's foot`},{x,y,z,dist:Math.abs(x)+Math.abs(y)+z});
-  Object.assign(cell(id),{planned:true,written:false,seen:false,massif:true},sp&&sp.p||{});
+  const stairUp=z<ZMAX&&stairs[z][0]===x&&stairs[z][1]===y,stairDown=z>0&&stairs[z-1][0]===x&&stairs[z-1][1]===y;
+  let sp=specials[`${x},${y},${z}`];if(!sp&&stairDown&&named[z])sp={n:named[z],d:z===3?"You stand on a bare shoulder of rock, three ledges above the river country. Far below, the river glints between its towns. A cairned path leads on round the mountain.":"A grassy saddle sits between two crags, absurdly green this high up. The path climbs on toward the summit."};
+  const band=MOUNT_BANDS.find(b=>z<=b.top)||MOUNT_BANDS[2],onTrail=trail.has(key3(x,y,z)),crag=z>=2&&!onTrail;
+  const ex={north:true,south:true,east:true,west:true,up:stairUp,down:stairDown||!!(sp&&sp.down)};
+  const name=sp?sp.n:crag?pick(["Sheer Crag","Loose Scree","Overhang","Ice Slab","Rotten Rock"]):pick(band.names);
+  const desc=sp?sp.d:crag?"There is no path here: the rock is sheer and loose, and the drop below is long. One careless step and you will fall.":pick(band.lines)+(stairUp?" Cairns mark a steep stair climbing to the next ledge.":stairDown?" A steep stair leads back down to the ledge below.":onTrail&&z>0?" A path marked with small cairns winds on round the mountain.":"");
+  const id=createLocation({name,desc,terrain:sp&&sp.t||"mountain",items:[],hazard:null,monster:null,by:"tables",exits:ex,glimpse:z?`${name}, ${z} ${z===1?"ledge":"ledges"} up the mountain`:`${name}, at the mountain's foot`},{x,y,z,dist:Math.abs(x)+Math.abs(y)+z});
+  Object.assign(cell(id),{planned:true,written:false,seen:false,massif:true,trail:onTrail||undefined,crag:crag||undefined},sp&&sp.p||{});
  }
  const peak=coord.get(ck(C.x,C.y,ZMAX));if(peak)appendTo(peak,"contain",itemCell(normItem({name:"Eagle's-eye stone",description:"A smooth stone left on the summit cairn by some earlier climber.",kind:"treasure",weight:0.2,value:25})));
  // Under the mountain the caves go all the way down, from the old mine to the root of the mountain
@@ -1268,6 +1299,72 @@ function renderStation(L){
  if(!L.station||!L.station.length)return"";
  const night=isNight(gameNow());
  return`<div class="sectionhead"><h3>Railway station</h3><span class="mono" style="font-size:12px;color:var(--faint)">${night?"closed until dawn":"trains by day"}</span></div><ul class="items">${L.station.map(s=>{const D=cell(s.to),fare=trainFare(s.len);return`<li><span><span class="nm">Train to ${esc(D.t)}</span><span class="meta">${s.len} squares by rail · about ${Math.max(15,s.len*8)} minutes · ${fare} gp</span></span><span class="acts"><button class="small" data-act="train" data-id="${s.to}" ${night||busy||sv("GP")<fare?"disabled":""}>Take the train</button></span></li>`}).join("")}</ul>`;
+}
+/* Festivals: four a year, one in each season, on the fourth day of the season, in every town. Each has a
+   contest tied to one ability. Win it once per festival and choose a permanent +1 to that ability or a
+   level's worth of experience. */
+const FESTIVALS={spring:{name:"the Blossom Fair",stat:"DEX",contest:"the maypole dance",win:"You weave through the ribbons without a single tangle, and the crowd crowns you with blossom."},
+ summer:{name:"the Midsummer Bonfires",stat:"CON",contest:"the bonfire leap",win:"You clear the highest fire of the night and land to a roar from the crowd."},
+ autumn:{name:"the Harvest Feast",stat:"STR",contest:"the sheaf toss",win:"Your sheaf sails over the bar, higher than anyone's in living memory."},
+ winter:{name:"the Midwinter Lights",stat:"CHA",contest:"the song contest",win:"The square falls silent for your song, then the lanterns are raised for you."}};
+const FEST_DAY=3;
+const festivalToday=(t=gameNow())=>{const yd=Math.floor(((t/1440)%YEAR_DAYS+YEAR_DAYS)%YEAR_DAYS);return yd%7===FEST_DAY?FESTIVALS[seasonOf(t)]:null};
+const festivalKey=(t=gameNow())=>`${Math.floor(t/1440/YEAR_DAYS)}-${seasonOf(t)}`;
+function festivalEntered(){const r=cell("root");return((r&&r.festivals)||{})[festivalKey()]}
+/* The contest: a target of five rings and a launch button that drifts left and right, a little
+   erratically. Press it to throw; where it was when you pressed decides how far across the target your
+   dart lands, and an unsteady hand adds a little wobble. Three throws; the best counts. A steadier
+   hand (the festival's ability) slows the drift. Bullseye wins the prize. */
+const RINGS=[{r:12,name:"the bullseye"},{r:26,name:"the inner ring"},{r:42,name:"the middle ring"},{r:58,name:"the outer ring"},{r:74,name:"the edge of the target"}];
+let contest=null;
+// The throw happens the moment the button is pressed, so a redraw between press and release cannot lose it
+document.addEventListener("pointerdown",e=>{if(e.button===0&&e.target.closest("#throw-btn")&&!e.target.closest("#throw-btn").disabled){e.preventDefault();throwDart()}});
+document.addEventListener("keydown",e=>{if(e.target.closest&&e.target.closest("#throw-btn")&&(e.key==="Enter"||e.key===" ")){e.preventDefault();throwDart()}});
+function enterContest(){
+ const F=festivalToday(),L=hereId()&&cell(hereId());if(!F||!L||!L.town||festivalEntered()||busy||isDowned()||contest)return;
+ const steady=Math.max(.45,1.15-.09*mod(sv(F.stat)));
+ contest={F,throws:[],pos:0,vel:.9*steady,steady,raf:0,last:performance.now()};renderPlace();
+ const tick=now=>{if(!contest)return;const dt=Math.min(.05,(now-contest.last)/1000);contest.last=now;
+  if(Math.random()<dt*2.2)contest.vel=(Math.random()<.5?-1:1)*(.5+Math.random())*contest.steady*1.3;
+  contest.pos+=contest.vel*dt*1.4;if(contest.pos>1){contest.pos=1;contest.vel=-Math.abs(contest.vel)}if(contest.pos<-1){contest.pos=-1;contest.vel=Math.abs(contest.vel)}
+  const b=document.getElementById("throw-btn");if(b)b.style.left=`calc(${50+contest.pos*42}% - 34px)`;
+  contest.raf=requestAnimationFrame(tick)};
+ contest.raf=requestAnimationFrame(tick);
+}
+function throwDart(){
+ if(!contest||contest.throws.length>=3)return;
+ const x=contest.pos*80,y=(Math.random()+Math.random()-1)*30*contest.steady,d=Math.hypot(x,y),ring=RINGS.findIndex(R=>d<=R.r);
+ contest.throws.push({x,y,ring:ring<0?9:ring});
+ if(sound.started&&sound.on){sound.burst("highpass",3000,1500,.8,.12,.15,0);sound.tone(220,120,.12,.08,.18,"triangle")}
+ if(contest.throws.length===3){cancelAnimationFrame(contest.raf);setTimeout(finishContest,900)}
+ renderPlace();
+}
+function finishContest(){
+ if(!contest)return;const {F,throws}=contest,best=Math.min(...throws.map(t=>t.ring)),r=cell("root");r.festivals=r.festivals||{};contest=null;
+ if(best===0){r.festivals[festivalKey()]="won";placeMemory(hereId(),"festival",F.contest);log(`Bullseye! You win ${F.contest} at ${F.name}. ${F.win} Choose your prize.`,"good")}
+ else{const xp=[0,60,40,25,15][best]||10;r.festivals[festivalKey()]="lost";gainXP(xp);log(best<9?`Your best throw finds ${RINGS[best].name}. Not the bullseye, but the judges give you a ribbon (${xp} XP).`:"All three throws miss the target. The crowd is kind about it, and somebody buys you a cider (10 XP).","")}
+ touch("root");passTime(60);store.flush();render();
+}
+function renderContest(){
+ const c=contest;
+ const marks=c.throws.map((t,i)=>`<circle class="dart" cx="${90+t.x}" cy="${90+t.y}" r="4"><title>Throw ${i+1}: ${t.ring<9?RINGS[t.ring].name:"a miss"}</title></circle>`).join("");
+ return`<div class="contest"><svg viewBox="0 0 180 180" class="target" aria-label="The target">${RINGS.slice().reverse().map((R,i)=>`<circle cx="90" cy="90" r="${R.r}" class="ring r${RINGS.length-1-i}"/>`).join("")}${marks}</svg>
+  <div class="track"><button type="button" id="throw-btn" ${c.throws.length>=3?"disabled":""}>Throw</button></div>
+  <p class="note">${c.throws.length<3?`Press Throw as it passes the middle. Throw ${c.throws.length+1} of 3. A steadier ${c.F.stat} slows the drift.`:"Three throws. The judges confer…"}</p></div>`;
+}
+function festivalPrize(kind){
+ const F=festivalToday(),r=cell("root");if(!F||festivalEntered()!=="won")return;
+ if(kind==="stat"){setStat(F.stat,sv(F.stat)+1);log(`Your ${F.stat} rises to ${sv(F.stat)}, for good.`,"good")}
+ else{const need=Math.max(1,sv("LVL")*100-sv("XP"));gainXP(need);log(`You take the purse of honour: ${need} XP.`,"good")}
+ r.festivals[festivalKey()]="claimed";touch("root");store.flush();render();
+}
+function renderFestival(L){
+ const F=festivalToday();if(!F||!L.town)return"";const st=festivalEntered();
+ if(contest)return`<div class="realmevent festival"><span class="eyebrow">Festival today</span><p><b>${esc(F.contest[0].toUpperCase()+F.contest.slice(1))}</b></p>${renderContest()}</div>`;
+ const body=st==="won"?`<p>You won ${esc(F.contest)}. Choose your prize:</p><div class="btnrow"><button class="small primary" data-act="festprize" data-id="stat">+1 ${F.stat}, for good</button><button class="small" data-act="festprize" data-id="xp">A level's worth of experience</button></div>`
+  :st?`<p>${st==="claimed"?"You have your prize.":"You entered "+esc(F.contest)+" this year."} There is dancing in the streets until late.</p>`
+  :`<p>Bunting, music and food in every street. The contest is ${esc(F.contest)} (${F.stat}). Win, and you choose +1 ${F.stat} for good or a level's worth of experience.</p><div class="btnrow"><button class="small primary" data-act="contest" ${busy?"disabled":""}>Enter ${esc(F.contest)}</button></div>`;
+ return`<div class="realmevent festival"><span class="eyebrow">Festival today</span><p><b>${esc(F.name[0].toUpperCase()+F.name.slice(1))}</b></p>${body}</div>`;
 }
 function freeSpot(minR,maxR,pad=1){
  for(let t=0;t<5000;t++){const x=pick([-1,1])*rnd(maxR),y=pick([-1,1])*rnd(maxR);if(Math.max(Math.abs(x),Math.abs(y))<minR)continue;
@@ -1635,17 +1732,18 @@ function simulate(){
  for(let i=0;i<n;i++){
   const before=isNight(t);t+=TICK;const after=isNight(t);
   if(!before&&after)log(`Dusk on day ${dayOf(t)}. Lamps are lit and the townsfolk head for home.`,"time");
-  if(before&&!after){log(`Dawn on day ${dayOf(t)}. The townsfolk set out for the day.`,"time");dawnGifts();if(seasonOf(t)!==seasonOf(t-1440))log(`${seasonOf(t)[0].toUpperCase()+seasonOf(t).slice(1)} has come to the realm.${seasonOf(t)==="winter"?" The river is freezing over, and snow closes the high path.":seasonOf(t)==="spring"?" The ice on the river breaks up.":""}`,"time")}
-  weatherTick(t);hungerTick(t);anomalyTick(t);
-  for(const f of npcs()){
+  if(before&&!after){log(`Dawn on day ${dayOf(t)}. The townsfolk set out for the day.`,"time");{const F=festivalToday(t);if(F)log(`Today is ${F.name}, in every town. There is a contest: ${F.contest}.`,"good")}dawnGifts();if(seasonOf(t)!==seasonOf(t-1440))log(`${seasonOf(t)[0].toUpperCase()+seasonOf(t).slice(1)} has come to the realm.${seasonOf(t)==="winter"?" The river is freezing over, and snow closes the high path.":seasonOf(t)==="spring"?" The ice on the river breaks up.":""}`,"time")}
+  const follow=sharedFollower();
+  weatherTick(t);hungerTick(t);if(!follow)anomalyTick(t);
+  if(!follow)for(const f of npcs()){
    if(!cell(f.id))continue;
    if(f.defeated&&recoverTick(f,t))continue;
    const fire=fireNear(f.x,f.y);
    if(fire){fleeFrom(f,fire.x,fire.y,t);f.activity="running from the fire";for(const o of npcsAt(f.x,f.y))if(o!==f)bump2(f,o,.05);continue}
    f.wild?creatureTick(f,t):npcTick(f,t);
   }
-  socialStep();
-  paladinTick();
+  if(!follow)socialStep();
+  paladinTick();wolvesTick();
  }
  for(const f of npcs())touch(f.id);
  r.npcT=t;touch("root");recordBloom();checkPaladin();
@@ -1721,8 +1819,7 @@ function lightning(t){
  }
  const H=hereId()&&cell(hereId());
  if(H&&!isDowned()&&Math.random()<strikeChance(H.x,H.y,zOf(H),t)){
-  const r=roll("3d10");setStat("HP",sv("HP")-r.total);log(`Lightning strikes you at ${H.t}: ${r.total} damage.`,"bad",r.text);
-  if(sv("HP")<=0)fall(H.id);
+  const r=roll("3d10"),dmg=Math.min(r.total,sv("HP")-1);setStat("HP",sv("HP")-dmg);log(`Lightning strikes near you at ${H.t}: ${dmg} damage. You are thrown to the ground, but alive.`,"bad",r.text);placeMemory(H.id,"lightning");
  }
  // Strikes on woodland
  for(const c of Object.values(zz.cells)){
@@ -1746,7 +1843,7 @@ function fireTick(t){
  // Anyone caught in the flames is burned
  for(const n of npcs())if(w.fires[n.x+","+n.y]){const r=roll("1d6");n.hp-=r.total;if(n.hp<=0)removeAgent(n,`${n.t} was caught by the fire at ${placeName(n)} and did not escape.`);else touch(n.id)}
  const H=hereId()&&cell(hereId());
- if(H&&!isDowned()&&fireAt(H.x,H.y,zOf(H))){const r=roll("1d6");setStat("HP",sv("HP")-r.total);log(`The fire reaches you at ${H.t}: ${r.total} damage. Get out!`,"bad",r.text);if(sv("HP")<=0)fall(H.id)}
+ if(H&&!isDowned()&&fireAt(H.x,H.y,zOf(H))){const r=roll("1d6");setStat("HP",sv("HP")-r.total);if(sv("HP")<1)setStat("HP",1);log(`The fire reaches you at ${H.t}: ${r.total} damage. Get out!`,"bad",r.text)}
 }
 const fireNear=(x,y)=>{const w=wxState();if(!w)return null;for(const k of Object.keys(w.fires)){const [fx,fy]=k.split(",").map(Number);if(Math.abs(fx-x)+Math.abs(fy-y)<=2)return{x:fx,y:fy}}return null};
 function fleeFrom(n,fx,fy,t){
@@ -1809,12 +1906,24 @@ function enter(locId,first){
  markSeen(locId);ravenScout(locId);checkRumour(locId);checkMarks(L);
  if(first&&!L.town)foxFind(locId);
  if(L.town)stockMagic(locId);
+ if(L.crag&&zOf(L)>0&&!isDowned()){
+  const rope=packIds().some(i=>/rope/i.test(cell(i).t)),dc=8+zOf(L)+(isNight(gameNow())?2:0),d=rnd(20),m=mod(sv("DEX"))+(rope?4:0),tot=d+m;
+  const txt=`DEX check on the crag: d20 → ${d} ${sgn(m)}${rope?" (rope +4)":""} = ${tot} against DC ${dc}`;
+  if(tot<dc){
+   const layers=d===1&&zOf(L)>=2?2:1,dmg=roll(`${2*layers*Math.ceil(zOf(L)/2)}d6`);
+   setStat("HP",sv("HP")-dmg.total);
+   const below=coord.get(ck(L.x,L.y,zOf(L)-layers))||coord.get(ck(L.x,L.y,zOf(L)-1));
+   log(`You slip on the crag and fall ${layers===2?"two ledges":"a ledge"}: ${dmg.total} damage.`,"bad",txt+"; "+dmg.text);placeMemory(L.id,"fall");
+   if(below){connect(ch,"at",below);const B=cell(below);B.seen=true;if(!B.visited){B.visited=true;touch(below)}markSeen(below)}
+   if(sv("HP")<=0){fall(hereId());return}
+  }else log("You pick your way across the crag.","",txt);
+ }
  if(first&&L.hazard&&!L.hazardDone){
   const h=L.hazard,m=mod(sv(h.stat)),d=rnd(20),tot=d+m,ok=tot>=h.dc;
   let txt=`${h.stat} save: d20 → ${d} ${sgn(m)} = ${tot} against DC ${h.dc}`;
   L.hazardDone=true;
-  if(ok){L.outcome={ok:true,roll:txt};log(`${h.name}: you get through unharmed.`,"good",txt);gainXP(25)}
-  else{const dmg=roll(h.damage);txt+=`; damage ${dmg.text}`;L.outcome={ok:false,roll:txt,dmg:dmg.total};setStat("HP",sv("HP")-dmg.total);log(`${h.name}: you take ${dmg.total} damage.`,"bad",txt)}
+  if(ok){L.outcome={ok:true,roll:txt};log(`${h.name}: you get through unharmed.`,"good",txt);gainXP(25);placeMemory(locId,"hazardok",h.name)}
+  else{const dmg=roll(h.damage);txt+=`; damage ${dmg.text}`;L.outcome={ok:false,roll:txt,dmg:dmg.total};setStat("HP",sv("HP")-dmg.total);log(`${h.name}: you take ${dmg.total} damage.`,"bad",txt);placeMemory(locId,"hazard",h.name)}
   touch(locId);lastHazard=locId;
   if(sv("HP")<=0){fall(locId);return}
  }
@@ -1828,6 +1937,21 @@ function enter(locId,first){
 }
 /* Death, waking and resurrection */
 const isDowned=()=>!!(charId()&&cell(charId()).downed);
+/* Most things that fight you can only wound you. Brought to 0 HP by anything but a Keter anomaly, you
+   run: half of what you carry is dropped where you fell, and you stagger into the nearest town some
+   hours later with a quarter of your HP. */
+function woundedRetreat(by){
+ const H=cell(hereId()),items=packIds().filter(i=>!cell(i).worn&&!cell(i).wielded),lose=shuffle(items).slice(0,Math.ceil(items.length/2));
+ for(const id of lose){excise(id,"contain");touch(id);appendTo(H.id,"contain",id)}
+ const T=towns().slice().sort((a,b)=>(Math.abs(wrapC(a.x-H.x))+Math.abs(wrapC(a.y-H.y)))-(Math.abs(wrapC(b.x-H.x))+Math.abs(wrapC(b.y-H.y))))[0]||cell(cell("root").home);
+ const dist=Math.abs(wrapC(T.x-H.x))+Math.abs(wrapC(T.y-H.y))+Math.abs(zOf(H));
+ setStat("HP",Math.max(1,Math.ceil(sv("MAXHP")/4)));rounds=[];
+ const F=by&&by.id&&cell(by.id);if(F&&F.k==="monster"){F.hp=Math.min(F.maxhp,F.hp+Math.ceil(F.maxhp/4));touch(F.id)}
+ const dropped=lose.map(id=>cell(id).t);placeMemory(H.id,"wounded",by&&by.t?by.t:"something");
+ connect(charId(),"at",T.id);markSeen(T.id);
+ log(`${by&&by.t?by.t:"It"} wounds you badly and you run. ${dropped.length?`You drop ${dropped.slice(0,4).join(", ")}${dropped.length>4?` and ${dropped.length-4} more things`:""} at ${H.t} as you flee, and`:"You"} stagger into ${T.t} some hours later.`,"bad");
+ passTime(Math.min(16*60,Math.max(60,dist*STEP_MIN)));store.flush();render();
+}
 function fall(locId){
  const ch=cell(charId());ch.downed=locId;touch(ch.id);
  const f=foeId(locId);if(f){cell(f).hp=cell(f).maxhp;touch(f)}
@@ -1858,7 +1982,7 @@ const BILLING={freeRange:12,supporterRange:WORLD_R,supporterTokens:3,prices:{sup
 function entitlement(){const r=cell("root"),e=Object.assign({plan:"free",tokens:0},r&&r.ent||{});if(!e.paid){e.plan="free";e.tokens=0}return e}
 function saveEntitlement(e){const r=cell("root");if(!r)return;r.ent=e;touch("root")}
 const plan=()=>entitlement().plan;
-const exploreRange=()=>plan()==="supporter"?BILLING.supporterRange:BILLING.freeRange;
+const exploreRange=()=>WORLD_R;   // the whole world is open to everyone; support is by donation
 
 /* Combat */
 function monsterTurn(){
@@ -1870,7 +1994,7 @@ function monsterTurn(){
   else{const r=roll(F.dmg,d===20?2:1);txt+=`; damage ${r.text}`;setStat("HP",sv("HP")-r.total);say(d===20?`A critical blow from ${F.t}: ${r.total} damage.`:`${F.t} hits you for ${r.total} damage.`,"bad",txt)}
  }
  if(F.special==="regenerate"&&F.hp<F.maxhp){const r=roll("1d4");F.hp=Math.min(F.maxhp,F.hp+r.total);touch(f);say(`${F.t} knits itself back together (+${r.total}).`,"",r.text)}
- if(sv("HP")<=0)fall(hereId());
+ if(sv("HP")<=0){if(F.objectClass==="Keter")fall(hereId());else woundedRetreat(F)}
 }
 function attack(index){
  const f=foeId();if(busy||!f||isDowned())return;const F=cell(f),opt=attackOptions()[index||0];if(!opt)return;const h0=F.hp;
@@ -1888,7 +2012,7 @@ function attack(index){
  if(F.evSlot)eventHit(F,h0-Math.max(0,F.hp));
  if(F.hp<=0){
   // The great foe's reward is shared out by the server among everyone who fought it, not given to the last blow
-  const xp=F.evSlot?0:Math.round(F.maxhp*2+F.ac*2+F.atk*5);checkQuests("slay",hereId());neutraliseAt(hereId(),null);say(`${F.designation} ${F.t} is neutralised.`,"good");if(xp){gainXP(xp);log(`You gain ${xp} XP.`,"good")}
+  const xp=F.evSlot?0:Math.round(F.maxhp*2+F.ac*2+F.atk*5);placeMemory(hereId(),"slay",F.t);checkQuests("slay",hereId());neutraliseAt(hereId(),null);say(`${F.designation} ${F.t} is neutralised.`,"good");if(xp){gainXP(xp);log(`You gain ${xp} XP.`,"good")}
   const H=cell(hereId()),you=cell(charId());if(zOf(H)===0){const saw=npcs().filter(o=>Math.abs(o.x-H.x)+Math.abs(o.y-H.y)<=1);for(const o of saw)bump(o,you,.15);
    if(saw.length)log(`${saw.slice(0,3).map(o=>o.t).join(", ")}${saw.length>3?` and ${saw.length-3} more`:""} saw you do it, and think better of you.`,"npc")}
   store.flush();render();return}
@@ -2064,8 +2188,8 @@ function useItem(id){
  if(it.kind==="treasure"){setStat("GP",sv("GP")+(+it.value||0));log(`You add ${it.t} to your purse: ${it.value} gp.`,"good");excise(id,"contain");destroy(id);store.flush();render();return}
  if(it.mapOf){readMap(id);return}
  if(!it.heal)return;
- if(it.kind==="food")ate(it.t.toLowerCase());
- const r=roll(it.heal),before=sv("HP"),after=Math.min(sv("MAXHP"),before+r.total);
+ if(it.kind==="food"){ate(it.t.toLowerCase());if(it.shared){const ch=cell(charId());ch.lastMeal=gameNow()+720;touch(ch.id);log("Food that was shared goes twice as far.","good")}}
+ const r=roll(it.heal),before=sv("HP"),after=Math.min(sv("MAXHP"),before+r.total*(it.shared?2:1));
  setStat("HP",after);(foeId()?say:log)(`You use ${it.t} and recover ${after-before} HP.`,"good",r.text);
  excise(id,"contain");destroy(id);
  if(foeId())monsterTurn();
@@ -2508,7 +2632,7 @@ function attackAgent(id){
   log(`${n.t} is beaten. Others carry ${n.wild?"it":"them"} to ${S.t} to recover. From now on ${n.wild?"it keeps":"they keep"} well away from you.`,"bad");
  }else if(!n.wild&&n.courage>.5&&n.hp>n.maxhp*.3){
   const R=ROLES[n.role]||ROLES.farmer,d2=rnd(20),t2=d2+n.atk,ac=armourClass(),tx=`d20 → ${d2} +${n.atk} = ${t2} against your AC ${ac}`;
-  if(t2>=ac){const r=roll(R[5]);setStat("HP",sv("HP")-r.total);log(`${n.t} fights back: ${r.total} damage.`,"bad",tx+"; "+r.text);if(sv("HP")<=0){n.fight="over";fall(hereId())}}
+  if(t2>=ac){const r=roll(R[5]);setStat("HP",sv("HP")-r.total);log(`${n.t} fights back: ${r.total} damage.`,"bad",tx+"; "+r.text);if(sv("HP")<=0){n.fight="over";woundedRetreat(n)}}
   else log(`${n.t} swings back and misses.`,"",tx);
  }else{
   const opts=FLAT.map(d=>DIRS[d]).filter(v=>passXY(n.x+v.dx,n.y+v.dy,magicPresent()));
@@ -2701,6 +2825,29 @@ function standingPercentile(){
  return others.length?100*others.filter(s=>s<mine).length/others.length:50;
 }
 const paladin=()=>Object.values(zz.cells).find(c=>c.k==="paladin");
+const wolves=()=>Object.values(zz.cells).find(c=>c.k==="wolves");
+const moonFull=(t=gameNow())=>{const p=((t/1440)%LUNAR_DAYS+LUNAR_DAYS)%LUNAR_DAYS/LUNAR_DAYS;return(1-Math.cos(2*Math.PI*p))/2};
+function summonWolves(){
+ if(wolves()||!hereId())return;const H=cell(hereId()),a=Math.random()*Math.PI*2;
+ const id=newCell("wolves",{t:"a pack of grey wolves",x:wrapC(H.x+Math.round(Math.cos(a)*9)),y:wrapC(H.y+Math.round(Math.sin(a)*9)),until:gameNow()+2*1440});
+ log("Somewhere behind you a wolf howls, then another. You stole from someone poorer than you, and the wild has noticed. A pack is hunting you; they run faster as the moon fills.","bad");
+ touch(id);store.flush();render();
+}
+function wolvesTick(){
+ const W=wolves();if(!W||isDowned())return;const H=cell(hereId());if(!H)return;
+ if(gameNow()>W.until){log("The wolves lose your scent and melt back into the wild.","good");destroy(W.id);return}
+ if(zOf(H)!==0)return;   // they will not follow you up the mountain or into the earth
+ const steps=1+Math.round(2*moonFull()),field=pathDist(H.x,H.y);
+ for(let s=0;s<steps;s++){if(W.x===H.x&&W.y===H.y)break;const cur=field.get(ck(W.x,W.y,0))??1e9;let best=null,bd=cur;
+  for(const k of FLAT){const v=DIRS[k],nx=wrapC(W.x+v.dx),ny=wrapC(W.y+v.dy),d=field.get(ck(nx,ny,0));if(d!==undefined&&d<bd){bd=d;best=[nx,ny]}}
+  if(best){W.x=best[0];W.y=best[1]}else{const dx=Math.sign(wrapC(H.x-W.x)),dy=Math.sign(wrapC(H.y-W.y));W.x=wrapC(W.x+dx);W.y=wrapC(W.y+(dx?0:dy))}}
+ touch(W.id);
+ if(W.x===H.x&&W.y===H.y&&!foeId(H.id)){
+  const lv=sv("LVL"),full=moonFull()>.85;
+  const mid=newCell("monster",{personal:true,t:"Grey wolf pack",designation:"Wolves",objectClass:"Euclid",desc:"Five grey wolves circle you, low and silent, eyes bright. They came for the thief.",hp:14+lv*5,maxhp:14+lv*5,ac:13,atk:3+lv,dmg:"2d4",special:full?"frenzy":"none",born:gameNow(),roam:false,spread:false});
+  connect(H.id,"occupant",mid);destroy(W.id);log(`The wolves have caught you at ${H.t}.${full?" Under the full moon they are wild.":""}`,"bad");
+ }else if(!W.warned&&Math.abs(wrapC(W.x-H.x))+Math.abs(wrapC(W.y-H.y))<=4){W.warned=true;log("Howling, close now. The wolves are near.","bad")}
+}
 function checkPaladin(){
  const r=cell("root");if(!r||!charId()||paladin()||isDowned())return;
  if(r.paladinRestUntil&&gameNow()<r.paladinRestUntil)return;
@@ -2755,11 +2902,26 @@ function paladinCatch(P){
    Starving (two days): lose 1 HP every six hours, never below 1. ---------- */
 function hungerLevel(t=gameNow()){const ch=charId()&&cell(charId());if(!ch||ch.lastMeal==null)return 0;return Math.max(0,Math.floor((t-ch.lastMeal)/1440))}
 function ate(what){const ch=cell(charId());ch.lastMeal=gameNow();ch.starveMark=0;if(ch.hungerSaid){ch.hungerSaid=0;log(`You eat ${what}. The hunger passes.`,"good")}touch(ch.id)}
+// Starvation can only hurt you somewhere with nothing to eat and no one to ask: high on the mountain or deep in the mine
+const starveZone=L=>!!L&&((L.massif&&zOf(L)>=1)||zOf(L)<=-5);
+function sensibleMeal(t){
+ const ch=cell(charId()),L=hereId()&&cell(hereId());if(!L)return false;
+ const food=packIds().map(cell).filter(i=>i.kind==="food").sort((a,b)=>(+a.value||0)-(+b.value||0))[0];
+ if(food){log(`Hungry, you stop and eat ${food.t.toLowerCase()}.`,"");useItem(food.id);return true}
+ // A stranger shares what they have; food that is shared goes twice as far
+ if(zOf(L)===0){const n=npcsAt(L.x,L.y).find(n=>!n.wild&&n.food>0&&!n.defeated);
+  if(n){n.food--;touch(n.id);ate(`bread shared by ${n.t}`);ch.lastMeal=gameNow()+720;touch(ch.id);if(typeof noteOf==="function")noteOf(n,"I shared my food with you when you were hungry");log(`${n.t} sees you are hungry and shares their bread without a word. Food shared goes twice as far.`,"good");placeMemory(L.id,"shared",n.t);return true}}
+ // No one goes hungry in a town, however small
+ if(L.town){const T=L.town.of?cell(L.town.of):L;ate(`a bowl of soup from the almshouse in ${T.t}`);log(`The almshouse in ${T.t} gives you soup and bread. No one starves here.`,"good");return true}
+ return false;
+}
 function hungerTick(t){
- const ch=charId()&&cell(charId());if(!ch||ch.lastMeal==null||isDowned())return;const lv=hungerLevel(t);
+ const ch=charId()&&cell(charId());if(!ch||ch.lastMeal==null||isDowned())return;
+ if(hungerLevel(t)>=1&&sensibleMeal(t))return;
+ const lv=hungerLevel(t);
  if(lv>=1&&(ch.hungerSaid||0)<1){ch.hungerSaid=1;log("You are hungry. Eat something soon: hunger weakens you (−1 STR, −1 CON) and slows healing.","bad")}
- if(lv>=2&&(ch.hungerSaid||0)<2){ch.hungerSaid=2;log("You are starving. Without food you will lose strength every few hours.","bad")}
- if(lv>=2){const mark=Math.floor((t-ch.lastMeal-2880)/360);if(mark>(ch.starveMark||0)){ch.starveMark=mark;if(sv("HP")>1){setStat("HP",sv("HP")-1);log("Hunger gnaws at you: −1 HP.","bad")}}}
+ if(lv>=2&&(ch.hungerSaid||0)<2){ch.hungerSaid=2;log(starveZone(hereId()&&cell(hereId()))?"You are starving, and there is nothing to eat up here. Head down toward a town.":"You are starving. Find food, or any town will feed you.","bad")}
+ if(lv>=2&&starveZone(hereId()&&cell(hereId()))){const mark=Math.floor((t-ch.lastMeal-2880)/360);if(mark>(ch.starveMark||0)){ch.starveMark=mark;if(sv("HP")>1){setStat("HP",sv("HP")-1);log("Hunger gnaws at you: −1 HP.","bad")}}}
  touch(ch.id);
 }
 
@@ -2820,6 +2982,26 @@ function readMap(id){
  log(`You study the map of ${T.label} and copy ${shown} places onto your own.${it.wrong?" One mark looks oddly placed.":""}`,"good");store.flush();render();
 }
 function checkMarks(L){for(const m of marks()){if(m.done||wrapC(m.x-L.x)||wrapC(m.y-L.y))continue;m.done=true;touch("root");log(m.real?`You find ${m.label}, just as the map promised.`:`The map marked ${m.label} here. There is nothing. The map was wrong.`,m.real?"good":"bad")}}
+/* Place memories: the game notes anything interesting that happens to you at a place, and when you
+   come back the description remembers it with you ("Remember the wolves? Phew."). */
+const MEM_LINES={
+ slay:n=>pick([`This is where you put down ${n}. Phew, that was a close one.`,`Remember ${n}? It ended here, by your hand.`]),
+ wounded:n=>pick([`Remember ${n}? It wounded you here and you ran, dropping half your things. Some may still be lying about.`,`This is where ${n} sent you running. You would rather not repeat that.`]),
+ fall:n=>pick(["You slipped and fell from here once. You still remember the drop.","The crag where you fell. Your knees remember it."]),
+ hazard:n=>pick([`${n} nearly had you here.`,`Mind ${n.toLowerCase()} again.`]),
+ hazardok:n=>`You got past ${n.toLowerCase()} here without a scratch. A lucky break.`,
+ met:n=>pick([`This is where you met ${n}.`,`You ran into ${n} here once.`]),
+ shared:n=>`${n} shared their bread with you here when you were starving.`,
+ lightning:n=>"Lightning struck right beside you here. You still flinch at thunder.",
+ festival:n=>`You won ${n} here, to a roar from the crowd.`,
+ rumour:n=>`The rumour was true: you found ${n} here.`,
+ rule:n=>`Here you read a hidden rule: ${n}.`};
+function placeMemory(locId,kind,name){
+ const L=cell(locId);if(!L||!MEM_LINES[kind])return;const line=MEM_LINES[kind](name||"");
+ L.memories=(L.memories||[]).filter(m=>m.kind!==kind||m.name!==name).concat([{kind,name:name||"",line,t:Math.round(gameNow())}]).slice(-4);touch(L.id);
+}
+// What the description adds when you come back
+function memoryText(L){const m=(L.memories||[]).slice(-2);return m.length?m.map(x=>x.line).join(" "):""}
 function saveNote(text){const L=cell(hereId());L.note=String(text||"").trim().slice(0,200)||null;touch(L.id);store.flush();render()}
 
 /* ---------- Factions: each town keeps its own opinion of you, and of the other towns ---------- */
@@ -2910,7 +3092,8 @@ function realmSnapshot(){
   if(o.ties)for(const k of Object.keys(o.ties))if(mine.has(k))delete o.ties[k];
   out[id]=o;
  }
- const r=out.root;for(const k of ["log","codex","ent","clock","fragments","fragDay","rumours","marks","cottage","created"])delete r[k];
+ for(const F of Object.values(zz.cells))if(shareableMon(F)){ensureSid(F);if(out[F.id])out[F.id].sid=F.sid}
+ const r=out.root;for(const k of ["log","codex","ent","clock","fragments","fragDay","rumours","marks","cottage","created","friends","festivals","intro"])delete r[k];
  return out;
 }
 async function uploadRealm(){
@@ -2960,10 +3143,13 @@ async function sharedSquares(need){
 }
 function squareOut(id,planned){
  const c=cell(id);const ex=c.exits?Object.entries(c.exits).filter(([,v])=>v).map(([d])=>d==="up"?"u":d==="down"?"d":d[0]).join(""):"";
- return {name:c.t,desc:c.desc,glimpse:c.glimpse||"",terrain:c.terrain,exits:ex,walls:c.walls||null,hazard:c.hazard||null,planned:!!planned};
+ const f=foeId(id),F=f&&cell(f);
+ const mon=F&&!F.evSlot&&!F.personal?{name:F.t,designation:F.designation,objectClass:F.objectClass,description:F.desc,hp:F.maxhp,ac:F.ac,attack:F.atk,damage:F.dmg,special:F.special}:null;
+ return {name:c.t,desc:c.desc,glimpse:c.glimpse||"",terrain:c.terrain,exits:ex,walls:c.walls||null,hazard:c.hazard||null,planned:!!planned,mon,hasMon:true};
 }
 function squareIn(s,L,n){
  const base=tableLocation(L,n.dir,n.pos);   // local items and anomalies, so each player still finds their own
+ if(s.hasMon)base.monster=s.mon?Object.assign({},s.mon,{maxhp:s.mon.hp,loot:null}):null;
  return Object.assign(base,{name:s.name||base.name,desc:s.desc,terrain:TERRAINS.includes(s.terrain)?s.terrain:base.terrain,
   exits:s.exits?EX(s.exits):normExits(null,n.dir),walls:normWalls(s.walls),glimpse:s.glimpse||`${s.name||base.name}: ${GLIMPSE[s.terrain]||GLIMPSE.other}`,hazard:s.hazard&&s.hazard.name?normLocation({hazard:s.hazard},base.terrain,n.pos).hazard:base.hazard,by:"shared"});
 }
@@ -2996,8 +3182,8 @@ async function mpPing(say){
  if(mp.busy){if(say)mp.queued=say;return}
  const L=cell(hereId()),ch=cell(charId());mp.busy=true;
  try{
-  const r=await mp.call("/presence",Object.assign({x:L.x,y:L.y,z:zOf(L),name:ch.t,cls:ch.cls,lvl:sv("LVL"),say:say||undefined},mpExtras()));
-  mp.you=r.you;mp.online=r.players.length;mp.players=r.players.filter(p=>p.u!==r.you);mp.ground=r.ground||[];mp.ev=r.ev||null;evTick();applyThefts(r.thefts);meetPlayers(L);mp.groundKey=sqk({x:L.x,y:L.y,z:zOf(L)});mp.status="";
+  const r=await mp.call("/presence",Object.assign({x:L.x,y:L.y,z:zOf(L),name:ch.t,cls:ch.cls,lvl:sv("LVL"),say:say||undefined},mpExtras(),worldBody()));
+  mp.you=r.you;mp.online=r.players.length;mp.players=r.players.filter(p=>p.u!==r.you);mp.ground=r.ground||[];mp.ev=r.ev||null;worldReply(r);evTick();applyThefts(r.thefts);meetPlayers(L);mp.groundKey=sqk({x:L.x,y:L.y,z:zOf(L)});mp.status="";
   if(say)log(`You say: “${say}”`,"talk");
   const here=new Set();
   for(const p of mp.players){
@@ -3042,8 +3228,9 @@ function renderTravellers(L){
  let h=`<div class="sectionhead"><h3>Other travellers</h3><span class="mono" style="font-size:12px;color:var(--faint)">${mp.status?esc(mp.status):mp.online==null?"connecting…":`${mp.online} in the realm`}</span></div>`;
  const myPoss=possessions(),fr=friends();
  h+=near.length?`<ul class="quests">${near.map(p=>{const here=bearing(p,L)==="here",canSteal=here&&p.poss>2*myPoss&&!(mp.stoleFrom&&mp.stoleFrom[p.u]&&Date.now()-mp.stoleFrom[p.u]<864e5);
-  return`<li><b>${esc(p.name)}</b>${fr[p.u]?" (friend)":""} · ${esc(p.cls||"traveller")}, level ${p.lvl||1} · ${esc(bearing(p,L))}${canSteal?` <button class="small" data-act="steal" data-id="${esc(p.u)}" title="They carry ${p.poss} things to your ${myPoss}. One DEX check, once a day; they will know if you fail.">Try to lift one item</button>`:""}</li>`}).join("")}</ul>`:`<p class="note">No one else is within ${MP_NEAR} squares. Their footprints show on the map when they pass.</p>`;
- if(said.length)h+=`<ul class="quests">${said.map(p=>`<li>${esc(p.name)}: “${esc(p.say.text)}”</li>`).join("")}</ul>`;
+  return`<li><b>${esc(p.name)}</b>${bondName(fr[p.u])?` (${bondName(fr[p.u])})`:""} · ${esc(p.cls||"traveller")}, level ${p.lvl||1} · ${esc(bearing(p,L))}${here&&packIds().some(i=>cell(i).kind==="food")?` <button class="small" data-act="sharefood" data-id="${esc(p.u)}" title="Give them some of your food; shared food goes twice as far">Share food</button>`:""}${canSteal?` <button class="small" data-act="steal" data-id="${esc(p.u)}" title="They carry ${p.poss} things to your ${myPoss}. One DEX check, once a day; they will know if you fail.">Try to lift one item</button>`:""}</li>`}).join("")}</ul>`:`<p class="note">No one else is within ${MP_NEAR} squares. Their footprints show on the map when they pass.</p>`;
+ if(said.length)h+=`<ul class="quests">${said.map(p=>{const k=p.u+"|"+p.say.t,rated=(mp.rated||{})[k];
+  return`<li>${esc(p.name)}: “${esc(p.say.text)}”${rated?` <span class="meta">(${rated})</span>`:` <span class="rate"><button class="small" data-act="rate" data-id="${esc(k)}|good" title="A good exchange: goodwill grows">good</button><button class="small" data-act="rate" data-id="${esc(k)}|mid" title="Neither here nor there">mid</button><button class="small" data-act="rate" data-id="${esc(k)}|bad" title="A bad exchange: goodwill falls">bad</button></span>`}</li>`}).join("")}</ul>`;
  h+=`<form class="note-form" data-say><label for="say-in">Say something to travellers within ${MP_NEAR} squares</label><div class="btnrow"><input id="say-in" maxlength="160" placeholder="Hello, traveller…"><button class="small" type="submit">Say</button></div></form>`;
  if(ground.length)h+=`<div class="sectionhead"><h3>Left by other travellers</h3></div><ul class="items">${ground.map(g=>`<li><span><span class="nm">${esc(g.item.name)}</span><span class="meta">${esc(g.item.kind)}${g.item.magic?" · magic":""} · left by ${esc(g.by===mp.you?"you":g.by)}</span>${g.item.desc?`<span class="about">${esc(g.item.desc)}</span>`:""}</span><span class="acts"><button class="small" data-act="takeleft" data-id="${esc(g.id)}">Take</button></span></li>`).join("")}</ul>`;
  return h;
@@ -3053,7 +3240,7 @@ function mapTravellers(H,R,Z,P){
  for(const p of mp.players){
   for(const s of (p.trail||[]).slice(0,-1)){if(s.z!==Z)continue;const dx=wrapC(s.x-H.x),dy=wrapC(s.y-H.y);if(Math.abs(dx)>R||Math.abs(dy)>R)continue;const [qx,qy]=P(dx,dy);out+=`<circle class="footprint" cx="${qx+12}" cy="${qy+48}" r="2.2"><title>${esc(p.name)} passed here</title></circle>`}
   if(p.z!==Z)continue;const dx=wrapC(p.x-H.x),dy=wrapC(p.y-H.y);if(Math.abs(dx)>R||Math.abs(dy)>R)continue;const [qx,qy]=P(dx,dy);
-  out+=`<g class="traveller"><circle cx="${qx+48}" cy="${qy+46}" r="5"/><path d="M${qx+43} ${qy+56} q5 -7 10 0"/><title>${esc(p.name)}, ${esc(p.cls||"traveller")} (level ${p.lvl||1})</title></g>`;
+  out+=`<g class="traveller" style="${p.colour?`--pc:${esc(p.colour)}`:""}"><circle cx="${qx+48}" cy="${qy+46}" r="5"/><path d="M${qx+43} ${qy+56} q5 -7 10 0"/><title>${esc(p.name)}, ${esc(p.cls||"traveller")} (level ${p.lvl||1})</title></g>`;
  }
  return out;
 }
@@ -3207,15 +3394,53 @@ function memoryLine(n){const k=n.knows;if(!k||!k.met)return"";const last=k.notes
    ============================================================ */
 const friends=()=>{const r=cell("root");return r?(r.friends=r.friends||{}):{}};
 const possessions=()=>packIds().length;
+const worth=()=>sv("GP")+packIds().reduce((a,id)=>a+(+cell(id).value||0),0);
+/* Acquaintance and friendship. Each separate meeting (on the same hex, at least half an hour of real
+   time after the last, and not on the realm's starting hex) counts once. Met once or twice: an
+   acquaintance, not tracked. Met three times or more, with goodwill left: a friend, whose rough
+   whereabouts show on your map. Goodwill fades by one every two real days unless refreshed by
+   meetings and good conversations, and bad ones take it away. */
+const FADE_MS=2*864e5;
+function goodwill(f){return(f.score||0)-Math.floor((Date.now()-(f.lastGood||f.met||Date.now()))/FADE_MS)}
+const isFriend=f=>!!f&&(f.meets||0)>=3&&goodwill(f)>0;
+const bondName=f=>!f?"":isFriend(f)?"friend":(f.meets||0)>=1?"acquaintance":"";
 function packForServer(){return packIds().map(cell).filter(it=>!it.worn&&!it.wielded&&!it.forSale).slice(0,40).map(it=>({id:it.id,name:it.t,desc:it.desc,kind:it.kind,weight:it.weight,value:it.value,heal:it.heal,ac:it.ac,dmg:it.dmg,finesse:it.finesse,light:it.light,magic:it.magic}))}
+const PLAYER_COLOURS=["#d9483b","#e08a2e","#d8b931","#5aa64a","#2f9e8f","#3b7dd8","#6b5bd6","#b04fc0","#d6577f","#8a6a3f"];
+function myColour(){const r=cell("root");if(!r.colour){r.colour=pick(PLAYER_COLOURS);touch("root")}return r.colour}
+/* Meeting another player sometimes points you toward something worth finding: a faint dotted path
+   in their colour appears on your map, heading toward it. It is a direction, not a reveal. */
+function maybeHint(p){
+ if(Math.random()>.45)return;const r=cell("root"),H=cell(hereId());
+ const cands=Object.values(zz.cells).filter(c=>c.k==="loc"&&zOf(c)===0&&!c.visited&&(c.monument||c.castle||c.cavemouth||c.sanctuary||(c.landmark&&!c.town))&&!(r.hints||[]).some(h=>h.id===c.id)).map(c=>({c,d:Math.abs(wrapC(c.x-H.x))+Math.abs(wrapC(c.y-H.y))})).filter(o=>o.d>3&&o.d<22).sort((a,b)=>a.d-b.d);
+ if(!cands.length)return;const T=pick(cands.slice(0,4)).c,what=T.monument?"something carved in stone":T.castle?"an old castle":T.cavemouth?"a way down into the earth":T.sanctuary?"a place of healing":"something worth seeing";
+ r.hints=(r.hints||[]).concat([{id:T.id,x:T.x,y:T.y,colour:p.colour||"#888",from:p.name,what,t:Date.now()}]).slice(-6);touch("root");
+ log(`${p.name} mentions ${what}, out that way. A faint dotted path, in their colour, appears on your map.`,"good");
+}
+function mapHints(H,R,Z,P,inMap){
+ if(Z!==0)return"";const r=cell("root");let out="";
+ r.hints=(r.hints||[]).filter(h=>{const c=cell(h.id);return c&&!c.visited});
+ for(const h of r.hints){const dx=wrapC(h.x-H.x),dy=wrapC(h.y-H.y),n=Math.max(Math.abs(dx),Math.abs(dy));if(n<1)continue;
+  for(let k=1;k<n;k++){const qx=Math.round(dx*k/n),qy=Math.round(dy*k/n);if(!inMap(qx,qy))break;const [px,py]=P(qx,qy);
+   out+=`<circle class="hintdot" cx="${px+30+(k%2?5:-5)}" cy="${py+30}" r="2.6" fill="${esc(h.colour)}"><title>${esc(h.from)} mentioned ${esc(h.what)} this way</title></circle>`}}
+ return out;
+}
 function mpExtras(){
  const pack=packForServer(),sig=pack.map(i=>i.id).join(",");
- const o={poss:possessions()};if(sig!==mp.packSig){o.pack=pack;mp.packSig=sig}
+ const o={poss:possessions(),worth:worth(),colour:myColour()};if(sig!==mp.packSig){o.pack=pack;mp.packSig=sig}
  return o;
 }
-// Thefts reported by the server: take the item out of the pack, and say so
+async function shareFood(u){
+ const p=mp.players.find(x=>x.u===u),food=packIds().map(cell).find(i=>i.kind==="food");if(!p||!food)return;
+ try{await mp.call("/gift",{target:u,item:{name:food.t,desc:food.desc,kind:"food",weight:food.weight,value:food.value,heal:food.heal}});
+  excise(food.id,"contain");destroy(food.id);log(`You share ${food.t.toLowerCase()} with ${p.name}.`,"good");
+  const f=friends()[u];if(f){f.score=Math.max(0,goodwill(f))+1;f.lastGood=Date.now();touch("root")}
+ }catch(e){flash=e.message}
+ store.flush();render();
+}
+// Thefts and gifts reported by the server: take the item out of the pack, or add the gift, and say so
 function applyThefts(list){
  for(const th of list||[]){
+  if(th.gift){const g=th.gift,nid=itemCell(normItem({name:g.name,description:g.desc,kind:g.kind,weight:g.weight,value:g.value,heal:g.heal}));cell(nid).shared=true;appendTo(charId(),"contain",nid);log(`${th.from} shares ${g.name.toLowerCase()} with you. Shared food goes twice as far.`,"good");continue}
   if(th.failed){log(`${th.thief} tried to pick your pocket, but you caught their hand.`,"bad");continue}
   const id=packIds().find(i=>i===th.id)||packIds().find(i=>cell(i).t===th.name);
   if(id){excise(id,"contain");destroy(id)}
@@ -3225,24 +3450,38 @@ function applyThefts(list){
 async function trySteal(u){
  const p=mp.players.find(x=>x.u===u);if(!p)return;
  try{const r=await mp.call("/steal",{target:u,dex:mod(sv("DEX"))});
+  if(r.ok&&Math.random()<(r.theirWorth!=null&&r.myWorth!=null&&r.theirWorth<r.myWorth?.6:.12))setTimeout(summonWolves,0);
   if(r.ok){const g=r.item,nid=itemCell(normItem({name:g.name,description:g.desc,kind:g.kind,weight:g.weight,value:g.value,heal:g.heal,ac:g.ac,damage:g.dmg,finesse:g.finesse,light:g.light}));
    if(g.magic)cell(nid).magic=true;appendTo(charId(),"contain",nid);log(`DEX check ${r.roll} → ${r.total}: you lift ${g.name} from ${r.from} unseen.`,"good")}
   else log(r.empty?`You find nothing worth taking on ${p.name}.`:`DEX check ${r.roll} → ${r.total}: ${p.name} catches your hand. They will remember that.`,"bad");
  }catch(e){flash=e.message}
  mp.stoleFrom=Object.assign(mp.stoleFrom||{},{[u]:Date.now()});store.flush();render();
 }
-// Met: standing on the same hex as another player makes you friends
+// Meeting: standing on the same hex as another player, apart from the starting hex
 function meetPlayers(L){
- const fr=friends(),r=cell("root");let changed=false;
+ const fr=friends(),r=cell("root"),now=Date.now();let changed=false;
  for(const p of mp.players){if(p.x!==L.x||p.y!==L.y||p.z!==zOf(L))continue;
-  if(!fr[p.u]){fr[p.u]={name:p.name,met:Date.now()};log(`You meet ${p.name} the ${p.cls||"traveller"}. From now on you will have a rough idea where they are.`,"good");changed=true}
+  if(L.id!==r.home){const f=fr[p.u]||(fr[p.u]={name:p.name,meets:0,score:0,met:now});f.name=p.name;
+   if(!f.lastMeet||now-f.lastMeet>30*60e3){const was=isFriend(f);f.meets=(f.meets||0)+1;f.lastMeet=now;f.score=Math.max(0,goodwill(f))+1;f.lastGood=now;changed=true;
+    placeMemory(L.id,"met",p.name);maybeHint(p);
+    if(isFriend(f)&&!was)log(`You and ${p.name} are friends now. From here on you will have a rough idea where they are.`,"good");
+    else if(f.meets===1)log(`You meet ${p.name} the ${p.cls||"traveller"}. Meet them twice more and you may become friends.`,"good");
+    else if(!isFriend(f))log(`You run into ${p.name} again.`,"")}
+   else f.lastMeet=now}
   if(r.intro&&r.intro.u===p.u){log(`So this is ${p.name}. ${r.intro.by} was right.`,"good");delete r.intro;changed=true}}
  if(changed)touch("root");
+}
+function rateChat(v){
+ const parts=v.split("|"),val=parts.pop(),k=parts.join("|"),u=parts[0],fr=friends(),p=mp.players.find(x=>x.u===u);
+ mp.rated=Object.assign(mp.rated||{},{[k]:val});
+ const f=fr[u]||(fr[u]={name:p?p.name:u,meets:0,score:0,met:Date.now()});
+ if(val==="good"){f.score=Math.max(0,goodwill(f))+2;f.lastGood=Date.now()}else if(val==="bad"){f.score=goodwill(f)-2;f.lastGood=Date.now()}
+ touch("root");store.flush();render();
 }
 // Introductions happen in towns
 function maybeIntroduce(L){
  if(!mp.on()||!L.town)return;const r=cell("root");if(r.intro&&mp.players.some(p=>p.u===r.intro.u))return;
- const fr=friends(),cands=mp.players.filter(p=>!fr[p.u]);if(!cands.length)return;
+ const fr=friends(),cands=mp.players.filter(p=>!isFriend(fr[p.u]));if(!cands.length)return;
  const T=L.town.of?cell(L.town.of):L,folk=npcs().filter(n=>!n.wild&&n.home===T.id),who=folk.length?pick(folk):null;
  const p=pick(cands),by=who?who.t:"Someone at the inn";
  r.intro={u:p.u,name:p.name,by,t:Date.now()};touch("root");
@@ -3260,7 +3499,7 @@ function mapFriends(H,R,Z,P,V,W,inMap){
   let tk=n;while(tk>1&&!inMap(Math.round(dx*tk/n),Math.round(dy*tk/n)))tk--;const [tx,ty]=P(Math.round(dx*tk/n),Math.round(dy*tk/n));
   out+=`<text class="friendname" x="${tx+30}" y="${ty+12}" text-anchor="middle">${esc(intro.name)} · ${n}</text>`}
  // Rings for friends you have met
- for(const p of mp.players){if(!fr[p.u]||(intro&&intro.u===p.u))continue;const c=friendRingCentre(p);if(c.z!==Z)continue;
+ for(const p of mp.players){if(!isFriend(fr[p.u])||(intro&&intro.u===p.u))continue;const c=friendRingCentre(p);if(c.z!==Z)continue;
   const dx=wrapC(c.x-H.x),dy=wrapC(c.y-H.y),[px,py]=P(dx,dy),cx=px+30,cy=py+30,shown=inMap(dx,dy);
   if(shown)out+=`<g class="friendring" pointer-events="none"><circle cx="${cx}" cy="${cy}" r="20"><animate attributeName="r" from="16" to="${7*48*.55}" dur="3.6s" repeatCount="indefinite"/><animate attributeName="opacity" from=".55" to="0" dur="3.6s" repeatCount="indefinite"/></circle><text x="${cx}" y="${cy+4}" text-anchor="middle">${esc(p.name)}</text></g>`;
   else{const vx=cx-210,vy=cy-210,k=Math.min(W*.45/Math.abs(vx||1e-9),V*.43/Math.abs(vy||1e-9)),ex=210+vx*k,ey=210+vy*k;
@@ -3274,9 +3513,9 @@ function mapFriends(H,R,Z,P,V,W,inMap){
    browser and is sent only to ElevenLabs, and the speech uses their own ElevenLabs credits.
    ============================================================ */
 const XI="https://api.elevenlabs.io/v1";
-const voice={key:"",id:"JBFqnCBsd6RMkjVDRZzb",auto:true,hide:false,voices:[],cache:new Map(),audio:null,last:null,status:"",busy:false,
- load(){try{this.key=localStorage.getItem("zr-xi-key")||"";this.id=localStorage.getItem("zr-xi-voice")||this.id;this.auto=localStorage.getItem("zr-xi-auto")!=="0";this.hide=localStorage.getItem("zr-xi-hide")==="1"}catch(e){}},
- save(){try{localStorage.setItem("zr-xi-key",this.key);localStorage.setItem("zr-xi-voice",this.id);localStorage.setItem("zr-xi-auto",this.auto?"1":"0");localStorage.setItem("zr-xi-hide",this.hide?"1":"0")}catch(e){}},
+const voice={key:"",id:"JBFqnCBsd6RMkjVDRZzb",tenseId:"",auto:true,hide:false,voices:[],cache:new Map(),audio:null,last:null,status:"",busy:false,
+ load(){try{this.key=localStorage.getItem("zr-xi-key")||"";this.id=localStorage.getItem("zr-xi-voice")||this.id;this.auto=localStorage.getItem("zr-xi-auto")!=="0";this.hide=localStorage.getItem("zr-xi-hide")==="1";this.tenseId=localStorage.getItem("zr-xi-tense")||""}catch(e){}},
+ save(){try{localStorage.setItem("zr-xi-key",this.key);localStorage.setItem("zr-xi-voice",this.id);localStorage.setItem("zr-xi-auto",this.auto?"1":"0");localStorage.setItem("zr-xi-hide",this.hide?"1":"0");localStorage.setItem("zr-xi-tense",this.tenseId||"")}catch(e){}},
  on(){return!!this.key},
  async listVoices(){
   try{const r=await fetch(XI+"/voices",{headers:{"xi-api-key":this.key}});
@@ -3287,12 +3526,15 @@ const voice={key:"",id:"JBFqnCBsd6RMkjVDRZzb",auto:true,hide:false,voices:[],cac
  },
  duck(on){if(!sound.started)return;const now=sound.ctx.currentTime;sound.master.gain.setTargetAtTime(on?sound.vol*.3:sound.vol,now,.4)},
  stop(){if(this.audio){this.audio.pause();this.audio=null}this.duck(false)},
- async speak(text,cacheKey){
+ /* Mood is carried by the voice, not by extra words: calm places are read steadily, tense ones (an
+    anomaly at hand, night, the deep, a crag) more urgently, and in a second voice if one is chosen */
+ async speak(text,cacheKey,tense){
   if(!this.key||!text)return;this.stop();
-  text=text.replace(/\s+/g," ").trim().slice(0,1200);
-  const k=this.id+"|"+(cacheKey||"")+"|"+text;let url=this.cache.get(k);
+  text=text.replace(/\s+/g," ").trim().slice(0,600);
+  const vid=tense&&this.tenseId?this.tenseId:this.id,settings=tense?{stability:.32,similarity_boost:.75,style:.55,use_speaker_boost:true}:{stability:.72,similarity_boost:.75,style:.12,use_speaker_boost:true};
+  const k=vid+"|"+(tense?"t":"c")+"|"+(cacheKey||"")+"|"+text;let url=this.cache.get(k);
   if(!url){this.busy=true;renderVoice();
-   try{const r=await fetch(`${XI}/text-to-speech/${encodeURIComponent(this.id)}?output_format=mp3_44100_128`,{method:"POST",headers:{"xi-api-key":this.key,"Content-Type":"application/json",Accept:"audio/mpeg"},body:JSON.stringify({text,model_id:"eleven_flash_v2_5"})});
+   try{const r=await fetch(`${XI}/text-to-speech/${encodeURIComponent(vid)}?output_format=mp3_44100_128`,{method:"POST",headers:{"xi-api-key":this.key,"Content-Type":"application/json",Accept:"audio/mpeg"},body:JSON.stringify({text,model_id:"eleven_flash_v2_5",voice_settings:settings})});
     if(!r.ok){this.status=r.status===401?"ElevenLabs did not accept that key.":r.status===429?"ElevenLabs is busy or your credits have run out.":`ElevenLabs answered ${r.status}.`;return}
     url=URL.createObjectURL(await r.blob());this.cache.set(k,url);this.status="";
    }catch(e){this.status=window.claude?"Narration works on the Puter site; this page cannot reach ElevenLabs.":"Could not reach ElevenLabs.";return}
@@ -3301,7 +3543,11 @@ const voice={key:"",id:"JBFqnCBsd6RMkjVDRZzb",auto:true,hide:false,voices:[],cac
   try{await a.play()}catch(e){this.status="Click anywhere on the page, then try again: the browser blocked the sound.";this.duck(false)}
   renderVoice();
  },
- readHere(){const L=hereId()&&cell(hereId());if(!L)return;const magic=magicPresent(),d=L.river&&L.river.crossing==="magic"&&magic&&L.descPresent?L.descPresent:L.desc;this.last=L.id;this.speak(`${L.t}. ${d||""}`,L.id)}
+ // A short reading: the name, the first sentence or two (up to about 220 characters) and anything remembered
+ readHere(){const L=hereId()&&cell(hereId());if(!L)return;const magic=magicPresent(),d=(L.river&&L.river.crossing==="magic"&&magic&&L.descPresent?L.descPresent:L.desc)||"";
+  const sents=d.match(/[^.!?]+[.!?]+/g)||[d];let short="";for(const x of sents){if((short+x).length>220&&short)break;short+=x}
+  const tense=!!foeId(L.id)||isNight(gameNow())||zOf(L)<0||!!L.crag;
+  this.last=L.id;this.speak(`${L.t}. ${short.trim()} ${memoryText(L)}`,L.id,tense)}
 };
 voice.load();
 function renderVoice(){
@@ -3310,10 +3556,11 @@ function renderVoice(){
  if(!voice.on()){el.innerHTML=head+`<p class="note">Hear each place read aloud with your own <b>ElevenLabs</b> account. Paste an API key from ElevenLabs (Profile, API keys). It is kept only in this browser, sent only to ElevenLabs, and the speech uses your ElevenLabs credits.</p>
   <form class="note-form" data-voicekey><label for="xi-key">ElevenLabs API key</label><div class="btnrow"><input id="xi-key" type="password" autocomplete="off" spellcheck="false" placeholder="sk_…"><button class="small" type="submit">Save key</button></div></form>${voice.status?`<p class="flash">${esc(voice.status)}</p>`:""}`;decoratePanels();return}
  el.innerHTML=head+`<label for="xi-voice">Voice<select id="xi-voice">${(voice.voices.length?voice.voices:[{id:voice.id,name:"Default voice"}]).map(v=>`<option value="${esc(v.id)}"${v.id===voice.id?" selected":""}>${esc(v.name)}</option>`).join("")}</select></label>
+  <label for="xi-tense">Voice for tense moments (anomalies, night, the deep)<select id="xi-tense"><option value="">Same voice, read more urgently</option>${voice.voices.map(v=>`<option value="${esc(v.id)}"${v.id===voice.tenseId?" selected":""}>${esc(v.name)}</option>`).join("")}</select></label>
   <label class="check" for="xi-auto"><input type="checkbox" id="xi-auto" ${voice.auto?"checked":""}> Read each new place aloud as you arrive</label>
   <label class="check" for="xi-hide"><input type="checkbox" id="xi-hide" ${voice.hide?"checked":""}> Hide the written description while narration is on</label>
   <div class="btnrow"><button class="small" data-voice="read" ${voice.busy?"disabled":""}>Read this place</button><button class="small" data-voice="stop" ${voice.audio?"":"disabled"}>Stop</button><button class="small" data-voice="forget">Forget my key</button></div>
-  ${voice.status?`<p class="flash">${esc(voice.status)}</p>`:`<p class="note">Speech uses your ElevenLabs credits. Places you revisit in this session are not charged again.</p>`}`;
+  ${voice.status?`<p class="flash">${esc(voice.status)}</p>`:`<p class="note">Each place is read in short: its name, the first sentence or two, and anything you remember there. Mood comes from the voice, not extra words. Speech uses your ElevenLabs credits; places revisited in this session are not charged again.</p>`}`;
  decoratePanels();
 }
 document.addEventListener("submit",e=>{const f=e.target.closest("form[data-voicekey]");if(!f)return;e.preventDefault();const k=f.querySelector("input").value.trim();if(!k)return;
@@ -3322,11 +3569,75 @@ document.addEventListener("click",e=>{const b=e.target.closest("[data-voice]");i
  if(a==="read")voice.readHere();else if(a==="stop"){voice.stop();renderVoice()}else if(a==="forget"){voice.stop();voice.key="";voice.voices=[];voice.save();try{localStorage.removeItem("zr-xi-key")}catch(err){}renderVoice();render()}});
 document.addEventListener("change",e=>{
  if(e.target.id==="xi-voice"){voice.id=e.target.value;voice.save()}
+ else if(e.target.id==="xi-tense"){voice.tenseId=e.target.value;voice.save()}
  else if(e.target.id==="xi-auto"){voice.auto=e.target.checked;voice.save()}
  else if(e.target.id==="xi-hide"){voice.hide=e.target.checked;voice.save();render()}});
 // Read each new place aloud on arrival
 function voiceOnRender(){if(!voice.on()||!voice.auto||busy||!hereId()||isDowned())return;const L=cell(hereId());if(L.id===voice.last||!L.desc)return;voice.readHere()}
 if(voice.on())voice.listVoices().then(renderVoice);
+
+/* ============================================================
+   Shared townsfolk, creatures and anomalies (shared realm). One player's game at a time, the
+   keeper, holds a short lease from the server and runs the world: townsfolk and creatures go about
+   their days and anomalies roam and spread. It uploads that state; everyone else's game mirrors it
+   and does not simulate them. Anything another player does to them (a blow, a defeat, food or gold
+   changing hands) is sent as an act, folded in by the server at once and applied by the keeper.
+   Anomalies are matched by a shared id from the square where they first stood.
+   ============================================================ */
+const shareableMon=F=>F&&F.k==="monster"&&!F.evSlot&&!F.personal;
+const monLoc=F=>{const L=step(F.id,"occupant","-");return L&&cell(L)};
+function ensureSid(F){if(!F.sid){const L=monLoc(F);if(L){F.sid=`s${L.x},${L.y},${zOf(L)}`;touch(F.id)}}return F.sid}
+const sharedFollower=()=>mp.on()&&mp.keeper===false;
+function localMons(){const m=new Map();for(const F of Object.values(zz.cells))if(shareableMon(F)&&ensureSid(F))m.set(F.sid,F);return m}
+const NPC_KEYS=["x","y","hp","maxhp","activity","food","gold","defeated","fear"];
+function worldState(){
+ const npcsOut={},mons={};
+ for(const n of npcs()){const o={};for(const k of NPC_KEYS)o[k]=n[k]??null;o.ties=Object.fromEntries(Object.entries(n.ties||{}).filter(([k])=>cell(k)&&cell(k).k==="npc"));npcsOut[n.id]=o}
+ for(const [sid,F] of localMons()){const L=monLoc(F);mons[sid]={x:L.x,y:L.y,z:zOf(L),hp:F.hp,maxhp:F.maxhp,t:F.t,designation:F.designation,objectClass:F.objectClass,desc:F.desc,ac:F.ac,atk:F.atk,dmg:F.dmg,special:F.special,roam:!!F.roam,spread:!!F.spread}}
+ return{npcs:npcsOut,mons};
+}
+function quietNeutralise(F,by){const L=monLoc(F);if(!L)return;for(const id of rank(F.id,"contain")){excise(id,"contain");appendTo(L.id,"contain",id)}L.defeated={designation:F.designation,name:F.t,by:by||"another traveller"};touch(L.id);destroy(F.id)}
+function applyAct(a,mons){
+ if(a.k==="npc"){const n=cell(a.id);if(n&&n.k==="npc"){Object.assign(n,a.patch||{});touch(n.id)}}
+ else if(a.k==="mon"){const F=mons.get(a.sid);if(!F)return;if(a.gone){if(monLoc(F)&&monLoc(F).id!==hereId())quietNeutralise(F)}else if(a.hp!=null){F.hp=a.hp;touch(F.id)}}
+}
+// Everyone but the keeper: take the shared state as it is
+function applyWorld(W,acts,dead){
+ if(W&&W.npcs)for(const [id,s] of Object.entries(W.npcs)){const n=cell(id);if(!n||n.k!=="npc")continue;
+  for(const k of NPC_KEYS)n[k]=s[k];
+  if(s.ties)n.ties=Object.assign(Object.fromEntries(Object.entries(n.ties||{}).filter(([k])=>!(cell(k)&&cell(k).k==="npc"))),s.ties);touch(id)}
+ let mons=localMons();
+ for(const sid of dead||[]){const F=mons.get(sid);if(F&&!(monLoc(F)&&monLoc(F).id===hereId()))quietNeutralise(F)}
+ mons=localMons();
+ if(W&&W.mons)for(const [sid,m] of Object.entries(W.mons)){if((dead||[]).includes(sid))continue;const lid=coord.get(ck(m.x,m.y,m.z)),F=mons.get(sid);
+  if(!F){if(!lid||foeId(lid)||lid===hereId())continue;const mid=newCell("monster",{sid,t:m.t,designation:m.designation,objectClass:m.objectClass,desc:m.desc,hp:m.hp,maxhp:m.maxhp,ac:m.ac,atk:m.atk,dmg:m.dmg,special:m.special,roam:m.roam,spread:m.spread,born:gameNow()});connect(lid,"occupant",mid);continue}
+  const L=monLoc(F);if(L&&L.id===hereId())continue;            // never yank a foe out from under you mid-fight
+  F.hp=m.hp;F.maxhp=m.maxhp;touch(F.id);
+  if(lid&&L&&L.id!==lid&&!foeId(lid)&&lid!==hereId()){disconnect(L.id,"occupant","+");connect(lid,"occupant",F.id)}}
+ mons=localMons();for(const a of acts||[])applyAct(a,mons);
+}
+// What changed here since the last mirror: this player's own doings, to send as acts
+const ACT_KEYS=["x","y","hp","food","gold","defeated"];
+function snapshotMirror(){const M={npcs:{},mons:{}};for(const n of npcs()){const o={};for(const k of ACT_KEYS)o[k]=n[k]??null;M.npcs[n.id]=o}for(const [sid,F] of localMons())M.mons[sid]={hp:F.hp};mp.mirror=M}
+function localActs(){
+ const M=mp.mirror,acts=[];if(!M)return acts;const mons=localMons();
+ for(const [id,s] of Object.entries(M.npcs)){const n=cell(id);if(!n)continue;const patch={};for(const k of ACT_KEYS)if(JSON.stringify(n[k]??null)!==JSON.stringify(s[k]))patch[k]=n[k]??null;if(Object.keys(patch).length)acts.push({k:"npc",id,patch})}
+ for(const [sid,s] of Object.entries(M.mons)){const F=mons.get(sid);if(!F)acts.push({k:"mon",sid,gone:true});else if(F.hp!==s.hp)acts.push({k:"mon",sid,hp:F.hp})}
+ return acts.slice(0,40);
+}
+function worldBody(){
+ if(!mp.on())return{};
+ if(mp.keeper)return{world:worldState(),ack:mp.ack||0};
+ const acts=localActs();return acts.length?{acts}:{};
+}
+function worldReply(r){
+ if(!r||r.keeper==null)return;const was=mp.keeper;mp.keeper=!!r.keeper;
+ if(mp.keeper){const mons=localMons();for(const a of r.wacts||[]){applyAct(a,mons);mp.ack=Math.max(mp.ack||0,a.seq)}
+  for(const sid of r.dead||[]){const F=mons.get(sid);if(F&&!(monLoc(F)&&monLoc(F).id===hereId()))quietNeutralise(F)}
+  if(!was&&r.world)applyWorld(r.world,[],r.dead)}       // a new keeper starts from the shared state
+ else applyWorld(r.world,r.wacts,r.dead);
+ snapshotMirror();
+}
 
 /* ============================================================
    Rendering
@@ -3347,10 +3658,10 @@ function linkify(text){
    and under them a line of the four seasons with the current one lit and a mark for today */
 const SEG={0:"abcdef",1:"bc",2:"abged",3:"abgcd",4:"fgbc",5:"afgcd",6:"afgedc",7:"abc",8:"abcdefg",9:"abcfgd"};
 function segDigits(hh){
- const w=24,h=40,t=4.2,poly=(x,y,horiz,len)=>horiz?`${x+t/2},${y} ${x+len-t/2},${y} ${x+len},${y+t/2} ${x+len-t/2},${y+t} ${x+t/2},${y+t} ${x},${y+t/2}`:`${x},${y+t/2} ${x+t/2},${y} ${x+t},${y+t/2} ${x+t},${y+len-t/2} ${x+t/2},${y+len} ${x},${y+len-t/2}`;
- const segs=(ox,oy)=>({a:poly(ox+2,oy,1,w-4),g:poly(ox+2,oy+h/2-t/2,1,w-4),d:poly(ox+2,oy+h-t,1,w-4),f:poly(ox,oy+2,0,h/2-2),b:poly(ox+w-t,oy+2,0,h/2-2),e:poly(ox,oy+h/2,0,h/2-2),c:poly(ox+w-t,oy+h/2,0,h/2-2)});
+ const w=24,h=40,t=4.2,gap=1.6,poly=(x,y,horiz,len)=>horiz?`${x+t/2},${y} ${x+len-t/2},${y} ${x+len},${y+t/2} ${x+len-t/2},${y+t} ${x+t/2},${y+t} ${x},${y+t/2}`:`${x},${y+t/2} ${x+t/2},${y} ${x+t},${y+t/2} ${x+t},${y+len-t/2} ${x+t/2},${y+len} ${x},${y+len-t/2}`;
+ const segs=(ox,oy)=>({a:poly(ox+2+gap,oy,1,w-4-2*gap),g:poly(ox+2+gap,oy+h/2-t/2,1,w-4-2*gap),d:poly(ox+2+gap,oy+h-t,1,w-4-2*gap),f:poly(ox,oy+2+gap,0,h/2-2-2*gap),b:poly(ox+w-t,oy+2+gap,0,h/2-2-2*gap),e:poly(ox,oy+h/2+gap,0,h/2-2-2*gap),c:poly(ox+w-t,oy+h/2+gap,0,h/2-2-2*gap)});
  let out="";const xs=[2,32,72,102];
- for(let i=0;i<4;i++){const on=SEG[hh[i]]||"",S=segs(xs[i],2);for(const k of "abcdefg")out+=`<polygon class="${on.includes(k)?"on":"off"}" points="${S[k]}"/>`}
+ for(let i=0;i<4;i++){const on=SEG[hh[i]]||"",S=segs(xs[i],2);for(const k of on)out+=`<polygon class="on" points="${S[k]}"/>`}
  out+=`<circle class="dot" cx="64" cy="15" r="2.6"/><circle class="dot" cx="64" cy="31" r="2.6"/>`;
  return out;
 }
@@ -3430,12 +3741,13 @@ function renderHud(){
   <div class="row"><span>${light}</span><span>${hunger}</span></div><div class="row"><span>${fmtW(carried())}/${capacity()} lb</span><button type="button" id="hud-rest" ${restBlocked?"disabled":""}>${L.town?"Room · 2 gp":"Camp"}</button></div>`;
  $("hud-rest").onclick=rest;
 }
+let lastMapShape="";window.addEventListener("resize",()=>{const b=$("map").getBoundingClientRect(),sh=Math.round(b.width/Math.max(1,b.height)*20);if(String(sh)!==lastMapShape){lastMapShape=String(sh);renderMap()}});
 function renderMap(){
  const svg=$("map"),here=hereId();
  if(!here){renderHud();$("mapplace").dataset.sig="";$("mapplace").innerHTML=`<div class="sectionhead"><h3 id="map-h">Survey map</h3></div>`;svg.innerHTML=`<text x="210" y="215" text-anchor="middle" class="axis">The map starts when your character sets out.</text>`;$("coords").textContent="";return}
  const H=cell(here),Z=zOf(H),R=mapZoom,magic=magicPresent(),t=gameNow(),ws=wxState();
  // Zoom: the drawing keeps its scale and the view widens; V is the visible width around the centre
- const ASP=480/416,V=420*(R+.6)/3.6,W=V*ASP,VB=[210-W/2,210-V/2,W,V],ui=V/420,UI=s=>`<g transform="translate(${VB[0]+(W-V)/2} ${VB[1]}) scale(${ui})">${s}</g>`;
+ const bb=svg.getBoundingClientRect(),ASP=bb.width>50&&bb.height>50?bb.width/bb.height:480/416,V=420*(R+.6)/3.6,W=V*ASP,VB=[210-W/2,210-V/2,W,V],ui=V/420,UI=s=>`<g transform="translate(${VB[0]+(W-V)/2} ${VB[1]}) scale(${ui})">${s}</g>`;
  /* Flat-topped hexagons in staggered columns: odd columns (by world x) sit half a hex lower, so each
     place touches six others. The world is still a square grid underneath; only the drawing changes.
     P gives the top-left of a 60×60 box centred on the hex, so everything drawn at +30,+30 is centred. */
@@ -3475,30 +3787,33 @@ function renderMap(){
   if(exitOpen(c,"up")&&coord.get(ck(c.x,c.y,Z+1)))out+=`<path class="stair" d="M${px+40} ${py+16} l5 -7 l5 7 Z"/>`;
   if(exitOpen(c,"down")&&coord.get(ck(c.x,c.y,Z-1)))out+=`<path class="stair" d="M${px+40} ${py+44} l5 7 l5 -7 Z"/>`;
   if(f)out+=`<path class="threat" d="M${px+14} ${py+9} l5 5 l-5 5 l-5 -5 Z"/>`;
-  if(c.note)out+=`<path class="notemark" d="M${px+44} ${py+52} l8 -8 l3 3 l-8 8 Z"><title>${esc(c.note)}</title></path>`;
+  if(c.trail&&zOf(c)>0)out+=`<circle class="cairn" cx="${px+18}" cy="${py+44}" r="2.2"/><circle class="cairn" cx="${px+24}" cy="${py+46}" r="1.8"/>`;
+  if(c.crag)out+=`<path class="cragmark" d="M${px+12} ${py+44} l6 -6 M${px+18} ${py+46} l6 -6 M${px+24} ${py+48} l6 -6"/>`;
+  if(c.note||(c.memories&&c.memories.length))out+=`<path class="notemark" d="M${px+44} ${py+52} l8 -8 l3 3 l-8 8 Z"><title>${esc(c.note||memoryText(c))}</title></path>`;
   if(Z===0){const folk=npcsAt(c.x,c.y).slice(0,5);folk.forEach((o,k)=>{out+=`<circle class="folk${o.wild?" beast":""}" cx="${px+12+k*7}" cy="${py+48}" r="3.2"/>`})}
   out+=`</g>`;}
  for(const d of FLAT){const v=DIRS[d],id=coord.get(ck(H.x+v.dx,H.y+v.dy,Z));if((id&&visible(cell(id)))||!exitOpen(H,d))continue;const [px,py]=P(v.dx,v.dy);
   out+=`<g data-dir="${d}"><polygon class="frontier" points="${hex(px+30,py+30,.88)}" tabindex="0" role="button" aria-label="Explore ${d}"><title>Explore ${d}</title></polygon><text class="q" x="${px+30}" y="${py+36}" text-anchor="middle">${genFor===here?"…":"?"}</text></g>`;}
+ {const wv=wolves();if(wv&&Z===0){const dx=wrapC(wv.x-H.x),dy=wrapC(wv.y-H.y);if(inView(dx,dy)){const [qx,qy]=P(dx,dy);out+=`<path class="threat" d="M${qx+20} ${qy+36} l4 -10 l4 6 l4 -6 l4 10 Z"><title>A wolf pack hunting you</title></path>`}}}
  const pal=paladin();if(pal&&Z>=0){const dx=wrapC(pal.x-H.x),dy=wrapC(pal.y-H.y);if(Math.abs(dx)<=R&&Math.abs(dy)<=R){const [qx,qy]=P(dx,dy);out+=`<path class="threat" d="M${qx+22} ${qy+10} h16 v8 q0 10 -8 14 q-8 -4 -8 -14 Z"><title>${esc(pal.t)}, a paladin hunting you</title></path>`}}
  for(const m of marks().filter(m=>!m.done).map(m=>({x:m.x,y:m.y,label:`Map mark: ${m.label}`})).concat(rumours().filter(r=>!r.found&&cell(r.cell)).map(r=>({x:cell(r.cell).x,y:cell(r.cell).y,label:`Rumour: ${r.text}`})))){
   if(Z!==0)break;const dx=wrapC(m.x-H.x),dy=wrapC(m.y-H.y);if(Math.abs(dx)>R||Math.abs(dy)>R||(!dx&&!dy))continue;const [qx,qy]=P(dx,dy);
   out+=`<text class="markstar" x="${qx+48}" y="${qy+19}" text-anchor="middle"><title>${esc(m.label)}</title>★</text>`}
- out+=mapTravellers(H,R,Z,P)+mapRealmEvent(H,R,Z,P)+mapFriends(H,R,Z,P,V,W,inView);
+ out+=mapTravellers(H,R,Z,P)+mapRealmEvent(H,R,Z,P)+mapFriends(H,R,Z,P,V,W,inView)+mapHints(H,R,Z,P,inView);
  /* Beacons: the nearest sanctuaries and cave entrances shine from far off. In view they glow on their
     hex; beyond the map they show at its edge, in their direction, with how many squares away. */
  let beacons="";
  if(Z===0){
-  const found={sanctuary:[],cave:[]};
+  const found={sanctuary:[],cave:[],festival:[]};
   for(const c of Object.values(zz.cells)){if(c.k!=="loc"||zOf(c)!==0||c.id===here)continue;
-   const kind=c.sanctuary?"sanctuary":exitOpen(c,"down")&&!c.town?"cave":null;if(!kind)continue;
+   const kind=c.sanctuary?"sanctuary":exitOpen(c,"down")&&!c.town?"cave":c.town&&!c.town.of&&festivalToday()?"festival":null;if(!kind)continue;
    const dx=wrapC(c.x-H.x),dy=wrapC(c.y-H.y),d=Math.max(Math.abs(dx),Math.abs(dy));if(d<=20)found[kind].push({c,dx,dy,d,kind})}
-  for(const b of [...found.sanctuary.sort((a,b)=>a.d-b.d).slice(0,3),...found.cave.sort((a,b)=>a.d-b.d).slice(0,3)]){
-   const what=b.kind==="sanctuary"?"Sanctuary":"Cave entrance",tip=`${what}: ${b.c.t}, ${bearing({x:b.c.x,y:b.c.y,z:0},H)}`;
+  for(const b of [...found.sanctuary.sort((a,b)=>a.d-b.d).slice(0,3),...found.cave.sort((a,b)=>a.d-b.d).slice(0,3),...found.festival.sort((a,b)=>a.d-b.d).slice(0,3)]){
+   const what=b.kind==="sanctuary"?"Sanctuary":b.kind==="festival"?"Festival today":"Cave entrance",tip=`${what}: ${b.c.t}, ${bearing({x:b.c.x,y:b.c.y,z:0},H)}`;
    if(inView(b.dx,b.dy)){const [cx,cy]=C(b.dx,b.dy);
     beacons+=`<g class="beacon ${b.kind}" pointer-events="none"><circle class="halo" cx="${cx}" cy="${cy}" r="27"/><polygon class="ring" points="${hex(cx,cy,.98)}"/></g>`;continue}
    const [tx,ty]=C(b.dx,b.dy),vx=tx-210,vy=ty-210,k=Math.min(W*.45/Math.abs(vx||1e-9),V*.43/Math.abs(vy||1e-9)),ex=210+vx*k,ey=210+vy*k;
-   const icon=b.kind==="sanctuary"?`<path d="M${ex-7} ${ey+6} V${ey-1} L${ex} ${ey-7} L${ex+7} ${ey-1} V${ey+6} Z M${ex} ${ey-3} V${ey+4} M${ex-3} ${ey} H${ex+3}"/>`:`<path d="M${ex-7} ${ey-5} H${ex+7} L${ex} ${ey+6} Z"/>`;
+   const icon=b.kind==="festival"?`<path d="M${ex} ${ey-8} l2.4 5 5.4 .6 -4 3.7 1.1 5.4 -4.9 -2.8 -4.9 2.8 1.1 -5.4 -4 -3.7 5.4 -.6 Z"/>`:b.kind==="sanctuary"?`<path d="M${ex-7} ${ey+6} V${ey-1} L${ex} ${ey-7} L${ex+7} ${ey-1} V${ey+6} Z M${ex} ${ey-3} V${ey+4} M${ex-3} ${ey} H${ex+3}"/>`:`<path d="M${ex-7} ${ey-5} H${ex+7} L${ex} ${ey+6} Z"/>`;
    beacons+=`<g class="beacon ${b.kind} far" data-loc="${b.c.id}"><circle class="halo" cx="${ex}" cy="${ey}" r="14"/>${icon}<text x="${ex}" y="${ey+(ey>210?-14:22)}" text-anchor="middle">${b.d}</text><title>${esc(tip)}</title></g>`;
   }
  }
@@ -3650,15 +3965,15 @@ function renderDowned(){
  const ch=cell(charId()),L=cell(ch.downed),e=entitlement(),home=cell(cell("root").home);
  return`<div class="placehead"><p class="eyebrow">You have fallen</p><h2>Darkness at ${esc(L.t)}</h2></div>
  <p class="desc">Your hit points are gone. Choose how your story goes on.</p>
- <div class="btnrow"><button id="wake">Wake at ${esc(home.t)}</button><button class="primary" id="resurrect" ${e.tokens<1?"disabled":""}>Resurrect with your pack (${e.tokens} token${e.tokens===1?"":"s"})</button></div>
- <p class="note">Waking at the start is free, but your pack stays where you fell. A resurrection token brings you back one step from where you fell, with your pack and half your HP. ${esc(BILLING.prices.token)}.</p>
+ <div class="btnrow"><button class="primary" id="wake">Wake at ${esc(home.t)}</button>${e.tokens>0?`<button id="resurrect">Resurrect with your pack (${e.tokens} token${e.tokens===1?"":"s"})</button>`:""}</div>
+ <p class="note">You wake at the start, rested. Your pack stays where you fell, for you to fetch.</p>
  ${flash?`<p class="flash">${esc(flash)}</p>`:""}`;
 }
 
 function renderPlace(){
  const el=$("place");
  if(!charId()||!hereId()){renderCreate(el);return}
- if(isDowned()){el.innerHTML=renderDowned();$("wake").onclick=wakeAtHome;$("resurrect").onclick=resurrect;return}
+ if(isDowned()){el.innerHTML=renderDowned();$("wake").onclick=wakeAtHome;if($("resurrect"))$("resurrect").onclick=resurrect;return}
  const here=hereId(),L=cell(here),f=foeId(here),magic=magicPresent(),t=gameNow(),wa=weatherAt(L.x,L.y,zOf(L),t);
  const tr=TERRAINS.includes(L.terrain)?L.terrain:"other";
  const chips=[`<span class="chip terrain">${L.sanctuary?"sanctuary":L.monument?esc(MONUMENT_KIND[L.monument]):L.town?esc(TOWN_SIZES[L.town.size].label):L.river?(L.river.crossing?esc(CROSSINGS[L.river.crossing]):"river"):tr}</span>`,`<span class="chip">${esc(depthName(zOf(L)))}</span>`];
@@ -3668,7 +3983,7 @@ function renderPlace(){
  chips.push(`<span class="chip">${L.dist?L.dist+" steps from the start":"starting point"}</span>`,`<span class="chip">written by ${L.by==="claude"?esc(ai.kind==="puter"?"AI":"Claude"):"built-in tables"}</span>`);
  // Above the map: one scrolling line of the place's details, then its name; no taller than an over-title and a title
  {const items=[`<span class="tk-lead">You are at</span>`,...chips,`<span class="chip">${esc($("coords").textContent||"")}</span>`].join("");
-  const descText=L.river&&L.river.crossing==="magic"&&magic&&L.descPresent?L.descPresent:L.desc,hideDesc=voice.on()&&voice.hide;
+  const mem=memoryText(L),descText=(L.river&&L.river.crossing==="magic"&&magic&&L.descPresent?L.descPresent:L.desc)+(mem?" "+mem:""),hideDesc=voice.on()&&voice.hide;
   const descHtml=hideDesc?`<p class="note">The description is being read aloud. <button class="small" data-voice="read">Read it again</button></p>`:`<p class="desc mapdesc${busy?" busy":""}">${linkify(descText)}</p>`;
   const sig=items+L.t+descHtml,el=$("mapplace");
   if(el.dataset.sig!==sig){el.dataset.sig=sig;
@@ -3694,9 +4009,8 @@ function renderPlace(){
   else html+=`<div class="btnrow"><button class="small" data-act="rent" ${sv("GP")<COTTAGE_RENT?"disabled":""}>${C?"Move your cottage here":"Rent a cottage here"} · ${COTTAGE_RENT} gp</button><span class="note">A home with a chest the paladin cannot touch.</span></div>`;
  }
  html+=renderTravellers(L);
- html+=renderStation(L);
+ html+=renderFestival(L)+renderStation(L);
  if(L.spring)html+=`<p class="note">A healing spring rises here.</p>`;
- html+=`<form class="note-form" data-note><label for="note-in">Your note on this place</label><div class="btnrow"><input id="note-in" maxlength="200" value="${esc(L.note||"")}" placeholder="Leave yourself a note…"><button class="small" type="submit">Save note</button></div></form>`;
  if(L.hazard&&L.outcome){const o=L.outcome;html+=`<div class="hazard${o.ok?" passed":""}"><b>${esc(L.hazard.name)}.</b> ${esc(L.hazard.text)} ${o.ok?"You get through unharmed.":`You take ${o.dmg} damage.`}${here===lastHazard?`<span class="roll">${esc(o.roll)}</span>`:""}</div>`}
  if(f)html+=renderFoe(f);
  else if(L.defeated)html+=`<p class="neutral">${esc(L.defeated.designation)} ${esc(L.defeated.name)} was neutralised here${L.defeated.by?` by ${esc(L.defeated.by)}, who left treasure and food behind`:""}.</p>`;
@@ -3760,12 +4074,9 @@ function renderSheet(){
  ${(()=>{const T=towns(),rel=[];for(let i=0;i<T.length;i++)for(let j=i+1;j<T.length;j++)rel.push(`${esc(T[i].t)} and ${esc(T[j].t)}: ${relationName(rivalry(T[i].id,T[j].id))}`);return rel.length?`<p class="note">${rel.join(" · ")}. Helping one town is noticed by its rivals.</p>`:""})()}
  ${rumours().filter(r=>!r.found).length?`<div class="sectionhead"><h3>Rumours</h3><span class="mono" style="font-size:12px;color:var(--faint)">${rumours().filter(r=>!r.found).length} unproven</span></div><ul class="quests">${rumours().filter(r=>!r.found).slice(-6).reverse().map(r=>`<li>${esc(r.from)}: ${esc(r.text)}</li>`).join("")}</ul>`:""}
  <dl class="facts"><div><dt>Reputation</dt><dd>${repTier()} ${reputation()>=0?"+":"−"}${Math.abs(reputation()).toFixed(2)}</dd></div><div><dt>Standing</dt><dd>${ordinal(Math.round(standingPercentile()))} pct</dd></div><div><dt>Magic offered</dt><dd>${reputation()>=.5?"rare and common":reputation()>=.25?"common":"none"}</dd></div></dl>
- <dl class="facts"><div><dt>Plan</dt><dd>${e.plan==="supporter"?"supporter":"free explorer"}</dd></div><div><dt>Range</dt><dd>${exploreRange()>=WORLD_R?"whole world":exploreRange()+" squares"}</dd></div><div><dt>Resurrections</dt><dd>${e.tokens}</dd></div></dl>
- <div class="btnrow"><button class="small" id="plan-info">Plans and prices</button></div>
  </details>
- ${quests().length?`<div class="sectionhead"><h3>Quests</h3><span class="mono" style="font-size:12px;color:var(--faint)">${quests().filter(q=>!q.done).length} open</span></div><ul class="quests">${quests().slice(-8).reverse().map(q=>`<li class="${q.done?(q.failed?"failed":"done"):""}">${q.done?(q.failed?"Failed: ":"Done: "):""}${esc(q.giverName)} asked you to ${esc(q.desc)} · ${q.gold} gp</li>`).join("")}</ul>`:""}
- ${planInfoOpen?`<p class="note">${esc(BILLING.prices.supporter)}. ${esc(BILLING.prices.token)}. Free explorers can travel ${BILLING.freeRange} squares from the start. Payments are not connected yet.</p>`:""}`;
- $("rest").onclick=rest;$("plan-info").onclick=()=>{planInfoOpen=!planInfoOpen;renderSheet()};
+ ${quests().length?`<div class="sectionhead"><h3>Quests</h3><span class="mono" style="font-size:12px;color:var(--faint)">${quests().filter(q=>!q.done).length} open</span></div><ul class="quests">${quests().slice(-8).reverse().map(q=>`<li class="${q.done?(q.failed?"failed":"done"):""}">${q.done?(q.failed?"Failed: ":"Done: "):""}${esc(q.giverName)} asked you to ${esc(q.desc)} · ${q.gold} gp</li>`).join("")}</ul>`:""}`;
+ $("rest").onclick=rest;
  const ids=packIds();
  pk.innerHTML=`<div class="sectionhead"><h3 id="pack-h">Pack</h3><span class="mono" style="font-size:12px;color:${carried()>capacity()*.9?"var(--danger)":"var(--faint)"}">${fmtW(carried())} / ${capacity()} lb</span></div>`+
   (ids.length?`<ul class="items">${ids.map(id=>itemRow(id,"pack")).join("")}</ul>`:`<p class="empty">Your pack is empty.</p>`)+renderCraft();
@@ -4009,7 +4320,7 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_EXP:{water:
    // Town life, by size: talk all day, carts by day, singing mostly from the taverns at night
    talk:H.town?townSize*(night?.6:1):0,
    carts:H.town&&!night?townSize:0,
-   singing:H.town?townSize*(night?1:.25):0
+   singing:H.town?townSize*(night?1:.25)*(festivalToday(t)?2.5:1):0
   };
   // Creatures within two squares call now and then, louder when near and when it is their time of day
   out.creatures=[];out.groups=[];
@@ -4251,7 +4562,7 @@ document.addEventListener("click",e=>{
   trade:i=>{openTrade=openTrade===i?null:i;openChat=null;armedAttack=null;render()},
   buyfood:buyFood,sell:v=>{const [n,it]=v.split("|");sellTo(n,it)},quest:i=>{offerQuest(cell(i));passTime(5);store.flush();render()},
   give:giveFood,arm:i=>{armedAttack=armedAttack===i?null:i;render()},hit:attackAgent,
-  craft,deposit,withdraw,rent:rentCottage,leave:leaveForOthers,takeleft:takeLeft,train:takeTrain,steal:trySteal})[b.dataset.act](id);return}
+  craft,deposit,withdraw,rent:rentCottage,leave:leaveForOthers,takeleft:takeLeft,train:takeTrain,steal:trySteal,sharefood:shareFood,rate:rateChat,contest:enterContest,festprize:festivalPrize,throwdart:throwDart})[b.dataset.act](id);return}
  const d=e.target.closest("#compass button[data-dir]");if(d){move(d.dataset.dir);return}
  const g=e.target.closest("#map g");if(g){if(g.dataset.dir)move(g.dataset.dir);else if(g.dataset.loc){const id=g.dataset.loc,H=cell(hereId()),C=cell(id);
   const dir=H&&C?Object.keys(DIRS).find(k=>coord.get(ck(H.x+DIRS[k].dx,H.y+DIRS[k].dy,zOf(H)+DIRS[k].dz))===id):null;
@@ -4287,6 +4598,21 @@ function hideNudge(){
 }
 document.addEventListener("click",e=>{if(e.target.id==="nudge-ok"||e.target.id==="night-nudge")hideNudge()});
 document.addEventListener("keydown",e=>{if(!$("night-nudge").hidden){if(e.key==="Escape"){e.preventDefault();hideNudge()}else if(e.key==="Tab"){const f=[$("nudge-ok"),$("nudge-never")],i=f.indexOf(document.activeElement);e.preventDefault();f[(i+(e.shiftKey?-1:1)+f.length)%f.length].focus()}else e.stopPropagation()}},true);
+let lastInput=Date.now();for(const ev of ["pointerdown","keydown"])document.addEventListener(ev,()=>{lastInput=Date.now()},{capture:true});
+function sensibleIdle(){
+ if(!charId()||!hereId()||busy||isDowned()||foeId()||Date.now()-lastInput<60e3)return;
+ const L=cell(hereId()),t=gameNow();
+ if(hungerLevel(t)>=2&&!packIds().some(i=>cell(i).kind==="food")&&!L.town){
+  const T=towns().map(T=>({T,p:pathTo(T.id)})).filter(o=>o.p).sort((a,b)=>a.p.length-b.p.length)[0];
+  if(Date.now()-(sensibleIdle.last||0)>120e3){sensibleIdle.last=Date.now();
+   if(T){log(`Starving, you set off for ${T.T.t}, where no one goes hungry.`,"");travelTo(T.T.id);return}
+   const N=towns().slice().sort((a,b)=>(Math.abs(wrapC(a.x-L.x))+Math.abs(wrapC(a.y-L.y)))-(Math.abs(wrapC(b.x-L.x))+Math.abs(wrapC(b.y-L.y))))[0];
+   if(N){const d=(zOf(L)>0?["down"]:zOf(L)<0?["up"]:[]).concat(FLAT.slice().sort((a,b)=>(Math.abs(wrapC(N.x-L.x-DIRS[a].dx))+Math.abs(wrapC(N.y-L.y-DIRS[a].dy)))-(Math.abs(wrapC(N.x-L.x-DIRS[b].dx))+Math.abs(wrapC(N.y-L.y-DIRS[b].dy))))).find(d=>!blockedBy(hereId(),d));
+    if(d){log(`Starving, you start back toward ${N.t}.`,"");move(d);return}}}
+ }
+ if(isNight(t)&&(!hasLight()||nightLeft()<=0)&&Date.now()-(sensibleIdle.camp||0)>60e3){sensibleIdle.camp=Date.now();log(L.town?"It is late, so you find a bed for the night.":"Night has fallen and you cannot go on, so you make camp.","");rest()}
+}
+setInterval(sensibleIdle,5000);
 setInterval(()=>{
  if(!charId()||!hereId()||busy){return}
  const night=isNight(gameNow());

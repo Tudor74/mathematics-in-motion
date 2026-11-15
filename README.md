@@ -190,3 +190,30 @@ Check the version in the game source or live build before relying on these featu
 - **Clock**: seven-segment digits, a moon in its eight-day phase, and a season line.
 - Only the most recently opened copy of a world saves to Puter, and old shared-realm
   saves detach when the realm is founded anew.
+
+### v0.7: a shared living world
+
+- **Shared townsfolk, creatures and anomalies**: one player's game at a time (the
+  keeper, on a 20-second lease) runs them and uploads their state. Everyone else
+  mirrors it. Blows, defeats and trades by anyone are sent to the server and folded in.
+- **Mountain path**: one stair per layer, joined by a cairned path that winds to the
+  peak. Off the path, from the second ledge up, a slip can drop you one or two layers.
+- **The whole world is open to everyone.** Plans and prices are gone from this page.
+- **Walls are decided before the AI writes a place**, and it is told which sides are
+  blocked.
+- **Festivals**: one per season, a darts-and-archery contest. A bullseye earns +1 to an
+  ability for good or a level's worth of experience.
+- **Acquaintances and friends**: three separate meetings make a friend. Goodwill fades
+  without good meetings or good chats (rate each chat good, mid or bad).
+- **Wolves** hunt anyone who steals from a poorer player. They run faster as the moon fills.
+- **Sensible survival**: you eat when hungry, strangers share food (shared food counts
+  double), every town gives charity, starvation only harms on the mountain and in the
+  deep mine, you make camp when you cannot go on, and nothing kills you while you wait.
+  Only Keter anomalies can kill; anything else wounds you, and you flee to a town,
+  dropping half your loose things where you fell.
+- **Place memories**: the game remembers what happened where, and says so when you return.
+- **Player colours and hints**: meeting another player can draw a faint dotted path in
+  their colour toward something worth finding.
+- **Narration** is shorter, and the voice carries the mood (steady or urgent, optionally
+  a second voice).
+- **Layout**: the map runs full width on desktop, with three equal columns below.

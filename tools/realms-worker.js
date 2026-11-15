@@ -95,6 +95,10 @@ function cleanSquare(s) {
     exits: str(s.exits, 6), walls: s.walls && typeof s.walls === "object" ? Object.fromEntries(Object.entries(s.walls).filter(([d]) => ["north", "south", "east", "west", "up", "down"].includes(d)).map(([d, w]) => [d, str(w, 80)])) : null,
     planned: !!s.planned, by: str(s.by, 40), at: Date.now() };
   if (!o.desc) return null;
+  o.hasMon = !!s.hasMon;
+  if (s.mon && typeof s.mon === "object") o.mon = { name: str(s.mon.name, 60), designation: str(s.mon.designation, 20), objectClass: ["Safe", "Euclid", "Keter"].includes(s.mon.objectClass) ? s.mon.objectClass : "Euclid",
+    description: str(s.mon.description, 500), hp: num(s.mon.hp, 1, 200, 10) | 0, ac: num(s.mon.ac, 5, 20, 12) | 0, attack: num(s.mon.attack, 0, 15, 3) | 0, damage: dice(s.mon.damage) || "1d6",
+    special: ["none", "regenerate", "phasing", "frenzy"].includes(s.mon.special) ? s.mon.special : "none" };
   if (s.hazard && typeof s.hazard === "object") o.hazard = { name: str(s.hazard.name, 60), text: str(s.hazard.text, 200), stat: str(s.hazard.stat, 3), dc: num(s.hazard.dc, 5, 20, 10), damage: dice(s.hazard.damage) || "1d4" };
   return o;
 }
@@ -131,7 +135,9 @@ router.post("/presence", async ({ request, user }) => {
   if (!last || last.x !== x || last.y !== y || last.z !== z) trail.push({ x, y, z, t: now });
   const me_ = { u, name: str(b.name, 40) || u, cls: str(b.cls, 20), lvl: num(b.lvl, 1, 30, 1) | 0, x, y, z, t: now, trail: trail.slice(-8),
     say: prev && prev.say || null, exp: prev && prev.exp || 0,
-    poss: b.poss != null ? num(b.poss, 0, 999) | 0 : (prev && prev.poss) || 0 };
+    poss: b.poss != null ? num(b.poss, 0, 999) | 0 : (prev && prev.poss) || 0,
+    worth: b.worth != null ? num(b.worth, 0, 1e7) | 0 : (prev && prev.worth) || 0,
+    colour: /^#[0-9a-f]{6}$/i.test(b.colour || "") ? b.colour : (prev && prev.colour) || "" };
   const refresh = now - me_.exp > 300e3; if (refresh) me_.exp = now;
   const said = str(b.say, 160);
   if (said) me_.say = { text: said, t: now, x, y, z };
@@ -158,7 +164,39 @@ router.post("/presence", async ({ request, user }) => {
   online.players[u] = me_;
   const ground = await me.puter.kv.get(P + "gi:" + sqKey(x, y, z)) || [];
   const ev = await evState(evSlot(now), u);
-  return { you: u, now, players: Object.values(online.players).filter(p => now - p.t < ONLINE_TTL), ground, ev, thefts };
+  // ---- the shared world: a keeper (by short lease) runs townsfolk, creatures and anomalies
+  let keeper = await me.puter.kv.get(P + "keeper");const freshKeeper = !keeper || keeper.u !== u;
+  if (!keeper || keeper.until < now || keeper.u === u) { keeper = { u, until: now + 20000 }; await me.puter.kv.set(P + "keeper", keeper) }
+  const amKeeper = keeper.u === u;
+  let world = await me.puter.kv.get(P + "world"), acts = (await me.puter.kv.get(P + "wacts")) || [], dead = (await me.puter.kv.get(P + "wdead")) || [];
+  let actsChanged = false, deadChanged = false;
+  if (!amKeeper && Array.isArray(b.acts)) for (const a of b.acts.slice(0, 40)) {
+    let c = null;
+    if (a && a.k === "npc" && typeof a.id === "string" && a.patch && typeof a.patch === "object") {
+      const pt = {};
+      for (const k of ["hp", "food", "gold"]) if (a.patch[k] != null) pt[k] = num(a.patch[k], -50, 999) | 0;
+      for (const k of ["x", "y"]) if (a.patch[k] != null) pt[k] = num(a.patch[k], -99, 99) | 0;
+      if ("defeated" in a.patch) pt.defeated = a.patch.defeated && typeof a.patch.defeated === "object" ? { place: str(a.patch.defeated.place, 60), until: num(a.patch.defeated.until, 0, 1e9) } : null;
+      c = { k: "npc", id: str(a.id, 20), patch: pt };
+    } else if (a && a.k === "mon" && typeof a.sid === "string") {
+      c = { k: "mon", sid: str(a.sid, 30) };
+      if (a.gone) { c.gone = true; if (!dead.includes(c.sid)) { dead.push(c.sid); deadChanged = true } } else c.hp = num(a.hp, -50, 999) | 0;
+    }
+    if (c) { c.seq = await me.puter.kv.incr(P + "wseq"); acts.push(c); actsChanged = true }
+  }
+  if (amKeeper && b.world && typeof b.world === "object") {
+    const ack = num(b.ack, 0, 1e9) | 0;
+    const before = acts.length; acts = acts.filter(a => a.seq > ack); if (acts.length !== before) actsChanged = true;
+    const mons = b.world.mons && typeof b.world.mons === "object" ? b.world.mons : {};
+    if (world && world.mons) for (const sid of Object.keys(world.mons)) if (!(sid in mons) && !dead.includes(sid)) { dead.push(sid); deadChanged = true }
+    world = { v: ((world && world.v) || 0) + 1, at: now, npcs: b.world.npcs || {}, mons };
+    const text = JSON.stringify(world);
+    if (text.length < 350e3) await me.puter.kv.set(P + "world", world);
+  }
+  if (actsChanged) await me.puter.kv.set(P + "wacts", acts.slice(-200));
+  if (deadChanged) await me.puter.kv.set(P + "wdead", dead.slice(-800));
+  return { you: u, now, players: Object.values(online.players).filter(p => now - p.t < ONLINE_TTL), ground, ev, thefts,
+    keeper: amKeeper, world: amKeeper && !freshKeeper ? null : world, wacts: acts, dead };
 });
 
 // ---------- items left on the ground for other players ----------
@@ -248,7 +286,19 @@ router.post("/steal", async ({ request, user }) => {
   pack.splice(i, 1); await me.puter.kv.set(P + "pk:" + target, pack);
   const th = (await me.puter.kv.get(P + "th:" + target)) || [];
   th.push({ thief: mine.name || u, id: item.id, name: item.name, t: now }); await me.puter.kv.set(P + "th:" + target, th.slice(-10));
-  return { ok: true, roll, total, item, from: theirs.name || target };
+  return { ok: true, roll, total, item, from: theirs.name || target, theirWorth: theirs.worth || 0, myWorth: mine.worth || 0 };
+});
+
+// ---------- sharing food with another player standing with you ----------
+router.post("/gift", async ({ request, user }) => {
+  const [u, err] = await guard(request, user); if (err) return err;
+  const b = await body(request), target = str(b.target, 60), now = Date.now(), item = cleanItem(b.item);
+  if (!item || item.kind !== "food") return bad("Only food can be shared this way.");
+  const [mine, theirs] = [await me.puter.kv.get(P + "pl:" + u), await me.puter.kv.get(P + "pl:" + target)];
+  if (!mine || !theirs || now - theirs.t > ONLINE_TTL || mine.x !== theirs.x || mine.y !== theirs.y || mine.z !== theirs.z) return bad("They are not here.", 409);
+  const th = (await me.puter.kv.get(P + "th:" + target)) || [];
+  th.push({ from: mine.name || u, gift: item, t: now }); await me.puter.kv.set(P + "th:" + target, th.slice(-10));
+  return { ok: true };
 });
 
 router.get("/health", async () => ({ ok: true, at: Date.now() }));
