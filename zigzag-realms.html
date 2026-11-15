@@ -259,6 +259,7 @@ details.zz summary{cursor:pointer;font-family:var(--mono);font-size:13pt;color:v
 
 /* Character */
 .who{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.facebox{display:inline-flex;flex:0 0 auto}.facebox svg{display:block;border-radius:14px}.who .facebox{margin-right:4px}.facehead{display:flex;gap:14px;align-items:center}
 .who h2{font-size:26px}
 .hpbar{height:12px;border-radius:99px;background:var(--wash);border:1px solid var(--rule);overflow:hidden}
 .hpbar.thin{height:6px}
@@ -4381,10 +4382,96 @@ function renderPlace(){
 }
 let zzOpen=false;
 
+/* ============================================================
+   Faces. Each character's portrait is assembled from small pieces, like the place descriptions:
+   chibi proportions (a big head, big shining eyes), a toy-brick head (a rounded cylinder with a stud
+   on top, features printed flat) and Aztec ornament (stepped frets, feather crowns, jaguar hoods, sun
+   discs, ear spools, face paint, a jade pectoral). The pieces are chosen by a generator seeded from the
+   character's name, so the same name always gives the same face; the class picks the headdress.
+   ============================================================ */
+const FACE_PAL={
+ skin:["#f6c66b","#f0c9a0","#d9a27a","#b97a50","#8d5a3b","#5e3b26","#f2d36b"],
+ jade:["#2f9e8f","#3fae6a","#1f7a6d"],turq:["#38b6c9","#2a93b5"],red:["#c4452f","#a8322a","#d2602f"],gold:["#e2b53c","#d39b22"],
+ ink:"#2b2118",bg:["#e9dcc0","#dbe6d8","#e6d6cf","#d9dbe8"],paint:["#c4452f","#2b2118","#2f9e8f","#2a93b5","#f2f0e6"]};
+function strSeed(s){let h=2166136261;for(const c of String(s))h=Math.imul(h^c.charCodeAt(0),16777619);return h|0}
+function faceSVG(name,cls,size=96){
+ const r=seededRng(strSeed(name),strSeed(cls||""),0,31),pk=a=>a[Math.floor(r()*a.length)],ch=p=>r()<p;
+ const skin=pk(FACE_PAL.skin),jade=pk(FACE_PAL.jade),red=pk(FACE_PAL.red),gold=pk(FACE_PAL.gold),turq=pk(FACE_PAL.turq),bg=pk(FACE_PAL.bg),ink=FACE_PAL.ink;
+ const accent=pk([jade,red,turq,gold]),accent2=pk([jade,red,turq,gold].filter(c=>c!==accent));
+ let s="";
+ // backdrop: a stepped-fret tile
+ s+=`<rect x="2" y="-22" width="116" height="160" rx="14" fill="${bg}"/>`;
+ const fret=(y,c)=>{let d="";for(let x=6;x<114;x+=18)d+=`M${x} ${y+8} h6 v-6 h6 v6 h6`;return`<path d="${d}" fill="none" stroke="${c}" stroke-width="2.4" opacity=".55"/>`};
+ s+=fret(-16,accent2)+fret(122,accent2);
+ // shoulders and torso: a small brick body with a stepped pectoral
+ const body=pk([red,jade,turq,"#6b4a8a","#3b5f8a"]);
+ s+=`<path d="M30 140 L36 112 Q60 104 84 112 L90 140 Z" fill="${body}"/>`;
+ const pect=pk(["steps","beads","disc"]);
+ if(pect==="steps")s+=`<path d="M44 112 h32 v5 h-5 v5 h-5 v5 h-12 v-5 h-5 v-5 h-5 Z" fill="${gold}" stroke="${ink}" stroke-width="1.2"/>`;
+ if(pect==="beads")for(let i=0;i<7;i++){const a=Math.PI*(.15+.7*i/6);s+=`<circle cx="${60-26*Math.cos(a)}" cy="${108+12*Math.sin(a)}" r="3.2" fill="${i%2?jade:gold}" stroke="${ink}" stroke-width=".8"/>`}
+ if(pect==="disc")s+=`<circle cx="60" cy="121" r="8" fill="${jade}" stroke="${gold}" stroke-width="3"/>`;
+ // neck and the toy-brick head: a rounded cylinder, broad for chibi proportions
+ s+=`<rect x="50" y="98" width="20" height="10" fill="${skin}"/>`;
+ const hw=pk([60,64,68]),hx=60-hw/2,hy=34,hh=66;
+ s+=`<rect x="${hx+hw*.3}" y="${hy-9}" width="${hw*.4}" height="11" rx="3" fill="${skin}" stroke="${ink}" stroke-width="1.4"/>`; // the stud
+ s+=`<rect x="${hx}" y="${hy}" width="${hw}" height="${hh}" rx="${pk([14,18,22])}" fill="${skin}" stroke="${ink}" stroke-width="1.8"/>`;
+ s+=`<rect x="${hx+5}" y="${hy+4}" width="${hw*.22}" height="${hh-14}" rx="6" fill="#fff" opacity=".18"/>`; // a plastic shine
+ // ear spools
+ if(ch(.75)){const c=pk([jade,gold,turq]);for(const ex of [hx-3,hx+hw+3])s+=`<circle cx="${ex}" cy="${hy+40}" r="7" fill="${c}" stroke="${ink}" stroke-width="1.4"/><circle cx="${ex}" cy="${hy+40}" r="2.6" fill="${ink}"/>`}
+ // face paint
+ const paint=pk(["band","chin","cheeks","steps","none","none"]),pc=pk(FACE_PAL.paint.filter(c=>c!==skin));
+ if(paint==="band")s+=`<rect x="${hx+2}" y="${hy+24}" width="${hw-4}" height="16" fill="${pc}" opacity=".55"/>`;
+ if(paint==="chin")for(let i=0;i<3;i++)s+=`<rect x="${52+i*6}" y="${hy+52}" width="3" height="9" rx="1.5" fill="${pc}"/>`;
+ if(paint==="cheeks")for(const cx of [hx+12,hx+hw-12])for(let i=0;i<3;i++)s+=`<circle cx="${cx+(i-1)*4}" cy="${hy+46}" r="1.7" fill="${pc}"/>`;
+ if(paint==="steps")for(const cx of [hx+10,hx+hw-16])s+=`<path d="M${cx} ${hy+50} h6 v-4 h-3 v-3 h-3 Z" fill="${pc}"/>`;
+ // eyes: big and shining (chibi), or printed dots (brick)
+ const eye=pk(["big","big","big","dot","arc","sharp"]),ey=hy+34,ex1=60-hw*.2,ex2=60+hw*.2,iris=pk(["#2b2118","#3b5f8a","#2f6e4f","#6b3f22"]);
+ for(const ex of [ex1,ex2]){
+  if(eye==="big")s+=`<ellipse cx="${ex}" cy="${ey}" rx="7" ry="9" fill="${ink}"/><ellipse cx="${ex}" cy="${ey+1}" rx="5" ry="7" fill="${iris}"/><circle cx="${ex+2}" cy="${ey-3}" r="2.6" fill="#fff"/><circle cx="${ex-2}" cy="${ey+3}" r="1.2" fill="#fff"/>`;
+  if(eye==="dot")s+=`<circle cx="${ex}" cy="${ey}" r="4" fill="${ink}"/><circle cx="${ex+1.3}" cy="${ey-1.3}" r="1.2" fill="#fff"/>`;
+  if(eye==="arc")s+=`<path d="M${ex-6} ${ey+2} Q${ex} ${ey-6} ${ex+6} ${ey+2}" fill="none" stroke="${ink}" stroke-width="3" stroke-linecap="round"/>`;
+  if(eye==="sharp")s+=`<path d="M${ex-7} ${ey} L${ex} ${ey-4} L${ex+7} ${ey} L${ex} ${ey+4} Z" fill="${ink}"/><circle cx="${ex+1}" cy="${ey-1}" r="1.3" fill="#fff"/>`;
+ }
+ // brows
+ const brow=pk(["flat","up","down","none","thick"]);
+ for(const [ex,sg] of [[ex1,-1],[ex2,1]]){
+  if(brow==="flat")s+=`<path d="M${ex-6} ${ey-13} h12" stroke="${ink}" stroke-width="2.6" stroke-linecap="round"/>`;
+  if(brow==="up")s+=`<path d="M${ex-6} ${ey-11+sg*2} L${ex+6} ${ey-13-sg*2}" stroke="${ink}" stroke-width="2.6" stroke-linecap="round"/>`;
+  if(brow==="down")s+=`<path d="M${ex-6} ${ey-14-sg*2} L${ex+6} ${ey-12+sg*2}" stroke="${ink}" stroke-width="2.6" stroke-linecap="round"/>`;
+  if(brow==="thick")s+=`<rect x="${ex-7}" y="${ey-16}" width="14" height="4" rx="2" fill="${ink}"/>`;
+ }
+ // mouth
+ const my=hy+52,mouth=pk(["smile","grin","flat","o","smirk","fangs"]);
+ if(mouth==="smile")s+=`<path d="M52 ${my} Q60 ${my+7} 68 ${my}" fill="none" stroke="${ink}" stroke-width="2.6" stroke-linecap="round"/>`;
+ if(mouth==="grin")s+=`<path d="M50 ${my-1} Q60 ${my+11} 70 ${my-1} Z" fill="${ink}"/><path d="M53 ${my} h14" stroke="#fff" stroke-width="2"/>`;
+ if(mouth==="flat")s+=`<path d="M53 ${my+2} h14" stroke="${ink}" stroke-width="2.6" stroke-linecap="round"/>`;
+ if(mouth==="o")s+=`<ellipse cx="60" cy="${my+2}" rx="4" ry="5" fill="${ink}"/>`;
+ if(mouth==="smirk")s+=`<path d="M53 ${my+2} Q63 ${my+5} 68 ${my-2}" fill="none" stroke="${ink}" stroke-width="2.6" stroke-linecap="round"/>`;
+ if(mouth==="fangs")s+=`<path d="M51 ${my} Q60 ${my+8} 69 ${my}" fill="none" stroke="${ink}" stroke-width="2.6" stroke-linecap="round"/><path d="M55 ${my+2} l2 4 l2 -3.4 M61 ${my+2.6} l2 3.4 l2 -4" fill="#fff" stroke="${ink}" stroke-width=".8"/>`;
+ if(ch(.5))s+=`<circle cx="${ex1-4}" cy="${ey+12}" r="4" fill="${red}" opacity=".25"/><circle cx="${ex2+4}" cy="${ey+12}" r="4" fill="${red}" opacity=".25"/>`; // chibi blush
+ // headdress, by class
+ const crown={Wizard:"feathers",Cleric:"sun",Fighter:"jaguar",Rogue:"band"}[cls]||pk(["feathers","sun","jaguar","band"]);
+ if(crown==="feathers"){const n=pk([5,7,9]),cols=[jade,turq,red,gold];
+  for(let i=0;i<n;i++){const a=-Math.PI/2+(i-(n-1)/2)*.28,len=pk([34,40,46]),x1=60+Math.cos(a)*14,y1=hy+4+Math.sin(a)*8,x2=60+Math.cos(a)*(14+len),y2=hy+4+Math.sin(a)*(10+len);
+   s+=`<path d="M${x1} ${y1} Q${(x1+x2)/2+Math.cos(a+1.57)*7} ${(y1+y2)/2+Math.sin(a+1.57)*7} ${x2} ${y2} Q${(x1+x2)/2-Math.cos(a+1.57)*7} ${(y1+y2)/2-Math.sin(a+1.57)*7} ${x1} ${y1}Z" fill="${cols[i%cols.length]}" stroke="${ink}" stroke-width="1.2"/>`}
+  s+=`<rect x="${hx-2}" y="${hy-2}" width="${hw+4}" height="12" rx="3" fill="${gold}" stroke="${ink}" stroke-width="1.4"/>`;
+  for(let x=hx+4;x<hx+hw-4;x+=10)s+=`<path d="M${x} ${hy+8} v-4 h4 v-3 h4" fill="none" stroke="${ink}" stroke-width="1.2"/>`}
+ if(crown==="sun"){let rays="";for(let i=0;i<12;i++){const a=i/12*Math.PI*2;rays+=`M${60+Math.cos(a)*16} ${hy-6+Math.sin(a)*16} L${60+Math.cos(a+.13)*26} ${hy-6+Math.sin(a+.13)*26} L${60+Math.cos(a+.26)*16} ${hy-6+Math.sin(a+.26)*16}Z `}
+  s+=`<path d="${rays}" fill="${gold}" stroke="${ink}" stroke-width="1.1"/><circle cx="60" cy="${hy-6}" r="15" fill="${gold}" stroke="${ink}" stroke-width="1.6"/><circle cx="60" cy="${hy-6}" r="7" fill="${jade}" stroke="${ink}" stroke-width="1.2"/>`;
+  s+=`<rect x="${hx-2}" y="${hy+4}" width="${hw+4}" height="9" rx="3" fill="${red}" stroke="${ink}" stroke-width="1.4"/>`}
+ if(crown==="jaguar"){const fur=pk(["#d9a02c","#c98a1f","#b8862f"]);
+  s+=`<path d="M${hx-6} ${hy+26} Q${hx-6} ${hy-14} 60 ${hy-16} Q${hx+hw+6} ${hy-14} ${hx+hw+6} ${hy+26} L${hx+hw-2} ${hy+14} Q60 ${hy-2} ${hx+2} ${hy+14} Z" fill="${fur}" stroke="${ink}" stroke-width="1.6"/>`;
+  for(const ex of [hx+6,hx+hw-6])s+=`<path d="M${ex-8} ${hy-6} L${ex} ${hy-22} L${ex+8} ${hy-6} Z" fill="${fur}" stroke="${ink}" stroke-width="1.4"/>`;
+  for(let i=0;i<7;i++)s+=`<circle cx="${hx+4+r()*(hw-8)}" cy="${hy-10+r()*18}" r="${1.6+r()*1.6}" fill="${ink}" opacity=".7"/>`}
+ if(crown==="band"){s+=`<rect x="${hx-2}" y="${hy+8}" width="${hw+4}" height="11" fill="${ink}"/>`;for(let x=hx+2;x<hx+hw;x+=8)s+=`<rect x="${x}" y="${hy+11}" width="4" height="4" fill="${accent}"/>`;
+  s+=`<path d="M${hx+hw+2} ${hy+12} q12 4 10 18 M${hx+hw+2} ${hy+15} q8 6 4 18" fill="none" stroke="${ink}" stroke-width="3" stroke-linecap="round"/>`;
+  if(ch(.5))s+=`<path d="M${hx} ${hy} Q60 ${hy-18} ${hx+hw} ${hy} Z" fill="${accent2}" stroke="${ink}" stroke-width="1.4"/>`}
+ return`<svg class="face" viewBox="0 -24 120 164" width="${size}" height="${Math.round(size*164/120)}" role="img" aria-label="Portrait of ${esc(name)}">${s}</svg>`;
+}
 function renderCreate(el){
  const s=draft.stats,C=CLASSES[draft.cls],hp=Math.max(1,C.hd+mod(s[2]));
  const waiting=busy?`<span class="mapping">${busy.dir==="realm"?"Finding the shared realm and its travellers":busy.dir==="founding"?"Founding the shared realm for everyone who comes after":busy.dir==="river"?"The narrator is charting the river and its towns":busy.dir==="look"?"The narrator is writing what you can see":"The narrator is writing where your journey begins"}</span>`:"";
- el.innerHTML=`<div class="create"><div class="placehead"><p class="eyebrow">New adventurer</p><h2>Roll a character</h2></div>
+ el.innerHTML=`<div class="create"><div class="placehead facehead"><span class="facebox" id="face-preview">${faceSVG(draft.name,draft.cls,88)}</span><div><p class="eyebrow">New adventurer</p><h2>Roll a character</h2></div></div>
  <p class="note">Abilities are rolled the classic way: four six-sided dice, keep the best three. You also carry three random items from home. When you set out, the narrator charts the river and its towns, then writes the place where your journey begins.</p>
  <div class="row"><label for="f-name">Name<input id="f-name" value="${esc(draft.name)}" maxlength="40"></label>
  <label for="f-cls">Class<select id="f-cls">${Object.keys(CLASSES).map(k=>`<option${k===draft.cls?" selected":""}>${k}</option>`).join("")}</select></label></div>
@@ -4394,7 +4481,7 @@ function renderCreate(el){
  <p class="note mono" style="font-size:13pt">Hit die d${C.hd} · starting HP ${hp} · AC ${10+mod(s[1])+(C.kit.find(k=>k[2]==="armor")?.[6]||0)} · carry ${s[0]*15} lb</p>
  <p class="note">${esc(CLASS_NOTES[draft.cls])}</p>
  <div class="btnrow"><button id="f-reroll" ${busy?"disabled":""}>Reroll abilities</button><button class="primary" id="f-begin" ${busy||(canJoinRealm()&&!draft.shared)?"disabled":""}>Set out</button>${waiting}</div></div>`;
- $("f-name").oninput=e=>draft.name=e.target.value;
+ $("f-name").oninput=e=>{draft.name=e.target.value;$("face-preview").innerHTML=faceSVG(draft.name,draft.cls,88)};
  $("f-theme").oninput=e=>draft.theme=e.target.value;
  $("f-cls").onchange=e=>{draft.cls=e.target.value;renderPlace()};
  $("f-reroll").onclick=()=>{draft.stats=rollStats();renderPlace()};
@@ -4409,7 +4496,7 @@ function renderSheet(){
  if(!charId()){el.innerHTML=`<div class="who"><h2>No character yet</h2></div><p class="empty">Roll a character to see their sheet here: abilities, hit points, armour class and level.</p>`;pk.innerHTML=`<div class="sectionhead"><h3 id="pack-h">Pack</h3></div><p class="empty">Your class kit, a healing potion and three random items go here when you set out.</p>`;return}
  const ch=cell(charId()),hp=sv("HP"),max=sv("MAXHP"),pct=Math.max(0,Math.min(100,hp/max*100)),w=weapon(),L=hereId()&&cell(hereId()),e=entitlement();
  const restBlocked=busy||foeId()||isDowned();
- el.innerHTML=`<div class="who"><h2>${esc(ch.t)}</h2><span class="mono" style="font-size:13pt;color:var(--faint)">Level ${sv("LVL")} ${esc(ch.cls)}</span></div>
+ el.innerHTML=`<div class="who"><span class="facebox">${faceSVG(ch.t,ch.cls,72)}</span><h2>${esc(ch.t)}</h2><span class="mono" style="font-size:13pt;color:var(--faint)">Level ${sv("LVL")} ${esc(ch.cls)}</span></div>
  <button type="button" class="statfold" data-statfold aria-expanded="${statsOpen}" aria-controls="stat-details"><span class="lbl">Abilities</span><span class="sum mono">${statsOpen?"":`${hungerLevel()>=2?"starving · ":hungerLevel()>=1?"hungry · ":""}AC ${armourClass()} · XP ${sv("XP")}/${sv("LVL")*100} · ${sv("GP")} gp${STATS.some(k=>boonFor(k))?" · ✦ boon":""}`}</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6 8 10.5 12.5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <div class="statbody" id="stat-details"${statsOpen?"":" hidden"}>
  <div class="abil">${STATS.map(k=>`<div${boonFor(k)?` class="boon" title="Effect: ${boonFor(k)>0?"+":""}${boonFor(k)} until ${(ch.boons||[]).filter(b=>b.stat===k).map(b=>fmtClock(b.until)).join(", ")}"`:""}><span class="k">${k}${boonFor(k)?" ✦":""}</span><span class="v">${sv(k)}</span><span class="m">${sgn(mod(sv(k)))}</span></div>`).join("")}</div>
