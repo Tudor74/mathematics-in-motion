@@ -115,9 +115,9 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .map .side{stroke-linecap:round;pointer-events:none}.map .side.shut{stroke:var(--ink);stroke-width:5;opacity:.85}.map .side.shut.mine{stroke-width:6.5;opacity:1}
 .map .side.open.mine{stroke:var(--good);stroke-width:3.5;opacity:.8;stroke-dasharray:6 5}
 .map .side.pulse{animation:sidepulse .7s ease 3}@keyframes sidepulse{0%,100%{stroke:var(--ink)}50%{stroke:var(--danger);stroke-width:9}}
-.encounter{position:absolute;inset:0;display:grid;place-items:center;padding:12px 60px 12px 12px;pointer-events:none;z-index:5}.encounter:not(.show){display:none}
-.encounter .card{pointer-events:auto;max-width:min(520px,100%);max-height:100%;overflow:auto;background:var(--sheet);border:1px solid var(--danger);border-radius:12px;box-shadow:0 8px 28px #0004;padding:12px 14px;display:grid;gap:8px}
-.encounter .card .foe{margin:0}@media (min-width:900px){.encounter.dock-left{justify-items:start}.encounter.dock-right{justify-items:end}.encounter .card{max-width:min(520px,46%)}}
+.encounter{position:absolute;inset:0;display:grid;place-items:center;padding:0;pointer-events:none;z-index:5}.encounter:not(.show){display:none}
+.encounter .card{pointer-events:auto;width:80%;height:80%;box-sizing:border-box;overflow:auto;background:var(--sheet);border:1px solid var(--danger);border-radius:12px;box-shadow:0 8px 28px #0004;padding:12px 14px;display:grid;gap:8px}
+.encounter .card .foe{margin:0}
 .starve{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:5;width:min(460px,calc(100% - 90px));pointer-events:none}.starve:not(.show){display:none}
 .starve .card{pointer-events:auto;display:grid;gap:6px;padding:12px 16px;border-radius:12px;background:var(--sheet);border:2px solid var(--danger);box-shadow:0 6px 24px #0004;text-align:center}
 .starve b{font-family:var(--display);font-size:22px;color:var(--danger)}.starve p{margin:0}.starve .btnrow{justify-content:center}
@@ -137,6 +137,11 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .statusbar .hud{display:flex;align-items:center;gap:12px}.statusbar .hudside{display:flex;flex-wrap:wrap;gap:6px;padding-top:0;align-items:center}
 .statusbar .mapwx{border:0;background:none;padding:0}.statusbar .maprealm>span{box-shadow:none}
 .statusbar .nixie{margin-left:auto;background:none;border:0;padding:0}
+.daydial{width:32px;height:32px;flex:0 0 auto}.daydial .ring{fill:var(--wash);stroke:none}.daydial .nightarc{fill:none;stroke:#3a3f55;stroke-width:5;opacity:.75}
+.daydial .dayarc{fill:none;stroke:#f0c75a;stroke-width:5;stroke-linecap:butt}.daydial .sunmark{fill:#f3a52f;stroke:var(--sheet);stroke-width:1.2}.daydial .moonmark{fill:#e9e6d8;stroke:#3a3f55;stroke-width:1}
+.daydial.dark .ring{fill:none;stroke:var(--danger);stroke-width:2.2}
+.statusbar *,.statusbar .maprealm>span,.statusbar .soundicon{border:0!important;box-shadow:none!important}
+.statusbar .hpdial .bg{stroke:none}.statusbar .maprealm>span{padding:3px 10px;gap:6px}.statusbar .maprealm .live .facehead{box-shadow:none}
 @media (max-width:560px){.statusbar{justify-content:center}.statusbar .nixie{margin-left:0}}
 .maprealm{position:absolute;right:10px;top:10px;pointer-events:none}.maprealm:empty{display:none}
 .maprealm>span{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;background:color-mix(in srgb,var(--sheet) 88%,transparent);border:1px solid var(--rule);box-shadow:0 2px 8px #0002;font-family:var(--mono);font-size:13pt;color:var(--ink)}
@@ -771,7 +776,8 @@ function magicPresent(t=gameNow()){const r=cell("root");if(!r)return false;retur
    ============================================================ */
 const charId=()=>step("root","cursor","+");
 const hereId=()=>charId()&&step(charId(),"at","+");
-const foeId=(loc=hereId())=>loc?step(loc,"occupant","+"):null;
+const foeId=(...a)=>{const loc=a.length?a[0]:hereId(),f=loc?step(loc,"occupant","+"):null;if(!a.length&&f&&(cell(f).truce||0)>gameNow())return null;return f};
+const foeHere=()=>{const h=hereId();return h?step(h,"occupant","+"):null};
 const statCell=name=>rank(charId(),"stat").map(cell).find(c=>c.t===name);
 // A stat's value is its base plus any active boon (boons only touch the six abilities)
 function boonFor(name){const ch=charId()&&cell(charId());if(!ch)return 0;const hunger=(name==="STR"||name==="CON")&&typeof hungerLevel==="function"&&hungerLevel()>=1?-1:0;if(!ch.boons)return hunger;const t=gameNow();return hunger+ch.boons.filter(b=>b.stat===name&&b.until>t).reduce((s,b)=>s+b.amount,0)}
@@ -4130,7 +4136,7 @@ function renderAccount(){
  
  const who="";
  {const mr=$("maprealm");if(mr){const n=mp.online,lab=n==null?(mp.status||"connecting"):`${n} ${n===1?"traveller":"travellers"} here now`;
-  mr.innerHTML=mp.on()&&charId()?`<span class="${n>1?"live":""}" title="${esc(lab)}" role="img" aria-label="${esc(lab)}">${faceHead(cell(charId()).t,cell(charId()).cls,cell(charId()).faceSeed||0,30)}<b>${n==null?"…":n}</b></span>`:""}}
+  mr.innerHTML=mp.on()&&charId()?`<span class="${n>1?"live":""}" title="${esc(lab)}" role="img" aria-label="${esc(lab)}">${faceHead(cell(charId()).t,cell(charId()).cls,cell(charId()).faceSeed||0,22)}<b>${n==null?"…":n}</b></span>`:""}}
  // Players who already have a world of their own can move to the shared realm from here
  const join=canJoinRealm()&&!mp.on()&&charId()?(joinArmed
   ?`<span class="confirm">Move to the shared realm? You roll a new character there and this world is erased. <button class="small" id="join-yes">Move</button><button class="small" id="join-no">Stay</button></span>`
@@ -4197,8 +4203,13 @@ function renderHud(){
  const coin=`<span class="gp" title="${sv("GP")} gold pieces"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" class="c1"/><circle cx="12" cy="12" r="6.6" class="c2"/></svg><b>${sv("GP")}</b></span>`;
  const short=hungerLevel()<2?foodShort():null;
  if(short&&!foodShort.said){foodShort.said=true;log(`Your food will not last the ${short.steps} steps to ${short.town.t}. Eat sparingly, forage, or hunt.`,"bad")}if(!short)foodShort.said=false;
- const warn=[hungerLevel()>=2?"starving":hungerLevel()>=1?"hungry":"",short?"low food":"",!hasLight()&&(night||zOf(L)<0)?"no light":""].filter(Boolean);
- el.innerHTML=`${dial}<div class="hudside">${coin}${warn.map(w=>`<span class="hudwarn"${w==="low food"&&short?` title="Not enough food to reach ${esc(short.town.t)}, ${short.steps} steps away"`:""}>${w}</span>`).join("")}</div>`;
+ const warn=[hungerLevel()>=2?"starving":hungerLevel()>=1?"hungry":"",short?"low food":""].filter(Boolean);
+ // the day dial: a ring of the whole day, light from dawn to dusk, dark either side; the sun marks the hour
+ const tt=gameNow(),hr=hourOf(tt),dn=dawnH(tt),dk=duskH(tt),dark=!hasLight()&&(night||zOf(L)<0);
+ const ang=h=>(h/24)*2*Math.PI+Math.PI/2,pt=(h,r)=>[16+Math.cos(ang(h))*r,16+Math.sin(ang(h))*r],[ax,ay]=pt(dn,11),[bx,by]=pt(dk,11),[sx,sy]=pt(hr,11);
+ const big=((dk-dn+24)%24)>12?1:0,dlab=`${night?"Night":"Day"}, ${fmtClock(tt).split(" · ")[1]}. Daylight ${String(Math.floor(dn)).padStart(2,"0")}:${dn%1?"30":"00"} to ${String(Math.floor(dk)).padStart(2,"0")}:${dk%1?"30":"00"}${dark?". No light: you cannot travel in the dark":""}`;
+ const daydial=`<svg class="daydial${dark?" dark":""}" viewBox="0 0 32 32" role="img" aria-label="${esc(dlab)}"><title>${esc(dlab)}</title><circle cx="16" cy="16" r="14" class="ring"/><circle cx="16" cy="16" r="11" class="nightarc"/><path d="M${ax.toFixed(2)} ${ay.toFixed(2)} A11 11 0 ${big} 1 ${bx.toFixed(2)} ${by.toFixed(2)}" class="dayarc"/>${night?`<circle cx="${sx.toFixed(2)}" cy="${sy.toFixed(2)}" r="3.2" class="moonmark"/>`:`<circle cx="${sx.toFixed(2)}" cy="${sy.toFixed(2)}" r="3.6" class="sunmark"/>`}</svg>`;
+ el.innerHTML=`${dial}<div class="hudside">${coin}${daydial}${warn.map(w=>`<span class="hudwarn"${w==="low food"&&short?` title="Not enough food to reach ${esc(short.town.t)}, ${short.steps} steps away"`:""}>${w}</span>`).join("")}</div>`;
 }
 let lastMapShape="";window.addEventListener("resize",()=>{const b=$("map").getBoundingClientRect(),sh=Math.round(b.width/Math.max(1,b.height)*20);if(String(sh)!==lastMapShape){lastMapShape=String(sh);renderMap()}});
 /* Hex sides. Flat-topped hexes: side k runs between corners k and k+1 (corner k at k·60°, y down), so
@@ -4254,11 +4265,17 @@ function renderDream(){
  const key=Math.floor((gameNow()+360)/1440)+"|"+charId();if(dreamKey===key)return;dreamKey=key;
  const text=makeDream(),tr=el.querySelector(".track");tr.textContent=text;tr.style.setProperty("--dur",`${Math.max(30,text.length/6).toFixed(0)}s`);
 }
+// Disengage: stay in the hex but step out of the fight, a DEX check like fleeing; it then lets you be for a while
+function disengage(){
+ const f=foeId();if(!f||busy)return;const F=cell(f),dc=10+Math.floor(F.atk/2),d=rnd(20),m=mod(sv("DEX")),tot=d+m,txt=`DEX check: d20 → ${d} ${sgn(m)} = ${tot} against DC ${dc}`;
+ if(tot<dc){say(`You try to back away from ${F.t}, but it presses in.`,"bad",txt);monsterTurn();store.flush();render();return}
+ F.truce=gameNow()+120;touch(f);rounds=[];log(`You step back and lower your guard. ${F.t} lets you be, for now.`,"good",txt);store.flush();render();
+}
 // An encounter happens on the map, in a card docked away from you so you can still tap a hex to flee
 function renderEncounter(){
- const el=$("encounter");if(!el)return;const f=charId()&&hereId()&&!isDowned()?foeId(hereId()):null;
+ const el=$("encounter");if(!el)return;const f=charId()&&hereId()&&!isDowned()?foeId():null;
  el.classList.toggle("show",!!f);if(!f){el.innerHTML="";return}
- el.innerHTML=`<div class="card">${renderFoe(f)}<p class="note">To flee, tap a neighbouring hex or a way on the rose.</p></div>`;
+ el.innerHTML=`<div class="card">${renderFoe(f)}<div class="btnrow"><button data-act="disengage" ${busy?"disabled":""} title="Step back and stay here: a DEX check against DC ${10+Math.floor(cell(f).atk/2)}. Fail and it strikes.">Disengage</button></div><p class="note">Disengage to stay in this hex without fighting, or flee by a way on the rose or a hex at the edge of the map.</p></div>`;
  requestAnimationFrame(()=>{const me=document.querySelector("#map .headmark.me"),w=el.getBoundingClientRect();if(me&&w.width){const r=me.getBoundingClientRect(),right=(r.x+r.width/2)>w.x+w.width/2;el.classList.toggle("dock-left",right);el.classList.toggle("dock-right",!right)}});
 }
 // Enough food to reach a town? Each item is a day (rations say how many); you can go two days without before starving
@@ -4274,7 +4291,7 @@ function foodShort(){
 let starveDismissed=null;
 function renderStarving(){
  const el=$("starve");if(!el)return;const ch=charId()&&cell(charId()),L=hereId()&&cell(hereId());
- const on=!!(ch&&L&&!isDowned()&&!foeId(hereId())&&!L.town&&hungerLevel()>=2&&!packIds().some(i=>cell(i).kind==="food")&&starveDismissed!==ch.lastMeal);
+ const on=!!(ch&&L&&!isDowned()&&!foeId()&&!L.town&&hungerLevel()>=2&&!packIds().some(i=>cell(i).kind==="food")&&starveDismissed!==ch.lastMeal);
  el.classList.toggle("show",on);if(!on){el.innerHTML="";return}
  const T=towns().slice().sort((a,b)=>hexDist(L.x,L.y,a.x,a.y)-hexDist(L.x,L.y,b.x,b.y))[0];
  el.innerHTML=`<div class="card"><b>Starving</b><p>Every scrap of food is gone. Find a town, where no one goes hungry, or hunt a creature and eat what it leaves.</p>
@@ -4556,7 +4573,7 @@ function renderPlace(){
  const el=$("place");
  if(!charId()||!hereId()){renderCreate(el);return}
  if(isDowned()){el.innerHTML=`<div class="placehead"><p class="eyebrow">You have fallen</p><h2>See the map</h2></div><p class="note">Choose how your story goes on, in the panel on the map.</p>`;return}
- const here=hereId(),L=cell(here),f=foeId(here),magic=magicPresent(),t=gameNow(),wa=weatherAt(L.x,L.y,zOf(L),t);
+ const here=hereId(),L=cell(here),f=foeId(),magic=magicPresent(),t=gameNow(),wa=weatherAt(L.x,L.y,zOf(L),t);
  const tr=TERRAINS.includes(L.terrain)?L.terrain:"other";
  const chips=[`<span class="chip terrain">${L.sanctuary?"sanctuary":L.monument?esc(MONUMENT_KIND[L.monument]):L.town?esc(TOWN_SIZES[L.town.size].label):L.river?(L.river.crossing?esc(CROSSINGS[L.river.crossing]):"river"):tr}</span>`,`<span class="chip">${esc(depthName(zOf(L)))}</span>`];
  if(L.river&&L.river.crossing==="magic")chips.push(`<span class="chip magic">${magic?"bridge present":"bridge absent"}</span>`);
@@ -4607,6 +4624,7 @@ function renderPlace(){
  if(L.spring)html+=`<p class="note">A healing spring rises here.</p>`;
  if(L.hazard&&L.outcome){const o=L.outcome;html+=`<div class="hazard${o.ok?" passed":""}"><b>${esc(L.hazard.name)}.</b> ${esc(L.hazard.text)} ${o.ok?"You get through unharmed.":`You take ${o.dmg} damage.`}${here===lastHazard?`<span class="roll">${esc(o.roll)}</span>`:""}</div>`}
  if(f)html+=`<p class="neutral">An encounter is under way: see the map.</p>`;
+ else if(foeHere()){const F=cell(foeHere());html+=`<p class="neutral">${esc(F.designation||"")} ${esc(F.t)} keeps its distance for now. <button class="small" data-act="reengage">Fight it</button></p>`}
  else if(L.defeated)html+=`<p class="neutral">${esc(L.defeated.designation)} ${esc(L.defeated.name)} was neutralised here${L.defeated.by?` by ${esc(L.defeated.by)}, who left treasure and food behind`:""}.</p>`;
  html+=renderPeople(L);
  const rp=reputation(),items=storeIds(here).filter(id=>!(cell(id).forSale&&cell(id).magic&&rp<cell(id).minRep));
@@ -5363,7 +5381,7 @@ document.addEventListener("click",e=>{
   trade:i=>{openTrade=openTrade===i?null:i;openChat=null;armedAttack=null;render()},
   buyfood:buyFood,sell:v=>{const [n,it]=v.split("|");sellTo(n,it)},quest:i=>{offerQuest(cell(i));passTime(5);store.flush();render()},
   give:giveFood,arm:i=>{armedAttack=armedAttack===i?null:i;render()},hit:attackAgent,
-  craft,deposit,withdraw,rent:rentCottage,leave:leaveForOthers,takeleft:takeLeft,train:takeTrain,steal:trySteal,sharefood:shareFood,rate:rateChat,contest:enterContest,festprize:festivalPrize,throwdart:throwDart})[b.dataset.act](id);return}
+  disengage:()=>disengage(),reengage:()=>{const f=foeHere();if(f){cell(f).truce=0;touch(f);log(`You turn to face ${cell(f).t} again.`,"bad");store.flush();render()}},craft,deposit,withdraw,rent:rentCottage,leave:leaveForOthers,takeleft:takeLeft,train:takeTrain,steal:trySteal,sharefood:shareFood,rate:rateChat,contest:enterContest,festprize:festivalPrize,throwdart:throwDart})[b.dataset.act](id);return}
  const d=e.target.closest("#compass button[data-dir]");if(d){move(d.dataset.dir);return}
  // while the map slides (and a moment after), taps on it are ignored, so a moving map never walks you somewhere
  if(e.target.closest("#map")&&mapCam&&(mapCam.anim||performance.now()-(mapCam.settled||0)<250||mapDownAt>(mapCam.anim?mapCam.anim.t0:mapCam.slideStart||0)&&mapDownDuringSlide))return;
