@@ -94,7 +94,17 @@ header.top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align
 .hud .bar{height:6px;border-radius:99px;background:var(--wash);border:1px solid var(--rule);overflow:hidden}.hud .bar span{display:block;height:100%;background:var(--good)}
 .hud .bar.low span{background:var(--danger)}.hud .bar.xp span{background:var(--magic)}
 .hud .warn{color:var(--danger)}.hud button{min-height:26px;padding:2px 8px;font-size:12px;font-family:var(--body)}
-.mapplace h2{font-size:21px;line-height:1.15}.mapplace .chips{gap:4px}.mapplace .chip{font-size:11px;padding:1px 6px}.mapplace .eyebrow{font-size:10px}
+.mapplace{display:grid;gap:2px;min-width:0}
+.mapplace h2{font-size:21px;line-height:1.15;margin:0}
+.ticker{overflow:hidden;white-space:nowrap;mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
+.ticker-track{display:inline-flex;animation:tick 30s linear infinite}
+.ticker:hover .ticker-track,.ticker:focus-within .ticker-track{animation-play-state:paused}
+.ticker.still{mask-image:none;-webkit-mask-image:none}.ticker.still .ticker-track{animation:none}.ticker.still .tk-set+.tk-set{display:none}
+.tk-set{display:inline-flex;gap:6px;align-items:center;padding-right:24px}
+.ticker .chip{font-size:11px;padding:1px 6px;line-height:1.5}
+.tk-lead{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.ticker{overflow-x:auto}.ticker-track{animation:none}.tk-set+.tk-set{display:none}}
 .map .gridline{stroke:var(--rule);stroke-width:1}
 .map .link{stroke:var(--ink);stroke-width:3;stroke-linecap:round;opacity:.55}
 .map .tile{stroke:var(--ink);stroke-opacity:.35;stroke-width:1;stroke-linejoin:round;cursor:pointer}
@@ -415,7 +425,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
   <div class="col left" data-col="left">
    <section class="panel map" aria-labelledby="map-h">
     <div class="mapplace" id="mapplace"><div class="sectionhead"><h3 id="map-h">Survey map</h3></div></div>
-    <span class="mono" id="coords" style="font-size:12px;color:var(--faint)"></span>
+    <span id="coords" hidden></span>
     <div class="mapwrap"><svg id="map" viewBox="0 0 480 416" role="img" aria-label="Map of explored places on your current level"></svg><div class="hud" id="hud" aria-live="polite"></div></div>
     <div class="zoomrow"><button class="small" id="zoom-out" type="button" aria-label="Zoom out">−</button><span class="mono" id="zoom-label">zoom</span><button class="small" id="zoom-in" type="button" aria-label="Zoom in">+</button></div>
     <div class="layerbar" id="layerbar" role="img" aria-label="Layers"></div>
@@ -3337,7 +3347,7 @@ function renderHud(){
 }
 function renderMap(){
  const svg=$("map"),here=hereId();
- if(!here){renderHud();$("mapplace").innerHTML=`<div class="sectionhead"><h3 id="map-h">Survey map</h3></div>`;svg.innerHTML=`<text x="210" y="215" text-anchor="middle" class="axis">The map starts when your character sets out.</text>`;$("coords").textContent="";return}
+ if(!here){renderHud();$("mapplace").dataset.sig="";$("mapplace").innerHTML=`<div class="sectionhead"><h3 id="map-h">Survey map</h3></div>`;svg.innerHTML=`<text x="210" y="215" text-anchor="middle" class="axis">The map starts when your character sets out.</text>`;$("coords").textContent="";return}
  const H=cell(here),Z=zOf(H),R=mapZoom,magic=magicPresent(),t=gameNow(),ws=wxState();
  // Zoom: the drawing keeps its scale and the view widens; V is the visible width around the centre
  const ASP=480/416,V=420*(R+.6)/3.6,W=V*ASP,VB=[210-W/2,210-V/2,W,V],ui=V/420,UI=s=>`<g transform="translate(${VB[0]+(W-V)/2} ${VB[1]}) scale(${ui})">${s}</g>`;
@@ -3571,7 +3581,13 @@ function renderPlace(){
  if(L.river&&L.river.crossing==="magic")chips.push(`<span class="chip magic">${magic?"bridge present":"bridge absent"}</span>`);
  if(L.town)chips.push(`<span class="chip">${esc(L.town.side)} bank of the ${esc(riverName())}</span>`);
  chips.push(`<span class="chip">${L.dist?L.dist+" steps from the start":"starting point"}</span>`,`<span class="chip">written by ${L.by==="claude"?esc(ai.kind==="puter"?"AI":"Claude"):"built-in tables"}</span>`);
- $("mapplace").innerHTML=`<div class="placehead"><p class="eyebrow">You are at</p><h2 id="map-h">${esc(L.t)}</h2><div class="chips">${chips.join("")}</div></div>`;
+ // Above the map: one scrolling line of the place's details, then its name; no taller than an over-title and a title
+ {const items=[`<span class="tk-lead">You are at</span>`,...chips,`<span class="chip">${esc($("coords").textContent||"")}</span>`].join("");
+  const sig=items+L.t,el=$("mapplace");
+  if(el.dataset.sig!==sig){el.dataset.sig=sig;
+   el.innerHTML=`<div class="ticker" aria-label="${esc(chips.map(c=>c.replace(/<[^>]+>/g,"")).join(", "))}"><div class="ticker-track"><span class="tk-set">${items}</span><span class="tk-set" aria-hidden="true">${items}</span></div></div><h2 id="map-h">${esc(L.t)}</h2>`;
+   const tr=el.querySelector(".ticker-track"),w=tr.scrollWidth/2,box=el.querySelector(".ticker").clientWidth;
+   el.querySelector(".ticker").classList.toggle("still",w<=box);tr.style.animationDuration=`${Math.max(12,w/28)}s`}}
  let html="";
  html+=renderRealmEvent(L);
  if(canJoinRealm()&&!mp.on()&&puterUser&&!store.stale)html+=`<div class="realmevent"><span class="eyebrow">Shared realm</span><p>You are playing in a world of your own. Use <b>Join the shared realm</b> at the top of the page to roll a character in the world other players share.</p></div>`;
