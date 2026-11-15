@@ -4287,11 +4287,19 @@ let lastMapShape="";window.addEventListener("resize",()=>{const b=$("map").getBo
    move that depends on the column (see hexDiagOK). */
 function sideMoves(x){const ev=evenCol(x);return[ev?"east":"southeast","south",ev?"west":"southwest",ev?"northwest":"west","north",ev?"northeast":"east"]}
 // Is the way across this side open, by the lie of the land (walls, water, closed exits), ignoring night and weather?
+// It follows the same rules as walking (see blockedBy and diagCheck), so a side drawn open can really be walked
+function flatPass(id,d){
+ const A=cell(id);if(!A||!exitOpen(A,d))return false;const v=DIRS[d],bid=coord.get(ck(A.x+v.dx,A.y+v.dy,zOf(A)+v.dz)),B=bid&&cell(bid);
+ return!B||(!B.lake&&!riverBlock(bid)&&exitOpen(B,OPP[d]));
+}
 function sideOpen(id,d){
- const A=cell(id),Z=zOf(A),D=DIRS[d]||DIAG[d],bid=coord.get(ck(A.x+D.dx,A.y+D.dy,Z)),B=bid&&cell(bid);
- const there=o=>!B||(B.lake?false:riverBlock(bid)?false:o);
- if(DIRS[d])return exitOpen(A,d)&&there(exitOpen(B,OPP[d]));
- const [a,b]=DIAG[d].via;return(exitOpen(A,a)||exitOpen(A,b))&&there(exitOpen(B,OPP[a])||exitOpen(B,OPP[b]));
+ const A=cell(id),Z=zOf(A);if(DIRS[d])return flatPass(id,d);
+ if(!hexDiagOK(A.x,d))return false;
+ const D=DIAG[d],[a,b]=D.via,nb=e=>coord.get(ck(A.x+DIRS[e].dx,A.y+DIRS[e].dy,Z)),tid=coord.get(ck(A.x+D.dx,A.y+D.dy,Z)),T=tid&&cell(tid);
+ for(const [p,q] of [[a,b],[b,a]]){const sid=nb(p);if(sid&&flatPass(id,p)&&flatPass(sid,q))return true}
+ const hereOpen=flatPass(id,a)||flatPass(id,b)||(!nb(a)&&!nb(b));
+ const thereOpen=!T||(!T.lake&&!riverBlock(tid)&&(exitOpen(T,OPP[a])||exitOpen(T,OPP[b])));
+ return hereOpen&&thereOpen;
 }
 let blockTimer=null;
 function flashBlocked(d,why){
