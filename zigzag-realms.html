@@ -4167,7 +4167,7 @@ const GLYPH_MON={arch:"M16 35 V21 Q26 6 36 21 V35 M20 35 V22 Q26 12 32 22 V35",s
 const ZOOMS=[2,3,4,5,6,8];let mapZoom=3;try{const z=+localStorage.getItem("zr-zoom3");if(ZOOMS.includes(z))mapZoom=z}catch(e){}
 function setZoom(step){const i=Math.max(0,Math.min(ZOOMS.length-1,ZOOMS.indexOf(mapZoom)+step));mapZoom=ZOOMS[i];try{localStorage.setItem("zr-zoom3",String(mapZoom))}catch(e){}renderMap()}
 document.addEventListener("click",e=>{if(e.target.closest("#map-key-btn")){const k=$("mapkey");k.hidden=!k.hidden}});
-document.addEventListener("input",e=>{if(e.target.id!=="zoom")return;const i=ZOOMS.length-1-(+e.target.value);mapZoom=ZOOMS[Math.max(0,Math.min(ZOOMS.length-1,i))];try{localStorage.setItem("zr-zoom3",String(mapZoom))}catch(e){}renderMap()});
+document.addEventListener("input",e=>{if(e.target.id!=="zoom")return;{const svg=$("map"),cur=(svg.getAttribute("viewBox")||"").split(" ").map(Number);if(cur.length===4&&cur.every(isFinite))zoomTw={from:zoomTw&&zoomTw.now?zoomTw.now:cur,t0:performance.now(),dur:matchMedia("(prefers-reduced-motion: reduce)").matches?1:520}}const i=ZOOMS.length-1-(+e.target.value);mapZoom=ZOOMS[Math.max(0,Math.min(ZOOMS.length-1,i))];try{localStorage.setItem("zr-zoom3",String(mapZoom))}catch(e){}renderMap()});
 document.addEventListener("keydown",e=>{const p=e.target.closest&&e.target.closest(".petal[data-go]");if(p&&(e.key==="Enter"||e.key===" ")){e.preventDefault();move(p.dataset.go)}});
 /* The HUD: hit points, level and XP, gold, load, light and hunger, plus a rest button, over the map */
 function renderHud(){
@@ -4204,6 +4204,10 @@ function flashBlocked(d,why){
  // and pulse the side you tried
  const side=document.querySelector(`#map .side[data-d="${d}"]`);if(side){side.classList.remove("pulse");void side.getBBox();side.classList.add("pulse")}
 }
+let zoomTw=null;
+function stepZoom(){const z=zoomTw,svg=$("map");if(!z||!svg||!z.to)return;const t=Math.min(1,(performance.now()-z.t0)/z.dur),e=easeBack(t);
+ z.now=z.from.map((v,k)=>v+(z.to[k]-v)*e);svg.setAttribute("viewBox",z.now.map(v=>v.toFixed(1)).join(" "));
+ if(t<1)requestAnimationFrame(stepZoom);else{zoomTw=null;renderMap()}}
 let mapCam=null,mapDownAt=0,mapDownDuringSlide=false;
 document.addEventListener("pointerdown",e=>{if(e.target.closest&&e.target.closest("#map")){mapDownAt=performance.now();mapDownDuringSlide=!!(mapCam&&mapCam.anim)}},true);
 const easeBack=t=>-(Math.cos(Math.PI*t)-1)/2;   // a slow, smooth slide: gentle start, gentle stop
@@ -4233,7 +4237,7 @@ function renderMap(){
  mapCam.frame={hx:hx0,hy:hy0,W,V};
  VB[0]=210+(mapCam.x-hx0)-W/2;VB[1]=210+(mapCam.y-hy0)-V/2;
  // what to draw: the final view, plus where the glide starts
- const BX=[VB[0],VB[1],VB[0]+W,VB[1]+V];if(mapCam.anim){const sx=210+(mapCam.anim.fx-hx0),sy=210+(mapCam.anim.fy-hy0);BX[0]=Math.min(BX[0],sx-W/2);BX[1]=Math.min(BX[1],sy-V/2);BX[2]=Math.max(BX[2],sx+W/2);BX[3]=Math.max(BX[3],sy+V/2)}
+ const BX=[VB[0],VB[1],VB[0]+W,VB[1]+V];if(zoomTw){const f=zoomTw.now||zoomTw.from;BX[0]=Math.min(BX[0],f[0]);BX[1]=Math.min(BX[1],f[1]);BX[2]=Math.max(BX[2],f[0]+f[2]);BX[3]=Math.max(BX[3],f[1]+f[3])}if(mapCam.anim){const sx=210+(mapCam.anim.fx-hx0),sy=210+(mapCam.anim.fy-hy0);BX[0]=Math.min(BX[0],sx-W/2);BX[1]=Math.min(BX[1],sy-V/2);BX[2]=Math.max(BX[2],sx+W/2);BX[3]=Math.max(BX[3],sy+V/2)}
  const inView=(dx,dy)=>{const [cx,cy]=C(dx,dy);return cx>VB[0]-8&&cx<VB[0]+W+8&&cy>VB[1]-8&&cy<VB[1]+V+8};
  const inBox=(dx,dy)=>{const [cx,cy]=C(dx,dy);return cx>BX[0]-HW&&cx<BX[2]+HW&&cy>BX[1]-HH&&cy<BX[3]+HH};
  const DX0=Math.floor((BX[0]-210)/(HW*.75))-2,DX1=Math.ceil((BX[2]-210)/(HW*.75))+2,DY0=Math.floor((210-BX[3])/HH)-2,DY1=Math.ceil((210-BX[1])/HH)+2;
@@ -4324,7 +4328,7 @@ function renderMap(){
    <text class="nn-s" x="210" y="${210-h/2+82+rows.length*30+8}" text-anchor="middle">Dawn in about ${mins} real ${mins===1?"minute":"minutes"}</text></g>`)})();
  }
  else out+=beacons;
- svg.setAttribute("viewBox",(mapCam.anim?camBox():VB).map(v=>v.toFixed(1)).join(" "));{const cw=svg.clientWidth||bb.width;svg.style.setProperty("--u",cw>50?(W/cw*1.003).toFixed(4):"1")}{const zs=$("zoom"),lab=`${Math.round(W/(HW*.75))} × ${2*R+1} hexes`;if(zs){zs.max=String(ZOOMS.length-1);zs.value=String(ZOOMS.length-1-ZOOMS.indexOf(R));zs.setAttribute("aria-valuetext",lab);zs.title=`Zoom: ${lab}`}}
+ if(zoomTw){const fresh=!zoomTw.to;zoomTw.to=VB.slice();if(fresh){svg.setAttribute("viewBox",zoomTw.from.map(v=>v.toFixed(1)).join(" "));requestAnimationFrame(stepZoom)}}else svg.setAttribute("viewBox",(mapCam.anim?camBox():VB).map(v=>v.toFixed(1)).join(" "));{const cw=svg.clientWidth||bb.width;svg.style.setProperty("--u",cw>50?(W/cw*1.003).toFixed(4):"1")}{const zs=$("zoom"),lab=`${Math.round(W/(HW*.75))} × ${2*R+1} hexes`;if(zs){zs.max=String(ZOOMS.length-1);zs.value=String(ZOOMS.length-1-ZOOMS.indexOf(R));zs.setAttribute("aria-valuetext",lab);zs.title=`Zoom: ${lab}`}}
  renderHud();
  svg.innerHTML=`<defs><filter id="beaconglow" x="-1" y="-1" width="3" height="3"><feGaussianBlur stdDeviation="4"/></filter></defs>`+out;
  const ew=H.x===0?"0":Math.abs(H.x)+(H.x>0?" E":" W"),ns=H.y===0?"0":Math.abs(H.y)+(H.y>0?" N":" S");
