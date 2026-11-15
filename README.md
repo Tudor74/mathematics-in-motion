@@ -84,9 +84,9 @@ hard to confuse. Run `node tools/realm-script.mjs` to regenerate.
   song, scaled by size (talk by day, carts by day, singing mostly at night).
   Sanctuaries are hushed. Resting at one heals fully, with a 4% chance of a boon
   of +1 or +2 to one ability for 7 to 30 days.
-- **Night** (v0.2.8): the clock runs at 4× real time by day and 120× at night, so
-  night (20:00 to 06:00) lasts about five real minutes and a full day about
-  3 hours 35 minutes. At nightfall a friendly overlay suggests a break: stretch,
+- **Night** (v0.2.8): the clock runs at 4× real time by day and 200× at night, so
+  night (20:00 to 06:00) lasts about three real minutes and a full day about
+  3 hours 33 minutes. At nightfall a friendly overlay suggests a break: stretch,
   pet the cat (or dog, or imaginary friend), and get some water. It can be
   switched off.
 - **Lantern limit** (v0.2.9): a lantern gives two game hours (four steps) of
@@ -96,7 +96,7 @@ hard to confuse. Run `node tools/realm-script.mjs` to regenerate.
 
 - **Seasons**: a 28-day year of four seven-day seasons. Dawn and dusk move with
   the season (winter nights are longest), but every night still lasts about
-  five real minutes. Winter freezes the river so it can be walked across, and
+  three real minutes. Winter freezes the river so it can be walked across, and
   snow closes unexplored high mountain paths. Temperature, snow and foraging
   follow the season.
 - **Hunger**: after about a day without food you are hungry (−1 STR, −1 CON, half
