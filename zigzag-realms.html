@@ -2596,6 +2596,7 @@ async function move(dir){
   const F=cell(f),dc=10+Math.floor(F.atk/2),d=rnd(20),m=mod(sv("DEX")),tot=d+m,txt=`DEX check: d20 → ${d} ${sgn(m)} = ${tot} against DC ${dc}`;
   if(tot<dc){say(`You try to get away ${dir}, but ${F.t} cuts you off.`,"bad",txt);monsterTurn();store.flush();render();return}
   log(`You escape ${F.designation} ${F.t}, heading ${dir}.`,"good",txt);
+  if(roughSide(here,dir)){const b=sv("HP");setStat("HP",Math.max(1,b-2));log(`You scramble across hard ground to get away, and it costs you: −${b-sv("HP")} HP.`,"bad")}
  }
  const verb=dir==="up"?"climb up":dir==="down"?"go down":"walk "+dir;
  const key=ck(H.x+v.dx,H.y+v.dy,zOf(H)+v.dz);
