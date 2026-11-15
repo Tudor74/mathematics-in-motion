@@ -119,6 +119,12 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .blockflash.show{animation:bflash 2.2s ease forwards}@keyframes bflash{0%{opacity:0;transform:scale(.85)}12%{opacity:1;transform:scale(1.04)}22%{transform:scale(1)}80%{opacity:1}100%{opacity:0}}
 .bf-hex{width:230px;height:200px;display:grid;place-content:center;gap:6px;text-align:center;padding:0 34px;background:var(--ink);color:var(--sheet);clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);box-shadow:0 6px 24px #0005}
 .bf-hex b{font-family:var(--display);font-size:22px;letter-spacing:.04em}.bf-hex span{font-size:13pt;line-height:1.3}
+.panel.statusbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 20px;padding:10px 16px}
+.statusbar .hud,.statusbar .maprealm,.statusbar .mapwx,.statusbar .nixie{position:static;transform:none;box-shadow:none;max-width:none}
+.statusbar .hud{display:flex;align-items:center;gap:12px}.statusbar .hudside{display:flex;flex-wrap:wrap;gap:6px;padding-top:0;align-items:center}
+.statusbar .mapwx{border:0;background:none;padding:0}.statusbar .maprealm>span{box-shadow:none}
+.statusbar .nixie{margin-left:auto;background:none;border:0;padding:0}
+@media (max-width:560px){.statusbar{justify-content:center}.statusbar .nixie{margin-left:0}}
 .maprealm{position:absolute;right:10px;top:10px;pointer-events:none}.maprealm:empty{display:none}
 .maprealm>span{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;background:color-mix(in srgb,var(--sheet) 88%,transparent);border:1px solid var(--rule);box-shadow:0 2px 8px #0002;font-family:var(--mono);font-size:13pt;color:var(--ink)}
 .maprealm .facehead{display:block;border-radius:50%;background:var(--sheet)}.maprealm .live .facehead{box-shadow:0 0 0 2px var(--good)}
@@ -479,16 +485,22 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
   <section class="panel mapside" aria-label="Where you are"><div class="mapplace" id="mapplace"></div></section>
    <section class="panel map" aria-label="Map">
     <span id="coords" hidden></span>
-    <div class="mapwrap"><svg id="map" viewBox="0 0 480 416" role="img" aria-label="Map of explored places on your current level"></svg><div class="hud" id="hud" aria-live="polite"></div>
-  <div class="nixie" id="pill-clock" data-night="false">
-   <div class="segclock"><svg id="moon" viewBox="3.5 3.5 25 25"></svg><button id="sound-toggle" class="soundicon" aria-pressed="true" type="button" aria-label="Sound on"></button><svg aria-hidden="true" id="segdigits" viewBox="0 0 132 44"></svg></div>
-   <div class="seasonline" id="seasonline" aria-hidden="true"><span class="sp"></span><span class="su"></span><span class="au"></span><span class="wi"></span><i></i></div>
-  </div>
-<div class="maprealm" id="maprealm"></div><div class="blockflash" id="blockflash" aria-live="assertive"></div><div class="mapkey" id="mapkey" hidden></div><div class="arrive" id="arrive" aria-live="polite"></div><div class="gate" id="gate" hidden></div><div class="mapwx" id="mapwx" aria-label="Weather here"></div></div>
+    <div class="mapwrap"><svg id="map" viewBox="0 0 480 416" role="img" aria-label="Map of explored places on your current level"></svg>
+<div class="blockflash" id="blockflash" aria-live="assertive"></div><div class="mapkey" id="mapkey" hidden></div><div class="arrive" id="arrive" aria-live="polite"></div><div class="gate" id="gate" hidden></div></div>
     <div class="zoomrow"><button class="small" id="zoom-out" type="button" aria-label="Zoom out">−</button><span class="mono" id="zoom-label">zoom</span><button class="small" id="zoom-in" type="button" aria-label="Zoom in">+</button><button class="small iconbtn" id="map-key-btn" type="button" aria-label="Map key" title="Map key">?</button></div>
     <div class="layerbar" id="layerbar" role="img" aria-label="Layers"></div>
    </section>
  </div>
+
+ <section class="panel statusbar" aria-label="Status">
+  <div class="hud" id="hud" aria-live="polite"></div>
+  <div class="maprealm" id="maprealm"></div>
+  <div class="mapwx" id="mapwx" aria-label="Weather here"></div>
+  <div class="nixie" id="pill-clock" data-night="false">
+   <div class="segclock"><svg id="moon" viewBox="3.5 3.5 25 25"></svg><button id="sound-toggle" class="soundicon" aria-pressed="true" type="button" aria-label="Sound on"></button><svg aria-hidden="true" id="segdigits" viewBox="0 0 132 44"></svg></div>
+   <div class="seasonline" id="seasonline" aria-hidden="true"><span class="sp"></span><span class="su"></span><span class="au"></span><span class="wi"></span><i></i></div>
+  </div>
+ </section>
  <header class="top">
   <h1 class="sr">Zigzag Realms</h1>
   <div class="hdr-right">
