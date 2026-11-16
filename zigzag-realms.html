@@ -115,6 +115,9 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .map .side{stroke-linecap:round;pointer-events:none}.map .side.shut{stroke:#8b8b86;stroke-width:3;opacity:1}.map .side.shut.mine{stroke-width:3.6}.map .side.rough{stroke:#8b8b86;stroke-width:3.4;stroke-dasharray:.1 6;stroke-linecap:round}
 .map .side.open.mine{stroke:var(--good);stroke-width:3.5;opacity:.8;stroke-dasharray:6 5}
 .map .side.pulse{animation:sidepulse .7s ease 3}@keyframes sidepulse{0%,100%{stroke:var(--ink)}50%{stroke:var(--danger);stroke-width:9}}
+.pickflash{position:absolute;left:50%;bottom:22px;transform:translate(-50%,10px);z-index:4;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .3s ease}
+.pickflash.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.pickflash button{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:8px 18px;border-radius:99px;box-shadow:0 6px 18px #0003;font-size:13pt}
 .folkflash{position:absolute;left:0;right:0;top:34px;display:flex;justify-content:center;pointer-events:none;z-index:4;opacity:0;transform:translateY(-8px);transition:opacity .35s ease,transform .35s ease}
 .folkflash.show{opacity:1;transform:none;pointer-events:auto}
 .folkflash .ffrow{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:86%}
@@ -545,7 +548,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
    <section class="panel map" aria-label="Map">
     <span id="coords" hidden></span>
     <div class="mapwrap"><svg id="map" viewBox="0 0 480 416" role="img" aria-label="Map of explored places on your current level"></svg>
-<div class="blockflash" id="blockflash" aria-live="assertive"></div><div class="folkflash" id="folkflash" aria-live="polite"></div><nav class="compass roseover" id="compass" aria-label="Ways from here"></nav><div class="encounter" id="encounter" aria-live="polite"></div><div class="starve" id="starve" role="alert"></div><div class="dream" id="dream" aria-hidden="true"><div class="track"></div></div><div class="exploring" id="exploring" role="status" aria-live="polite"><span><svg class="hourglass" viewBox="0 0 24 32" aria-hidden="true"><g class="hg"><path class="hg-frame" d="M4 2h16M4 30h16M6 2c0 8 5 10 5 14s-5 6-5 14M18 2c0 8-5 10-5 14s5 6 5 14"/><path class="hg-top" d="M7.2 6h9.6c-.6 4-3.6 6.2-4.8 9.5C10.8 12.2 7.8 10 7.2 6z"/><path class="hg-bot" d="M7 29c.6-4 3.6-6 5-7.5 1.4 1.5 4.4 3.5 5 7.5z"/><line class="hg-fall" x1="12" y1="16" x2="12" y2="28"/></g></svg>Exploring, stand by</span></div><div class="zoomslider"><button class="small iconbtn" id="map-key-btn" type="button" aria-label="Map key" title="Map key">?</button><span aria-hidden="true">+</span><input type="range" id="zoom" min="0" max="5" step="1" aria-label="Zoom" title="Zoom"><span aria-hidden="true">−</span></div><div class="mapkey" id="mapkey" hidden></div><div class="arrive" id="arrive" aria-live="polite"></div><div class="gate" id="gate" hidden></div></div>
+<div class="blockflash" id="blockflash" aria-live="assertive"></div><div class="folkflash" id="folkflash" aria-live="polite"></div><div class="pickflash" id="pickflash"></div><nav class="compass roseover" id="compass" aria-label="Ways from here"></nav><div class="encounter" id="encounter" aria-live="polite"></div><div class="starve" id="starve" role="alert"></div><div class="dream" id="dream" aria-hidden="true"><div class="track"></div></div><div class="exploring" id="exploring" role="status" aria-live="polite"><span><svg class="hourglass" viewBox="0 0 24 32" aria-hidden="true"><g class="hg"><path class="hg-frame" d="M4 2h16M4 30h16M6 2c0 8 5 10 5 14s-5 6-5 14M18 2c0 8-5 10-5 14s5 6 5 14"/><path class="hg-top" d="M7.2 6h9.6c-.6 4-3.6 6.2-4.8 9.5C10.8 12.2 7.8 10 7.2 6z"/><path class="hg-bot" d="M7 29c.6-4 3.6-6 5-7.5 1.4 1.5 4.4 3.5 5 7.5z"/><line class="hg-fall" x1="12" y1="16" x2="12" y2="28"/></g></svg>Exploring, stand by</span></div><div class="zoomslider"><button class="small iconbtn" id="map-key-btn" type="button" aria-label="Map key" title="Map key">?</button><span aria-hidden="true">+</span><input type="range" id="zoom" min="0" max="5" step="1" aria-label="Zoom" title="Zoom"><span aria-hidden="true">−</span></div><div class="mapkey" id="mapkey" hidden></div><div class="arrive" id="arrive" aria-live="polite"></div><div class="gate" id="gate" hidden></div></div>
     <div class="layerbar" id="layerbar" role="img" aria-label="Layers"></div>
    </section>
  </div>
@@ -2446,6 +2449,26 @@ function ensureWayOut(id,fromId){
 }
 /* Who is here: on entering a hex, the people (and creatures) in it flash up over the map for a few seconds,
    each with a face, so you notice them. Tap one to dismiss, or wait for it to fade. */
+/* Things lying here: on arrival a Pick up all button flashes up over the map for a few seconds */
+let pickTimer=null;
+const loose=locId=>storeIds(locId).map(cell).filter(i=>i&&i.k==="item"&&!i.forSale);
+function flashPickup(locId){
+ const el=$("pickflash");if(!el||hereId()!==locId)return;clearTimeout(pickTimer);
+ const items=loose(locId);if(!items.length||isDowned()){el.classList.remove("show");return}
+ el.innerHTML=`<button class="primary" data-act="pickall">${ic("take","")} Pick up all (${items.length})</button>`;
+ el.classList.remove("show");void el.offsetWidth;el.classList.add("show");
+ pickTimer=setTimeout(()=>el.classList.remove("show"),6000);
+}
+function pickUpAll(){
+ const here=hereId();if(!here||isDowned())return;if(foeId()){say(`Not with ${cell(foeId()).t} watching.`,"bad");render();return}
+ const got=[],left=[];
+ for(const it of loose(here).sort((a,b)=>(+a.weight||0)-(+b.weight||0))){
+  if(carried()+(+it.weight||0)>capacity()){left.push(it.t);continue}
+  excise(it.id,"contain");appendTo(charId(),"contain",it.id);got.push(it.t)}
+ if(got.length)log(`You pick up ${got.length>4?got.slice(0,4).join(", ")+` and ${got.length-4} more`:got.join(", ")}.`,"good");
+ if(left.length)log(`Too heavy to carry as well: ${left.join(", ")}.`,"bad");
+ $("pickflash").classList.remove("show");store.flush();render();
+}
 let folkTimer=null;
 function flashFolk(locId){
  const el=$("folkflash");if(!el||hereId()!==locId||isDowned())return;const L=cell(locId),Z=zOf(L);
@@ -2467,7 +2490,7 @@ function flashFolk(locId){
 function enter(locId,first){
  if(mp.on()){mpSoon();const T=cell(locId);if(T&&T.town)maybeIntroduce(T)}
  const ch=charId(),prev=hereId();if(prev&&prev!==locId){cell(ch).prevAt=prev;touch(ch)}
- ensureWayOut(locId,prev);if(prev!==locId)setTimeout(()=>flashFolk(locId),80);
+ ensureWayOut(locId,prev);if(prev!==locId)setTimeout(()=>{flashFolk(locId);flashPickup(locId)},80);
  connect(ch,"at",locId);const L=cell(locId);lastHazard=null;rounds=[];
  if(!L.visited){L.visited=true;touch(locId);gainXP(L.town&&!L.town.of?25:10);if(L.town&&!L.town.of)log(`You reach ${L.t}, a ${TOWN_SIZES[L.town.size].label} on the ${riverName()}.`,"good")}
  markSeen(locId);ravenScout(locId);checkRumour(locId);checkMarks(L);
@@ -5677,7 +5700,7 @@ document.addEventListener("click",e=>{
   trade:i=>{openTrade=openTrade===i?null:i;openChat=null;armedAttack=null;render()},
   buyfood:buyFood,sell:v=>{const [n,it]=v.split("|");sellTo(n,it)},quest:i=>{offerQuest(cell(i));passTime(5);store.flush();render()},
   give:giveFood,arm:i=>{armedAttack=armedAttack===i?null:i;render()},hit:attackAgent,
-  disengage:()=>disengage(),autofight:()=>toggleAutoFight(),evgo:id=>goToEvent(id),reengage:()=>{const f=foeHere();if(f){cell(f).truce=0;touch(f);log(`You turn to face ${cell(f).t} again.`,"bad");store.flush();render()}},craft,deposit,withdraw,rent:rentCottage,leave:leaveForOthers,takeleft:takeLeft,train:takeTrain,steal:trySteal,sharefood:shareFood,rate:rateChat,contest:enterContest,festprize:festivalPrize,throwdart:throwDart})[b.dataset.act](id);return}
+  disengage:()=>disengage(),pickall:()=>pickUpAll(),autofight:()=>toggleAutoFight(),evgo:id=>goToEvent(id),reengage:()=>{const f=foeHere();if(f){cell(f).truce=0;touch(f);log(`You turn to face ${cell(f).t} again.`,"bad");store.flush();render()}},craft,deposit,withdraw,rent:rentCottage,leave:leaveForOthers,takeleft:takeLeft,train:takeTrain,steal:trySteal,sharefood:shareFood,rate:rateChat,contest:enterContest,festprize:festivalPrize,throwdart:throwDart})[b.dataset.act](id);return}
  const d=e.target.closest("#compass button[data-dir]");if(d){move(d.dataset.dir);return}
  // while the map slides (and a moment after), taps on it are ignored, so a moving map never walks you somewhere
  if(e.target.closest("#map")&&mapCam&&(mapCam.anim||performance.now()-(mapCam.settled||0)<250||mapDownAt>(mapCam.anim?mapCam.anim.t0:mapCam.slideStart||0)&&mapDownDuringSlide))return;
