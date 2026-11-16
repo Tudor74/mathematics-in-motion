@@ -16,24 +16,27 @@ function model(t){const c=t.curve,pts=c.points.slice().sort((a,b)=>a[0]-b[0]),la
  if(t.id==='longevity'){const rate=(last[1]-first[1])/((last[0]-first[0])/10);return {type:'linear',pts,last,def:+rate.toFixed(2),min:0,max:5,step:.05,label:'Years gained per decade',fmt:v=>v.toFixed(2)+' years'}}
  const cap=/^%|% of/.test(unit)?100:unit.includes('countr')?195:null;
  if(cap){return {type:'logistic',pts,last,cap,def:last[1]>cap/2?Math.round(last[0]-3):2032,min:2010,max:2045,step:.5,label:'Year it reaches half of the maximum',fmt:v=>String(v)}}
+ if(c.ceiling){const span=Math.max(.5,last[0]-first[0]);const r=clamp(Math.pow(last[1]/first[1],1/span)-1,0,3);return {type:'capped',pts,last,L:c.ceiling,def:+Math.min(r*100,150).toFixed(0),min:0,max:150,step:1,label:'Early growth per year (%)',fmt:v=>v+'%'}}
  if(c.kind==='cost-decline'){const span=Math.max(1,last[0]-first[0]);const r=1-Math.pow(last[1]/first[1],1/span);return {type:'decline',pts,last,def:+clamp(r*100,0,25).toFixed(1),min:0,max:25,step:.5,label:'Price fall per year (%)',fmt:v=>v+'%'}}
  const span=Math.max(.5,last[0]-first[0]);let r=pts.length>1?Math.pow(last[1]/first[1],1/span)-1:.15;r=clamp(r,0,3);
  return {type:'growth',pts,last,def:+Math.min(r*100,150).toFixed(0),min:0,max:150,step:1,label:'Growth per year (%)',fmt:v=>v+'%'}}
 function project(m,v,y){if(m.type==='growth')return m.last[1]*Math.pow(1+v/100,y-m.last[0]);if(m.type==='decline')return m.last[1]*Math.pow(1-v/100,y-m.last[0]);
  if(m.type==='linear')return m.last[1]+v*(y-m.last[0])/10;
+ if(m.type==='capped'){if(m.last[1]>=m.L)return m.L;const a=m.L/m.last[1]-1;return m.L/(1+a*Math.exp(-Math.log(1+v/100)*(y-m.last[0])))}
  if(m.type==='logistic'){const L=m.cap,a=L/m.last[1]-1;const k=Math.log(a)/(v-m.last[0]);if(isFinite(k)&&k>0)return L/(1+Math.exp(-k*(y-v)));return L/(1+a*Math.exp(-.3*(y-m.last[0])))}return null}
 
 function chart(t,m,v,o){const x0=70,x1=560,y0=212,y1=66;const ys=m.pts.map(p=>p[0]);const ya=Math.min(2010,Math.floor(Math.min(...ys))),yb=2040;const X=y=>x0+(y-ya)/(yb-ya)*(x1-x0);let g='';
- g+=`<rect x="${X(m.pts[m.pts.length-1][0])}" y="${y1-14}" width="${f2(x1-X(m.pts[m.pts.length-1][0]))}" height="${y0-y1+14}" fill="${C.purplep}" opacity=".45"/>`+T(X(2040)-6,y0-6,'projection',{size:10.5,anchor:'end',fill:C.purple});
+ g+=`<rect x="${X(m.pts[m.pts.length-1][0])}" y="${y1-14}" width="${f2(x1-X(m.pts[m.pts.length-1][0]))}" height="${y0-y1+14}" fill="${C.purplep}" opacity=".45"/>`+T(X(2040)-6,y0-6,t.curve.projLabel||'projection',{size:10.5,anchor:'end',fill:C.purple});
  for(let y=Math.ceil(ya/5)*5;y<=2040;y+=5)g+=`<line x1="${f2(X(y))}" y1="${y0}" x2="${f2(X(y))}" y2="${y0+5}" stroke="${C.ink}"/>`+T(X(y),y0+18,String(y),{size:10.5,anchor:'middle',fill:C.muted});
  g+=`<line x1="${x0}" y1="${y0}" x2="${x1}" y2="${y0}" stroke="${C.ink}"/>`;
  if(m.type==='milestones'){m.pts.forEach((p,i)=>{const x=X(p[0]);g+=`<line x1="${f2(x)}" y1="${y0}" x2="${f2(x)}" y2="${y0-30-i*30}" stroke="${C.blue}" stroke-width="2" opacity="${f2(o)}"/><circle cx="${f2(x)}" cy="${y0-30-i*30}" r="7" fill="${C.blue}" opacity="${f2(o)}"/>`+T(x>380?x-10:x+10,y0-26-i*30,t.curve.unit==='milestone number'?'milestone '+Math.round(p[1]):fmtN(p[1])+' '+t.curve.unit,{size:11,fill:C.ink,op:o,anchor:x>380?'end':'start'})});
   const [col]=CONF[t.confidence]||[C.purple];g+=`<circle cx="${X(2040)}" cy="${y1+20}" r="11" fill="${col}"/>`+T(X(2040)-14,y1+24,'2040 →',{size:11.5,anchor:'end',fill:col,weight:700});return g}
  const vals=m.pts.map(p=>p[1]);let proj=[];for(let y=m.last[0];y<=2040.01;y+=.25)proj.push([y,project(m,v,y)]);const all=vals.concat(proj.map(p=>p[1])).filter(x=>isFinite(x)&&x>0);
- const logScale=(m.type==='growth'||m.type==='decline')&&Math.max(...all)/Math.max(1e-9,Math.min(...all))>50;let lo=logScale?Math.min(...all)*.7:0,hi=Math.max(...all)*1.08;if(m.type==='logistic')hi=m.cap;if(m.type==='linear'){lo=Math.min(...all)-3;hi=Math.max(...all)+3}
+ const logScale=(m.type==='growth'||m.type==='decline')&&Math.max(...all)/Math.max(1e-9,Math.min(...all))>50;let lo=logScale?Math.min(...all)*.7:0,hi=Math.max(...all)*1.08;if(m.type==='logistic')hi=m.cap;if(m.type==='capped')hi=m.L*1.12;if(m.type==='linear'){lo=Math.min(...all)-3;hi=Math.max(...all)+3}
  const Y=v=>logScale?y0-(Math.log(v/lo)/Math.log(hi/lo))*(y0-y1):y0-(v-lo)/(hi-lo)*(y0-y1);
  [lo+(hi-lo)*0,lo+(hi-lo)*.5,hi].forEach((tv,i)=>{const val=logScale?lo*Math.pow(hi/lo,i/2):tv;g+=T(x0-6,Y(val)+4,fmtN(val),{size:10.5,anchor:'end',fill:C.muted})+`<line x1="${x0}" y1="${f2(Y(val))}" x2="${x1}" y2="${f2(Y(val))}" stroke="${C.grid}" stroke-dasharray="2 4"/>`});
  if(logScale)g+=T(x0,y1-20,'log scale',{size:10,fill:C.muted});
+ if(m.type==='capped')g+=`<line x1="${x0}" y1="${f2(Y(m.L))}" x2="${x1}" y2="${f2(Y(m.L))}" stroke="${C.purple}" stroke-width="1.5" stroke-dasharray="3 3"/>`+T(x0+6,Y(m.L)-5,'assumed ceiling: '+fmtN(m.L),{size:10.5,fill:C.purple});
  g+=`<path d="${m.pts.map((p,i)=>(i?'L':'M')+f2(X(p[0]))+' '+f2(Y(p[1]))).join('')}" fill="none" stroke="${C.blue}" stroke-width="3"/>`;m.pts.forEach(p=>{g+=`<circle cx="${f2(X(p[0]))}" cy="${f2(Y(p[1]))}" r="5" fill="${C.blue}"/>`});
  const shown=proj.filter(p=>p[0]<=m.last[0]+(2040-m.last[0])*o);if(shown.length>1)g+=`<path d="${shown.map((p,i)=>(i?'L':'M')+f2(X(p[0]))+' '+f2(Y(clamp(p[1],lo||1e-9,hi*5)))).join('')}" fill="none" stroke="${C.purple}" stroke-width="3" stroke-dasharray="7 5"/>`;
  if(o>=1){const v40=project(m,v,2040);g+=`<circle cx="${X(2040)}" cy="${f2(Y(clamp(v40,lo||1e-9,hi)))}" r="7" fill="${C.purple}"/>`+T(X(2040)-10,Y(clamp(v40,lo||1e-9,hi))-12,'2040: '+fmtN(v40),{size:12.5,anchor:'end',weight:700,fill:C.purple})}
@@ -65,7 +68,7 @@ FD.techs.forEach(t=>{const m=model(t);const [col,lab]=CONF[t.confidence]||[C.pur
    return g},
   tryUI:s=>({html:(m.type!=='milestones'?`<div class="row"><label>${esc(m.label)} <input type="range" id="pv" min="${m.min}" max="${m.max}" step="${m.step}" value="${s.v}"></label></div>`:'')+`<div class="row"><label><input type="checkbox" id="wd"${s.wild?' checked':''}> Show the wildcard scenario</label></div><p class="out" id="tout"></p>`,
    bind(q,re){const pv=q('#pv');if(pv)pv.oninput=e=>{s.v=+e.target.value;re()};q('#wd').onchange=e=>{s.wild=e.target.checked;re()}},
-   out:s=>m.type==='milestones'?'Milestone points are events, not a smooth trend, so there is no curve to project. Flip to the wildcard to see another future.':`Your assumption: ${m.fmt(s.v)}. In 2040 that gives about ${fmtN(project(m,s.v,2040))} ${t.curve.unit}. The default was fitted to the real data.`})
+   out:s=>m.type==='milestones'?'Milestone points are events, not a smooth trend, so there is no curve to project. Flip to the wildcard to see another future.':`Your assumption: ${m.fmt(s.v)}. In 2040 that gives about ${fmtN(project(m,s.v,2040))} ${t.curve.unit}. The default was fitted to the real data.${t.curve.caveat?' '+esc(t.curve.caveat):''}`})
  })});
 
 /* Finale */
