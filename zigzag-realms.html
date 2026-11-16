@@ -5576,6 +5576,23 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_EXP:{water:
   out.saw=!night&&!under&&w.rain<.3&&!H.sanctuary&&!H.grove?(T==="forest"?1:near(c=>c.terrain==="forest")*.5):0;
   // Sanctuaries are hushed: everything is softened and the crowd falls away
   if(H.sanctuary){for(const k of ["wind","water","falls","rain","leaves","drone"])out[k]*=.3;out.crowd=0;out.hum=.025;out.birds*=.4;out.crickets*=.4;out.thunder*=.5;out.crackle=0;out.clinks=0}
+  // The seasons: spring birdsong, summer crickets, autumn rooks, winter's hush and creaking ice
+  const season=seasonOf(t);out.season=season;
+  out.birds*= {spring:1.8,summer:1,autumn:.45,winter:.15}[season];out.crickets*={spring:.4,summer:1.8,autumn:.7,winter:0}[season];
+  out.rooks=!night&&!under&&season==="autumn"&&["forest","plains","road","village","grove"].includes(T)?1:(!night&&!under&&season==="winter"?.3:0);
+  out.ice=season==="winter"&&!under&&waterNear>0?waterNear:0;if(out.ice){out.water*=.25;out.torrent*=.2;out.burble*=.3}
+  // Caves: the deeper, the more it drips, the longer the echo, and now and then stone shifts somewhere far off
+  out.depth=z<0?-z:0;if(z<0){out.drips=1+(-z)*.25}
+  // Sanctuaries and the Moonlit Grove call to you from a few hexes away: bells, or a hummed choir
+  let calm=null;for(const S of Object.values(zz.cells)){if(S.k!=="loc"||zOf(S)!==z||!(S.sanctuary||S.grove)||S.id===H.id)continue;const d=hexDist(H.x,H.y,S.x,S.y);if(d<=4&&(!calm||d<calm.d))calm={d,dx:Math.sign(wrapC(S.x-H.x)),grove:!!S.grove}}
+  out.calm=calm;
+  // You: a heartbeat when badly hurt, a rumbling stomach when hungry
+  const hpF=sv("HP")/Math.max(1,sv("MAXHP"));out.heart=isDowned()?0:hpF<=.25?1-hpF*2:0;out.stomach=hungerLevel(t)>=1?Math.min(1,.5+hungerLevel(t)*.25):0;
+  // Other travellers' footsteps within two hexes
+  out.walkers=(mp.on()?mp.players:[]).filter(p=>(p.z||0)===z).map(p=>({d:hexDist(H.x,H.y,p.x,p.y),dx:Math.sign(wrapC(p.x-H.x))})).filter(p=>p.d>0&&p.d<=2);
+  // The magical bridge hums while it stands, if you are within a few hexes of it
+  let mb=null;if(magicPresent(t)&&!under)for(const c of Object.values(zz.cells)){if(c.k==="loc"&&c.river&&c.river.crossing==="magic"){const d=hexDist(H.x,H.y,c.x,c.y);if(d<=4)mb={d,dx:Math.sign(wrapC(c.x-H.x))}}}
+  out.bridge=mb;
   return out;
  },
  scape(){
@@ -5674,6 +5691,15 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_EXP:{water:
   if(e.torrent){const ch=this.chains&&this.chains.torrent;if(ch&&r()<.3)ch[0].frequency.setTargetAtTime(380+e.torrent*900+r()*120,now0,1.5)}
   if(r()<.018*e.howl)this.howl(e.howl,e.howlDx);
   for(const a of e.anoms||[])if(r()<(a.d===0?.09:a.d===1?.05:.03))this.eerie(a);
+  if(r()<.05*(e.rooks||0))this.rook();
+  if(e.ice&&r()<.05*e.ice)this.creak();
+  if(e.depth&&r()<.006*e.depth)this.rockfall(e.depth);
+  if(e.depth){this.echoFb.gain.setTargetAtTime(Math.min(.72,.42+e.depth*.04),now0,1);this.echo.delayTime.setTargetAtTime(Math.min(.8,.33+e.depth*.06),now0,1)}
+  if(e.calm&&r()<(e.calm.d<=1?.12:.06))this.calmCall(e.calm);
+  if(e.heart){const gap=1.1-e.heart*.45;for(let k=0;k*gap<1;k++)this.heartbeat(k*gap,e.heart)}
+  if(e.stomach&&r()<.025*e.stomach)this.stomach(e.stomach);
+  for(const w of e.walkers||[])if(r()<(w.d===1?.5:.3))this.walker(w);
+  if(e.bridge&&r()<(e.bridge.d===0?.5:.25))this.shimmer(e.bridge);
   if(e.fireFar){for(let i=0;i<3;i++)if(r()<.45*e.fireFar)this.pop(i*.25+r()*.2,e.fireFar*.6,this.panned(e.fireDx*.6));if(r()<.08*e.fireFar)this.roar(e.fireFar,e.fireDx)}
   if(e.crackle>1&&r()<.12)this.roar(1,0);
   if(e.hooves&&(this.hoofUntil||0)<this.ctx.currentTime&&r()<.03*e.hooves)this.hooves(e.hooves,e.townDx);
@@ -5798,6 +5824,22 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_EXP:{water:
  clink(){const f=2600+Math.random()*1200;this.tone(f,f,.35,.03,0);this.tone(f*2.01,f*2,.25,.012,0)},
  pop(at,lvl=1,dest){const c=this.ctx,t=c.currentTime+at,s=c.createBufferSource(),g=c.createGain(),hp=this.filt("highpass",(lvl<1?500:900)+Math.random()*1500*lvl);s.buffer=this.white;s.playbackRate.value=this.pitch;
   g.gain.setValueAtTime(.0001+.25*lvl*Math.random(),t);g.gain.exponentialRampToValueAtTime(.0001,t+.02+Math.random()*.04);s.connect(hp);hp.connect(g);g.connect(dest||this.fx);s.start(t,Math.random()*3);s.stop(t+.1)},
+ rook(){const n=1+Math.floor(Math.random()*3),dest=this.panned((Math.random()-.5)*1.4);for(let i=0;i<n;i++){const at=i*(.35+Math.random()*.2);this.burst("bandpass",700,520,4,.16,.22,at,dest);this.tone(330,240,.2,.03,at,"sawtooth",dest)}},
+ creak(){const c=this.ctx,t=c.currentTime,o=c.createOscillator(),bp=this.filt("bandpass",900,10),g=c.createGain(),f=60+Math.random()*50,dur=.6+Math.random()*1.2;o.type="sawtooth";
+  o.frequency.setValueAtTime(f,t);o.frequency.linearRampToValueAtTime(f*(1.5+Math.random()),t+dur);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.25,t+.05);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(bp);bp.connect(g);g.connect(this.echo||this.fx);g.connect(this.fx);o.start(t);o.stop(t+dur+.05);if(Math.random()<.3)this.burst("highpass",3000,1500,1,.12,.08,dur*.7)},
+ rockfall(depth){const c=this.ctx,t=c.currentTime,n=6+Math.floor(Math.random()*10);for(let i=0;i<n;i++){const at=i*.06+Math.random()*.25+i*i*.004;this.burst("lowpass",500+Math.random()*700,200,1,.07+.02*Math.min(4,depth),.12+Math.random()*.2,at,this.echo||this.fx)}
+  const s=c.createBufferSource(),lp=this.filt("lowpass",220),g=c.createGain();s.buffer=this.brownBuf;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.16,t+.3);g.gain.exponentialRampToValueAtTime(.0001,t+2.5);s.connect(lp);lp.connect(g);g.connect(this.echo||this.fx);s.start(t);s.stop(t+2.6)},
+ calmCall(cl){const v=cl.d<=1?1:cl.d===2?.6:.35,dest=this.panned(cl.dx*.6);
+  if(cl.grove){const ch=[0,4,7,11].map(k=>220*Math.pow(2,k/12));ch.forEach((f,i)=>this.voice&&this.voice(f,i*.08,3.2,.045*v,["a","o","u","a"][i],true,dest))}
+  else{const notes=[784,659,587,523];const n=1+Math.floor(Math.random()*3);for(let i=0;i<n;i++){const f=notes[Math.floor(Math.random()*notes.length)];this.tone(f,f*.998,3.5,.05*v,i*.9,"sine",this.echo||dest);this.tone(f*2.76,f*2.75,1.5,.012*v,i*.9,"sine",dest)}}},
+ heartbeat(at,level){for(const [off,pk] of [[0,1],[.18,.7]]){this.tone(62,38,.16,.25*level*pk,at+off,"sine",this.master)}},
+ stomach(level){const c=this.ctx,t=c.currentTime,o=c.createOscillator(),lp=this.filt("lowpass",300,4),g=c.createGain(),dur=1+Math.random()*1.2;o.type="sawtooth";
+  o.frequency.setValueAtTime(70+Math.random()*30,t);o.frequency.linearRampToValueAtTime(110+Math.random()*60,t+dur*.5);o.frequency.linearRampToValueAtTime(60,t+dur);
+  lp.frequency.setValueAtTime(180,t);lp.frequency.linearRampToValueAtTime(420,t+dur*.6);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.12*level,t+.15);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(lp);lp.connect(g);g.connect(this.master);o.start(t);o.stop(t+dur+.05)},
+ walker(w){const v=w.d===1?.6:.3,dest=this.panned(w.dx*.7);for(let i=0;i<3;i++)this.burst("bandpass",380+Math.random()*200,250,2,1*v,.07,i*.5+Math.random()*.05,dest)},
+ shimmer(b){const v=b.d===0?1:b.d<=2?.5:.25,dest=this.panned(b.dx*.6),base=[1046,1318,1568,2093];for(let i=0;i<3;i++){const f=base[Math.floor(Math.random()*base.length)]*(1+(Math.random()-.5)*.004);this.tone(f,f*1.003,1.8,.018*v,i*.25,"sine",this.echo||dest);this.tone(f*1.5,f*1.5,1.2,.006*v,i*.25,"sine",dest)}},
  /* The anomalies. Each one, by its designation, has one of six wrong sounds: a beating drone, whispering,
     an out-of-tune music box, a clock that cannot keep time, a breath drawn in backwards, or a groan of metal. */
  eerie(a){const c=this.ctx,v=(a.d===0?1:a.d===1?.55:.3)*(a.keter?1.3:1),dest=this.panned(a.dx/2.5),rr=seededRng(a.seed+Math.floor(c.currentTime/7));
