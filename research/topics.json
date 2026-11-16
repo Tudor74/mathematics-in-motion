@@ -64,8 +64,8 @@
    {
     "title": "Short proofs and NP versus coNP",
     "status": "open",
-    "q": "Does every proof system for propositional logic have true statements whose shortest proofs are exponentially long?",
-    "known": "Cook and Reckhow (1979) showed this holds for every proof system exactly when NP ≠ coNP. Exponential lower bounds are proved for weaker systems such as resolution (Haken, 1985), but the question is open for Frege systems, the standard textbook proof systems.",
+    "q": "Is there a proof system for propositional logic in which every tautology has a proof of polynomial length?",
+    "known": "Cook and Reckhow (1979) showed that no such system exists exactly when NP ≠ coNP, so NP ≠ coNP means every proof system has tautologies whose shortest proofs grow faster than any polynomial. Exponential lower bounds for one particular system do not settle it. They are proved for weaker systems such as resolution (Haken, 1985), but even superpolynomial lower bounds remain open for Frege systems, the standard textbook proof systems.",
     "link": "https://en.wikipedia.org/wiki/Proof_complexity",
     "id": "proof-length"
    },
