@@ -1369,6 +1369,9 @@ function normMonster(m,pos){
   hp,maxhp:hp,ac:clamp(m.ac,9,17),attack:clamp(m.attack,1,Math.min(10,3+L+Math.floor(D/5))),damage,
   special:Object.keys(SPECIALS).includes(m.special)?m.special:"none",loot:m.loot?normItem(m.loot):null};
 }
+// A place name, never one of the narrator's working labels ("NEW (square 0,-5 at depth 0)" and the like)
+const BAD_NAME={test:n=>/\bNEW\b/.test(n)||/\bsquare\s*-?\d|\bat depth\b|^\s*-?\d+\s*,\s*-?\d+|^(north|south|east|west|up|down)$|^(unknown|nameless place|\.\.\.)$/i.test(n)};
+function cleanPlaceName(n,terrain){const t=String(n||"").replace(/\s+/g," ").trim().slice(0,60);return t&&!BAD_NAME.test(t)?t:pick((TABLES[terrain]||TABLES.plains).names)}
 function normLocation(o,fallbackTerrain,pos){
  o=o&&typeof o==="object"?o:{};
  let terrain=TERRAINS.includes(o.terrain)?o.terrain:(fallbackTerrain||"plains");
@@ -1376,7 +1379,7 @@ function normLocation(o,fallbackTerrain,pos){
  if(h&&typeof h==="object"&&h.name&&STATS.includes(h.stat)&&DICE.test(cleanDice(h.damage))){
   hazard={name:String(h.name).slice(0,60),text:String(h.text||"").slice(0,240),stat:h.stat,dc:Math.max(8,Math.min(18,Math.round(+h.dc||12))),damage:cleanDice(h.damage)};
  }
- return{name:String(o.name||"Nameless place").slice(0,60),desc:String(o.description||"").slice(0,1200),terrain,
+ return{name:cleanPlaceName(o.name,terrain),desc:String(o.description||"").slice(0,1200),terrain,
   items:(Array.isArray(o.items)?o.items:[]).slice(0,4).map(normItem),hazard,monster:pos.dist>2?normMonster(o.monster,pos):null};
 }
 function describeForPrompt(id){
@@ -1529,7 +1532,7 @@ function batchPrompt(locId,need){
   const where=`square ${n.pos.x},${n.pos.y} at depth ${n.pos.z}`;
   if(n.planned){const P=cell(n.planned);return`- ${n.dir}: PLANNED "${P.t}" (${P.terrain}, ${where}). Keep the name and terrain. Notes: ${P.desc}${P.exits?` Open ways from it: ${Object.keys(P.exits).filter(k=>P.exits[k]).join(", ")||"none"}.`:""} Write glimpse and description only.`}
   const sides=n.open?(n.open.length===4?" It is open on all four sides.":` It can be entered ONLY from the ${n.open.join(" and ")}; the ${FLAT.filter(d=>!n.open.includes(d)).join(" and ")} ${4-n.open.length===1?"side is":"sides are"} blocked by something solid that suits the ground (a cliff, a thicket, deep water, a wall). The description must say so, must not suggest a way through the blocked sides, and exits must match; give each blocked side a short "walls" phrase.`):"";
-  return`- ${n.dir}: NEW (${where}).${sides}${around.length?` Mapped neighbours: ${around.join("; ")}.`:""}${Math.max(Math.abs(n.pos.x),Math.abs(n.pos.y))>=WORLD_R-1?" It lies at the edge of the world, where a veil of golden mist hangs in the air; beyond it the world wraps round to its far side.":""}`;
+  return`- ${n.dir}: a place still to write, at ${where} (give it a real name of its own).${sides}${around.length?` Mapped neighbours: ${around.join("; ")}.`:""}${Math.max(Math.abs(n.pos.x),Math.abs(n.pos.y))>=WORLD_R-1?" It lies at the edge of the world, where a veil of golden mist hangs in the air; beyond it the world wraps round to its far side.":""}`;
  });
  return [
   "You are the narrator of a fantasy tabletop adventure in the style of classic D&D, with a strange undertone: anomalies, uncanny entities documented in the dry voice of containment files, inspired by the SCP Foundation.",
@@ -1542,7 +1545,7 @@ function batchPrompt(locId,need){
   "Write the places they can see from here, one for each direction below. Keep everything consistent with the landmarks and neighbours: terrain changes gradually, and the mountain, woods, lakes, river and desert are where the landmarks say.",
   items.join("\n"),
   "",
-  "For a NEW place give: name; terrain; glimpse (what the traveller can see of it from where they stand, under 12 words, as seen by day or by night as fits the time); description (2 to 3 sentences, second person, present tense, as experienced on arrival; mention what can be seen in other directions using the words north, south, east, west, above or below); exits (true or false for north, south, east, west, up, down: open ground usually has all four horizontal ways open; cliffs, deep water, thorn walls or rock close some; up and down only for real features such as stairs, a tree to climb, a cave mouth, a well or a ledge; underground passages usually have one to three ways; the way back toward the traveller must be open); walls (for each closed horizontal way, a short phrase of what blocks it); items (0 to 3, as below); hazard (about one in four, else null); monster (about one in nine underground or at night, one in fifteen otherwise, else null).",
+  "For each place still to write give: name (a proper place name, never a label or coordinates); terrain; glimpse (what the traveller can see of it from where they stand, under 12 words, as seen by day or by night as fits the time); description (2 to 3 sentences, second person, present tense, as experienced on arrival; mention what can be seen in other directions using the words north, south, east, west, above or below); exits (true or false for north, south, east, west, up, down: open ground usually has all four horizontal ways open; cliffs, deep water, thorn walls or rock close some; up and down only for real features such as stairs, a tree to climb, a cave mouth, a well or a ledge; underground passages usually have one to three ways; the way back toward the traveller must be open); walls (for each closed horizontal way, a short phrase of what blocks it); items (0 to 3, as below); hazard (about one in four, else null); monster (about one in nine underground or at night, one in fifteen otherwise, else null).",
   `Items: objects lying there. kind is one of ${KINDS.join(", ")}. weight in pounds, value in gold. Potions and food may heal with a dice expression such as "2d4+2"; armour gives ac 1 to 5; weapons have damage such as "1d8" and finesse true for light blades.`,
   `Hazards: {"name","text","stat" (one of ${STATS.join(", ")}),"dc" 10 to 16,"damage" such as "1d6"}.`,
   `Monsters are original anomalies (never real SCP numbers or names): {"designation":"AE-####","name","objectClass":"Safe|Euclid|Keter","description" (clinical, 1 or 2 short sentences under 30 words, ending with what it is doing now),"hp" about ${6+4*sv("LVL")},"ac" 10 to 16,"attack" 2 to ${3+sv("LVL")},"damage" one or two dice,"special":"none|regenerate|phasing|frenzy","loot" an item or null}. Keter only far from the start or deep underground.`,
@@ -3802,7 +3805,7 @@ function squareOut(id,planned){
  return {name:c.t,desc:c.desc,glimpse:c.glimpse||"",terrain:c.terrain,exits:ex,walls:c.walls||null,hazard:c.hazard||null,planned:!!planned,mon,hasMon:true};
 }
 function squareIn(s,L,n){
- const base=tableLocation(L,n.dir,n.pos);   // local items and anomalies, so each player still finds their own
+ const base=tableLocation(L,n.dir,n.pos);if(s.name&&BAD_NAME.test(s.name))s=Object.assign({},s,{name:null,glimpse:null});   // local items and anomalies, so each player still finds their own
  if(s.hasMon)base.monster=s.mon?Object.assign({},s.mon,{maxhp:s.mon.hp,loot:null}):null;
  return Object.assign(base,{sharedDesc:true,name:s.name||base.name,desc:s.desc,terrain:TERRAINS.includes(s.terrain)?s.terrain:base.terrain,
   exits:s.exits?EX(s.exits):normExits(null,n.dir),walls:normWalls(s.walls),glimpse:s.glimpse||`${s.name||base.name}: ${GLIMPSE[s.terrain]||GLIMPSE.other}`,hazard:s.hazard&&s.hazard.name?normLocation({hazard:s.hazard},base.terrain,n.pos).hazard:base.hazard,by:"shared"});
@@ -5758,6 +5761,7 @@ setInterval(()=>{
  if(saved){
   zz.cells=saved;for(const c of Object.values(zz.cells))if(c.k==="loc")coord.set(ck(c.x,c.y,zOf(c)),c.id);
   for(const c of Object.values(zz.cells))if(c.k==="loc"&&c.river&&c.river.crossing)fixCrossing(c.id);
+  for(const c of Object.values(zz.cells))if(c.k==="loc"&&BAD_NAME.test(String(c.t||""))&&!c.town){c.t=cleanPlaceName("",c.terrain);if(c.glimpse&&BAD_NAME.test(c.glimpse))c.glimpse=null;touch(c.id)}
   if(hereId())ensureWayOut(hereId(),charId()&&cell(charId()).prevAt);
   {const ch=charId()&&cell(charId());if(ch&&ch.lastMeal==null){ch.lastMeal=gameNow();touch(ch.id)}if(!cell("root").rivalry&&towns().length)seedRivalry()}
   const r=cell("root");if(!r.clock){r.clock={base:8*60,real:Date.now()};r.npcT=8*60;r.seed=Math.floor(Math.random()*1e6);touch("root")}
