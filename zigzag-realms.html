@@ -126,6 +126,7 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 @keyframes seekshoot{to{stroke-dashoffset:0}}
 .map .seekray{animation:seekfade 14s linear forwards}@keyframes seekfade{0%,80%{opacity:1}100%{opacity:0}}
 .pickflash .pickgot{background:var(--sheet);border:1px solid var(--rule);border-radius:14px;box-shadow:0 6px 18px #0003;padding:10px 16px;min-width:200px;max-width:320px;cursor:pointer}.pickflash .pickgot b{display:block;margin-bottom:4px}.pickflash .pickgot ul{margin:0;padding-left:18px;columns:2;column-gap:18px}.pickflash .pickgot p{margin:6px 0 0;color:var(--faint)}
+.lightning{position:absolute;inset:0;border-radius:12px;pointer-events:none;z-index:7;background:#fff;opacity:0}.lightning.on{animation:bolt .9s ease-out}@keyframes bolt{0%{opacity:0}4%{opacity:.75}10%{opacity:.1}16%{opacity:.55}40%{opacity:.08}100%{opacity:0}}@media (prefers-reduced-motion:reduce){.lightning.on{animation:none}}
 .pickflash{position:absolute;left:50%;bottom:22px;transform:translate(-50%,10px);z-index:4;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .3s ease}
 .pickflash.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 .pickflash{display:flex;align-items:center;gap:6px}.pickflash .pf-x{min-height:44px;width:44px;padding:0;border-radius:99px;font-size:20px;line-height:1;justify-content:center;background:var(--sheet)}
@@ -566,7 +567,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
    <section class="panel map" aria-label="Map">
     <span id="coords" hidden></span>
     <div class="mapwrap"><svg id="map" viewBox="0 0 480 416" role="img" aria-label="Map of explored places on your current level"></svg>
-<div class="blockflash" id="blockflash" aria-live="assertive"></div><div class="folkflash" id="folkflash" aria-live="polite"></div><div class="pickflash" id="pickflash"></div><button class="seekstar" id="seekstar" data-act="seek" aria-label="Seek: find people (once a day)" title="Seek: once a day, see which way everyone is"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.7 6.1 6.6.6-5 4.4 1.5 6.5L12 16.7l-5.8 3.4 1.5-6.5-5-4.4 6.6-.6z"/></svg></button><nav class="compass roseover" id="compass" aria-label="Ways from here"></nav><div class="encounter" id="encounter" aria-live="polite"></div><div class="starve" id="starve" role="alert"></div><div class="dream" id="dream" aria-hidden="true"><div class="track"></div></div><div class="exploring" id="exploring" role="status" aria-live="polite"><span><svg class="hourglass" viewBox="0 0 24 32" aria-hidden="true"><g class="hg"><path class="hg-frame" d="M4 2h16M4 30h16M6 2c0 8 5 10 5 14s-5 6-5 14M18 2c0 8-5 10-5 14s5 6 5 14"/><path class="hg-top" d="M7.2 6h9.6c-.6 4-3.6 6.2-4.8 9.5C10.8 12.2 7.8 10 7.2 6z"/><path class="hg-bot" d="M7 29c.6-4 3.6-6 5-7.5 1.4 1.5 4.4 3.5 5 7.5z"/><line class="hg-fall" x1="12" y1="16" x2="12" y2="28"/></g></svg>Exploring, stand by</span></div><div class="zoomslider"><button class="small iconbtn" id="map-key-btn" type="button" aria-label="Map key" title="Map key">?</button><span aria-hidden="true">+</span><input type="range" id="zoom" min="0" max="5" step="1" aria-label="Zoom" title="Zoom"><span aria-hidden="true">−</span></div><div class="mapkey" id="mapkey" hidden></div><div class="arrive" id="arrive" aria-live="polite"></div><div class="gate" id="gate" hidden></div></div>
+<div class="blockflash" id="blockflash" aria-live="assertive"></div><div class="folkflash" id="folkflash" aria-live="polite"></div><div class="pickflash" id="pickflash"></div><div class="lightning" id="lightning" aria-hidden="true"></div><button class="seekstar" id="seekstar" data-act="seek" aria-label="Seek: find people (once a day)" title="Seek: once a day, see which way everyone is"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.7 6.1 6.6.6-5 4.4 1.5 6.5L12 16.7l-5.8 3.4 1.5-6.5-5-4.4 6.6-.6z"/></svg></button><nav class="compass roseover" id="compass" aria-label="Ways from here"></nav><div class="encounter" id="encounter" aria-live="polite"></div><div class="starve" id="starve" role="alert"></div><div class="dream" id="dream" aria-hidden="true"><div class="track"></div></div><div class="exploring" id="exploring" role="status" aria-live="polite"><span><svg class="hourglass" viewBox="0 0 24 32" aria-hidden="true"><g class="hg"><path class="hg-frame" d="M4 2h16M4 30h16M6 2c0 8 5 10 5 14s-5 6-5 14M18 2c0 8-5 10-5 14s5 6 5 14"/><path class="hg-top" d="M7.2 6h9.6c-.6 4-3.6 6.2-4.8 9.5C10.8 12.2 7.8 10 7.2 6z"/><path class="hg-bot" d="M7 29c.6-4 3.6-6 5-7.5 1.4 1.5 4.4 3.5 5 7.5z"/><line class="hg-fall" x1="12" y1="16" x2="12" y2="28"/></g></svg>Exploring, stand by</span></div><div class="zoomslider"><button class="small iconbtn" id="map-key-btn" type="button" aria-label="Map key" title="Map key">?</button><span aria-hidden="true">+</span><input type="range" id="zoom" min="0" max="5" step="1" aria-label="Zoom" title="Zoom"><span aria-hidden="true">−</span></div><div class="mapkey" id="mapkey" hidden></div><div class="arrive" id="arrive" aria-live="polite"></div><div class="gate" id="gate" hidden></div></div>
     <div class="layerbar" id="layerbar" role="img" aria-label="Layers"></div>
    </section>
  </div>
@@ -5460,7 +5461,7 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_EXP:{water:
   const c=this.ctx,s=c.createBufferSource();s.buffer=buf;s.loop=true;let node=s;for(const f of chain){node.connect(f);node=f}
   const g=c.createGain();g.gain.value=0;node.connect(g);g.connect(this.master);s.start(0,Math.random()*3);
   if(lfo){const o=c.createOscillator(),og=c.createGain();o.frequency.value=lfo.rate;og.gain.value=lfo.depth;o.connect(og);og.connect(lfo.param(chain,g));o.start()}
-  this.beds[name]=g;this.pitched.push({src:s,filters:chain.map(f=>({f,base:f.frequency.value})),exp:this.PITCH_EXP[name]??1})},
+  this.beds[name]=g;(this.chains=this.chains||{})[name]=chain;this.pitched.push({src:s,filters:chain.map(f=>({f,base:f.frequency.value})),exp:this.PITCH_EXP[name]??1})},
  /* Noise pitch: everything sits low (PITCH_BASE), and the river raises it. The nearer the
     river, the higher the noise: factor = PITCH_BASE·(1 + PITCH_RIVER·e^(−d/2)), d in squares. */
  riverPitch(){
@@ -5497,6 +5498,8 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_EXP:{water:
   this.townOut=this.filt("lowpass",2600,.5);this.townOut.connect(this.fx);
   this.bed("falls",B,[this.filt("lowpass",900)]);
   this.bed("rain",W,[this.filt("highpass",2500)]);
+  this.bed("rainHeavy",B,[this.filt("lowpass",700,.6)]);
+  this.bed("torrent",B,[this.filt("lowpass",520,.7),this.filt("highpass",60)],{rate:.13,depth:120,param:ch=>ch[0].frequency});
   this.bed("leaves",P,[this.filt("highpass",2800)],{rate:.35,depth:.03,param:(ch,g)=>g.gain});
   this.bed("crowd",B,[this.filt("bandpass",420,1.2)],{rate:.6,depth:.05,param:(ch,g)=>g.gain});
   this.bed("drone",B,[this.filt("lowpass",160)]);
@@ -5518,11 +5521,31 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_EXP:{water:
   const T=H.terrain,under=z<0||T==="cave"||T==="dungeon";
   const townSize=H.town?{small:.55,medium:.8,large:1}[H.town.size]:0;
   const fire=fireNear(H.x,H.y);
+  /* How big is the water here? Upstream near the spring the river is a gurgling stream; it swells as it
+     runs south toward the hole, and rushes loudest where it narrows over the ledge. Pools and becks are small. */
+  let waterNear=0,waterSize=0;for(let dx=-1;dx<=1;dx++)for(let dy=-1;dy<=1;dy++){const id=coord.get(ck(H.x+dx,H.y+dy,z)),c=id&&cell(id);if(!c)continue;
+   const isW=(c.river&&!c.hole)||(c.terrain==="water"&&!c.lake&&!c.falls);if(!isW)continue;const prox=dx||dy?.45:1;
+   const size=c.river?Math.min(1,.15+.85*(c.river.index||0)/19+(/ledge|race|run|deep/i.test(c.t)?.2:0)):.12+.25*h32((c.x*73856093)^(c.y*19349663));
+   if(prox>waterNear||(prox===waterNear&&size>waterSize)){waterNear=prox;waterSize=size}}
+  // Further-off things you can hear: the mountain's wolves, a burning wood, horses on the roads into town
+  const dM=hexDist(H.x,H.y,MOUNTAIN_C.x,MOUNTAIN_C.y),howl=under?0:Math.max(0,1-dM/9)*(night?1:.3);
+  let fireD=99,fireDx=0;if(ws&&ws.fires)for(const k of Object.keys(ws.fires)){const [fx,fy]=k.split(",").map(Number),d=hexDist(H.x,H.y,fx,fy);if(d<fireD){fireD=d;fireDx=Math.sign(wrapC(fx-H.x))}}
+  let townD=99,townDx=0;if(!H.town&&!under)for(const T2 of towns()){const d=hexDist(H.x,H.y,T2.x,T2.y);if(d<townD){townD=d;townDx=Math.sign(wrapC(T2.x-H.x))}}
+  // Anomalies within two hexes: each has its own wrong-sounding voice, quieter the further it is
+  const anoms=[];for(let dx=-2;dx<=2;dx++)for(let dy=-2;dy<=2;dy++){const id=coord.get(ck(H.x+dx,H.y+dy,z));if(!id)continue;const f=rank(id,"occupant").find(o=>cell(o)&&cell(o).k==="monster");
+   if(f){const F=cell(f);let seed=0;for(const ch of String(F.designation||F.t))seed=(seed*31+ch.charCodeAt(0))>>>0;anoms.push({seed,d:hexDist(0,0,dx,dy),dx,keter:F.objectClass==="Keter"})}}
   const out={
+   anoms,
+   howl,howlDx:Math.sign(wrapC(MOUNTAIN_C.x-H.x)),fireFar:fireD<=6&&!fire?Math.max(0,1-fireD/7):0,fireDx,
+   hooves:townD<=9&&!night?Math.max(0,1-townD/10):0,townDx,
    wind:under?.02:Math.min(.55,.05+w.wind*.17+(["mountain","sky","desert"].includes(T)?.12:0)),
-   water:near(c=>(c.river&&!c.hole)||(c.terrain==="water"&&!c.lake&&!c.falls))*.2,
+   water:waterNear*(.1+.14*waterSize),
+   burble:waterNear*(1.25-waterSize),       // a small stream gurgles and chuckles; a big river hardly does
+   torrent:waterNear*Math.max(0,waterSize-.45)*.75+near(c=>c.falls||c.hole)*.25,
    falls:Math.max(near(c=>c.falls||c.hole)*.5,(H.t==="Behind the Falls")?.6:0),
-   rain:under?0:w.rain*.35,
+   rain:under?0:Math.min(.55,.06+w.rain*.4)*(w.rain>.02?1:0),
+   rainI:under?0:Math.min(1.2,w.rain),
+   rainHeavy:under?0:Math.max(0,w.rain-.45)*.55,
    leaves:["forest","grove"].includes(T)?.05+w.wind*.08:near(c=>c.terrain==="forest")*.025,
    crowd:H.town?(night?.32:.15)*townSize:near(c=>c.town)*.04,
    drone:under?.13:0,
@@ -5591,7 +5614,7 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_EXP:{water:
   this.setReverb(scape,changed);
   {const [d,fb,send]=this.ECHO[scape]||[.3,0,0];this.echo.delayTime.setTargetAtTime(d,now,.3);this.echoFb.gain.setTargetAtTime(fb,now,.3);this.echoSend.gain.setTargetAtTime(send,now,.4)}
   this.steps(scape);
-  const beds=["wind","water","falls","rain","leaves","crowd","drone","hum"];
+  const beds=["wind","water","falls","rain","rainHeavy","torrent","leaves","crowd","drone","hum"];
   if(changed){
    // A new soundscape: the old one is cut away, a sweep carries you across, and the new one swells in too loud before settling
    this.master.gain.cancelScheduledValues(now);this.master.gain.setValueAtTime(this.master.gain.value,now);
@@ -5630,12 +5653,12 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_EXP:{water:
   if(!this.started)return;const e=this.env();if(!e)return;const now=this.ctx.currentTime;
   const here=hereId();this.setPitch();
   if(here!==this.lastHere){this.lastHere=here;this.e=e;this.onMove(e);return}
-  for(const k of ["wind","water","falls","rain","leaves","crowd","drone","hum"])this.beds[k].gain.setTargetAtTime(e[k]*(this.drift[k]||1),now,1.5);
+  for(const k of ["wind","water","falls","rain","rainHeavy","torrent","leaves","crowd","drone","hum"])this.beds[k].gain.setTargetAtTime(e[k]*(this.drift[k]||1),now,1.5);
   this.e=e;
  },
  tick(){
-  if(!this.started||!this.on||!this.e)return;if(this.ctx.state==="suspended")return;const e=this.e,r=Math.random;
-  if(e.water>.01){const n=Math.round(e.water*30+e.water*e.water*40);for(let i=0;i<n;i++)this.bubble(r(),e.water)}
+  if(!this.started||!this.on||!this.e)return;if(this.ctx.state==="suspended")return;const e=this.e,r=Math.random,now0=this.ctx.currentTime;
+  if(e.water>.01){const b=e.burble??1,n=Math.round((e.water*30+e.water*e.water*40)*b);for(let i=0;i<n;i++)this.bubble(r(),e.water)}
   if(r()<.22*e.birds)this.birds();
   if(r()<.03*e.owls)this.owl();
   if(r()<.3*e.crickets)this.cricket();
@@ -5646,13 +5669,21 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_EXP:{water:
   if((this.singingUntil||0)<this.ctx.currentTime&&r()<.05*e.singing)this.song(e.singing);
   if(e.crackle)for(let i=0;i<3;i++)if(r()<.5*e.crackle)this.pop(i*.25+r()*.2);
   if(r()<.04*e.thunder)this.thunder(e.thunder);
+  if(e.rainI>.02){const ch=this.chains&&this.chains.rain;if(ch)ch[0].frequency.setTargetAtTime(Math.max(900,4400-3200*Math.min(1,e.rainI)),now0,2);
+   const drops=e.rainI<.6?Math.round(4+e.rainI*18):Math.round(e.rainI*6);for(let i=0;i<drops;i++)if(r()<.8)this.pop(r(),e.rainI<.6?.18+e.rainI*.3:.12)}
+  if(e.torrent){const ch=this.chains&&this.chains.torrent;if(ch&&r()<.3)ch[0].frequency.setTargetAtTime(380+e.torrent*900+r()*120,now0,1.5)}
+  if(r()<.018*e.howl)this.howl(e.howl,e.howlDx);
+  for(const a of e.anoms||[])if(r()<(a.d===0?.09:a.d===1?.05:.03))this.eerie(a);
+  if(e.fireFar){for(let i=0;i<3;i++)if(r()<.45*e.fireFar)this.pop(i*.25+r()*.2,e.fireFar*.6,this.panned(e.fireDx*.6));if(r()<.08*e.fireFar)this.roar(e.fireFar,e.fireDx)}
+  if(e.crackle>1&&r()<.12)this.roar(1,0);
+  if(e.hooves&&(this.hoofUntil||0)<this.ctx.currentTime&&r()<.03*e.hooves)this.hooves(e.hooves,e.townDx);
   // The whole soundscape breathes: a slow wandering volume with the odd swell
   const now=this.ctx.currentTime;
   this.modLevel=Math.max(.65,Math.min(1.2,this.modLevel+(r()-.5)*.08));
   if(r()<.02){this.mod.gain.setTargetAtTime(Math.min(1.35,this.modLevel*1.3),now,1.5);this.mod.gain.setTargetAtTime(this.modLevel,now+4,3)}
   else this.mod.gain.setTargetAtTime(this.modLevel,now,3);
-  for(const k of ["wind","water","falls","rain","leaves","crowd","drone"]){this.drift[k]=Math.max(.55,Math.min(1.45,(this.drift[k]||1)+(r()-.5)*.12));this.beds[k].gain.setTargetAtTime(e[k]*this.drift[k],now,2.5)}
-  if(e.water>.01){const n=Math.round(e.water*6+r()*e.water*10);for(let i=0;i<n;i++)if(r()<.7)this.gurgle(r(),e.water)}
+  for(const k of ["wind","water","falls","rain","rainHeavy","torrent","leaves","crowd","drone"]){this.drift[k]=Math.max(.55,Math.min(1.45,(this.drift[k]||1)+(r()-.5)*.12));this.beds[k].gain.setTargetAtTime(e[k]*this.drift[k],now,2.5)}
+  if(e.water>.01){const b=e.burble??1,n=Math.round((e.water*6+r()*e.water*10)*b*1.4);for(let i=0;i<n;i++)if(r()<.7)this.gurgle(r(),e.water)}
   if(e.saw&&(this.sawUntil||0)<now&&r()<.012*e.saw)this.saw(e.saw);
   for(const cr of e.creatures||[]){const p=(cr.active?.05:.012)*(cr.d===0?1:cr.d===1?.6:.35);if(r()<p)this.call(cr.species,cr.d,cr.dx)}
   for(const g of e.groups||[]){if(r()<Math.min(.5,.12*g.n)*(g.d===0?1:g.d===1?.55:.3))this.chatter(Math.min(1,.25+.12*g.n)*(g.d===0?1:g.d===1?.6:.35),this.panned(g.dx/2))}
@@ -5765,9 +5796,48 @@ const sound={ctx:null,on:true,started:false,beds:{},pitched:[],PITCH_EXP:{water:
  cricket(){const f=4300+Math.random()*400;for(let i=0;i<5;i++)this.tone(f,f,.025,.012,i*.05)},
  drip(){const f=900+Math.random()*900;this.tone(f*1.4,f,.18,.06,0,"sine",this.echo);this.tone(f*1.4,f,.18,.04,0)},
  clink(){const f=2600+Math.random()*1200;this.tone(f,f,.35,.03,0);this.tone(f*2.01,f*2,.25,.012,0)},
- pop(at){const c=this.ctx,t=c.currentTime+at,s=c.createBufferSource(),g=c.createGain(),hp=this.filt("highpass",900+Math.random()*1500);s.buffer=this.white;s.playbackRate.value=this.pitch;
-  g.gain.setValueAtTime(.25*Math.random(),t);g.gain.exponentialRampToValueAtTime(.0001,t+.02+Math.random()*.04);s.connect(hp);hp.connect(g);g.connect(this.fx);s.start(t,Math.random()*3);s.stop(t+.1)},
- thunder(strength){const c=this.ctx,t=c.currentTime,s=c.createBufferSource(),lp=this.filt("lowpass",1400),g=c.createGain(),dur=3+Math.random()*3;s.buffer=this.brownBuf;s.playbackRate.value=this.pitch;
+ pop(at,lvl=1,dest){const c=this.ctx,t=c.currentTime+at,s=c.createBufferSource(),g=c.createGain(),hp=this.filt("highpass",(lvl<1?500:900)+Math.random()*1500*lvl);s.buffer=this.white;s.playbackRate.value=this.pitch;
+  g.gain.setValueAtTime(.0001+.25*lvl*Math.random(),t);g.gain.exponentialRampToValueAtTime(.0001,t+.02+Math.random()*.04);s.connect(hp);hp.connect(g);g.connect(dest||this.fx);s.start(t,Math.random()*3);s.stop(t+.1)},
+ /* The anomalies. Each one, by its designation, has one of six wrong sounds: a beating drone, whispering,
+    an out-of-tune music box, a clock that cannot keep time, a breath drawn in backwards, or a groan of metal. */
+ eerie(a){const c=this.ctx,v=(a.d===0?1:a.d===1?.55:.3)*(a.keter?1.3:1),dest=this.panned(a.dx/2.5),rr=seededRng(a.seed+Math.floor(c.currentTime/7));
+  const kind=a.seed%6,base=[55,65,73,82,98][a.seed%5];
+  if(kind===0){for(const [f,det] of [[base*2,1],[base*2,1.017],[base*3,1.003]])this.tone(f*det,f*det*.985,4.5,.05*v,0,"sine",dest)}
+  else if(kind===1){const n=4+Math.floor(rr()*5);for(let i=0;i<n;i++){const at=i*.18+rr()*.25,f=[700,1100,1700,2300,500][Math.floor(rr()*5)];this.burst("bandpass",f,f*(.8+rr()*.5),9,.3*v,.12+rr()*.18,at,dest)}}
+  else if(kind===2){const sc=[0,3,5,7,10,12,15],n=4+Math.floor(rr()*3);for(let i=0;i<n;i++){const f=880*Math.pow(2,(sc[Math.floor(rr()*sc.length)]+(rr()-.5)*.7)/12);this.tone(f,f*.995,1.1,.035*v,i*(.35+rr()*.35),"triangle",this.echo||dest);this.tone(f*2.01,f*2,.5,.01*v,i*(.35+rr()*.35),"sine",dest)}}
+  else if(kind===3){let at=0;for(let i=0;i<9;i++){this.burst("bandpass",3200,2600,12,.3*v,.03,at,dest);at+=.18+rr()*rr()*.9}}
+  else if(kind===4){const t=c.currentTime,s=c.createBufferSource(),bp=this.filt("bandpass",900,.9),g=c.createGain(),dur=1.6+rr();s.buffer=this.white;
+   bp.frequency.setValueAtTime(400,t);bp.frequency.exponentialRampToValueAtTime(2600,t+dur);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.12*v,t+dur);g.gain.setValueAtTime(.0001,t+dur+.01);
+   s.connect(bp);bp.connect(g);g.connect(dest);s.start(t,rr()*2);s.stop(t+dur+.05)}
+  else{const t=c.currentTime,o=c.createOscillator(),bp=this.filt("bandpass",base*6,6),g=c.createGain(),dur=2.5+rr()*1.5;o.type="sawtooth";
+   o.frequency.setValueAtTime(base*1.5,t);o.frequency.linearRampToValueAtTime(base*(1.1+rr()*.3),t+dur);bp.frequency.setValueAtTime(base*4,t);bp.frequency.exponentialRampToValueAtTime(base*9,t+dur*.6);bp.frequency.exponentialRampToValueAtTime(base*3,t+dur);
+   g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.3*v,t+.4);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(bp);bp.connect(g);g.connect(dest);o.start(t);o.stop(t+dur+.05)}},
+ /* A wolf howl: a voice that rises, holds with a wobble, and falls away, sometimes answered by a second */
+ howl(level,dx){const dest=this.panned(dx*.7),lp=this.filt("lowpass",1500,.6);lp.connect(dest);
+  const one=(at,base,peak)=>{const c=this.ctx,t=c.currentTime+at,o=c.createOscillator(),g=c.createGain(),v=c.createOscillator(),vg=c.createGain();o.type="sawtooth";
+   o.frequency.setValueAtTime(base*.7,t);o.frequency.exponentialRampToValueAtTime(base*1.35,t+.7);o.frequency.setValueAtTime(base*1.35,t+1.9);o.frequency.exponentialRampToValueAtTime(base*.8,t+3.1);
+   v.frequency.value=5.5;vg.gain.value=base*.018;v.connect(vg);vg.connect(o.frequency);
+   g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(peak,t+.5);g.gain.setValueAtTime(peak,t+2);g.gain.exponentialRampToValueAtTime(.0001,t+3.3);
+   const bp=this.filt("bandpass",900,1.4);o.connect(bp);bp.connect(g);g.connect(lp);o.start(t);v.start(t);o.stop(t+3.4);v.stop(t+3.4)};
+  const pk=.14+.2*level;one(0,390+Math.random()*60,pk);if(Math.random()<.6)one(1.2+Math.random(),470+Math.random()*80,pk*.7);if(Math.random()<.3)one(2.4+Math.random(),340,pk*.6)},
+ /* A burning wood heard from a little way off: a low breathing roar under the crackle */
+ roar(level,dx){const c=this.ctx,t=c.currentTime,s=c.createBufferSource(),lp=this.filt("lowpass",380,.8),g=c.createGain(),dur=2.5+Math.random()*2;s.buffer=this.brownBuf;
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.12*level,t+dur*.4);g.gain.linearRampToValueAtTime(0,t+dur);s.connect(lp);lp.connect(g);g.connect(this.panned(dx*.6));s.start(t,Math.random()*2);s.stop(t+dur+.1)},
+ /* Horses on the road into town: a clip-clop that comes up out of the distance and fades again */
+ hooves(level,dx){const c=this.ctx,t0=c.currentTime,dur=5+Math.random()*4,dest=this.panned(dx*.7),lp=this.filt("lowpass",900+1600*level,.7);lp.connect(dest);this.hoofUntil=t0+dur+2;
+  const gait=Math.random()<.5?.42:.3;let k=0;for(let at=0;at<dur;at+=gait){const swell=Math.sin(Math.PI*at/dur),pk=(.1+.22*level)*swell;
+   for(const [off,f] of [[0,1150],[gait*.28,900]]){const n=c.createBufferSource(),bp=this.filt("bandpass",f*(1+(Math.random()-.5)*.1),7),g=c.createGain(),tt=t0+at+off+Math.random()*.012;n.buffer=this.white;
+    g.gain.setValueAtTime(.0001,tt);g.gain.linearRampToValueAtTime(pk,tt+.004);g.gain.exponentialRampToValueAtTime(.0001,tt+.07);n.connect(bp);bp.connect(g);g.connect(lp);n.start(tt,Math.random()*2);n.stop(tt+.09)}
+   if(++k%4===0&&Math.random()<.25){const tt=t0+at;this.tone(240,180,.25,.02*level*swell,at,"triangle",lp)}}},   // the odd snort
+ thunder(strength){
+  // the flash first, then a crack if it is close, then the long rumble after a delay that grows with distance
+  const close=strength>.4&&Math.random()<.6,delay=close?.15:.8+Math.random()*2.2;
+  {const el=document.getElementById("lightning");if(el){el.classList.remove("on");void el.offsetWidth;el.classList.add("on")}}
+  if(close){const c=this.ctx,t=c.currentTime+delay,s=c.createBufferSource(),hp=this.filt("highpass",1800,.7),g=c.createGain();s.buffer=this.white;
+   g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.55,t+.004);g.gain.exponentialRampToValueAtTime(.08,t+.12);g.gain.exponentialRampToValueAtTime(.0001,t+.6);
+   s.connect(hp);hp.connect(g);g.connect(this.master);s.start(t,Math.random()*2);s.stop(t+.7)}
+  setTimeout(()=>this.started&&this.rumble(strength),delay*1000)},
+ rumble(strength){const c=this.ctx,t=c.currentTime,s=c.createBufferSource(),lp=this.filt("lowpass",1400),g=c.createGain(),dur=3+Math.random()*3;s.buffer=this.brownBuf;s.playbackRate.value=this.pitch;
   lp.frequency.setValueAtTime(strength>.4?1600:500,t);lp.frequency.exponentialRampToValueAtTime(90,t+dur);
   g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(Math.min(.9,.25+strength*.7),t+(strength>.4?.05:.6));g.gain.exponentialRampToValueAtTime(.0001,t+dur);
   s.connect(lp);lp.connect(g);g.connect(this.master);s.start(t,Math.random()*2);s.stop(t+dur+.1)}
