@@ -314,7 +314,7 @@ add({stage:'sound',term:'Amplitude and loudness',
 const WAVES=['sine','triangle','square','saw'];
 add({stage:'sound',term:'Waveforms and harmonics',
  def:`The four classic synthesiser waves sound different because they contain different ${W('harmonic','harmonics')}: extra frequencies at whole-number multiples of the note. That mix is the sound’s ${W('timbre','timbre')}.`,
- ex:'A sine has no harmonics — pure and flute-like. A saw has every harmonic, each weaker (1/n): bright and buzzy. Square and triangle have only odd ones; the triangle’s fade much faster (1/n²).',
+ ex:'A sine contains only its fundamental (the first harmonic), with no higher harmonics — pure and flute-like. A saw has every harmonic, each weaker (1/n): bright and buzzy. Square and triangle have only odd ones; the triangle’s fade much faster (1/n²).',
  src:'<b>Maths:</b> any repeating wave can be built from sines — Fourier’s insight. The bars show each harmonic’s strength.',
  phases:['Sine: one frequency, nothing else.','Triangle: odd harmonics, fading fast — soft.','Square: odd harmonics, fading slower — hollow.','Saw: every harmonic — bright. Try it: switch and listen.'],
  init:()=>({w:'saw'}),anim:p=>({w:WAVES[Math.min(3,Math.floor(p*4))],p}),
