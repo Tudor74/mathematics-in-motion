@@ -1373,7 +1373,7 @@ function tableLocation(from,dir,pos){
   const a=pick(ANOMALIES.filter(m=>m.tier<=Math.min(3,tier)));
   monster=Object.assign({},a,{loot:Math.random()<.5?asItem(pick(LOOT.ruin.concat(LOOT.dungeon))):null});
  }
- return normLocation({name:pick(T.names),terrain,description:lead+text,items:items.map(asItem),
+ return normLocation({name:uniquePlaceName(terrain,pick(T.names)),terrain,description:lead+text,items:items.map(asItem),
   hazard:hz?{name:hz[0],text:"The way here is treacherous.",stat:hz[1],dc:10+Math.min(5,Math.floor(pos.dist/3)),damage:hz[2]}:null,monster},terrain,pos);
 }
 const asItem=([name,description,kind,weight,value,heal,ac,damage,finesse,light])=>({name,description,kind,weight,value,heal,ac,damage,finesse,light});
@@ -1403,7 +1403,31 @@ function normMonster(m,pos){
 }
 // A place name, never one of the narrator's working labels ("NEW (square 0,-5 at depth 0)" and the like)
 const BAD_NAME={test:n=>/\bNEW\b/.test(n)||/\bsquare\s*-?\d|\bat depth\b|^\s*-?\d+\s*,\s*-?\d+|^(north|south|east|west|up|down)$|^(unknown|nameless place|\.\.\.)$/i.test(n)||/^\s*(a\s+)?(new|unnamed|untitled|unknown)(\s+(place|location|area|square|hex|one))?\s*$|still to write|^\s*(place|location|name)\s*$/i.test(n)};
-function cleanPlaceName(n,terrain){const t=String(n||"").replace(/\s+/g," ").trim().replace(/^(new|name|place|title)\s*[:\-–—]\s*/i,"").replace(/^["'“‘]+|["'”’]+$/g,"").trim().slice(0,60);return t&&!BAD_NAME.test(t)?t:pick((TABLES[terrain]||TABLES.plains).names)}
+function cleanPlaceName(n,terrain){const t=String(n||"").replace(/\s+/g," ").trim().replace(/^(new|name|place|title)\s*[:\-–—]\s*/i,"").replace(/^["'“‘]+|["'”’]+$/g,"").trim().slice(0,60);return t&&!BAD_NAME.test(t)?t:uniquePlaceName(terrain,pick((TABLES[terrain]||TABLES.plains).names))}
+/* Place names built from parts, a few hundred for each kind of ground, and never one already used in your world */
+const NAME_PARTS={
+ forest:[["Thorn","Elder","Moss","Owl","Fern","Ash","Hazel","Holly","Rook","Badger","Wren","Briar","Oak","Yew","Bracken","Beech","Alder","Sloe","Hart","Fox"],["wood","holt","shaw","hollow","grove","dell","copse","hurst","combe","edge"]],
+ plains:[["Wind","Barrow","Kestrel","Lark","Hare","Bramble","Flax","Clover","Sheep","Chalk","Ridge","Thistle","Plover","Bell","Long"],["meet","field","heath","down","lea","ley","acre","mead","common","rise"]],
+ water:[["Heron","Willow","Reed","Otter","Mill","Kingfisher","Silver","Cress","Eel","Pebble","Swan","Alder","Sedge"],["pool","mere","bend","reach","race","water","ford","stair","eddy","shallows"]],
+ mountain:[["Raven","Grey","Cairn","Crag","Eagle","Scree","Storm","Iron","Wolf","Hollow","Cold","Stag","Kite"],["scar","shoulder","pass","peak","fell","tor","nab","crag","ridge","edge"]],
+ cave:[["Drip","Glowworm","Bat","Root","Echo","Chalk","Crystal","Moth","Blind","Lantern","Whisper","Cold"],["mouth","hollow","gallery","cellar","chamber","grotto","crawl","hall","throat","well"]],
+ dungeon:[["Sunken","Warden's","Broken","Ossuary","Iron","Grey","Bone","Chain","Ash","Silent","Rust"],["Vault","Cells","Hall","Stair","Crypt","Cloister","Gaol","Undercroft","Passage","Keep"]],
+ village:[["Shepherd's","Tollhouse","Crofters'","Miller's","Weaver's","Smithy","Cooper's","Tanner's"],["Fold","Corner","Row","Yard","End","Green","Lane","Close"]],
+ ruin:[["Old","Fallen","Broken","Bell","Roofless","Watch","Grey","Ivy","Crow","Lost"],["Watchtower","Chapel","Wall","Loft","Gate","Keep","Arch","Cloister","Mill","Steading"]],
+ swamp:[["Bitter","Mire","Black","Bog","Sour","Still","Sedge","Peat","Grim"],["fen","watch","sedge","moss","carr","slough","mire","pools","flats","wash"]],
+ road:[["King's","Drovers'","Milestone","Carters'","Salt","Pilgrim's","Old","Coach","Wool","Toll"],["Road","Way","Bend","Lane","Track","Turn","Causeway","Hollow","Cross","Stile"]],
+ sky:[["Cloud","Kite","Gull's","Wind","Sky","Hawk","Thunder","Sun"],["shelf","Ledge","Height","stair","perch","crown","lip","step"]],
+ desert:[["Red","Salt","Dune","Glass","Bone","Sun","Dust","Scorpion","Mirage","Copper"],["Flats","Sea","Wastes","Pan","Hollow","Drifts","Basin","Teeth","Reach","Sands"]]
+};
+function usedPlaceNames(){const u=new Set();for(const c of Object.values(zz.cells))if(c.k==="loc"&&c.t)u.add(String(c.t).toLowerCase());return u}
+function uniquePlaceName(terrain,want){
+ const used=usedPlaceNames(),ok=n=>n&&!used.has(n.toLowerCase());if(ok(want))return want;
+ const P=NAME_PARTS[terrain]||NAME_PARTS.plains,joinWord=w=>/^[A-Z]/.test(w)?" "+w:w;
+ for(let i=0;i<60;i++){const a=pick(P[0]),b=pick(P[1]),form=Math.random();
+  let n=form<.55?a+joinWord(b):form<.8?`The ${a}${joinWord(b)}`:`${a.replace(/'s$|s'$/,"")} ${b[0].toUpperCase()+b.slice(1)}`;n=n.replace(/\s+/g," ").trim();if(ok(n))return n}
+ for(const q of ["Upper","Lower","Far","Old","Little","High","Nether"]){const n=`${q} ${want||pick(P[0])+P[1][0]}`;if(ok(n))return n}
+ return `${want||"Nameless place"} ${Math.floor(Math.random()*900+100)}`;
+}
 function normLocation(o,fallbackTerrain,pos){
  o=o&&typeof o==="object"?o:{};
  let terrain=TERRAINS.includes(o.terrain)?o.terrain:(fallbackTerrain||"plains");
@@ -2415,6 +2439,9 @@ function itemCell(it){return newCell("item",{t:it.name,desc:it.desc,kind:it.kind
 
 function createLocation(data,pos){
  placeExtras(data,pos);const {x,y,z,dist}=pos;
+ // never a name already used in this world: a second "Heron Pool" gets a new name of its own
+ if(data.name&&usedPlaceNames().has(String(data.name).toLowerCase())){const old=data.name,rn=cell("root")&&cell("root").riverName,used=usedPlaceNames();
+  data.name=rn&&old.includes(rn)?(["Upper","Lower","Far","Near","Old","Little"].map(q=>`${q} ${old}`).find(n=>!used.has(n.toLowerCase()))||uniquePlaceName(data.terrain,null)):uniquePlaceName(data.terrain,null);if(data.desc)data.desc=data.desc.split(old).join(data.name);if(data.glimpse)data.glimpse=data.glimpse.split(old).join(data.name)}
  const id=newCell("loc",{t:data.name,desc:data.desc,terrain:data.terrain,x,y,z,dist,hazard:data.hazard,hazardDone:false,outcome:null,visited:false,by:data.by||"tables",defeated:null,
   exits:data.exits||null,walls:data.walls||null,glimpse:data.glimpse||null,rough:data.rough||null});
  coord.set(ck(x,y,z),id);
@@ -5993,6 +6020,9 @@ setInterval(()=>{
  if(saved){
   zz.cells=saved;for(const c of Object.values(zz.cells))if(c.k==="loc")coord.set(ck(c.x,c.y,zOf(c)),c.id);
   for(const c of Object.values(zz.cells))if(c.k==="loc"&&c.river&&c.river.crossing)fixCrossing(c.id);
+  // places that share a name with another are renamed, keeping the one you have visited
+  {const seen=new Set();const locs=Object.values(zz.cells).filter(c=>c.k==="loc"&&c.t&&!c.town&&!c.river&&!c.landmark&&!c.sanctuary&&!c.grove&&!c.castle).sort((a,b)=>(b.visited?1:0)-(a.visited?1:0));
+   for(const c of locs){const k=String(c.t).toLowerCase();if(!seen.has(k)){seen.add(k);continue}const old=c.t;c.t=uniquePlaceName(c.terrain,null);seen.add(c.t.toLowerCase());if(c.desc)c.desc=c.desc.split(old).join(c.t);if(c.glimpse)c.glimpse=c.glimpse.split(old).join(c.t);touch(c.id)}}
   for(const c of Object.values(zz.cells))if(c.k==="loc"){fixPlaceName(c.id);if(c.glimpse&&BAD_NAME.test(c.glimpse)){c.glimpse=null;touch(c.id)}}
   if(hereId())ensureWayOut(hereId(),charId()&&cell(charId()).prevAt);
   {const ch=charId()&&cell(charId());if(ch&&ch.lastMeal==null){ch.lastMeal=gameNow();touch(ch.id)}if(!cell("root").rivalry&&towns().length)seedRivalry()}
