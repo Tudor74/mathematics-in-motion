@@ -1982,6 +1982,7 @@ function buildRiverWorld(plan,w){
   return id;
  });
  for(let i=0;i<segIds.length-1;i++)connect(segIds[i],"river",segIds[i+1]);
+ for(const id of segIds)if(cell(id).river.crossing&&!cell(id).river.span)fixCrossing(id);
  const npcList=w.npcs.slice();
  plan.towns.forEach((t,i)=>{
   const id=createLocation({name:w.towns[i].name,desc:w.towns[i].description,terrain:"village",items:[],hazard:null,monster:null,by:w.by},{x:t.x,y:t.y,z:0,dist:Math.abs(t.x)+Math.abs(t.y)});
@@ -2460,6 +2461,15 @@ function createLocation(data,pos){
    the crossing open, and at least one other way out that is not back over the water. */
 function fixCrossing(cid){
  const C=cell(cid);if(!C||!C.river||!C.river.crossing)return;
+ /* Where the river bends back on itself it can lie two hexes wide beside a crossing. Then the bridge (or the
+    ford, or the bridge of light) carries on over the second stretch too, so it always reaches dry land. The
+    river's own flow in and out of the crossing (the stretches just upstream and downstream) is left alone. */
+ if(!C.river.span)for(const d of sideMoves(C.x)){const D=DIRS[d]||DIAG[d],nid=coord.get(ck(C.x+D.dx,C.y+D.dy,0)),N=nid&&cell(nid);
+  if(!N||!N.river||N.river.crossing||N.hole)continue;if(D.dx===0&&Math.abs((N.river.index??-9)-(C.river.index??-99))<=1)continue;   // straight up or downstream: the river itself
+  N.river.crossing=C.river.crossing;N.river.span=true;N.exits=EX("nsew");N.walls=null;
+  if(C.river.crossing!=="magic")N.desc=String(N.desc||"").trim()+` The ${C.river.crossing==="ford"?"ford's stepping stones carry":"bridge carries"} on across this second stretch of the ${riverName()}.`;
+  else{N.descPresent=String(N.desc||"").trim()+" The bridge of light carries on across this second stretch of the river."}
+  touch(nid)}
  for(const d of FLAT){const v=DIRS[d],nid=coord.get(ck(C.x+v.dx,C.y+v.dy,0));if(!nid)continue;const N=cell(nid);if(N.river||N.lake)continue;
   let ch=false;N.exits=N.exits||EX("nsew");
   if(N.exits[OPP[d]]===false){N.exits[OPP[d]]=true;if(N.walls)delete N.walls[OPP[d]];ch=true}
