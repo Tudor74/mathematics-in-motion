@@ -30,8 +30,8 @@ const ARCHE=[['Thales','water','c. 624–546 BCE','Water nourishes, freezes, flo
  ['Empedocles','four roots','c. 494–434 BCE','Earth, water, air and fire, mixed by Love and separated by Strife.',C.green],
  ['Democritus','atoms and void','c. 460–370 BCE','Tiny uncuttable bits moving in empty space make up everything.',C.purple]];
 add({stage:'ancient',thinker:'Thales',term:'Thales: what is everything made of?',
- def:`In the Greek city of Miletus, Thales is said to have claimed that everything comes from water. The answer was wrong, but the question was new: explain the world by a ${W('arche','first principle')} rather than by the moods of gods.`,
- ex:'His successors argued back — air, fire, four elements, atoms. Philosophy and science began as this chain of rival explanations, each criticising the last.',
+ def:`In the Greek city of Miletus, Thales is said to have claimed that everything comes from water. The answer was wrong, but the question was new to Greek thought: explain the world by a ${W('arche','first principle')} rather than by the moods of gods.`,
+ ex:'His successors argued back — air, fire, four elements, atoms. Greek philosophy and science grew from this chain of rival explanations, each criticising the last. Careful study of nature was older still: Babylonian astronomers had kept centuries of records of eclipses and planets.',
  src:'<b>Thales</b> of Miletus, c. 624–546 BCE. No writings survive; we know his views through Aristotle. Herodotus says he predicted a solar eclipse, usually dated 585 BCE.',
  phases:['Many things: rivers, rocks, breath, flame.','Thales: they are all, at bottom, water.','His successors propose air, fire, four roots, atoms.','Try it: compare the first principles.'],
  init:()=>({k:0}),anim:p=>({k:Math.min(4,Math.floor(p*5)),p}),
