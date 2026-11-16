@@ -904,9 +904,9 @@ function attackOptions(){
  if(w){const finesse=!!w.finesse,stat=finesse&&sv("DEX")>sv("STR")?"DEX":"STR";
   opts.push({key:"weapon",label:`Attack with ${w.t}`,stat,dice:cleanDice(w.dmg)||"1d6",addMod:true,sneak:ch.cls==="Rogue"&&finesse?Math.ceil(lvl/2):0});}
  else opts.push({key:"unarmed",label:"Punch",stat:"STR",dice:"1d2",addMod:true,sneak:0});
- if(ch.cls==="Wizard")opts.push({key:"spell",label:"Cast Fire Bolt",stat:"INT",dice:lvl>=5?"2d10":"1d10",addMod:false,sneak:0});
+ if(ch.cls==="Wizard")opts.push({key:"spell",label:"Cast Fire Bolt",stat:"INT",dice:lvl>=5?"3d8":"2d6",addMod:false,sneak:0});
  if(ch.cls==="Cleric")opts.push({key:"spell",label:"Call Sacred Flame",stat:"WIS",dice:lvl>=5?"2d8":"1d8",addMod:false,sneak:0});
- if(opts.length>1&&mod(sv(opts[1].stat))>=mod(sv(opts[0].stat)))opts.reverse();
+ {const ev=o=>{const m=/(\d+)d(\d+)/.exec(o.dice)||[0,1,4];return(+m[1])*((+m[2])+1)/2+(o.addMod?mod(sv(o.stat)):0)+(o.sneak||0)*3.5+mod(sv(o.stat))*.5};opts.sort((a,b)=>ev(b)-ev(a))}
  return opts;
 }
 
@@ -2670,7 +2670,7 @@ function foeLesson(F){
  touch(F.id);say(`You learn: ${tip}`,"lesson");
 }
 function attack(index){
- const f=foeId();if(busy||!f||isDowned())return;const F=cell(f),opt=attackOptions()[index||0];if(!opt)return;const h0=F.hp;
+ const f=foeId();if(busy||!f||isDowned())return;const F=cell(f);fitFoe(F);const opt=attackOptions()[index||0];if(!opt)return;const h0=F.hp;
  const m=mod(sv(opt.stat)),p=prof(),d=rnd(20),tot=d+m+p;
  let txt=`d20 → ${d} ${sgn(m)} ${opt.stat} +${p} proficiency = ${tot} against AC ${F.ac}`;
  if(d===1||(d!==20&&tot<F.ac))say(`${opt.label}: you miss.`,"",txt);
@@ -4644,9 +4644,22 @@ function disengage(){
  F.truce=gameNow()+120;touch(f);rounds=[];log(`You step back and lower your guard. ${F.t} lets you be, for now.`,"good",txt);store.flush();render();
 }
 // An encounter happens on the map, in a card docked away from you so you can still tap a hex to flee
+/* A fair fight: when you meet an anomaly it is trimmed to your level, so a level-one traveller is not
+   handed something built for a veteran. Hit points, guard, attack and damage each have a ceiling that rises
+   with your level; anything already within it is left alone. Keter anomalies keep a little more. */
+function fitFoe(F){
+ if(!F||F.evSlot)return;const L=sv("LVL")||1;if(F.fitLvl===L)return;F.fitLvl=L;
+ const k=F.objectClass==="Keter"?1.3:1,hpCap=Math.round((10+6*L)*k),acCap=13+Math.floor(L/3)+(k>1?1:0),atkCap=2+L+(k>1?1:0);
+ if(F.maxhp>hpCap){const f=F.hp/F.maxhp;F.maxhp=hpCap;F.hp=Math.max(1,Math.round(hpCap*f))}
+ F.ac=Math.min(F.ac,acCap);F.atk=Math.min(F.atk,atkCap);
+ const avg=s=>{const m=/(\d+)d(\d+)([+-]\d+)?/.exec(String(s||""));return m?(+m[1])*((+m[2])+1)/2+(+(m[3]||0)):3.5};
+ const cap=(3.5+1.6*(L-1))*k;if(avg(F.dmg)>cap){const C=["1d4","1d6","1d6+1","1d8","1d8+1","1d10","1d10+1","2d6","2d6+1","2d8","2d8+1","2d10","3d8"];F.dmg=C.filter(d=>avg(d)<=cap).pop()||"1d4"}
+ touch(F.id);
+}
 let dreadFor=null;
 function renderEncounter(){
  const el=$("encounter");if(!el)return;const f=charId()&&hereId()&&!isDowned()?foeId():null;
+ if(f)fitFoe(cell(f));
  if(f&&sound.started&&sound.on&&sound.ctx){if(!sound._dread)sound.dread()}else if(sound._dread)sound.stopDread();dreadFor=f||null;
  el.classList.toggle("show",!!f);if(!f){el.innerHTML="";return}
  {const n=rounds.length;
