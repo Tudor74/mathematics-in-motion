@@ -2867,7 +2867,7 @@ function rest(atDusk){
 function campAtNightfall(){
  if(!charId()||!hereId()||busy||isDowned()||foeId()||walking)return;
  const t=gameNow(),ch=cell(charId()),L=cell(hereId());if(!isNight(t)||zOf(L)<0)return;
- if(hasLight()&&nightLeft(t)>0)return;
+ // with or without a lantern: the lantern is for going underground, and for pressing on after camp if you choose
  if(ch.campedNight===nightKey(t))return;
  log(L.town?"Night falls, so you find a bed for the night.":"Night falls and you make camp.","time");rest(true);
 }
