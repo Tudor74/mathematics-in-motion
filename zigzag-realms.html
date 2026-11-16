@@ -2648,8 +2648,8 @@ function fall(locId){
 function wakeAtHome(){
  const ch=cell(charId()),locId=ch.downed;if(!locId)return;let n=0;
  for(const id of packIds()){excise(id,"contain");Object.assign(cell(id),{worn:false,wielded:false});touch(id);appendTo(locId,"contain",id);n++}
- ch.downed=null;touch(ch.id);setStat("HP",1);connect(ch.id,"at",cell("root").home);markSeen(cell("root").home);
- log(`You wake back at ${cell(cell("root").home).t} with 1 HP.${n?` Your pack lies where you fell, at ${cell(locId).t}.`:""}`,"bad");
+ ch.downed=null;touch(ch.id);setStat("HP",Math.max(1,Math.ceil(sv("MAXHP")/2)));connect(ch.id,"at",cell("root").home);markSeen(cell("root").home);
+ log(`You wake back at ${cell(cell("root").home).t} with half your HP (${sv("HP")}).${n?` Your pack lies where you fell, at ${cell(locId).t}.`:""}`,"bad");
  passTime(REST_MIN);store.flush();render();
 }
 function resurrect(){
@@ -4990,7 +4990,7 @@ function renderDowned(){
  return`<div class="placehead"><p class="eyebrow">You have fallen</p><h2>Darkness at ${esc(L.t)}</h2></div>
  <p class="desc">Your hit points are gone. Choose how your story goes on.</p>
  <div class="btnrow"><button class="primary" id="wake">Wake at ${esc(home.t)}</button>${e.tokens>0?`<button id="resurrect">Resurrect with your pack (${e.tokens} token${e.tokens===1?"":"s"})</button>`:""}</div>
- <p class="note">You wake at the start with 1 HP. Your pack stays where you fell, for you to fetch.</p>
+ <p class="note">You wake at the start with half your HP. Your pack stays where you fell, for you to fetch.</p>
  ${flash?`<p class="flash">${esc(flash)}</p>`:""}`;
 }
 
