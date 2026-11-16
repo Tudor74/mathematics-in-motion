@@ -125,6 +125,7 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .folkflash .ffcard.more{padding:6px 12px;color:var(--faint)}
 .encounter{position:absolute;inset:0;display:grid;place-items:center;padding:0;pointer-events:none;z-index:5}.encounter:not(.show){display:none}
 .encounter .card{pointer-events:auto;width:92%;height:92%;box-sizing:border-box;overflow:auto;background:var(--sheet);border:1px solid var(--danger);border-radius:12px;box-shadow:0 8px 28px #0004;padding:12px 14px;display:grid;gap:8px}
+.foe button.autofight{background:#f3dcd6;border-color:#d39a8c;color:#6b2316}.foe button.autofight:hover{background:#eccbc2}.foe button.autofight.on{background:#6b2316;border-color:#6b2316;color:#fff;animation:afpulse 1s ease-in-out infinite alternate}@keyframes afpulse{to{opacity:.75}}
 .foe button.disengage{background:#d9efd2;border-color:#9cc98f;color:#24451c}.foe button.disengage:hover{background:#c9e8bf}
 .encounter .rounds .roll{display:none}
 .encounter .card.split{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:14px;overflow:hidden;align-items:stretch}
@@ -4014,7 +4015,15 @@ function renderRealmEvent(L){
  else{const F=evFoe(),st=mp.ev&&mp.ev.slot===ev.slot?mp.ev:null,hp=st?Math.max(0,EV_HP-st.dmg):F?F.hp:EV_HP;
   body=st&&st.dmg>=EV_HP?`<b>The great foe has fallen.</b> ${st.mine?"You fought it, and have had your share.":"Travellers brought it down together."} A new event begins in ${time}.`
    :`<b>${esc(F?F.t:"A great anomaly")}</b> stands at ${where}. Its wounds are shared by every traveller: ${hp} of ${EV_HP} left${st?`, ${st.n} ${st.n===1?"traveller has":"travellers have"} fought it${st.mine?`, ${st.mine} of the wounds yours`:""}`:""}. It is gone in ${time}.<span class="hpbar thin" style="display:block;margin-top:6px"><span style="width:${hp/EV_HP*100}%;background:var(--danger)"></span></span>`}
- return`<div class="realmevent"><span class="eyebrow">Realm event</span><p>${body}</p></div>`;
+ const fallen=ev.kind==="foe"&&mp.ev&&mp.ev.slot===ev.slot&&mp.ev.dmg>=EV_HP;
+ const go=p&&p.id&&ev.kind!=="storm"&&!fallen&&p.id!==hereId()?`<div class="btnrow"><button class="small primary" data-act="evgo" data-id="${esc(p.id)}">Go there now</button></div>`:"";
+ return`<div class="realmevent"><span class="eyebrow">Realm event</span><p>${body}</p>${go}</div>`;
+}
+// Go to the realm event: by a known route if there is one, otherwise walk toward it hex by hex
+function goToEvent(id){
+ const T=cell(id);if(!T||busy||isDowned())return;
+ if(foeId()){say(`${cell(foeId()).t} stands in your way. Deal with it first.`,"bad");render();return}
+ if(pathTo(id))travelTo(id);else walkToward(T.x,T.y);
 }
 function mapRealmEvent(H,R,Z,P){
  if(!mp.on()||Z!==0)return"";const ev=realmEvent(),p=evPlace(ev);if(!p)return"";
@@ -4516,6 +4525,17 @@ function renderDream(){
  const text=makeDream(),tr=el.querySelector(".track");tr.textContent=text;tr.style.setProperty("--dur",`${Math.max(30,text.length/6).toFixed(0)}s`);
 }
 // Disengage: stay in the hex but step out of the fight, a DEX check like fleeing; it then lets you be for a while
+/* Fight to the end: keep swinging, a round every three-quarters of a second, until it falls or you do.
+   Press again to stop. Anything else that takes you out of the fight stops it too. */
+let autoFight=null;
+function toggleAutoFight(){
+ if(autoFight){clearTimeout(autoFight);autoFight=null;render();return}
+ const f=foeId();if(!f||isDowned())return;
+ log(`You set your feet and fight ${cell(f).t} to the end.`,"bad");
+ const step=()=>{const g=foeId();if(!g||g!==f||isDowned()){autoFight=null;render();return}
+  if(!busy)attack(0);autoFight=setTimeout(step,750)};
+ autoFight=setTimeout(step,10);render();
+}
 function disengage(){
  const f=foeId();if(!f||busy)return;const F=cell(f),dc=10+Math.floor(F.atk/2),d=rnd(20),m=mod(sv("DEX")),tot=d+m,txt=`DEX check: d20 → ${d} ${sgn(m)} = ${tot} against DC ${dc}`;
  if(tot<dc){say(`You try to back away from ${F.t}, but it presses in.`,"bad",txt);monsterTurn();store.flush();render();return}
@@ -4768,7 +4788,7 @@ function renderFoe(f,split){
   <h3>${esc(F.t)}</h3>
   <p class="notes">${esc(anomDesc(F.desc))}</p>
   <div><div class="hprow"><span>Integrity</span></div><div class="hpbar"><span style="width:${pct}%"></span></div></div>
-  <div class="fight">${opts.map((o,i)=>`<button class="${i===0?"primary":""}" data-act="attack" data-id="${i}" ${busy?"disabled":""} title="Your ${o.stat} against its guard; damage ${o.dice}${o.addMod?" "+sgn(mod(sv(o.stat))):""}${o.sneak?" + "+o.sneak+"d6 sneak":""}">${esc(o.label)}</button>`).join("")}${wind}<button class="disengage" data-act="disengage" ${busy?"disabled":""} title="Step back and stay here: a DEX check. Fail and it strikes.">Disengage</button></div>
+  <div class="fight">${opts.map((o,i)=>`<button class="${i===0?"primary":""}" data-act="attack" data-id="${i}" ${busy?"disabled":""} title="Your ${o.stat} against its guard; damage ${o.dice}${o.addMod?" "+sgn(mod(sv(o.stat))):""}${o.sneak?" + "+o.sneak+"d6 sneak":""}">${esc(o.label)}</button>`).join("")}${wind}<button class="autofight${autoFight?" on":""}" data-act="autofight" title="${autoFight?"Stop fighting round by round":"Keep attacking, round after round, until it falls or you do"}">${autoFight?"Stop":"Fight to the end"}</button><button class="disengage" data-act="disengage" ${busy?"disabled":""} title="Step back and stay here: a DEX check. Fail and it strikes.">Disengage</button></div>
   <p class="note">Each direction is now an attempt to flee: a DEX check. Fail and it strikes. Drinking a potion also gives it a turn.</p>
   ${!split&&rounds.length?`<ol class="rounds">${rounds.slice(-6).map(r=>`<li class="${r.kind}">${esc(r.text)}${r.roll?`<span class="roll">${esc(r.roll)}</span>`:""}</li>`).join("")}</ol>`:""}
  </article>`;
@@ -5658,7 +5678,7 @@ document.addEventListener("click",e=>{
   trade:i=>{openTrade=openTrade===i?null:i;openChat=null;armedAttack=null;render()},
   buyfood:buyFood,sell:v=>{const [n,it]=v.split("|");sellTo(n,it)},quest:i=>{offerQuest(cell(i));passTime(5);store.flush();render()},
   give:giveFood,arm:i=>{armedAttack=armedAttack===i?null:i;render()},hit:attackAgent,
-  disengage:()=>disengage(),reengage:()=>{const f=foeHere();if(f){cell(f).truce=0;touch(f);log(`You turn to face ${cell(f).t} again.`,"bad");store.flush();render()}},craft,deposit,withdraw,rent:rentCottage,leave:leaveForOthers,takeleft:takeLeft,train:takeTrain,steal:trySteal,sharefood:shareFood,rate:rateChat,contest:enterContest,festprize:festivalPrize,throwdart:throwDart})[b.dataset.act](id);return}
+  disengage:()=>disengage(),autofight:()=>toggleAutoFight(),evgo:id=>goToEvent(id),reengage:()=>{const f=foeHere();if(f){cell(f).truce=0;touch(f);log(`You turn to face ${cell(f).t} again.`,"bad");store.flush();render()}},craft,deposit,withdraw,rent:rentCottage,leave:leaveForOthers,takeleft:takeLeft,train:takeTrain,steal:trySteal,sharefood:shareFood,rate:rateChat,contest:enterContest,festprize:festivalPrize,throwdart:throwDart})[b.dataset.act](id);return}
  const d=e.target.closest("#compass button[data-dir]");if(d){move(d.dataset.dir);return}
  // while the map slides (and a moment after), taps on it are ignored, so a moving map never walks you somewhere
  if(e.target.closest("#map")&&mapCam&&(mapCam.anim||performance.now()-(mapCam.settled||0)<250||mapDownAt>(mapCam.anim?mapCam.anim.t0:mapCam.slideStart||0)&&mapDownDuringSlide))return;
