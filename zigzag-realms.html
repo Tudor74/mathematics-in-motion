@@ -1402,7 +1402,7 @@ function normMonster(m,pos){
 }
 // A place name, never one of the narrator's working labels ("NEW (square 0,-5 at depth 0)" and the like)
 const BAD_NAME={test:n=>/\bNEW\b/.test(n)||/\bsquare\s*-?\d|\bat depth\b|^\s*-?\d+\s*,\s*-?\d+|^(north|south|east|west|up|down)$|^(unknown|nameless place|\.\.\.)$/i.test(n)||/^\s*(a\s+)?(new|unnamed|untitled|unknown)(\s+(place|location|area|square|hex|one))?\s*$|still to write|^\s*(place|location|name)\s*$/i.test(n)};
-function cleanPlaceName(n,terrain){const t=String(n||"").replace(/\s+/g," ").trim().slice(0,60);return t&&!BAD_NAME.test(t)?t:pick((TABLES[terrain]||TABLES.plains).names)}
+function cleanPlaceName(n,terrain){const t=String(n||"").replace(/\s+/g," ").trim().replace(/^(new|name|place|title)\s*[:\-–—]\s*/i,"").replace(/^["'“‘]+|["'”’]+$/g,"").trim().slice(0,60);return t&&!BAD_NAME.test(t)?t:pick((TABLES[terrain]||TABLES.plains).names)}
 function normLocation(o,fallbackTerrain,pos){
  o=o&&typeof o==="object"?o:{};
  let terrain=TERRAINS.includes(o.terrain)?o.terrain:(fallbackTerrain||"plains");
@@ -5420,7 +5420,8 @@ function renderMapKey(){const k=$("mapkey");if(!k||k.innerHTML)return;
  $("mapkey-close").onclick=()=>{k.hidden=true}}
 // Travellers have twice the hit points they used to; older characters are brought up once
 function doubleHP(){const ch=charId()&&cell(charId());if(!ch||ch.hpx2)return;ch.hpx2=true;setStat("MAXHP",2*sv("MAXHP"));setStat("HP",Math.max(1,2*sv("HP")));touch(ch.id)}
-function render(){doubleHP();renderSeekStar();if(hereId()&&!isDowned())ensureWayOut(hereId(),cell(charId()).prevAt);renderMapKey();renderGate();renderDream();renderEncounter();renderStarving();{const x=$("exploring");if(x)x.classList.toggle("show",!!(busy&&charId()&&!isDowned()&&!["realm","founding","river","start"].includes(busy.dir)))}renderPills();renderScriptButton();renderMap();renderCompass();renderPlace();renderSheet();renderSocial();renderGarden();renderCodex();renderAlphabet();renderLog();renderVoice();decoratePanels();iconHeads();sound.update();voiceOnRender()}
+function fixPlaceName(id){const c=id&&cell(id);if(c&&c.k==="loc"&&!c.town&&(BAD_NAME.test(String(c.t||""))||/^(new|name|place|title)\s*[:\-–—]/i.test(String(c.t||"")))){c.t=cleanPlaceName(c.t,c.terrain);touch(id)}}
+function render(){doubleHP();fixPlaceName(hereId());renderSeekStar();if(hereId()&&!isDowned())ensureWayOut(hereId(),cell(charId()).prevAt);renderMapKey();renderGate();renderDream();renderEncounter();renderStarving();{const x=$("exploring");if(x)x.classList.toggle("show",!!(busy&&charId()&&!isDowned()&&!["realm","founding","river","start"].includes(busy.dir)))}renderPills();renderScriptButton();renderMap();renderCompass();renderPlace();renderSheet();renderSocial();renderGarden();renderCodex();renderAlphabet();renderLog();renderVoice();decoratePanels();iconHeads();sound.update();voiceOnRender()}
 
 /* ============================================================
    Soundtrack: generated live from white, pink and brown noise and a few oscillators.
@@ -5867,7 +5868,7 @@ setInterval(()=>{
  if(saved){
   zz.cells=saved;for(const c of Object.values(zz.cells))if(c.k==="loc")coord.set(ck(c.x,c.y,zOf(c)),c.id);
   for(const c of Object.values(zz.cells))if(c.k==="loc"&&c.river&&c.river.crossing)fixCrossing(c.id);
-  for(const c of Object.values(zz.cells))if(c.k==="loc"&&BAD_NAME.test(String(c.t||""))&&!c.town){c.t=cleanPlaceName("",c.terrain);if(c.glimpse&&BAD_NAME.test(c.glimpse))c.glimpse=null;touch(c.id)}
+  for(const c of Object.values(zz.cells))if(c.k==="loc"){fixPlaceName(c.id);if(c.glimpse&&BAD_NAME.test(c.glimpse)){c.glimpse=null;touch(c.id)}}
   if(hereId())ensureWayOut(hereId(),charId()&&cell(charId()).prevAt);
   {const ch=charId()&&cell(charId());if(ch&&ch.lastMeal==null){ch.lastMeal=gameNow();touch(ch.id)}if(!cell("root").rivalry&&towns().length)seedRivalry()}
   const r=cell("root");if(!r.clock){r.clock={base:8*60,real:Date.now()};r.npcT=8*60;r.seed=Math.floor(Math.random()*1e6);touch("root")}
