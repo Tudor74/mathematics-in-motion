@@ -236,10 +236,10 @@ function chart(t,m,v,o){const x0=70,x1=560,y0=212,y1=66;const ys=m.pts.map(p=>p[
 
 /* Intro scene: exponential vs S-curve vs decline */
 add({stage:'intro',term:'How to read the future',
- def:'Most technologies follow a few shapes. Early on, growth looks exponential — doubling and doubling again. Then it bends into an S-curve as the market fills. Prices often fall along a learning curve: a steady percentage cheaper each year. Spotting the shape, and where we are on it, is most of the art of forecasting.',
+ def:'Most technologies follow a few shapes. Early on, growth looks exponential — doubling and doubling again. Then it bends into an S-curve as the market fills. Prices often fall along a learning curve: a steady percentage cheaper each time cumulative production doubles. Spotting the shape, and where we are on it, is most of the art of forecasting.',
  ex:'In every scene, solid blue points are real data with a source. The dashed purple line is a projection, and in Try it you set the assumption that drives it. The 2040 card is a story, not a promise.',
  src:`<b>About this course:</b> figures checked against public sources as of ${esc(FD.meta.asOf)}. ${esc(FD.meta.disclaimer)}`,
- phases:['Exponential: the same percentage growth every year.','S-curve: fast in the middle, flat at the top.','Learning curve: prices fall a steady share each year.','Try it: compare the shapes.'],
+ phases:['Exponential: the same percentage growth every year.','S-curve: fast in the middle, flat at the top.','Learning curve: prices fall a steady share per doubling of production (drawn as if production doubles at a steady pace).','Try it: compare the shapes.'],
  init:()=>({k:1}),anim:p=>({k:Math.min(2,Math.floor(p*3)),p}),
  draw(p,s){const x0=60,x1=560,y0=320,y1=70;let g=`<line x1="${x0}" y1="${y0}" x2="${x1}" y2="${y0}" stroke="${C.ink}"/><line x1="${x0}" y1="${y0}" x2="${x0}" y2="${y1}" stroke="${C.ink}"/>`+T(x1,y0+20,'time →',{size:11,anchor:'end',fill:C.muted});
   const fns=[[t=>Math.pow(2,t*6)/64,'exponential',C.coral],[t=>1/(1+Math.exp(-12*(t-.5))),'S-curve',C.blue],[t=>Math.pow(.82,t*10),'learning curve (price)',C.green]];
