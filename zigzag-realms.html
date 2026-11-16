@@ -112,6 +112,7 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .mapside .card.drift{animation:drift var(--dur,12s) ease-in-out infinite}.mapside:hover .card.drift{animation-play-state:paused}
 @keyframes drift{0%,18%{transform:translateY(0)}50%,68%{transform:translateY(calc(-1 * var(--dist,0px)))}100%{transform:translateY(0)}}
 @media (prefers-reduced-motion:reduce){.mapside .card.drift{animation:none}.maprow .mapside .mapplace{overflow-y:auto}}.mapside .chips{display:flex;flex-wrap:wrap;gap:4px}.mapside h2{margin:0;font-size:22px}.mapside .desc{margin:0;max-width:none}
+.map .trail{stroke:var(--ink);stroke-linecap:round;stroke-dasharray:.1 7;pointer-events:none}
 .map .side{stroke-linecap:round;pointer-events:none}.map .side.shut{stroke:#8b8b86;stroke-width:3;opacity:1}.map .side.shut.mine{stroke-width:3.6}.map .side.rough{stroke:#8b8b86;stroke-width:3.4;stroke-dasharray:.1 6;stroke-linecap:round}
 .map .side.open.mine{stroke:var(--good);stroke-width:3.5;opacity:.8;stroke-dasharray:6 5}
 .map .side.pulse{animation:sidepulse .7s ease 3}@keyframes sidepulse{0%,100%{stroke:var(--ink)}50%{stroke:var(--danger);stroke-width:9}}
@@ -2689,8 +2690,25 @@ async function move(dir){
  if(mins>STEP_MIN)log(`The going is hard: it takes you the rest of the day to get across.`,"time");
  arriveAt(coord.get(key),verb,H,v.dx,v.dy,mins);
 }
+/* Footpaths: every step you take between two places wears a faint dotted trail on the map. A way you walk
+   often grows darker and wider, like a desire line; one you leave alone fades away over four days. */
+const TRAIL_FADE=4*1440;
+function trailSvg(vis,C){
+ const T=cell("root")&&cell("root").trails;if(!T)return"";const t=gameNow();let out="";
+ for(const [k,e] of Object.entries(T)){const age=t-e.last;if(age>=TRAIL_FADE)continue;const [a,b]=k.split("|"),pa=vis.get(a),pb=vis.get(b);if(!pa||!pb)continue;
+  const [x1,y1]=C(pa[0],pa[1]),[x2,y2]=C(pb[0],pb[1]),fade=1-age/TRAIL_FADE,wear=Math.log2(e.n+1);
+  out+=`<line class="trail" x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke-width="${(2.2+Math.min(3.2,wear*.9)).toFixed(1)}" style="opacity:${((.22+Math.min(.5,wear*.14))*fade).toFixed(2)}"/>`}
+ return out;
+}
+function treadTrail(a,b){
+ if(!a||!b||a===b)return;const A=cell(a),B=cell(b);if(!A||!B||zOf(A)!==zOf(B)||hexDist(A.x,A.y,B.x,B.y)>1)return;
+ const r=cell("root");if(!r)return;const k=a<b?a+"|"+b:b+"|"+a,t=gameNow(),T=r.trails=r.trails||{};
+ const e=T[k];T[k]={n:e&&t-e.last<TRAIL_FADE?e.n+1:1,last:t};
+ const keys=Object.keys(T);if(keys.length>700){keys.sort((x,y)=>T[x].last-T[y].last);for(const x of keys.slice(0,keys.length-600))delete T[x]}
+ touch("root");
+}
 function arriveAt(next,verb,H,dx,dy,mins){
- const N=cell(next),firstTime=!N.visited;
+ const N=cell(next),firstTime=!N.visited;treadTrail(H.id,next);
  spendNight(mins,gameNow());
  if(wrapC(H.x+dx)!==H.x+dx||wrapC(H.y+dy)!==H.y+dy)log("You walk into the veil of golden mist. For a long moment there is nothing but warm, bright haze, and then it thins, and you are on the far side of the world.","time");
  log(`You ${verb} ${firstTime?"into somewhere new: ":"to "}${N.t}.`);
@@ -2806,6 +2824,7 @@ function travelTo(target){
  if(!hasLight()&&isNight(gameNow())&&!(T.town&&p.length===1)){flash="It is too dark to travel at night without a lantern. Make camp until dawn, or take a room at an inn in a town.";render();return}
  if(hasLight()&&isNight(gameNow())&&p.length*STEP_MIN>nightLeft()&&!(T.town&&p.length===1)){flash=`That is ${p.length} steps; your lantern has ${nightLeft()/STEP_MIN} left in it tonight before you must rest.`;render();return}
  spendNight(p.length*STEP_MIN,gameNow());
+ {let prev=hereId();for(const id of p){treadTrail(prev,id);prev=id}}
  flash=null;
  log(`You make your way to ${T.t} (${p.length} ${p.length===1?"step":"steps"}).`);
  enter(target,!T.visited);shunPlayer();if(!isDowned())passTime(STEP_MIN*p.length);store.flush();render();
@@ -4700,6 +4719,7 @@ function renderMap(){
    for(let k=0;k<6;k++){const d=moves[k],open=sideOpen(id,d),rough=open&&roughSide(id,d);if(open&&!rough)continue;
     const [x1,y1]=corner(cx,cy,k),[x2,y2]=corner(cx,cy,k+1);
     (me?(s_=>mineSides+=s_):(s_=>out+=s_))(`<line class="side ${rough?"rough":"shut"}${me?" mine":""}"${me?` data-d="${d}"`:""} x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/>`)}}}
+ out+=trailSvg(vis,C);
  const [hx,hy]=P(0,0);
  out+=``+(()=>{const ch=cell(charId());return headAt(ch.t,ch.cls,ch.faceSeed||0,hx+30,hy+30,36,`${ch.t} (you)`,"me")})();out+=mineSides;
  // Wanderers within earshot show as a little whistled note
