@@ -145,7 +145,16 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .dream.show{opacity:1}.dream .track{white-space:nowrap;padding-left:100%;animation:dreamscroll var(--dur,60s) linear infinite}
 @keyframes dreamscroll{from{transform:translateX(0)}to{transform:translateX(-100%)}}@media (prefers-reduced-motion:reduce){.dream .track{animation:none;padding-left:16px}}
 .exploring{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;z-index:6;opacity:0;transition:opacity .35s ease;background:color-mix(in srgb,var(--paper) 35%,transparent);border-radius:12px}
-.exploring.show{opacity:1}.exploring span{padding:10px 22px;border-radius:99px;background:var(--sheet);border:1px solid var(--rule);box-shadow:0 4px 18px #0003;font-family:var(--display);font-size:20px;letter-spacing:.03em;animation:breathe 2.4s ease-in-out infinite}
+.exploring.show{opacity:1}.exploring span{display:inline-flex;align-items:center;gap:10px}
+.hourglass{width:22px;height:30px;overflow:visible}.hourglass .hg{transform-origin:12px 16px;animation:hgflip 3s ease-in-out infinite}
+.hourglass .hg-frame{fill:none;stroke:var(--ink);stroke-width:1.6;stroke-linecap:round}
+.hourglass .hg-top,.hourglass .hg-bot{fill:#d8b25e}.hourglass .hg-top{transform-origin:12px 15.5px;animation:hgtop 3s linear infinite}.hourglass .hg-bot{transform-origin:12px 29px;animation:hgbot 3s linear infinite}
+.hourglass .hg-fall{stroke:#d8b25e;stroke-width:1.2;stroke-dasharray:1.5 2;animation:hgfall .4s linear infinite,hgfallon 3s step-end infinite}
+@keyframes hgflip{0%,82%{transform:rotate(0)}100%{transform:rotate(180deg)}}
+@keyframes hgtop{0%{transform:scaleY(1)}82%,100%{transform:scaleY(0)}}
+@keyframes hgbot{0%{transform:scaleY(0)}82%,100%{transform:scaleY(1)}}
+@keyframes hgfall{to{stroke-dashoffset:-3.5}}@keyframes hgfallon{0%{opacity:1}82%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.hourglass *{animation:none!important}}.exploring span{padding:10px 22px;border-radius:99px;background:var(--sheet);border:1px solid var(--rule);box-shadow:0 4px 18px #0003;font-family:var(--display);font-size:20px;letter-spacing:.03em;animation:breathe 2.4s ease-in-out infinite}
 @keyframes breathe{0%,100%{opacity:.75}50%{opacity:1}}@media (prefers-reduced-motion:reduce){.exploring span{animation:none}}
 .blockflash{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;z-index:7;opacity:0}
 .blockflash.show{animation:bflash 2.2s ease forwards}@keyframes bflash{0%{opacity:0;transform:scale(.85)}12%{opacity:1;transform:scale(1.04)}22%{transform:scale(1)}80%{opacity:1}100%{opacity:0}}
@@ -536,7 +545,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
    <section class="panel map" aria-label="Map">
     <span id="coords" hidden></span>
     <div class="mapwrap"><svg id="map" viewBox="0 0 480 416" role="img" aria-label="Map of explored places on your current level"></svg>
-<div class="blockflash" id="blockflash" aria-live="assertive"></div><div class="folkflash" id="folkflash" aria-live="polite"></div><nav class="compass roseover" id="compass" aria-label="Ways from here"></nav><div class="encounter" id="encounter" aria-live="polite"></div><div class="starve" id="starve" role="alert"></div><div class="dream" id="dream" aria-hidden="true"><div class="track"></div></div><div class="exploring" id="exploring" role="status" aria-live="polite"><span>Exploring, stand by</span></div><div class="zoomslider"><button class="small iconbtn" id="map-key-btn" type="button" aria-label="Map key" title="Map key">?</button><span aria-hidden="true">+</span><input type="range" id="zoom" min="0" max="5" step="1" aria-label="Zoom" title="Zoom"><span aria-hidden="true">−</span></div><div class="mapkey" id="mapkey" hidden></div><div class="arrive" id="arrive" aria-live="polite"></div><div class="gate" id="gate" hidden></div></div>
+<div class="blockflash" id="blockflash" aria-live="assertive"></div><div class="folkflash" id="folkflash" aria-live="polite"></div><nav class="compass roseover" id="compass" aria-label="Ways from here"></nav><div class="encounter" id="encounter" aria-live="polite"></div><div class="starve" id="starve" role="alert"></div><div class="dream" id="dream" aria-hidden="true"><div class="track"></div></div><div class="exploring" id="exploring" role="status" aria-live="polite"><span><svg class="hourglass" viewBox="0 0 24 32" aria-hidden="true"><g class="hg"><path class="hg-frame" d="M4 2h16M4 30h16M6 2c0 8 5 10 5 14s-5 6-5 14M18 2c0 8-5 10-5 14s5 6 5 14"/><path class="hg-top" d="M7.2 6h9.6c-.6 4-3.6 6.2-4.8 9.5C10.8 12.2 7.8 10 7.2 6z"/><path class="hg-bot" d="M7 29c.6-4 3.6-6 5-7.5 1.4 1.5 4.4 3.5 5 7.5z"/><line class="hg-fall" x1="12" y1="16" x2="12" y2="28"/></g></svg>Exploring, stand by</span></div><div class="zoomslider"><button class="small iconbtn" id="map-key-btn" type="button" aria-label="Map key" title="Map key">?</button><span aria-hidden="true">+</span><input type="range" id="zoom" min="0" max="5" step="1" aria-label="Zoom" title="Zoom"><span aria-hidden="true">−</span></div><div class="mapkey" id="mapkey" hidden></div><div class="arrive" id="arrive" aria-live="polite"></div><div class="gate" id="gate" hidden></div></div>
     <div class="layerbar" id="layerbar" role="img" aria-label="Layers"></div>
    </section>
  </div>
