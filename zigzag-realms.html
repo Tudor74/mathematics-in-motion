@@ -116,6 +116,16 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .map .side{stroke-linecap:round;pointer-events:none}.map .side.shut{stroke:#8b8b86;stroke-width:3;opacity:1}.map .side.shut.mine{stroke-width:3.6}.map .side.rough{stroke:#8b8b86;stroke-width:3.4;stroke-dasharray:.1 6;stroke-linecap:round}
 .map .side.open.mine{stroke:var(--good);stroke-width:3.5;opacity:.8;stroke-dasharray:6 5}
 .map .side.pulse{animation:sidepulse .7s ease 3}@keyframes sidepulse{0%,100%{stroke:var(--ink)}50%{stroke:var(--danger);stroke-width:9}}
+.seekstar{position:absolute;right:66px;bottom:12px;z-index:3;width:46px;height:46px;min-height:0;padding:0;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--sheet) 88%,transparent);border:1px solid var(--rule);box-shadow:0 4px 14px #0002;cursor:pointer;transition:opacity .4s,filter .4s}
+.seekstar svg{width:26px;height:26px;fill:#e9b93c;stroke:#9a6b12;stroke-width:1;filter:drop-shadow(0 0 4px #f5d76e);transition:transform .3s}.seekstar:not(.spent):hover svg{transform:scale(1.12) rotate(8deg)}
+.seekstar.spent{opacity:.5;filter:grayscale(1);cursor:default}
+.map .seekray line{stroke:#c98a1c;stroke-width:2.4;stroke-linecap:round;opacity:.85}.map .seekray.sk-player line{stroke:#7a4bd1}.map .seekray.sk-wander line{stroke:var(--water)}
+.map .seekray.sk-new line{stroke-dashoffset:calc(var(--len) * 1px);animation:seekshoot .7s cubic-bezier(.2,.8,.3,1) forwards}
+.map .seekray circle{fill:#e9b93c;stroke:#9a6b12;stroke-width:1}.map .seekray.sk-player circle{fill:#a57ce8;stroke:#5a32a8}.map .seekray.sk-wander circle{fill:#8fb7d4;stroke:var(--water)}
+.map .seekray text{font-family:var(--body);font-size:calc(13pt * var(--u,1));fill:var(--ink);paint-order:stroke;stroke:var(--sheet);stroke-width:3px}
+@keyframes seekshoot{to{stroke-dashoffset:0}}
+.map .seekray{animation:seekfade 14s linear forwards}@keyframes seekfade{0%,80%{opacity:1}100%{opacity:0}}
+.pickflash .pickgot{background:var(--sheet);border:1px solid var(--rule);border-radius:14px;box-shadow:0 6px 18px #0003;padding:10px 16px;min-width:200px;max-width:320px;cursor:pointer}.pickflash .pickgot b{display:block;margin-bottom:4px}.pickflash .pickgot ul{margin:0;padding-left:18px;columns:2;column-gap:18px}.pickflash .pickgot p{margin:6px 0 0;color:var(--faint)}
 .pickflash{position:absolute;left:50%;bottom:22px;transform:translate(-50%,10px);z-index:4;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .3s ease}
 .pickflash.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 .pickflash{display:flex;align-items:center;gap:6px}.pickflash .pf-x{min-height:44px;width:44px;padding:0;border-radius:99px;font-size:20px;line-height:1;justify-content:center;background:var(--sheet)}
@@ -145,7 +155,7 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .starve{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:5;width:min(460px,calc(100% - 90px));pointer-events:none}.starve:not(.show){display:none}
 .starve .card{pointer-events:auto;display:grid;gap:6px;padding:12px 16px;border-radius:12px;background:var(--sheet);border:2px solid var(--danger);box-shadow:0 6px 24px #0004;text-align:center}
 .starve b{font-family:var(--display);font-size:22px;color:var(--danger)}.starve p{margin:0}.starve .btnrow{justify-content:center}
-.dream{position:absolute;left:12px;right:66px;bottom:12px;height:2.1em;display:flex;align-items:center;overflow:hidden;border-radius:99px;background:rgba(18,18,30,.62);color:#efe9da;font-family:var(--body);font-style:italic;font-size:16pt;pointer-events:none;opacity:0;transition:opacity 1.2s ease;z-index:4;
+.dream{position:absolute;left:12px;right:66px;bottom:12px;height:2.1em;display:flex;align-items:center;overflow:hidden;border-radius:99px;background:rgba(18,18,30,.8);color:#efe9da;font-family:var(--body);font-style:italic;font-size:16pt;pointer-events:none;opacity:0;transition:opacity 1.2s ease;z-index:4;
  -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
 .dream.show{opacity:1}.dream .track{white-space:nowrap;padding-left:100%;animation:dreamscroll var(--dur,60s) linear infinite}
 @keyframes dreamscroll{from{transform:translateX(0)}to{transform:translateX(-100%)}}@media (prefers-reduced-motion:reduce){.dream .track{animation:none;padding-left:16px}}
@@ -294,7 +304,7 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .compass.rosebox{display:block}
 .roseover{position:absolute;left:10px;bottom:10px;z-index:3;width:168px;padding:4px 4px 2px;background:color-mix(in srgb,var(--sheet) 82%,transparent);border:1px solid var(--rule);border-radius:14px;box-shadow:0 4px 14px #0002;backdrop-filter:blur(2px)}
 .roseover .rose{max-width:none}.roseover .rosevert{margin:2px 0 4px;gap:6px}.roseover .rosevert button{min-height:36px;padding:2px 10px}
-.mapwrap:has(.roseover:not(:empty)) .dream{left:190px}
+.mapwrap:has(.roseover:not(:empty)) .dream{left:190px}.mapwrap .dream{right:120px}
 @media (max-width:700px){.roseover{width:132px;left:6px;bottom:6px}.mapwrap:has(.roseover:not(:empty)) .dream{left:146px}}.compass{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-areas:"nw n ne" "w c e" "sw s se" "u . d";gap:6px}
 .compass[data-hex="even"] .se,.compass[data-hex="even"] .sw,.compass[data-hex="odd"] .ne,.compass[data-hex="odd"] .nw{display:none}
 .compass[data-hex="even"] .e{grid-area:se}.compass[data-hex="even"] .w{grid-area:sw}.compass[data-hex="odd"] .e{grid-area:ne}.compass[data-hex="odd"] .w{grid-area:nw}
@@ -556,7 +566,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
    <section class="panel map" aria-label="Map">
     <span id="coords" hidden></span>
     <div class="mapwrap"><svg id="map" viewBox="0 0 480 416" role="img" aria-label="Map of explored places on your current level"></svg>
-<div class="blockflash" id="blockflash" aria-live="assertive"></div><div class="folkflash" id="folkflash" aria-live="polite"></div><div class="pickflash" id="pickflash"></div><nav class="compass roseover" id="compass" aria-label="Ways from here"></nav><div class="encounter" id="encounter" aria-live="polite"></div><div class="starve" id="starve" role="alert"></div><div class="dream" id="dream" aria-hidden="true"><div class="track"></div></div><div class="exploring" id="exploring" role="status" aria-live="polite"><span><svg class="hourglass" viewBox="0 0 24 32" aria-hidden="true"><g class="hg"><path class="hg-frame" d="M4 2h16M4 30h16M6 2c0 8 5 10 5 14s-5 6-5 14M18 2c0 8-5 10-5 14s5 6 5 14"/><path class="hg-top" d="M7.2 6h9.6c-.6 4-3.6 6.2-4.8 9.5C10.8 12.2 7.8 10 7.2 6z"/><path class="hg-bot" d="M7 29c.6-4 3.6-6 5-7.5 1.4 1.5 4.4 3.5 5 7.5z"/><line class="hg-fall" x1="12" y1="16" x2="12" y2="28"/></g></svg>Exploring, stand by</span></div><div class="zoomslider"><button class="small iconbtn" id="map-key-btn" type="button" aria-label="Map key" title="Map key">?</button><span aria-hidden="true">+</span><input type="range" id="zoom" min="0" max="5" step="1" aria-label="Zoom" title="Zoom"><span aria-hidden="true">−</span></div><div class="mapkey" id="mapkey" hidden></div><div class="arrive" id="arrive" aria-live="polite"></div><div class="gate" id="gate" hidden></div></div>
+<div class="blockflash" id="blockflash" aria-live="assertive"></div><div class="folkflash" id="folkflash" aria-live="polite"></div><div class="pickflash" id="pickflash"></div><button class="seekstar" id="seekstar" data-act="seek" aria-label="Seek: find people (once a day)" title="Seek: once a day, see which way everyone is"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.7 6.1 6.6.6-5 4.4 1.5 6.5L12 16.7l-5.8 3.4 1.5-6.5-5-4.4 6.6-.6z"/></svg></button><nav class="compass roseover" id="compass" aria-label="Ways from here"></nav><div class="encounter" id="encounter" aria-live="polite"></div><div class="starve" id="starve" role="alert"></div><div class="dream" id="dream" aria-hidden="true"><div class="track"></div></div><div class="exploring" id="exploring" role="status" aria-live="polite"><span><svg class="hourglass" viewBox="0 0 24 32" aria-hidden="true"><g class="hg"><path class="hg-frame" d="M4 2h16M4 30h16M6 2c0 8 5 10 5 14s-5 6-5 14M18 2c0 8-5 10-5 14s5 6 5 14"/><path class="hg-top" d="M7.2 6h9.6c-.6 4-3.6 6.2-4.8 9.5C10.8 12.2 7.8 10 7.2 6z"/><path class="hg-bot" d="M7 29c.6-4 3.6-6 5-7.5 1.4 1.5 4.4 3.5 5 7.5z"/><line class="hg-fall" x1="12" y1="16" x2="12" y2="28"/></g></svg>Exploring, stand by</span></div><div class="zoomslider"><button class="small iconbtn" id="map-key-btn" type="button" aria-label="Map key" title="Map key">?</button><span aria-hidden="true">+</span><input type="range" id="zoom" min="0" max="5" step="1" aria-label="Zoom" title="Zoom"><span aria-hidden="true">−</span></div><div class="mapkey" id="mapkey" hidden></div><div class="arrive" id="arrive" aria-live="polite"></div><div class="gate" id="gate" hidden></div></div>
     <div class="layerbar" id="layerbar" role="img" aria-label="Layers"></div>
    </section>
  </div>
@@ -2474,7 +2484,7 @@ function flashPickup(locId){
  const el=$("pickflash");if(!el||hereId()!==locId)return;clearTimeout(pickTimer);
  const items=loose(locId);if(!items.length||isDowned()){el.classList.remove("show");return}
  el.innerHTML=`<button class="primary" data-act="pickall">${ic("take","")} Pick up all (${items.length})</button><button class="pf-x" data-act="pickdismiss" aria-label="Dismiss" title="Leave them">×</button>`;
- el.classList.remove("show");void el.offsetWidth;el.classList.add("show");   // stays until you take them, dismiss it, or move on
+ el.onclick=null;el.classList.remove("show");void el.offsetWidth;el.classList.add("show");   // stays until you take them, dismiss it, or move on
 }
 function pickUpAll(){
  const here=hereId();if(!here||isDowned())return;if(foeId()){say(`Not with ${cell(foeId()).t} watching.`,"bad");render();return}
@@ -2484,8 +2494,40 @@ function pickUpAll(){
   excise(it.id,"contain");appendTo(charId(),"contain",it.id);got.push(it.t)}
  if(got.length)log(`You pick up ${got.length>4?got.slice(0,4).join(", ")+` and ${got.length-4} more`:got.join(", ")}.`,"good");
  if(left.length)log(`Too heavy to carry as well: ${left.join(", ")}.`,"bad");
- $("pickflash").classList.remove("show");store.flush();render();
+ const el=$("pickflash");
+ el.innerHTML=got.length?`<div class="pickgot" role="status"><b>You picked up</b><ul>${got.slice(0,10).map(n=>`<li>${esc(n)}</li>`).join("")}${got.length>10?`<li>and ${got.length-10} more</li>`:""}</ul>${left.length?`<p>Too heavy: ${esc(left.join(", "))}</p>`:""}</div>`:`<div class="pickgot" role="status"><b>Nothing you can carry.</b>${left.length?`<p>Too heavy: ${esc(left.join(", "))}</p>`:""}</div>`;
+ el.classList.add("show");clearTimeout(pickTimer);pickTimer=setTimeout(()=>el.classList.remove("show"),4500);el.onclick=()=>el.classList.remove("show");
+ store.flush();render();
 }
+/* Seek: once a day, a magical sense of everyone in the realm. Lines shoot out from you toward every
+   townsperson, wanderer and other traveller on your layer, each tipped with a name and how far. They fade
+   after a little while. The star in the corner of the map greys out until tomorrow. */
+let seekShow=null;
+const seekReady=()=>{const ch=charId()&&cell(charId());return!!ch&&ch.seekDay!==dayOf(gameNow())};
+function seekPeople(){
+ if(!seekReady()||!hereId()||isDowned())return;const ch=cell(charId()),H=cell(hereId()),Z=zOf(H);
+ const t=[];
+ for(const n of npcs())if(!n.wild&&!n.defeated&&(n.z||0)===Z)t.push({x:n.x,y:n.y,name:n.t,kind:"folk"});
+ if(Z===0)for(const w of wanderers())t.push({x:w.x,y:w.y,name:WANDERERS[w.i].name.split(",")[0],kind:"wander"});
+ if(mp.on())for(const p of mp.players)if((p.z||0)===Z)t.push({x:p.x,y:p.y,name:p.name,kind:"player"});
+ for(const o of t){o.dx=wrapC(o.x-H.x);o.dy=wrapC(o.y-H.y);o.d=hexDist(H.x,H.y,o.x,o.y)}
+ t.sort((a,b)=>a.d-b.d);
+ const groups=new Map();for(const o of t){const k=o.x+","+o.y,g=groups.get(k);if(g){g.more++;if(o.kind==="player")g.kind="player"}else groups.set(k,Object.assign({},o,{more:0}))}
+ ch.seekDay=dayOf(gameNow());touch(ch.id);seekShow={at:Date.now(),from:hereId(),targets:[...groups.values()].slice(0,24)};
+ log(t.length?`You close your eyes and feel for others. ${t.length} ${t.length===1?"presence answers":"presences answer"}; the nearest is ${t[0].name}, ${t[0].d} ${t[0].d===1?"hex":"hexes"} to the ${hexWord(t[0].dx,t[0].dy)}.`:"You close your eyes and feel for others, but nobody answers on this level.","npc");
+ store.flush();render();setTimeout(()=>{seekShow=null;render()},14000);
+}
+function seekSvg(C,VB,ui){
+ if(!seekShow||seekShow.from!==hereId())return"";const [ox,oy]=C(0,0),fresh=Date.now()-seekShow.at<900;let out="";
+ const x0=VB[0]+14*ui,x1=VB[0]+VB[2]-80*ui,y0=VB[1]+30*ui,y1=VB[1]+VB[3]-20*ui;
+ seekShow.targets.forEach((o,i)=>{if(!o.d)return;let [tx,ty]=C(o.dx,o.dy);const vx=tx-ox,vy=ty-oy;let k=1;
+  if(tx<x0)k=Math.min(k,(x0-ox)/vx);if(tx>x1)k=Math.min(k,(x1-ox)/vx);if(ty<y0)k=Math.min(k,(y0-oy)/vy);if(ty>y1)k=Math.min(k,(y1-oy)/vy);
+  const ex=ox+vx*k,ey=oy+vy*k,len=Math.hypot(ex-ox,ey-oy),edge=k<1;
+  out+=`<g class="seekray sk-${o.kind}${fresh?" sk-new":""}" style="--len:${len.toFixed(0)};animation-delay:-${((Date.now()-seekShow.at)/1000).toFixed(2)}s"><line x1="${ox.toFixed(1)}" y1="${oy.toFixed(1)}" x2="${ex.toFixed(1)}" y2="${ey.toFixed(1)}" stroke-dasharray="${len.toFixed(0)}" style="animation-delay:${(i*.05).toFixed(2)}s"/>
+   <circle cx="${ex.toFixed(1)}" cy="${ey.toFixed(1)}" r="${(edge?3.5:5)*ui}"/>${i<10?`<text x="${(ex+(vx>=0?-6:6)*ui).toFixed(1)}" y="${(ey-8*ui).toFixed(1)}" text-anchor="${vx>=0?"end":"start"}">${esc(o.name.split(" ")[0])}${o.more?` +${o.more}`:""} · ${o.d}</text>`:""}</g>`});
+ return out;
+}
+function renderSeekStar(){const b=$("seekstar");if(!b)return;const ok=seekReady()&&!!hereId()&&!isDowned();b.classList.toggle("spent",!ok);b.disabled=!ok;b.title=ok?"Seek: once a day, see which way everyone is":"Seek is spent for today. It returns at dawn of the next day."}
 let folkTimer=null;
 function flashFolk(locId){
  const el=$("folkflash");if(!el||hereId()!==locId||isDowned())return;const L=cell(locId),Z=zOf(L);
@@ -4742,6 +4784,7 @@ function renderMap(){
  if(Z===0)for(const w of wanderers()){const sx=wrapC(w.x-H.x),sy=wrapC(w.y-H.y),dd=hexDist(H.x,H.y,w.x,w.y);if(dd>3||!dd)continue;const [qx,qy]=P(sx,sy);
   out+=`<text class="wnote${WANDERERS[w.i].bard?" bard":""}" x="${(qx+30).toFixed(1)}" y="${(qy+38).toFixed(1)}" text-anchor="middle"><title>A whistled tune: ${esc(WANDERERS[w.i].name.split(",")[0])} is on the road</title>♪</text>`}
  if(ws&&ws.storm&&Z>=0){const sx=wrapC(Math.round(ws.storm.x)-H.x),sy=wrapC(Math.round(ws.storm.y)-H.y);const [qx,qy]=P(sx,sy);out+=`<circle class="stormring" cx="${qx+30}" cy="${qy+30}" r="${ws.storm.r*HW*.6}"/>`}
+ out+=seekSvg(C,VB,ui);
  out+=`<text class="axis" x="${VB[0]+W/2}" y="${VB[1]+16*ui}" text-anchor="middle">N ↑</text>`;
  // The fifteen layers, deepest on the left, the peak on the right; yours is marked
  $("layerbar").innerHTML=`<span class="mono">−${ZMAX}</span>${Array.from({length:2*ZMAX+1},(_,i)=>{const z=i-ZMAX;return`<span class="lv${z===Z?" on":z===0?" ground":z>0?" up":" down"}" title="${z===0?"ground level":z>0?`${z} above ground`:`${-z} below ground`}${z===Z?" (you are here)":""}"></span>`}).join("")}<span class="mono">+${ZMAX}</span>`;
@@ -4749,8 +4792,9 @@ function renderMap(){
  // At night the map greys out and a notice sits over it, so nightfall is hard to miss; the beacons still shine
  if(isNight(t)&&Z>=0){
   const mins=Math.max(1,Math.round(realMinutesToDawn(t))),steps=Math.floor(nightLeft()/STEP_MIN);
-  const line=!hasLight()?"Too dark to travel without a lantern. Make camp, or take a room at an inn."
-   :steps>0?`Your lantern has ${steps} ${steps===1?"step":"steps"} left tonight.`:"Your lantern is spent. Make camp, or take a room at an inn.";
+  const Lh=cell(hereId()),line=Lh&&Lh.town?"You have taken a room at the inn, and sleep until dawn."
+   :zOf(Lh)<0?(hasLight()&&steps>0?`Deep underground night means nothing. Your lantern has ${steps} ${steps===1?"step":"steps"} left.`:"You rest in the dark until dawn.")
+   :"You have made camp for the night, and sleep until dawn.";
   out=`<g class="nightfade">${out}</g>${beacons}`+(()=>{const words=line.split(" "),rows=[];let cur="";for(const w of words){if((cur+" "+w).trim().length>38&&cur){rows.push(cur);cur=w}else cur=(cur+" "+w).trim()}if(cur)rows.push(cur);
    const h=110+rows.length*30;return UI(`<g class="nightnote" pointer-events="none" style="--k:${(1/ui).toFixed(4)}"><rect x="14" y="${210-h/2}" width="392" height="${h}" rx="12"/>
    <text class="nn-h" x="210" y="${210-h/2+46}" text-anchor="middle">Night</text>${nightDial(t,58,210-h/2+42)}${nightGlass(t,362,210-h/2+42)}
@@ -5376,7 +5420,7 @@ function renderMapKey(){const k=$("mapkey");if(!k||k.innerHTML)return;
  $("mapkey-close").onclick=()=>{k.hidden=true}}
 // Travellers have twice the hit points they used to; older characters are brought up once
 function doubleHP(){const ch=charId()&&cell(charId());if(!ch||ch.hpx2)return;ch.hpx2=true;setStat("MAXHP",2*sv("MAXHP"));setStat("HP",Math.max(1,2*sv("HP")));touch(ch.id)}
-function render(){doubleHP();if(hereId()&&!isDowned())ensureWayOut(hereId(),cell(charId()).prevAt);renderMapKey();renderGate();renderDream();renderEncounter();renderStarving();{const x=$("exploring");if(x)x.classList.toggle("show",!!(busy&&charId()&&!isDowned()&&!["realm","founding","river","start"].includes(busy.dir)))}renderPills();renderScriptButton();renderMap();renderCompass();renderPlace();renderSheet();renderSocial();renderGarden();renderCodex();renderAlphabet();renderLog();renderVoice();decoratePanels();iconHeads();sound.update();voiceOnRender()}
+function render(){doubleHP();renderSeekStar();if(hereId()&&!isDowned())ensureWayOut(hereId(),cell(charId()).prevAt);renderMapKey();renderGate();renderDream();renderEncounter();renderStarving();{const x=$("exploring");if(x)x.classList.toggle("show",!!(busy&&charId()&&!isDowned()&&!["realm","founding","river","start"].includes(busy.dir)))}renderPills();renderScriptButton();renderMap();renderCompass();renderPlace();renderSheet();renderSocial();renderGarden();renderCodex();renderAlphabet();renderLog();renderVoice();decoratePanels();iconHeads();sound.update();voiceOnRender()}
 
 /* ============================================================
    Soundtrack: generated live from white, pink and brown noise and a few oscillators.
@@ -5739,7 +5783,7 @@ document.addEventListener("click",e=>{
   trade:i=>{openTrade=openTrade===i?null:i;openChat=null;armedAttack=null;render()},
   buyfood:buyFood,sell:v=>{const [n,it]=v.split("|");sellTo(n,it)},quest:i=>{offerQuest(cell(i));passTime(5);store.flush();render()},
   give:giveFood,arm:i=>{armedAttack=armedAttack===i?null:i;render()},hit:attackAgent,
-  disengage:()=>disengage(),pickall:()=>pickUpAll(),pickdismiss:()=>$("pickflash").classList.remove("show"),autofight:()=>toggleAutoFight(),evgo:id=>goToEvent(id),reengage:()=>{const f=foeHere();if(f){cell(f).truce=0;touch(f);log(`You turn to face ${cell(f).t} again.`,"bad");store.flush();render()}},craft,deposit,withdraw,rent:rentCottage,leave:leaveForOthers,takeleft:takeLeft,train:takeTrain,steal:trySteal,sharefood:shareFood,rate:rateChat,contest:enterContest,festprize:festivalPrize,throwdart:throwDart})[b.dataset.act](id);return}
+  disengage:()=>disengage(),seek:()=>seekPeople(),pickall:()=>pickUpAll(),pickdismiss:()=>$("pickflash").classList.remove("show"),autofight:()=>toggleAutoFight(),evgo:id=>goToEvent(id),reengage:()=>{const f=foeHere();if(f){cell(f).truce=0;touch(f);log(`You turn to face ${cell(f).t} again.`,"bad");store.flush();render()}},craft,deposit,withdraw,rent:rentCottage,leave:leaveForOthers,takeleft:takeLeft,train:takeTrain,steal:trySteal,sharefood:shareFood,rate:rateChat,contest:enterContest,festprize:festivalPrize,throwdart:throwDart})[b.dataset.act](id);return}
  const d=e.target.closest("#compass button[data-dir]");if(d){move(d.dataset.dir);return}
  // while the map slides (and a moment after), taps on it are ignored, so a moving map never walks you somewhere
  if(e.target.closest("#map")&&mapCam&&(mapCam.anim||performance.now()-(mapCam.settled||0)<250||mapDownAt>(mapCam.anim?mapCam.anim.t0:mapCam.slideStart||0)&&mapDownDuringSlide))return;
