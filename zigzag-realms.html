@@ -249,6 +249,12 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .map .beacon.sanctuary .halo{animation:beaconpulse 3.2s ease-in-out infinite}.map .beacon.cave .halo{animation:beaconpulse 4.1s ease-in-out infinite}
 @keyframes beaconpulse{0%,100%{opacity:.45}50%{opacity:.9}}
 .map .nightfade{filter:grayscale(1) brightness(.72);opacity:.5}
+.map .nightglass .ng-frame{fill:none;stroke:var(--ink);stroke-width:1.5;stroke-linecap:round}
+.map .nightglass .ng-top path,.map .nightglass .ng-bot path{fill:#e9cf7d}
+.map .nightglass .ng-top{transform:scaleY(var(--f));animation:ngtop linear forwards}.map .nightglass .ng-bot{transform:scaleY(calc(1 - var(--f)));animation:ngbot linear forwards}
+@keyframes ngtop{from{transform:scaleY(var(--f))}to{transform:scaleY(0)}}@keyframes ngbot{from{transform:scaleY(calc(1 - var(--f)))}to{transform:scaleY(1)}}
+.map .nightglass .ng-fall{stroke:#e9cf7d;stroke-width:1.1;stroke-dasharray:1.4 2.2;animation:ngfall .5s linear infinite}@keyframes ngfall{to{stroke-dashoffset:-3.6}}
+@media (prefers-reduced-motion:reduce){.map .nightglass *{animation:none!important}}
 .map .nightdial .nd-face{fill:var(--sheet);stroke:var(--rule);stroke-width:1.5}.map .nightdial line{stroke:var(--faint);stroke-width:1.4;stroke-linecap:round}
 .map .nightdial .nd-sweep{fill:none;stroke:#e9cf7d;stroke-dashoffset:var(--from);animation:ndsweep linear forwards}
 @keyframes ndsweep{from{stroke-dashoffset:var(--from)}to{stroke-dashoffset:var(--c)}}
@@ -789,6 +795,16 @@ function nightDial(t,cx,cy){
  return`<g class="nightdial"><circle class="nd-face" cx="${cx}" cy="${cy}" r="22"/>${ticks}
   <circle class="nd-sweep" cx="${cx}" cy="${cy}" r="${r}" stroke-width="${2*r}" stroke-dasharray="${C.toFixed(2)}" style="--c:${C.toFixed(2)};--from:${(C*(1-f)).toFixed(2)};animation-duration:${left.toFixed(1)}s" transform="rotate(-90 ${cx} ${cy}) scale(-1 1) translate(${-2*cx} 0)"/>
   <g transform="translate(${cx} ${cy})"><line class="nd-hand" x1="0" y1="2" x2="0" y2="-17" style="animation-delay:-${(Date.now()%60000/1000).toFixed(2)}s"/></g><circle class="nd-pin" cx="${cx}" cy="${cy}" r="2.2"/></g>`;
+}
+/* And an hourglass with just enough sand for one night: it starts full at dusk and runs out at dawn,
+   three real minutes later, picking up where the night really is after every redraw. */
+function nightGlass(t,cx,cy){
+ const left=Math.max(0,realMinutesToDawn(t)*60),f=Math.max(0,Math.min(1,left/180));
+ return`<g class="nightglass" transform="translate(${cx} ${cy}) scale(1.25)">
+  <path class="ng-frame" d="M-11 -18h22M-11 18h22M-9 -18c0 9 7 11 7 18s-7 9-7 18M9 -18c0 9-7 11-7 18s7 9 7 18"/>
+  <g class="ng-top" style="--f:${f.toFixed(4)};animation-duration:${left.toFixed(1)}s"><path d="M-7.6 -14.5h15.2c-1 5-5.6 8.6-7.6 14C-2 -5.9-6.6-9.5-7.6-14.5z"/></g>
+  <g transform="translate(0 16.5)"><g class="ng-bot" style="--f:${f.toFixed(4)};animation-duration:${left.toFixed(1)}s"><path d="M-8.5 0c.8-5 5.6-8 8.5-10 2.9 2 7.7 5 8.5 10z"/></g></g>
+  ${f>0?`<line class="ng-fall" x1="0" y1="0" x2="0" y2="16"/>`:""}</g>`;
 }
 function nightOrDayEdge(t){const h=((t%1440)+1440)%1440/60;return(h<dawnH(t)?dawnH(t)-h:h>=duskH(t)?24-h+DAWN[seasonOf(t+(24-h)*60)]:duskH(t)-h)*60}
 function advanceClock(t,ms){
@@ -4737,7 +4753,7 @@ function renderMap(){
    :steps>0?`Your lantern has ${steps} ${steps===1?"step":"steps"} left tonight.`:"Your lantern is spent. Make camp, or take a room at an inn.";
   out=`<g class="nightfade">${out}</g>${beacons}`+(()=>{const words=line.split(" "),rows=[];let cur="";for(const w of words){if((cur+" "+w).trim().length>38&&cur){rows.push(cur);cur=w}else cur=(cur+" "+w).trim()}if(cur)rows.push(cur);
    const h=110+rows.length*30;return UI(`<g class="nightnote" pointer-events="none" style="--k:${(1/ui).toFixed(4)}"><rect x="14" y="${210-h/2}" width="392" height="${h}" rx="12"/>
-   <text class="nn-h" x="210" y="${210-h/2+46}" text-anchor="middle">Night</text>${nightDial(t,58,210-h/2+42)}
+   <text class="nn-h" x="210" y="${210-h/2+46}" text-anchor="middle">Night</text>${nightDial(t,58,210-h/2+42)}${nightGlass(t,362,210-h/2+42)}
    ${rows.map((r,i)=>`<text class="nn-t" x="210" y="${210-h/2+82+i*30}" text-anchor="middle">${esc(r)}</text>`).join("")}
    <text class="nn-s" x="210" y="${210-h/2+82+rows.length*30+8}" text-anchor="middle">Dawn in about ${mins} real ${mins===1?"minute":"minutes"}</text></g>`)})();
  }
