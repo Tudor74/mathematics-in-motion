@@ -420,7 +420,7 @@ add({stage:'synth',term:'The LFO',
 /* 10 FM */
 add({stage:'synth',term:'FM synthesis',
  def:`In ${W('fm','FM synthesis')} one oscillator (the modulator) wobbles another’s frequency (the carrier) so fast that you no longer hear a wobble — you hear new frequencies, called sidebands. Ratio sets which frequencies appear; index sets how many.`,
- ex:'Whole-number ratios give harmonic, musical tones (electric pianos, basses); odd ratios give metallic, bell-like ones.',
+ ex:'Simple whole-number ratios give harmonic, musical tones (electric pianos, basses); non-integer ratios give inharmonic, metallic, bell-like ones.',
  src:'<b>History:</b> John Chowning developed FM synthesis at Stanford from the late 1960s; Stanford licensed it to Yamaha, whose DX7 (1983) became one of the best-selling synthesisers ever.',
  phases:['A carrier sine wave.','A modulator nudges its frequency — the wave bunches and stretches.','Higher index: more sidebands, a brighter sound.','Try it: change ratio and index.'],
  init:()=>({ratio:2,index:3}),anim:p=>({ratio:2,index:lerp(0,6,seg(p,.2,.85)),p}),
