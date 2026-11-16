@@ -118,6 +118,7 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .map .side.pulse{animation:sidepulse .7s ease 3}@keyframes sidepulse{0%,100%{stroke:var(--ink)}50%{stroke:var(--danger);stroke-width:9}}
 .pickflash{position:absolute;left:50%;bottom:22px;transform:translate(-50%,10px);z-index:4;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .3s ease}
 .pickflash.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.pickflash{display:flex;align-items:center;gap:6px}.pickflash .pf-x{min-height:44px;width:44px;padding:0;border-radius:99px;font-size:20px;line-height:1;justify-content:center;background:var(--sheet)}
 .pickflash button{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:8px 18px;border-radius:99px;box-shadow:0 6px 18px #0003;font-size:13pt}
 .folkflash{position:absolute;left:0;right:0;top:34px;display:flex;justify-content:center;pointer-events:none;z-index:4;opacity:0;transform:translateY(-8px);transition:opacity .35s ease,transform .35s ease}
 .folkflash.show{opacity:1;transform:none;pointer-events:auto}
@@ -2472,9 +2473,8 @@ const loose=locId=>storeIds(locId).map(cell).filter(i=>i&&i.k==="item"&&!i.forSa
 function flashPickup(locId){
  const el=$("pickflash");if(!el||hereId()!==locId)return;clearTimeout(pickTimer);
  const items=loose(locId);if(!items.length||isDowned()){el.classList.remove("show");return}
- el.innerHTML=`<button class="primary" data-act="pickall">${ic("take","")} Pick up all (${items.length})</button>`;
- el.classList.remove("show");void el.offsetWidth;el.classList.add("show");
- pickTimer=setTimeout(()=>el.classList.remove("show"),6000);
+ el.innerHTML=`<button class="primary" data-act="pickall">${ic("take","")} Pick up all (${items.length})</button><button class="pf-x" data-act="pickdismiss" aria-label="Dismiss" title="Leave them">×</button>`;
+ el.classList.remove("show");void el.offsetWidth;el.classList.add("show");   // stays until you take them, dismiss it, or move on
 }
 function pickUpAll(){
  const here=hereId();if(!here||isDowned())return;if(foeId()){say(`Not with ${cell(foeId()).t} watching.`,"bad");render();return}
@@ -5739,7 +5739,7 @@ document.addEventListener("click",e=>{
   trade:i=>{openTrade=openTrade===i?null:i;openChat=null;armedAttack=null;render()},
   buyfood:buyFood,sell:v=>{const [n,it]=v.split("|");sellTo(n,it)},quest:i=>{offerQuest(cell(i));passTime(5);store.flush();render()},
   give:giveFood,arm:i=>{armedAttack=armedAttack===i?null:i;render()},hit:attackAgent,
-  disengage:()=>disengage(),pickall:()=>pickUpAll(),autofight:()=>toggleAutoFight(),evgo:id=>goToEvent(id),reengage:()=>{const f=foeHere();if(f){cell(f).truce=0;touch(f);log(`You turn to face ${cell(f).t} again.`,"bad");store.flush();render()}},craft,deposit,withdraw,rent:rentCottage,leave:leaveForOthers,takeleft:takeLeft,train:takeTrain,steal:trySteal,sharefood:shareFood,rate:rateChat,contest:enterContest,festprize:festivalPrize,throwdart:throwDart})[b.dataset.act](id);return}
+  disengage:()=>disengage(),pickall:()=>pickUpAll(),pickdismiss:()=>$("pickflash").classList.remove("show"),autofight:()=>toggleAutoFight(),evgo:id=>goToEvent(id),reengage:()=>{const f=foeHere();if(f){cell(f).truce=0;touch(f);log(`You turn to face ${cell(f).t} again.`,"bad");store.flush();render()}},craft,deposit,withdraw,rent:rentCottage,leave:leaveForOthers,takeleft:takeLeft,train:takeTrain,steal:trySteal,sharefood:shareFood,rate:rateChat,contest:enterContest,festprize:festivalPrize,throwdart:throwDart})[b.dataset.act](id);return}
  const d=e.target.closest("#compass button[data-dir]");if(d){move(d.dataset.dir);return}
  // while the map slides (and a moment after), taps on it are ignored, so a moving map never walks you somewhere
  if(e.target.closest("#map")&&mapCam&&(mapCam.anim||performance.now()-(mapCam.settled||0)<250||mapDownAt>(mapCam.anim?mapCam.anim.t0:mapCam.slideStart||0)&&mapDownDuringSlide))return;
