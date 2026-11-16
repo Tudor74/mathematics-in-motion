@@ -787,7 +787,7 @@ function nightDial(t,cx,cy){
  const ticks=Array.from({length:12},(_,i)=>{const a=i/12*2*Math.PI;return`<line x1="${(cx+Math.sin(a)*19).toFixed(1)}" y1="${(cy-Math.cos(a)*19).toFixed(1)}" x2="${(cx+Math.sin(a)*22).toFixed(1)}" y2="${(cy-Math.cos(a)*22).toFixed(1)}"/>`}).join("");
  return`<g class="nightdial"><circle class="nd-face" cx="${cx}" cy="${cy}" r="22"/>${ticks}
   <circle class="nd-sweep" cx="${cx}" cy="${cy}" r="${r}" stroke-width="${2*r}" stroke-dasharray="${C.toFixed(2)}" style="--c:${C.toFixed(2)};--from:${(C*(1-f)).toFixed(2)};animation-duration:${left.toFixed(1)}s" transform="rotate(-90 ${cx} ${cy}) scale(-1 1) translate(${-2*cx} 0)"/>
-  <g transform="translate(${cx} ${cy})"><line class="nd-hand" x1="0" y1="2" x2="0" y2="-17"/></g><circle class="nd-pin" cx="${cx}" cy="${cy}" r="2.2"/></g>`;
+  <g transform="translate(${cx} ${cy})"><line class="nd-hand" x1="0" y1="2" x2="0" y2="-17" style="animation-delay:-${(Date.now()%60000/1000).toFixed(2)}s"/></g><circle class="nd-pin" cx="${cx}" cy="${cy}" r="2.2"/></g>`;
 }
 function nightOrDayEdge(t){const h=((t%1440)+1440)%1440/60;return(h<dawnH(t)?dawnH(t)-h:h>=duskH(t)?24-h+DAWN[seasonOf(t+(24-h)*60)]:duskH(t)-h)*60}
 function advanceClock(t,ms){
