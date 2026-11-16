@@ -4836,11 +4836,14 @@ function renderMap(){
   const Lh=cell(hereId()),line=Lh&&Lh.town?"You have taken a room at the inn, and sleep until dawn."
    :zOf(Lh)<0?(hasLight()&&steps>0?`Deep underground night means nothing. Your lantern has ${steps} ${steps===1?"step":"steps"} left.`:"You rest in the dark until dawn.")
    :"You have made camp for the night, and sleep until dawn.";
-  out=`<g class="nightfade">${out}</g>${beacons}`+(()=>{const words=line.split(" "),rows=[];let cur="";for(const w of words){if((cur+" "+w).trim().length>38&&cur){rows.push(cur);cur=w}else cur=(cur+" "+w).trim()}if(cur)rows.push(cur);
-   const h=110+rows.length*30;return UI(`<g class="nightnote" pointer-events="none" style="--k:${(1/ui).toFixed(4)}"><rect x="14" y="${210-h/2}" width="392" height="${h}" rx="12"/>
-   <text class="nn-h" x="210" y="${210-h/2+46}" text-anchor="middle">Night</text>${nightDial(t,58,210-h/2+42)}${nightGlass(t,362,210-h/2+42)}
-   ${rows.map((r,i)=>`<text class="nn-t" x="210" y="${210-h/2+82+i*30}" text-anchor="middle">${esc(r)}</text>`).join("")}
-   <text class="nn-s" x="210" y="${210-h/2+82+rows.length*30+8}" text-anchor="middle">Dawn in about ${mins} real ${mins===1?"minute":"minutes"}</text></g>`)})();
+  const narrow=W<V,wrapAt=narrow?24:38,G=narrow?44:30;
+  out=`<g class="nightfade">${out}</g>${beacons}`+(()=>{const words=line.split(" "),rows=[];let cur="";for(const w of words){if((cur+" "+w).trim().length>wrapAt&&cur){rows.push(cur);cur=w}else cur=(cur+" "+w).trim()}if(cur)rows.push(cur);
+   // near the top of the map, clear of the Ways rose and the controls along the bottom
+   // on a narrow map (a phone) the box shrinks to fit the width, leaving room for the zoom slider
+   const h=(narrow?150:110)+rows.length*G,Y=26,nsc=W>=V?ui:(W-62*U)/420,NUI=W>=V?UI:(s=>`<g transform="translate(${VB[0]+6*U} ${VB[1]}) scale(${nsc})">${s}</g>`);return NUI(`<g class="nightnote" pointer-events="none" style="--k:${(1/nsc).toFixed(4)}"><rect x="14" y="${Y}" width="392" height="${h}" rx="12"/>
+   <text class="nn-h" x="210" y="${Y+(narrow?56:46)}" text-anchor="middle">Night</text>${nightDial(t,58,Y+42)}${nightGlass(t,362,Y+42)}
+   ${rows.map((r,i)=>`<text class="nn-t" x="210" y="${Y+(narrow?110:82)+i*G}" text-anchor="middle">${esc(r)}</text>`).join("")}
+   <text class="nn-s" x="210" y="${Y+(narrow?110:82)+rows.length*G+8}" text-anchor="middle">${narrow?`Dawn in ~${mins} min`:`Dawn in about ${mins} real ${mins===1?"minute":"minutes"}`}</text></g>`)})();
  }
  else out+=beacons;
  if(zoomTw){const fresh=!zoomTw.to;zoomTw.to=VB.slice();if(fresh){svg.setAttribute("viewBox",zoomTw.from.map(v=>v.toFixed(1)).join(" "));requestAnimationFrame(stepZoom)}}else svg.setAttribute("viewBox",(mapCam.anim?camBox():VB).map(v=>v.toFixed(1)).join(" "));{const cw=svg.clientWidth||bb.width;svg.style.setProperty("--u",cw>50?(W/cw*1.003).toFixed(4):"1")}{const zs=$("zoom"),lab=`${Math.round(W/(HW*.75))} × ${2*R+1} hexes`;if(zs){zs.max=String(ZOOMS.length-1);zs.value=String(ZOOMS.length-1-ZOOMS.indexOf(R));zs.setAttribute("aria-valuetext",lab);zs.title=`Zoom: ${lab}`}}
