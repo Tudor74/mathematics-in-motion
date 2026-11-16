@@ -4263,7 +4263,10 @@ document.addEventListener("change",e=>{
  else if(e.target.id==="xi-auto"){voice.auto=e.target.checked;voice.save()}
  else if(e.target.id==="xi-hide"){voice.hide=e.target.checked;voice.save();render()}});
 // Read each new place aloud on arrival
-function voiceOnRender(){if(!voice.on()||!voice.auto||busy||!hereId()||isDowned())return;const L=cell(hereId());if(L.id===voice.last||!L.desc)return;voice.readHere()}
+// Each place is read aloud by itself only the first time you are there; the read button beside its name still reads it again
+function voiceOnRender(){if(!voice.on()||!voice.auto||busy||!hereId()||isDowned())return;const L=cell(hereId());if(L.id===voice.last||!L.desc)return;
+ if(L.narrated){voice.last=L.id;return}
+ L.narrated=true;touch(L.id);voice.readHere()}
 if(voice.on())voice.listVoices().then(renderVoice);
 
 /* ============================================================
