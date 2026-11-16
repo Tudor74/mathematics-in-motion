@@ -5835,7 +5835,7 @@ function sensibleIdle(){
    if(N){const d=(zOf(L)>0?["down"]:zOf(L)<0?["up"]:[]).concat(FLAT.slice().sort((a,b)=>(Math.abs(wrapC(N.x-L.x-DIRS[a].dx))+Math.abs(wrapC(N.y-L.y-DIRS[a].dy)))-(Math.abs(wrapC(N.x-L.x-DIRS[b].dx))+Math.abs(wrapC(N.y-L.y-DIRS[b].dy))))).find(d=>!blockedBy(hereId(),d));
     if(d){log(`Starving, you start back toward ${N.t}.`,"");move(d);return}}}
  }
- if(isNight(t)&&(!hasLight()||nightLeft()<=0)&&Date.now()-(sensibleIdle.camp||0)>60e3){sensibleIdle.camp=Date.now();log(L.town?"It is late, so you find a bed for the night.":"Night has fallen and you cannot go on, so you make camp.","");rest()}
+ // (camping at night is handled by campAtNightfall, which lets the night run its course)
 }
 setInterval(sensibleIdle,5000);
 setInterval(()=>{
