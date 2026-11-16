@@ -1401,7 +1401,7 @@ function normMonster(m,pos){
   special:Object.keys(SPECIALS).includes(m.special)?m.special:"none",loot:m.loot?normItem(m.loot):null};
 }
 // A place name, never one of the narrator's working labels ("NEW (square 0,-5 at depth 0)" and the like)
-const BAD_NAME={test:n=>/\bNEW\b/.test(n)||/\bsquare\s*-?\d|\bat depth\b|^\s*-?\d+\s*,\s*-?\d+|^(north|south|east|west|up|down)$|^(unknown|nameless place|\.\.\.)$/i.test(n)};
+const BAD_NAME={test:n=>/\bNEW\b/.test(n)||/\bsquare\s*-?\d|\bat depth\b|^\s*-?\d+\s*,\s*-?\d+|^(north|south|east|west|up|down)$|^(unknown|nameless place|\.\.\.)$/i.test(n)||/^\s*(a\s+)?(new|unnamed|untitled|unknown)(\s+(place|location|area|square|hex|one))?\s*$|still to write|^\s*(place|location|name)\s*$/i.test(n)};
 function cleanPlaceName(n,terrain){const t=String(n||"").replace(/\s+/g," ").trim().slice(0,60);return t&&!BAD_NAME.test(t)?t:pick((TABLES[terrain]||TABLES.plains).names)}
 function normLocation(o,fallbackTerrain,pos){
  o=o&&typeof o==="object"?o:{};
@@ -2549,7 +2549,7 @@ function flashFolk(locId){
 function enter(locId,first){
  if(mp.on()){mpSoon();const T=cell(locId);if(T&&T.town)maybeIntroduce(T)}
  const ch=charId(),prev=hereId();if(prev&&prev!==locId){cell(ch).prevAt=prev;touch(ch)}
- ensureWayOut(locId,prev);if(prev!==locId)setTimeout(()=>{flashFolk(locId);flashPickup(locId)},80);
+ ensureWayOut(locId,prev);{const Lb=cell(locId);if(Lb&&!Lb.town&&BAD_NAME.test(String(Lb.t||""))){Lb.t=cleanPlaceName("",Lb.terrain);touch(locId)}}if(prev!==locId)setTimeout(()=>{flashFolk(locId);flashPickup(locId)},80);
  connect(ch,"at",locId);const L=cell(locId);lastHazard=null;rounds=[];
  if(!L.visited){L.visited=true;touch(locId);gainXP(L.town&&!L.town.of?25:10);if(L.town&&!L.town.of)log(`You reach ${L.t}, a ${TOWN_SIZES[L.town.size].label} on the ${riverName()}.`,"good")}
  markSeen(locId);ravenScout(locId);checkRumour(locId);checkMarks(L);
