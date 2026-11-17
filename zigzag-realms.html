@@ -4462,11 +4462,12 @@ const voice={key:"",id:"JBFqnCBsd6RMkjVDRZzb",tenseId:"",auto:true,hide:false,vo
   }catch(e){this.status=window.claude?"Narration works on the Puter site; this page cannot reach ElevenLabs.":"Could not reach ElevenLabs."}
  },
  duck(on){if(!sound.started)return;const now=sound.ctx.currentTime;sound.master.gain.setTargetAtTime(on?sound.vol*.3:sound.vol,now,.4)},
- stop(){if(this.audio){this.audio.pause();this.audio=null}this.duck(false)},
+ seq:0,
+ stop(){this.seq++;if(this.audio){this.audio.pause();this.audio=null}this.duck(false)},
  /* Mood is carried by the voice, not by extra words: calm places are read steadily, tense ones (an
     anomaly at hand, night, the deep, a crag) more urgently, and in a second voice if one is chosen */
  async speak(text,cacheKey,tense){
-  if(!this.key||!text)return;this.stop();
+  if(!this.key||!text)return;this.stop();const my=this.seq;
   text=text.replace(/\s+/g," ").trim().slice(0,600);
   const vid=tense&&this.tenseId?this.tenseId:this.id,settings=tense?{stability:.32,similarity_boost:.75,style:.55,use_speaker_boost:true}:{stability:.72,similarity_boost:.75,style:.12,use_speaker_boost:true};
   const k=vid+"|"+(tense?"t":"c")+"|"+(cacheKey||"")+"|"+text;let url=this.cache.get(k);
@@ -4475,7 +4476,9 @@ const voice={key:"",id:"JBFqnCBsd6RMkjVDRZzb",tenseId:"",auto:true,hide:false,vo
     if(!r.ok){this.status=r.status===401?"ElevenLabs did not accept that key.":r.status===429?"ElevenLabs is busy or your credits have run out.":`ElevenLabs answered ${r.status}.`;return}
     url=URL.createObjectURL(await r.blob());this.cache.set(k,url);this.status="";
    }catch(e){this.status=window.claude?"Narration works on the Puter site; this page cannot reach ElevenLabs.":"Could not reach ElevenLabs.";return}
-   finally{this.busy=false;renderVoice()}}
+   finally{if(my===this.seq)this.busy=false;renderVoice()}}
+  // a newer reading (or Stop) arrived while this one was being fetched: drop this one so two voices never overlap
+  if(my!==this.seq)return;this.busy=false;if(this.audio){this.audio.pause();this.audio=null}
   const a=new Audio(url);this.audio=a;this.duck(true);a.onended=()=>{if(this.audio===a){this.audio=null;this.duck(false);renderVoice()}};
   try{await a.play()}catch(e){this.status="Click anywhere on the page, then try again: the browser blocked the sound.";this.duck(false)}
   renderVoice();
