@@ -57,14 +57,14 @@
    "id": "quantum",
    "stage": "intelligence",
    "name": "Quantum computing",
-   "today": "Quantum computers are still experimental, but error correction is finally working. Google's 105-qubit Willow chip showed errors shrinking as codes grew (2024). In 2026 Quantinuum ran 48 error-corrected logical qubits on its 98-qubit Helios machine. IBM aims for a 200-logical-qubit 'Starling' system by 2029.",
+   "today": "Quantum computers are still experimental, but error correction is finally working. Google's 105-qubit Willow chip showed errors shrinking as codes grew (2024). In late 2025 Quantinuum reported 48 error-corrected logical qubits on its 98-qubit Helios machine. IBM aims for a 200-logical-qubit 'Starling' system by 2029.",
    "numbers": [
     {"label": "Physical qubits on Google Willow", "value": 105, "unit": "qubits", "year": 2024, "source": "https://www.scimex.org/newsfeed/googles-new-quantum-chip-hits-error-correction-target"},
-    {"label": "Error-corrected logical qubits demonstrated on Quantinuum Helios", "value": 48, "unit": "logical qubits", "year": 2026, "source": "https://postquantum.com/quantum-research/quantinuum-94-logical-qubits/"},
+    {"label": "Error-corrected logical qubits demonstrated on Quantinuum Helios", "value": 48, "unit": "logical qubits", "year": 2025, "source": "https://postquantum.com/quantum-research/quantinuum-94-logical-qubits/"},
     {"label": "IBM Starling target (roadmap, not achieved)", "value": 200, "unit": "logical qubits", "year": 2029, "source": "https://thequantuminsider.com/2025/06/10/ibm-offers-roadmap-toward-large-scale-fault-tolerant-quantum-computer-at-new-ibm-quantum-data-center/"}
    ],
    "trend": "Milestone-driven rather than smooth: each step is a hard physics win. Roadmaps target hundreds of logical qubits by about 2029 and thousands in the early 2030s, but dates have slipped before.",
-   "curve": {"kind": "milestones", "points": [[2024, 1], [2026, 48]], "unit": "logical qubits demonstrated", "note": "2024: one below-threshold logical memory qubit on Google Willow. 2026: 48 error-corrected logical qubits on Quantinuum Helios. Different machines and definitions; treat as milestones, not a trend line. IBM's 2029 target of 200 is a plan, not data."},
+   "curve": {"kind": "milestones", "points": [[2024, 1], [2025, 48]], "unit": "logical qubits demonstrated", "note": "2024: one below-threshold logical memory qubit on Google Willow. 2025: 48 error-corrected logical qubits on Quantinuum Helios. Different machines and definitions; treat as milestones, not a trend line. IBM's 2029 target of 200 is a plan, not data."},
    "prediction2040": "A handful of fault-tolerant quantum computers work like national telescopes, booked by chemists designing fertiliser catalysts and battery materials. Your bank switched to quantum-safe encryption years ago, quietly. You still have no quantum computer at home, and never will.",
    "confidence": "plausible",
    "wildcard": "A clever classical algorithm or AI-driven simulation matches most promised quantum advantages, leaving quantum machines a scientific triumph without a killer app.",
@@ -313,7 +313,7 @@
    "id": "gene-editing",
    "stage": "body",
    "name": "Gene editing and gene therapy",
-   "today": "CRISPR has become medicine. Casgevy, approved in 2023, can cure sickle cell disease and beta thalassaemia. In 2025 a baby, KJ Muldoon, became the first patient treated with a CRISPR base editor designed just for his own mutation, made in about six months. In 2026 the FDA issued guidance for such bespoke treatments.",
+   "today": "CRISPR has become medicine. Casgevy, approved in 2023, is a potentially curative treatment for eligible people with sickle cell disease or transfusion-dependent beta thalassaemia: most trial participants met their 12-month goals, and long-term follow-up continues. In 2025 a baby, KJ Muldoon, became the first patient treated with a CRISPR base editor designed just for his own mutation, made in about six months. In 2026 the FDA issued guidance for such bespoke treatments.",
    "numbers": [
     {"label": "Time to design and make KJ's personalised base editor", "value": 6, "unit": "months", "year": 2025, "source": "https://www.pennmedicine.org/News/worlds-first-patient-treated-with-personalized-crispr-therapy"},
     {"label": "Casgevy quarterly revenue (Q2)", "value": 76, "unit": "US$ million", "year": 2026, "source": "https://www.marketbeat.com/instant-alerts/vertex-pharmaceuticals-q2-earnings-call-highlights-2026-08-03/"},
@@ -337,7 +337,7 @@
     {"label": "Reduction in risk of recurrence or death (Phase 2b, five-year follow-up)", "value": 49, "unit": "%", "year": 2025, "source": "https://www.curemelanoma.org/blog/a-new-milestone-in-melanoma-personalized-mrna-based-cancer-therapy-shows-positive-phase-3-results"}
    ],
    "trend": "A platform technology: once you can print instructions for any protein, new vaccines and therapies can be designed in weeks. Expect milestones, then a steeper curve as personalised manufacturing gets cheaper.",
-   "curve": {"kind": "milestones", "points": [[2020, 1], [2026, 2]], "unit": "milestone number", "note": "1: first mRNA vaccines authorised, for COVID-19 (December 2020). 2: first positive Phase 3 result for a personalised mRNA cancer therapy (INTerpath-001, August 2026). Full efficacy data were not yet published at time of writing."},
+   "curve": {"kind": "milestones", "points": [[2020, 1], [2026, 2]], "unit": "milestone number", "note": "1: first mRNA vaccines authorised, for COVID-19 (December 2020). 2: first positive Phase 3 result for a personalised mRNA cancer therapy (INTerpath-001, August 2026). The August 2026 result was a company announcement; detailed results and the full peer-reviewed report follow separately."},
    "prediction2040": "If you are diagnosed with certain cancers, doctors sequence the tumour and a personalised mRNA vaccine is ready in weeks, given alongside surgery as routinely as stitches. Flu jabs are updated almost in real time, and a combined winter jab covers flu, COVID and RSV in one go.",
    "confidence": "plausible",
    "wildcard": "mRNA's biggest hit is not vaccines but 'in-body manufacturing', briefly teaching the body to make its own medicines, from antibodies to gene editors.",
