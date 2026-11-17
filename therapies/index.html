@@ -468,7 +468,7 @@ SCENES.push({stage:'shape',term:'Two continents',
 SCENES.push({stage:'shape',term:'The map',
  def:'Because the six scores collapse into roughly two directions, a flat map loses little. Across: how structured and therapist-led (time structure and directiveness averaged). Up: how body- and action-based (somatic and experiential averaged). Colour: symbolic depth.',
  ex:'Cognitive & behavioural sits bottom right. Somatic and nature-based therapies sit at the top. Psychodynamic sits low and purple: talk-based and symbolic.',
- src:`<b>Placement:</b> the 15 category averages from the source; circle size is the number of members. Retired practices are a separate layer, off by default in Try it. Tight or loose families: see ${W('cohesion','cohesion')}.`,
+ src:`<b>Placement:</b> the 15 category averages from the source; circle size is the number of members (the source’s counts add up to 128, two short of its stated 130). Retired practices are a separate layer, off by default in Try it. Tight or loose families: see ${W('cohesion','cohesion')}.`,
  phases:['Two axes: across for structure and direction, up for body and action.','The talk-based families arrive along the bottom.','The embodied and expressive families fill the top.','Grey dashed: the historical & retired layer. Try it: click a family, switch layers.'],
  init:()=>({sel:'cb',hist:false,ev:false}),
  anim:p=>({sel:null,hist:true,ev:false,p}),
@@ -483,7 +483,7 @@ SCENES.push({stage:'shape',term:'The map',
 });
 /* 10 Evidence for what */
 const COND=[
- {k:'Depression',th:['CBT','Behavioural activation','Mindfulness-based CBT (group)','Counselling','Short-term psychodynamic'],cats:['cb','mi','hu','pd']},
+ {k:'Depression',th:['CBT','Behavioural activation','Group mindfulness & meditation','Counselling','Short-term psychodynamic'],cats:['cb','mi','hu','pd']},
  {k:'PTSD (adults)',th:['Trauma-focused CBT','EMDR'],cats:['tr','cb']},
  {k:'Anxiety disorders',th:['CBT','Applied relaxation (GAD)'],cats:['cb']},
  {k:'Anorexia (young people)',th:['Anorexia-focused family therapy'],cats:['sy']},
@@ -559,7 +559,7 @@ const BRIDGES=[
 ];
 SCENES.push({stage:'near',term:'Bridge therapies',
  def:`A ${W('bridge','bridge therapy')} has a balanced profile and shares features with several families, so it can act as a translator between them. Bridges are where integration is most natural.`,
- ex:'Internal Family Systems connects psychodynamic, humanistic, trauma-specialised and psychedelic-assisted work.',
+ ex:'Internal Family Systems connects psychodynamic, humanistic, creative and psychedelic-assisted work. (The essay also names trauma-specialised, the family the report files it under.)',
  src:'<b>From the USF report</b> (14 Aug 2025): ten therapies each connect seven categories; it names five for each. Solid links are the named five; faint stubs are the two it counts but does not name.',
  phases:['Person-centred: links to seven families.','Internal Family Systems: also seven.','Gestalt: seven too, including nature-based and psychedelic-assisted.','A bridge is a good translator, not a “best” therapy. Try it: switch bridges.'],
  init:()=>({b:1}),
@@ -642,7 +642,7 @@ const ERAS=[{k:'Historical',a:1890,b:1970,n:10,v:[.550,.720,.460,.475,.200,.510]
 SCENES.push({stage:'time',term:'Three eras',
  def:'The source reads the history of therapy as three eras, each with its own signature: authority without evidence, then evidence-based and problem-focused, and now an attempt to combine evidence with body, symbol and experience.',
  ex:'Directiveness falls from 0.72 to 0.45 between the historical and contemporary eras, while evidence rises from 0.20 to 0.54. But the historical era has only 10 therapies and the emerging era 7, against 113 contemporary ones.',
- src:'<b>From the USF report:</b> full six-dimension era profiles. Era boundaries are approximate. Claims about emerging therapies are about research in progress; most psychedelic-assisted therapy is still within trials.',
+ src:'<b>From the USF report:</b> full six-dimension era profiles. Era boundaries are approximate: the source’s historical list also includes mesmerism (18th–19th century) and primal scream, EST and rebirthing (1970s). Claims about emerging therapies are about research in progress; most psychedelic-assisted therapy is still within trials.',
  phases:['1890s–1960s: grand theories and medical authority.','1970s–2020s: the cognitive revolution and the demand for trials.','2020s onwards: evidence plus experience — psychedelics, VR, neurofeedback.','Try it: drag through the years.'],
  init:()=>({y:1995}),
  anim:p=>({y:lerp(1890,2032,smooth(p*1.05)),p}),
@@ -669,12 +669,12 @@ SCENES.push({stage:'time',term:'Directiveness without evidence',
  def:'The retired practices share a signature: very high directiveness with very low evidence. The person was a passive recipient and the theory went untested. This is the strongest argument in the source for why evidence matters.',
  ex:'Modern CBT is also directive — but it is collaborative and tested. The difference is what restrains the direction.',
  src:'<b>From the source:</b> historical & retired averages directiveness 0.77, evidence 0.16; placements for psychosurgery (meaning historical lobotomy, not today’s regulated neurosurgery), insulin shock and phrenology use the scores the source states. Short histories are our summary.',
- phases:['The map of current families.','The retired layer arrives: high on direction, low on evidence.','Shaded: where direction outruns evidence.','Try it: open each retired practice.'],
+ phases:['The map of current families.','The retired layer arrives: high on direction, low on evidence.','Shaded: the therapist-led side. CBT sits here too, but it is tested.','Try it: open each retired practice.'],
  init:()=>({k:0}),
  anim:p=>({k:null,p}),
  draw(p,s){let g=mapFrame();const o=s.p!=null?p:1;
   for(const id of CAT_IDS){if(!CATS[id].hist)g+=catDot(id,{op:.3,label:false})}
-  g+=`<rect x="${f2(mapX(.6))}" y="${PY1}" width="${f2(PX1-mapX(.6))}" height="${PY0-PY1}" fill="${C.coralp}" opacity="${f2(seg(o,.5,.7)*.6)}"/>`+T(PX1-8,PY0-10,'directed, little evidence',{size:12,anchor:'end',fill:C.coral,weight:700,op:seg(o,.5,.7)});
+  g+=`<rect x="${f2(mapX(.6))}" y="${PY1}" width="${f2(PX1-mapX(.6))}" height="${PY0-PY1}" fill="${C.coralp}" opacity="${f2(seg(o,.5,.7)*.6)}"/>`+T(PX1-8,PY0-10,'strongly therapist-led',{size:12,anchor:'end',fill:C.coral,weight:700,op:seg(o,.5,.7)});
   g+=catDot('hi',{op:seg(o,.2,.35),label:false});
   ['Psychosurgery','Insulin shock','Phrenology'].forEach((n,k)=>{const t=thBy(n),q=pos(t.s),op=seg(o,.3+k*.06,.42+k*.06),on=s.k!=null&&RET[s.k][0]===n;g+=`<g opacity="${f2(op)}"><circle cx="${f2(q[0])}" cy="${f2(q[1])}" r="${on?9:6}" fill="#8a969c" stroke="${on?C.ink:'#fff'}" stroke-width="2"/>${T(q[0]+[-12,0,-12][k],q[1]+[-12,22,-12][k],n,{size:12,anchor:['end','middle','end'][k],fill:C.ink,weight:on?700:500,style:'italic'})}</g>`});
   if(s.k!=null){g+=`<rect x="${PX0+6}" y="${PY1+6}" width="290" height="70" rx="10" fill="#fff" stroke="${C.coral}"/>`+T(PX0+16,PY1+26,RET[s.k][0],{size:13,weight:700})+wrap(PX0+16,PY1+44,RET[s.k][1],46,11.5,C.ink)}
