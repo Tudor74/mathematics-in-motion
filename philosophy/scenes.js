@@ -311,7 +311,7 @@ add({stage:'c19',thinker:'Bentham & Mill',term:'Bentham and Mill: the greatest h
 const SPH=[['Aesthetic','Living for enjoyment and novelty. Ends in boredom and despair.',C.coral],['Ethical','Committing to duties and a chosen life. Ends in the limits of one’s own goodness.',C.blue],['Religious','A personal, passionate relation to God beyond reason: the leap of faith.',C.purple]];
 add({stage:'c19',thinker:'Kierkegaard',term:'Kierkegaard: the leap',
  def:'Kierkegaard described three ways of existing. You cannot reason your way from one to the next; you must choose, wholeheartedly, and take responsibility — a leap. Truth that matters for a life, he said, is subjective: it must be lived, not just known.',
- ex:'Either/Or presents the aesthetic and ethical lives as letters from two different writers, and leaves the choice to the reader.',
+ ex:'Either/Or presents the aesthetic and ethical lives as the papers of two different writers, and leaves the choice to the reader.',
  src:'<b>Søren Kierkegaard</b>, 1813–1855, Copenhagen; often called the first existentialist. <i>Either/Or</i> (1843), <i>Fear and Trembling</i> (1843), <i>Stages on Life’s Way</i> (1845).',
  phases:['The aesthetic sphere: pleasure, possibility, boredom.','A leap: commitment, the ethical sphere.','Another leap: the religious sphere.','No argument carries you across — only choice. Try it: move between spheres.'],
  init:()=>({k:0}),anim:p=>({k:Math.min(2,Math.floor(p*3)),p}),
@@ -334,15 +334,15 @@ add({stage:'c19',thinker:'Nietzsche',term:'Nietzsche: the eternal return',
 });
 
 /* ============ TWENTIETH CENTURY ============ */
-const GAMES=['chess','football','patience','ring-a-roses','poker'];const FEATS=['competition','winning and losing','skill','luck','a ball','cards','played alone'];
-const GF=[[1,1,1,0,0,0,0],[1,1,1,1,1,0,0],[0,1,1,1,0,1,1],[0,0,0,0,0,0,0],[1,1,1,1,0,1,0]];
+const GAMES=['chess','football','patience','ring-a-roses','poker'];const FEATS=['2+ players','competition','winning and losing','skill','luck','a ball','cards','played alone'];
+const GF=[[1,1,1,1,0,0,0,0],[1,1,1,1,1,1,0,0],[0,0,1,1,1,0,1,1],[1,0,0,0,0,0,0,0],[1,1,1,1,1,0,1,0]];
 add({stage:'c20',thinker:'Wittgenstein',term:'Wittgenstein: family resemblance',
  def:`What do all games have in common? Look, says Wittgenstein, and you will not find one feature. You find a network of overlapping similarities, like resemblances in a family. Many concepts work like this — no definition, but real ${W('family','family resemblance')}.`,
  ex:'Not all games have winners (ring-a-roses), not all involve skill (snakes and ladders), not all are competitive (patience). Yet “game” is perfectly usable.',
  src:'<b>Ludwig Wittgenstein</b>, 1889–1951, Austrian-British. <i>Philosophical Investigations</i> (1953, posthumous), §§65–71. Earlier: <i>Tractatus Logico-Philosophicus</i> (1921).',
  phases:['Five games.','Their features, ticked.','No column is ticked for every game.','Overlap without a single essence. Try it: pick a game.'],
  init:()=>({k:4}),anim:p=>({k:-1,p}),
- draw(p,s){let g=head('Ludwig Wittgenstein','1889–1951','Philosophical Investigations §66');const x0=160,y0=80,cw=58,rh=46,o=s.p!=null?p:1;
+ draw(p,s){let g=head('Ludwig Wittgenstein','1889–1951','Philosophical Investigations §66');const x0=160,y0=80,cw=50,rh=46,o=s.p!=null?p:1;
   FEATS.forEach((f,j)=>{g+=`<g transform="translate(${x0+j*cw+cw/2},${y0-6}) rotate(-30)">${T(0,0,f,{size:11,fill:C.muted})}</g>`});
   GAMES.forEach((gm,i)=>{const on=s.k===i;g+=T(x0-10,y0+28+i*rh,gm,{size:13,anchor:'end',weight:on?700:500});GF[i].forEach((v,j)=>{const show=seg(o,.15+i*.08,.25+i*.08);g+=`<rect x="${x0+j*cw+4}" y="${y0+8+i*rh}" width="${cw-8}" height="${rh-10}" rx="6" fill="${v?(on?C.purple:C.pale):'#fff'}" stroke="${C.grid}" opacity="${f2(show)}"/>`+(v?T(x0+j*cw+cw/2,y0+33+i*rh,'✓',{size:15,anchor:'middle',fill:on?'#fff':C.blue,op:show}):'')})});
   g+=T(300,y0+5*rh+40,'no feature is shared by every game',{size:14,anchor:'middle',weight:700,fill:C.coral,op:seg(o,.75,.9)});return g},
@@ -376,7 +376,7 @@ add({stage:'c20',thinker:'Sartre & de Beauvoir',term:'Sartre and de Beauvoir: ex
 add({stage:'c20',thinker:'Foot & Thomson',term:'Foot and Thomson: the trolley problem',
  def:'A runaway trolley will kill five people. You can pull a switch to send it onto a side track where it will kill one. Most people say pull. Now you are on a footbridge: you can stop it only by pushing a large man onto the track. Same numbers — most people say no. Why?',
  ex:'A utilitarian counts five against one in both cases. Others point to the doctrine of double effect (in the switch case the death is a side effect; on the bridge you use the man as a means) — Kant’s formula of humanity again.',
- src:'<b>Philippa Foot</b>, 1920–2010: “The Problem of Abortion and the Doctrine of the Double Effect” (1967). <b>Judith Jarvis Thomson</b>, 1929–2020: named the trolley problem (1976) and added the footbridge (1985).',
+ src:'<b>Philippa Foot</b>, 1920–2010: “The Problem of Abortion and the Doctrine of the Double Effect” (1967). <b>Judith Jarvis Thomson</b>, 1929–2020: named the trolley problem and added the footbridge case (1976), then the bystander at the switch (1985).',
  phases:['Five people on the track ahead.','The switch: divert, and one dies instead.','The footbridge: push one to stop the trolley.','Same arithmetic, different judgements. Try it: choose in each case.'],
  init:()=>({c:0,act:false}),anim:p=>({c:p<.6?0:1,act:p>.3&&p<.6,p}),
  draw(p,s){let g=head('Philippa Foot · Judith Jarvis Thomson','1967 · 1976 · 1985','');
@@ -398,7 +398,7 @@ add({stage:'c20',thinker:'Gettier',term:'Gettier: is knowledge justified true be
  draw(p,s){let g=head('Edmund Gettier','1927–2021','Analysis, 1963');const cs=[[250,170,'belief',C.blue,s.b],[350,170,'truth',C.green,s.t],[300,250,'justification',C.gold,s.j]];
   cs.forEach(([x,y,l,col,on])=>{g+=`<circle cx="${x}" cy="${y}" r="90" fill="${col}" opacity="${on?.22:.05}" stroke="${col}" stroke-width="${on?2.5:1}"/>`+T(x+(x<300?-40:x>300?40:0),y+(y>200?60:-50),l,{size:13,anchor:'middle',weight:700,fill:col})});
   const all=s.b&&s.t&&s.j;g+=`<circle cx="300" cy="200" r="${all?14:6}" fill="${all?(s.luck?C.coral:C.ink):C.muted}"/>`;
-  if(s.luck&&all)g+=`<circle cx="500" cy="110" r="38" fill="#fff" stroke="${C.ink}" stroke-width="3"/><line x1="500" y1="110" x2="500" y2="84" stroke="${C.ink}" stroke-width="3"/><line x1="500" y1="110" x2="518" y2="110" stroke="${C.ink}" stroke-width="3"/>`+T(500,166,'stopped',{size:11.5,anchor:'middle',fill:C.coral});
+  if(s.luck&&all)g+=`<circle cx="500" cy="110" r="38" fill="#fff" stroke="${C.ink}" stroke-width="3"/><line x1="500" y1="110" x2="500" y2="84" stroke="${C.ink}" stroke-width="3"/><line x1="500" y1="110" x2="515.6" y2="101" stroke="${C.ink}" stroke-width="3"/>`+T(500,166,'stopped',{size:11.5,anchor:'middle',fill:C.coral});
   g+=T(300,370,!all?'not knowledge: a condition is missing':s.luck?'JTB says knowledge — Gettier says: only luck':'justified true belief — knowledge',{size:14,anchor:'middle',weight:700,fill:!all?C.muted:s.luck?C.coral:C.green});return g},
  tryUI:s=>({html:`<div class="row">${[['b','Believe it'],['t','It is true'],['j','Justified'],['luck','Stopped clock (luck)']].map(([k,l])=>`<label><input type="checkbox" data-k="${k}"${s[k]?' checked':''}> ${l}</label>`).join('')}</div>`,bind(q,re,root){root.querySelectorAll('[data-k]').forEach(x=>x.onchange=()=>{s[x.dataset.k]=x.checked;re()})}})
 });
@@ -447,7 +447,7 @@ add({stage:'today',thinker:'Singer',term:'Singer: the drowning child',
  src:'<b>Peter Singer</b>, born 1946, Australian. “Famine, Affluence, and Morality”, <i>Philosophy & Public Affairs</i> (1972); <i>The Life You Can Save</i> (2009).',
  phases:['A child drowning, a few metres away.','You could save her at the cost of your shoes.','Now move her further away — another country.','What changed, morally? Try it: change the distance.'],
  init:()=>({d:2}),anim:p=>({d:lerp(0,4,seg(p,.5,.95)),p}),
- draw(p,s){let g=head('Peter Singer','born 1946','“Famine, Affluence, and Morality”, 1972');const km=Math.pow(10,s.d)*.01;const X=60+s.d/4*460;
+ draw(p,s){let g=head('Peter Singer','born 1946','“Famine, Affluence, and Morality”, 1972');const km=Math.pow(10,s.d*1.5)*.01;const X=60+s.d/4*460;
   g+=person(60,250,C.ink,1)+`<line x1="60" y1="300" x2="540" y2="300" stroke="${C.grid}" stroke-width="2"/>`+`<ellipse cx="${f2(X)}" cy="290" rx="40" ry="12" fill="${C.pale}"/>`+person(X,280,C.coral,.5)+arrow(90,200,X-20,240,C.purple,2,.7,'6 5');
   g+=T(300,90,'distance: '+(km<1?Math.round(km*1000)+' m':km<1000?km.toFixed(km<10?1:0)+' km':'a continent away'),{size:16,anchor:'middle',weight:700})+T(300,116,'cost to you: about the same',{size:13,anchor:'middle',fill:C.muted})+T(300,350,'obligation to help: unchanged, says Singer',{size:14,anchor:'middle',weight:700,fill:C.purple});return g},
  tryUI:s=>({html:`<div class="row"><label>Distance <input type="range" id="sd" min="0" max="4" step="0.01" value="${s.d}"></label></div><p class="out" id="tout"></p>`,bind(q,re){q('#sd').oninput=e=>{s.d=+e.target.value;re()}},out:()=>'If your intuition changes with distance, ask what the distance itself is doing. Singer’s critics have answers; the question is the point.'})
