@@ -274,7 +274,7 @@
    "venue": "Fifteenth Symposium on Usable Privacy and Security (SOUPS 2019), USENIX",
    "coauthors": "with Nikhil Patnaik and Joseph Hallett",
    "era": "devsec",
-   "summary": "Developers misuse cryptography libraries because the libraries are hard to use. Analysing over 2,400 Stack Overflow questions about seven libraries and mapping issues onto Green and Smith's usability principles, the authors identified four 'usability smells', such as 'Needs a super sleuth', signalling where library design should improve.",
+   "summary": "Developers misuse cryptography libraries because the libraries are hard to use. Analysing over 2,400 Stack Overflow questions about seven libraries and mapping issues onto Green and Smith's usability principles, the authors identified four 'usability smells', such as 'Needs a super-sleuth', signalling where library design should improve.",
    "diagram": "Stack Overflow questions fall like tiles into bins labelled by usability principle; four bins overflow and turn into named 'smell' icons.",
    "interaction": "Read short developer questions and sort each into a smell; see how your classification compares with the paper's themes.",
    "source": "https://www.usenix.org/conference/soups2019/presentation/patnaik",

@@ -180,7 +180,7 @@ const KA_FLAT=KA.flatMap(([c,ks],ci)=>ks.map(k=>[k,ci]));const KACOL=[C.coral,C.
 function kaWheel(cx,cy,R,hi,heat){let g='';const n=KA_FLAT.length;KA_FLAT.forEach(([k,ci],i)=>{const a0=i/n*TAU-Math.PI/2,a1=(i+1)/n*TAU-Math.PI/2;const r0=R*.45;const pt=(a,r)=>[cx+Math.cos(a)*r,cy+Math.sin(a)*r];const [x1,y1]=pt(a0,R),[x2,y2]=pt(a1,R),[x3,y3]=pt(a1,r0),[x4,y4]=pt(a0,r0);const op=heat?heat[i]:(hi==null||hi===i?.9:.35);
  g+=`<path d="M${f2(x1)} ${f2(y1)} A${R} ${R} 0 0 1 ${f2(x2)} ${f2(y2)} L${f2(x3)} ${f2(y3)} A${r0} ${r0} 0 0 0 ${f2(x4)} ${f2(y4)} Z" fill="${KACOL[ci]}" opacity="${f2(op)}" stroke="#fff" stroke-width="2"/>`});return g}
 paper(13,'s4','Scoping the Cyber Security Body of Knowledge',{
- phases:['Thousands of topics from curricula, textbooks and job adverts.','They drift and cluster.','Nineteen Knowledge Areas emerge, in five broad categories.','Try it: place a topic.'],
+ phases:['Topics from curricula, textbooks, workshops and expert interviews.','They drift and cluster.','Nineteen Knowledge Areas emerge, in five broad categories.','Try it: place a topic.'],
  init:()=>({t:0,ans:-1}),anim:p=>({t:0,ans:-1,cl:seg(p,.2,.8),p}),
  d(p,s){let g='';const cl=s.cl!=null?s.cl:1;for(let i=0;i<120;i++){const r1=Math.abs(Math.sin(i*7.1)),r2=Math.abs(Math.cos(i*3.3));const ka=i%19,a=(ka+.5)/19*TAU-Math.PI/2;const tx=300+Math.cos(a)*120,ty=200+Math.sin(a)*120;const x=lerp(40+r1*520,tx+(r2-.5)*20,cl),y=lerp(60+r2*280,ty+(r1-.5)*20,cl);g+=`<circle cx="${f2(x)}" cy="${f2(y)}" r="3" fill="${KACOL[KA_FLAT[ka][1]]}" opacity=".7"/>`}
   if(cl>.95&&s.p!=null)g+=T(300,205,'19 Knowledge Areas',{size:15,anchor:'middle',weight:700});
@@ -200,8 +200,8 @@ paper(14,'s4','A game of security decisions',{
  tryUI:s=>({html:`<div class="sliders">${DEF.map((d,i)=>`<label>${d} <input type="range" data-i="${i}" min="0" max="5" value="${s.b[i]}"></label>`).join('')}</div><div class="row"><button type="button" class="chip" id="go">Face the attacks</button></div><p class="out" id="tout"></p>`,bind(q,re,root){root.querySelectorAll('[data-i]').forEach(x=>x.oninput=()=>{s.b[+x.dataset.i]=+x.value;s.played=false;re()});q('#go').onclick=()=>{s.played=true;re()}},out:s=>s.b.reduce((a,b)=>a+b,0)>10?'Over budget — cut something.':'In the study, experts were more confident but not automatically better; managers and experts favoured technical fixes, computer scientists favoured training.'})
 });
 /* 15 — usability smells */
-const SMELLS=['Needs a super sleuth','Confusion reigns','Needs an easier interface','Prepare for the unexpected'];
-const QS=[['Which mode should I use with AES? The docs list six.',1],['Where is the function to derive a key from a password? Can’t find it in the docs.',0],['Why do I need 40 lines just to sign a message?',2],['Decrypt suddenly throws an exception on Android only.',3],['Is ECB safe if I only encrypt short strings?',1]];
+const SMELLS=['Needs a super-sleuth','Confusion reigns','Needs a post-mortem','Doesn’t play well with others'];
+const QS=[['Which mode should I use with AES? The docs list six.',1],['Where is the function to derive a key from a password? Can’t find it in the docs.',0],['Verification fails with “error -1”. How do I find out what went wrong?',2],['Decrypt suddenly throws an exception on Android only.',3],['Is ECB safe if I only encrypt short strings?',1]];
 paper(15,'s4','Usability smells in crypto libraries',{
  phases:['Developers post questions about crypto libraries.','Each question reveals a usability problem.','They fall into bins by usability principle.','Four bins overflow: the usability smells. Try it: sort a question.'],
  init:()=>({q:0,a:-1}),anim:p=>({q:-1,a:-1,p}),
