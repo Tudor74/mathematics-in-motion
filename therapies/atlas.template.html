@@ -170,7 +170,7 @@ function index(){
  <p class="count" id="count" aria-live="polite"></p></div><div class="grid" id="grid"></div>`;
  const draw=()=>{const ql=q.trim().toLowerCase();const list=items.filter(i=>(famF==='all'||i.family===famF)&&(evF==='all'||i.evidenceLevel===evF)&&(!ql||[i.name,i.display,i.aka,i.what,i.suitability,i.origin].join(' ').toLowerCase().includes(ql)));
   $('count').textContent=`${list.length} of ${items.length} therapies`;
-  $('grid').innerHTML=list.map(i=>`<a class="card" href="#/t/${i.slug}" style="--fam:${famCol(i.family)}"><h3>${esc(i.display)}</h3><p>${esc(cats[i.family].name)}${i.year?' · '+i.year:''}</p><div class="badges"><span class="badge ev-${i.evidenceLevel}">${EVL[i.evidenceLevel]||''}</span>${STL[i.status]?`<span class="badge st-${i.status}">${STL[i.status]}</span>`:''}</div></a>`).join('')||'<p class="count">No therapies match.</p>'};
+  $('grid').innerHTML=list.map(i=>`<a class="card" href="#/t/${i.slug}" style="--fam:${famCol(i.family)}"><h3>${esc(i.display)}</h3><p>${esc(cats[i.family].name)}${i.year?' · '+i.year:''}</p><div class="badges"><span class="badge ev-${i.evidenceLevel}">${i.evidenceBadge||EVL[i.evidenceLevel]||''}</span>${STL[i.status]?`<span class="badge st-${i.status}">${STL[i.status]}</span>`:''}</div></a>`).join('')||'<p class="count">No therapies match.</p>'};
  $('search').oninput=e=>{q=e.target.value;draw()};
  document.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{famF=b.dataset.f;document.querySelectorAll('[data-f]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.f===famF)));draw()});
  document.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{evF=b.dataset.e;document.querySelectorAll('[data-e]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.e===evF)));draw()});
@@ -201,7 +201,7 @@ function detail(it){
   <p class="eyebrow"><a href="#/" style="text-decoration:none">Atlas</a> · ${esc(fam.name)}</p>
   <h2 id="name" tabindex="-1">${esc(it.display)}</h2>
   ${it.aka?`<p class="aka">${esc(it.aka)}</p>`:''}
-  <div class="badges" style="margin-bottom:14px"><span class="badge ev-${it.evidenceLevel}">${EVL[it.evidenceLevel]||''}</span>${STL[it.status]?`<span class="badge st-${it.status}">${STL[it.status]}</span>`:''}${it.year?`<span class="badge">since ${it.year}</span>`:''}</div>
+  <div class="badges" style="margin-bottom:14px"><span class="badge ev-${it.evidenceLevel}">${it.evidenceBadge||EVL[it.evidenceLevel]||''}</span>${STL[it.status]?`<span class="badge st-${it.status}">${STL[it.status]}</span>`:''}${it.year?`<span class="badge">since ${it.year}</span>`:''}</div>
   ${S('What it is',`<p class="lead">${esc(it.what)}</p>`)}
   ${S('Origins',P_(it.origin))}
   ${S('Evidence',P_(it.evidence))}
