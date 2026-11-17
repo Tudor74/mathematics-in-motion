@@ -18,8 +18,8 @@ function model(t){const c=t.curve,pts=c.points.slice().sort((a,b)=>a[0]-b[0]),la
  if(cap){return {type:'logistic',pts,last,cap,def:last[1]>cap/2?Math.round(last[0]-3):2032,min:2010,max:2045,step:.5,label:'Year it reaches half of the maximum',fmt:v=>String(v)}}
  if(c.ceiling){const span=Math.max(.5,last[0]-first[0]);const r=clamp(Math.pow(last[1]/first[1],1/span)-1,0,3);return {type:'capped',pts,last,L:c.ceiling,def:+Math.min(r*100,150).toFixed(0),min:0,max:150,step:1,label:'Early growth per year (%)',fmt:v=>v+'%'}}
  if(c.kind==='cost-decline'){const span=Math.max(1,last[0]-first[0]);const r=1-Math.pow(last[1]/first[1],1/span);return {type:'decline',pts,last,def:+clamp(r*100,0,25).toFixed(1),min:0,max:25,step:.5,label:'Price fall per year (%)',fmt:v=>v+'%'}}
- const span=Math.max(.5,last[0]-first[0]);let r=pts.length>1?Math.pow(last[1]/first[1],1/span)-1:.15;r=clamp(r,0,3);
- return {type:'growth',pts,last,def:+Math.min(r*100,150).toFixed(0),min:0,max:150,step:1,label:'Growth per year (%)',fmt:v=>v+'%'}}
+ const span=Math.max(.5,last[0]-first[0]);let r=pts.length>1?Math.pow(last[1]/first[1],1/span)-1:.15;r=clamp(r,0,5);
+ return {type:'growth',pts,last,def:+(r*100).toFixed(0),min:0,max:Math.max(150,Math.ceil(r*100/50)*50),step:1,label:'Growth per year (%)',fmt:v=>v+'%'}}
 function project(m,v,y){if(m.type==='growth')return m.last[1]*Math.pow(1+v/100,y-m.last[0]);if(m.type==='decline')return m.last[1]*Math.pow(1-v/100,y-m.last[0]);
  if(m.type==='linear')return m.last[1]+v*(y-m.last[0])/10;
  if(m.type==='capped'){if(m.last[1]>=m.L)return m.L;const a=m.L/m.last[1]-1;return m.L/(1+a*Math.exp(-Math.log(1+v/100)*(y-m.last[0])))}
@@ -68,13 +68,13 @@ FD.techs.forEach(t=>{const m=model(t);const [col,lab]=CONF[t.confidence]||[C.pur
    return g},
   tryUI:s=>({html:(m.type!=='milestones'?`<div class="row"><label>${esc(m.label)} <input type="range" id="pv" min="${m.min}" max="${m.max}" step="${m.step}" value="${s.v}"></label></div>`:'')+`<div class="row"><label><input type="checkbox" id="wd"${s.wild?' checked':''}> Show the wildcard scenario</label></div><p class="out" id="tout"></p>`,
    bind(q,re){const pv=q('#pv');if(pv)pv.oninput=e=>{s.v=+e.target.value;re()};q('#wd').onchange=e=>{s.wild=e.target.checked;re()}},
-   out:s=>m.type==='milestones'?'Milestone points are events, not a smooth trend, so there is no curve to project. Flip to the wildcard to see another future.':`Your assumption: ${m.fmt(s.v)}. In 2040 that gives about ${fmtN(project(m,s.v,2040))} ${t.curve.unit}. The default was fitted to the real data.${t.curve.caveat?' '+esc(t.curve.caveat):''}`})
+   out:s=>m.type==='milestones'?'Milestone points are events, not a smooth trend, so there is no curve to project. Flip to the wildcard to see another future.':`Your assumption: ${m.fmt(s.v)}. In 2040 that gives about ${fmtN(project(m,s.v,2040))} ${t.curve.unit}. The default is a starting assumption, taken from the trend in the real data where there is enough of it.${t.curve.caveat?' '+esc(t.curve.caveat):''}`})
  })});
 
 /* Finale */
 add({stage:'2040',term:'A day in 2040',
  def:'Put the predictions together and you get one possible day in 2040. Some of it is very likely; some is a wild guess. The point is not to be right, but to notice which changes are already under way, which depend on a breakthrough, and which depend on choices people have not made yet.',
- ex:'Filter by confidence. The “likely” future is mostly about energy, chips and electrification; the wildcards are about bodies, food and fusion.',
+ ex:'Filter by confidence. The “likely” future is mostly about energy, chips and electrification; the wildcards are fusion, air taxis and lab-grown meat.',
  src:`${esc(FD.meta.disclaimer)}`,
  phases:['Morning: energy and getting around.','Midday: work, machines and money.','Evening: health, food and the planet.','Try it: filter the day by confidence.'],
  init:()=>({f:0}),anim:p=>({f:0,n:Math.floor(p*FD.techs.length),p}),
