@@ -49,7 +49,7 @@
     "title": "The continuum hypothesis and new axioms",
     "status": "independent",
     "q": "Is there an infinite set larger than the natural numbers but smaller than the real numbers?",
-    "known": "Gödel (1940) and Cohen (1963) showed the usual axioms (ZFC) can neither prove nor refute the continuum hypothesis. The live question is which new axioms mathematicians should accept: forcing axioms such as Martin’s Maximum imply the continuum has size ℵ₂, whereas Woodin’s Ultimate L programme points towards the hypothesis being true.",
+    "known": "Gödel (1938) and Cohen (1963) showed the usual axioms (ZFC) can neither prove nor refute the continuum hypothesis. The live question is which new axioms mathematicians should accept: forcing axioms such as Martin’s Maximum imply the continuum has size ℵ₂, whereas Woodin’s Ultimate L programme points towards the hypothesis being true.",
     "link": "https://en.wikipedia.org/wiki/Continuum_hypothesis",
     "id": "continuum-hypothesis"
    },
@@ -81,7 +81,7 @@
     "title": "Hilbert’s tenth problem over the rationals",
     "status": "claimed",
     "q": "Is there an algorithm that decides whether a polynomial equation with rational coefficients has a rational solution?",
-    "known": "Over the integers the answer is no (Matiyasevich, 1970, completing work of Davis, Putnam and Robinson). Over the rationals a Diophantine definition of ℤ inside ℚ would settle it negatively. Until recently such definitions were known only under unproved conjectures; a preprint posted on 12 November 2026 (Burungale) claims an unconditional one, which has not yet been peer reviewed.",
+    "known": "Over the integers the answer is no (Matiyasevich, 1970, completing work of Davis, Putnam and Robinson). Over the rationals a Diophantine definition of ℤ inside ℚ would settle it negatively. No such definition had been established; a preprint posted on 12 November 2026 (Burungale) claims an unconditional one, which has not yet been peer reviewed.",
     "extra": {
      "label": "The Nov 2026 preprint",
      "url": "https://arxiv.org/abs/2611.16130"
@@ -229,7 +229,7 @@
     "id": "rota-basis",
     "title": "Rota’s basis conjecture",
     "status": "open",
-    "q": "Given n bases of an n-dimensional vector space, can the vectors always be arranged in an n×n grid so that every row and every column is a basis?",
+    "q": "Given n bases of an n-dimensional vector space, can each basis be written along its own row of an n×n grid, in some order, so that every column is also a basis?",
     "known": "Rota posed it in 1989. It is known for some small dimensions and in asymptotic forms (Pokrovskiy, 2020, and later improvements), but the full conjecture is open.",
     "link": "https://en.wikipedia.org/wiki/Rota%27s_basis_conjecture"
    },
@@ -508,7 +508,7 @@
     "title": "Goldbach’s conjecture",
     "status": "open",
     "q": "Is every even number greater than 2 the sum of two primes?",
-    "known": "Goldbach posed it in 1742. Helfgott (2013) proved the weak version that every odd number above 5 is a sum of three primes; the even case is verified by computer far beyond 10¹⁸ but unproved.",
+    "known": "Goldbach posed it in 1742. Helfgott (2013) proved the weak version that every odd number above 5 is a sum of three primes; the even case is verified by computer up to 4 × 10¹⁸ but unproved.",
     "link": "https://en.wikipedia.org/wiki/Goldbach%27s_conjecture"
    },
    {
@@ -646,7 +646,7 @@
     "title": "The polynomial Hirsch conjecture",
     "status": "open",
     "q": "Is the diameter of the graph of every polytope bounded by a polynomial in its dimension and number of facets?",
-    "known": "The original Hirsch conjecture was disproved by Santos (2010). The best general upper bound, due to Kalai and Kleitman (1992), is quasi-polynomial, so whether a polynomial bound holds, which matters for the simplex method, is open.",
+    "known": "The original Hirsch conjecture was disproved by Santos (2010). The best general upper bounds, starting with Kalai and Kleitman (1992) and since slightly improved, are quasi-polynomial, so whether a polynomial bound holds, which matters for the simplex method, is open.",
     "link": "https://en.wikipedia.org/wiki/Hirsch_conjecture"
    },
    {
@@ -670,7 +670,7 @@
     "title": "The Erdős unit distance problem",
     "status": "open",
     "q": "How many pairs of points at distance exactly one can n points in the plane determine?",
-    "known": "Erdős (1946) showed a grid gives slightly more than linearly many. The best upper bound, of order n^(4/3), dates from Spencer, Szemerédi and Trotter (1984), and closing the gap is open.",
+    "known": "Erdős (1946) showed a grid gives slightly more than linearly many and conjectured that this is essentially optimal. A 2026 construction disproved that, giving n^(1+c) unit distances for a fixed c > 0. The best upper bound, of order n^(4/3), dates from Spencer, Szemerédi and Trotter (1984), and closing the gap is open.",
     "link": "https://en.wikipedia.org/wiki/Erd%C5%91s_unit_distance_problem"
    },
    {
@@ -948,7 +948,7 @@
     "title": "Whitehead’s asphericity conjecture",
     "status": "open",
     "q": "Is every connected subcomplex of a two-dimensional aspherical complex itself aspherical?",
-    "known": "Whitehead posed it in 1941. Bestvina and Brady (1997) showed that a counterexample would also disprove either it or the Eilenberg–Ganea conjecture, but the question is open.",
+    "known": "Whitehead posed it in 1941. Bestvina and Brady (1997) showed that it and the Eilenberg–Ganea conjecture cannot both be true, but the question is open.",
     "link": "https://en.wikipedia.org/wiki/Whitehead_conjecture"
    },
    {
@@ -956,7 +956,7 @@
     "title": "The Andrews–Curtis conjecture",
     "status": "open",
     "q": "Can every balanced presentation of the trivial group be reduced to the trivial presentation using a standard list of moves?",
-    "known": "Andrews and Curtis proposed it in 1965. Many potential counterexamples are known, and it is linked to the smooth Poincaré conjecture in dimension 4, but none has been resolved either way.",
+    "known": "Andrews and Curtis proposed it in 1965. Many potential counterexamples are known, and it is linked to the smooth Poincaré conjecture in dimension 4, but none has been confirmed as a counterexample, and some candidates have been trivialised by computer search.",
     "link": "https://en.wikipedia.org/wiki/Andrews%E2%80%93Curtis_conjecture"
    },
    {
@@ -1374,7 +1374,7 @@
     "title": "Erdős’s conjecture on arithmetic progressions",
     "status": "open",
     "q": "If the sum of the reciprocals of a set of positive integers diverges, must the set contain arithmetic progressions of every length?",
-    "known": "Erdős posed it in 1936 (with Turán) and offered a large prize. Bloom and Sisask (2020) proved it for three-term progressions; longer progressions remain open.",
+    "known": "Erdős and Turán conjectured a weaker density version in 1936 (now Szemerédi’s theorem); Erdős later posed this stronger form and offered a large prize. Bloom and Sisask (2020) proved it for three-term progressions; longer progressions remain open.",
     "link": "https://en.wikipedia.org/wiki/Erd%C5%91s_conjecture_on_arithmetic_progressions"
    },
    {
@@ -1382,7 +1382,7 @@
     "title": "The Flint Hills series",
     "status": "open",
     "q": "Does the series 1/(n³ sin² n), summed over all positive integers n, converge?",
-    "known": "Pickover popularised it in 2002. Its convergence is tied to how well π can be approximated by fractions: Alekseyev (2011) showed it would converge if π’s irrationality measure were below 2.5.",
+    "known": "Pickover popularised it in 2002. Its convergence is tied to how well π can be approximated by fractions: Alekseyev (2011) showed that if it converges, π’s irrationality measure is at most 2.5, and Meiburg (2022) showed conversely that it converges if the measure is below 2.5.",
     "link": "https://en.wikipedia.org/wiki/Flint_Hills_series"
    },
    {
@@ -1390,7 +1390,7 @@
     "title": "The lonely runner conjecture",
     "status": "open",
     "q": "If k runners with distinct constant speeds circle a unit track, is every runner at some time at least 1/k away from all others?",
-    "known": "Wills (1967) and Cusick (1973) posed equivalent forms. It is proved for small numbers of runners, up to seven by Barajas and Serra (2008), but open in general.",
+    "known": "Wills (1967) and Cusick (1973) posed equivalent forms. It is proved for small numbers of runners, up to seven by Barajas and Serra (2008), with computer-assisted proofs for eight (Rosenfeld, 2025) and for nine and ten announced since, but open in general.",
     "link": "https://en.wikipedia.org/wiki/Lonely_runner_conjecture"
    }
   ],
@@ -1484,7 +1484,7 @@
     "title": "The smooth four-dimensional Poincaré conjecture",
     "status": "open",
     "q": "Is every smooth four-dimensional manifold that is a homotopy sphere actually the standard smooth four-sphere?",
-    "known": "Freedman (1982) proved the topological version, and the analogue holds in every other dimension. In dimension 4 smooth structures behave unusually, and the question is open.",
+    "known": "Freedman (1982) proved the topological version, and the topological statement holds in every dimension, while the smooth one fails in some higher dimensions such as 7. In dimension 4 smooth structures behave unusually, and the question is open.",
     "link": "https://en.wikipedia.org/wiki/Generalized_Poincar%C3%A9_conjecture"
    },
    {
@@ -1674,9 +1674,9 @@
    {
     "id": "eremenko",
     "title": "Eremenko’s conjecture",
-    "status": "open",
+    "status": "disproved",
     "q": "For a transcendental entire function, is every connected component of the set of escaping points unbounded?",
-    "known": "Eremenko (1989) showed the escaping set is non-empty and posed the question. Rottenfusser, Rückert, Rempe and Schleicher (2011) found a counterexample to a strong form, but the conjecture as stated is open.",
+    "known": "Eremenko (1989) showed the escaping set is non-empty and posed the question. Rottenfusser, Rückert, Rempe and Schleicher (2011) found a counterexample to a strong form, and Martí-Pete, Rempe and Waterman (2021) built an entire function whose escaping set has a bounded component, disproving the conjecture as stated.",
     "link": "https://en.wikipedia.org/wiki/Escaping_set"
    }
   ],
@@ -1936,7 +1936,7 @@
     "title": "Self-avoiding walk in the plane",
     "status": "open",
     "q": "Does the uniform self-avoiding walk on a planar lattice converge, when rescaled, to the random curve SLE(8/3)?",
-    "known": "Lawler, Schramm and Werner (2002) conjectured this and showed it would follow from a suitable continuum limit. Duminil-Copin and Smirnov (2010) computed the connective constant of the hexagonal lattice, √(2 + √2).",
+    "known": "Lawler, Schramm and Werner (2002) conjectured this and showed it would follow from a suitable continuum limit. Duminil-Copin and Smirnov (2012) computed the connective constant of the hexagonal lattice, √(2 + √2).",
     "link": "https://en.wikipedia.org/wiki/Self-avoiding_walk"
    },
    {
@@ -2376,7 +2376,7 @@
     "title": "The smooth 4-dimensional Poincaré conjecture",
     "status": "open",
     "q": "Is every smooth 4-manifold that is homotopy equivalent to the 4-sphere actually diffeomorphic to it?",
-    "known": "The topological version was proved by Freedman (1982), and the analogues hold in every other dimension. Whether exotic smooth 4-spheres exist is one of the central open problems linking geometry and topology.",
+    "known": "The topological version was proved by Freedman (1982), and the topological statement holds in every dimension, while the smooth one fails in some higher dimensions such as 7. Whether exotic smooth 4-spheres exist is one of the central open problems linking geometry and topology.",
     "link": "https://en.wikipedia.org/wiki/Generalized_Poincar%C3%A9_conjecture"
    },
    {
@@ -2512,7 +2512,7 @@
     "title": "Homotopy groups of spheres",
     "status": "open",
     "q": "Is there a way to compute all the homotopy groups of spheres, or at least to understand their overall pattern?",
-    "known": "Serre (1953) showed they are finite apart from a few exceptions, yet no general formula is known. Machine-assisted methods have pushed complete computations of the stable groups to dimension 90 (Isaksen, Wang and Xu, 2023).",
+    "known": "Serre (1953) showed they are finite apart from two explicit families, yet no general formula is known. Machine-assisted methods have pushed complete computations of the stable groups to dimension 90 (Isaksen, Wang and Xu, 2023).",
     "link": "https://en.wikipedia.org/wiki/Homotopy_groups_of_spheres"
    },
    {
@@ -6618,7 +6618,7 @@
     "title": "Why does Earth’s magnetic field reverse?",
     "status": "open",
     "q": "What controls the irregular reversals of Earth’s magnetic field?",
-    "known": "Glatzmaier and Roberts (1995) produced a spontaneous reversal in a computer simulation of the geodynamo. Why reversals occur at irregular intervals of thousands to millions of years is not understood.",
+    "known": "Glatzmaier and Roberts (1995) produced a spontaneous reversal in a computer simulation of the geodynamo. Why reversals occur at irregular intervals, from tens of thousands to tens of millions of years, is not understood.",
     "link": "https://en.wikipedia.org/wiki/Geomagnetic_reversal"
    },
    {

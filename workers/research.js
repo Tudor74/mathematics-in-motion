@@ -152,7 +152,7 @@ const TOPICS = {
    {
     "id": "rota-basis",
     "title": "Rota’s basis conjecture",
-    "q": "Given n bases of an n-dimensional vector space, can the vectors always be arranged in an n×n grid so that every row and every column is a basis?"
+    "q": "Given n bases of an n-dimensional vector space, can each basis be written along its own row of an n×n grid, in some order, so that every column is also a basis?"
    },
    {
     "id": "sunflower",
