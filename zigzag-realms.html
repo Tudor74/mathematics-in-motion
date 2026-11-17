@@ -127,6 +127,22 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .map .seekray{animation:seekfade 14s linear forwards}@keyframes seekfade{0%,80%{opacity:1}100%{opacity:0}}
 .pickflash .pickgot{background:var(--sheet);border:1px solid var(--rule);border-radius:14px;box-shadow:0 6px 18px #0003;padding:10px 16px;min-width:200px;max-width:320px;cursor:pointer}.pickflash .pickgot b{display:block;margin-bottom:4px}.pickflash .pickgot ul{margin:0;padding-left:18px;columns:2;column-gap:18px}.pickflash .pickgot p{margin:6px 0 0;color:var(--faint)}
 .lightning{position:absolute;inset:0;border-radius:12px;pointer-events:none;z-index:7;background:#fff;opacity:0}.lightning.on{animation:bolt .9s ease-out}@keyframes bolt{0%{opacity:0}4%{opacity:.75}10%{opacity:.1}16%{opacity:.55}40%{opacity:.08}100%{opacity:0}}@media (prefers-reduced-motion:reduce){.lightning.on{animation:none}}
+.wxfx{position:absolute;inset:0;border-radius:12px;overflow:hidden;pointer-events:none;z-index:2}
+.wxfx i{position:absolute;inset:0;opacity:0;transition:opacity 2s}
+.wxfx .cl{inset:-30% -60%;background:radial-gradient(closest-side,rgba(20,24,34,var(--cloud)),transparent) 0 0/38% 46%,radial-gradient(closest-side,rgba(20,24,34,var(--cloud)),transparent) 22% 60%/30% 40%;background-repeat:repeat;animation:cldrift var(--drift,90s) linear infinite var(--dir,normal)}
+.wxfx .cl.b{animation-duration:calc(var(--drift,90s)*1.6);background-position:60% 20%,10% 80%;filter:blur(6px)}
+.wxfx.clouds .cl{opacity:1}@keyframes cldrift{from{transform:translateX(-15%)}to{transform:translateX(15%)}}
+.wxfx .rn{background:repeating-linear-gradient(var(--rainAng,100deg),transparent 0 9px,rgba(70,90,120,.55) 9px 10px,transparent 10px 23px);background-size:200px 200px;animation:rainfall .45s linear infinite}
+.wxfx.rain .rn{opacity:var(--rain)}@keyframes rainfall{to{background-position:-40px 200px}}
+@media (prefers-reduced-motion:reduce){.wxfx .cl,.wxfx .rn{animation:none}}
+.map .routeplan .rp-line{fill:none;stroke:var(--accent);stroke-width:3.2;stroke-dasharray:2 7;stroke-linecap:round;opacity:.9}
+.map .routeplan .rp-end{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-dasharray:4 4}
+.map .routeplan .rp-box{fill:var(--sheet);stroke:var(--rule);opacity:.96}
+.map .routeplan text{font-family:var(--body);font-size:13pt;fill:var(--ink)}.map .routeplan .rp-t{font-weight:700}.map .routeplan .warn{fill:#8a3a12;font-weight:400}.map .routeplan .rp-hint{fill:var(--faint);font-style:italic}
+.map .pin path{fill:#c4512a;stroke:#5e2310;stroke-width:1;stroke-linejoin:round}.map .pin circle{fill:#5e2310}.map .pin{cursor:pointer}.map .pin.auto path{fill:#8a6d3b}
+.pinedit{position:absolute;inset:0;display:none;place-items:center;z-index:8;background:rgba(0,0,0,.08);border-radius:12px}.pinedit.show{display:grid}
+.pinedit .pe-card{background:var(--sheet);border:1px solid var(--rule);border-radius:14px;box-shadow:0 8px 24px #0003;padding:14px 16px;display:grid;gap:10px;width:min(360px,86%)}
+.pinedit input{font:inherit;font-size:13pt;padding:8px 10px;border:1px solid var(--rule);border-radius:8px;background:var(--paper,#fff)}
 .pickflash{position:absolute;left:50%;bottom:22px;transform:translate(-50%,10px);z-index:4;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .3s ease}
 .pickflash.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 .pickflash{display:flex;align-items:center;gap:6px}.pickflash .pf-x{min-height:44px;width:44px;padding:0;border-radius:99px;font-size:20px;line-height:1;justify-content:center;background:var(--sheet)}
@@ -567,7 +583,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
    <section class="panel map" aria-label="Map">
     <span id="coords" hidden></span>
     <div class="mapwrap"><svg id="map" viewBox="0 0 480 416" role="img" aria-label="Map of explored places on your current level"></svg>
-<div class="blockflash" id="blockflash" aria-live="assertive"></div><div class="folkflash" id="folkflash" aria-live="polite"></div><div class="pickflash" id="pickflash"></div><div class="lightning" id="lightning" aria-hidden="true"></div><button class="seekstar" id="seekstar" data-act="seek" aria-label="Seek: find people (once a day)" title="Seek: once a day, see which way everyone is"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.7 6.1 6.6.6-5 4.4 1.5 6.5L12 16.7l-5.8 3.4 1.5-6.5-5-4.4 6.6-.6z"/></svg></button><nav class="compass roseover" id="compass" aria-label="Ways from here"></nav><div class="encounter" id="encounter" aria-live="polite"></div><div class="starve" id="starve" role="alert"></div><div class="dream" id="dream" aria-hidden="true"><div class="track"></div></div><div class="exploring" id="exploring" role="status" aria-live="polite"><span><svg class="hourglass" viewBox="0 0 24 32" aria-hidden="true"><g class="hg"><path class="hg-frame" d="M4 2h16M4 30h16M6 2c0 8 5 10 5 14s-5 6-5 14M18 2c0 8-5 10-5 14s5 6 5 14"/><path class="hg-top" d="M7.2 6h9.6c-.6 4-3.6 6.2-4.8 9.5C10.8 12.2 7.8 10 7.2 6z"/><path class="hg-bot" d="M7 29c.6-4 3.6-6 5-7.5 1.4 1.5 4.4 3.5 5 7.5z"/><line class="hg-fall" x1="12" y1="16" x2="12" y2="28"/></g></svg>Exploring, stand by</span></div><div class="zoomslider"><button class="small iconbtn" id="map-key-btn" type="button" aria-label="Map key" title="Map key">?</button><span aria-hidden="true">+</span><input type="range" id="zoom" min="0" max="5" step="1" aria-label="Zoom" title="Zoom"><span aria-hidden="true">−</span></div><div class="mapkey" id="mapkey" hidden></div><div class="arrive" id="arrive" aria-live="polite"></div><div class="gate" id="gate" hidden></div></div>
+<div class="blockflash" id="blockflash" aria-live="assertive"></div><div class="folkflash" id="folkflash" aria-live="polite"></div><div class="pickflash" id="pickflash"></div><div class="lightning" id="lightning" aria-hidden="true"></div><div class="wxfx" id="wxfx" aria-hidden="true"><i class="cl a"></i><i class="cl b"></i><i class="rn"></i></div><div class="pinedit" id="pinedit"></div><button class="seekstar" id="seekstar" data-act="seek" aria-label="Seek: find people (once a day)" title="Seek: once a day, see which way everyone is"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.7 6.1 6.6.6-5 4.4 1.5 6.5L12 16.7l-5.8 3.4 1.5-6.5-5-4.4 6.6-.6z"/></svg></button><nav class="compass roseover" id="compass" aria-label="Ways from here"></nav><div class="encounter" id="encounter" aria-live="polite"></div><div class="starve" id="starve" role="alert"></div><div class="dream" id="dream" aria-hidden="true"><div class="track"></div></div><div class="exploring" id="exploring" role="status" aria-live="polite"><span><svg class="hourglass" viewBox="0 0 24 32" aria-hidden="true"><g class="hg"><path class="hg-frame" d="M4 2h16M4 30h16M6 2c0 8 5 10 5 14s-5 6-5 14M18 2c0 8-5 10-5 14s5 6 5 14"/><path class="hg-top" d="M7.2 6h9.6c-.6 4-3.6 6.2-4.8 9.5C10.8 12.2 7.8 10 7.2 6z"/><path class="hg-bot" d="M7 29c.6-4 3.6-6 5-7.5 1.4 1.5 4.4 3.5 5 7.5z"/><line class="hg-fall" x1="12" y1="16" x2="12" y2="28"/></g></svg>Exploring, stand by</span></div><div class="zoomslider"><button class="small iconbtn" id="map-key-btn" type="button" aria-label="Map key" title="Map key">?</button><span aria-hidden="true">+</span><input type="range" id="zoom" min="0" max="5" step="1" aria-label="Zoom" title="Zoom"><span aria-hidden="true">−</span></div><div class="mapkey" id="mapkey" hidden></div><div class="arrive" id="arrive" aria-live="polite"></div><div class="gate" id="gate" hidden></div></div>
     <div class="layerbar" id="layerbar" role="img" aria-label="Layers"></div>
    </section>
  </div>
@@ -2566,6 +2582,122 @@ function seekSvg(C,VB,ui){
  return out;
 }
 function renderSeekStar(){const b=$("seekstar");if(!b)return;const ok=seekReady()&&!!hereId()&&!isDowned();b.classList.toggle("spent",!ok);b.disabled=!ok;b.title=ok?"Seek: once a day, see which way everyone is":"Seek is spent for today. It returns at dawn of the next day."}
+/* ============================================================
+   1. Route preview. Tap a distant hex and the way there is drawn as a ghost path first, with how many steps,
+      how long it takes, and anything worth knowing: night falling on the way, hard going, an anomaly in the
+      path, unexplored ground. Tap the same hex again to set off; tap anywhere else to plan again.
+   ============================================================ */
+let routePlan=null,routeWalking=false;
+function planRoute(tx,ty){
+ const H=cell(hereId());if(!H)return null;const Z=zOf(H);tx=wrapC(tx);ty=wrapC(ty);
+ const key=(x,y)=>x+","+y,start=key(H.x,H.y),goal=key(tx,ty),dist={[start]:0},prev={},open=[[0,H.x,H.y]],R=hexDist(H.x,H.y,tx,ty)+10;
+ while(open.length){open.sort((a,b)=>a[0]-b[0]);const [dd,x,y]=open.shift();const k=key(x,y);if(dd>dist[k])continue;if(k===goal)break;
+  const id=coord.get(ck(x,y,Z));if(id&&k!==start&&foeId(id)&&k!==goal)continue;
+  for(const d of sideMoves(x)){const D=DIRS[d]||DIAG[d],nx=wrapC(x+D.dx),ny=wrapC(y+D.dy),nk=key(nx,ny);if(hexDist(nx,ny,tx,ty)>R)continue;
+   const nid=coord.get(ck(nx,ny,Z)),N=nid&&cell(nid);let cost=1;
+   if(id){if(!sideOpen(id,d))continue;if(roughSide(id,d))cost=8}else if(N&&(N.lake||N.hole||(N.river&&riverBlock(nid))))continue;
+   if(N&&(N.lake||riverBlock(nid)))continue;if(!N)cost+=.25;
+   const nd=dd+cost;if(nd<(dist[nk]??1e9)){dist[nk]=nd;prev[nk]=[k,d];open.push([nd,nx,ny])}}}
+ if(!(goal in prev))return null;
+ const path=[];for(let k=goal;k!==start;k=prev[k][0]){const [x,y]=k.split(",").map(Number);path.unshift({x,y,d:prev[k][1],from:prev[k][0]})}
+ // what the walk will cost, and what to look out for
+ let mins=0,rough=0,unknown=0,foes=[];const t0=gameNow();
+ for(const st of path){const [fx,fy]=st.from.split(",").map(Number),fid=coord.get(ck(fx,fy,Z)),nid=coord.get(ck(st.x,st.y,Z));
+  if(fid&&roughSide(fid,st.d)){rough++;mins+=Math.max(STEP_MIN,toDusk(t0+mins))}else mins+=DIAG[st.d]?DIAG_MIN:STEP_MIN;
+  if(!nid)unknown++;else{const f=foeId(nid);if(f)foes.push(cell(f).t)}}
+ const warns=[];
+ if(!hasLight()&&Z>=0){for(let m=0;m<=mins;m+=STEP_MIN)if(isNight(t0+m)){warns.push(`night falls on the way, at ${fmtClock(t0+m).split("· ").pop()}`);break}}
+ if(rough)warns.push(`hard going: ${rough===1?"one stretch takes":rough+" stretches take"} the rest of the day`);
+ if(foes.length)warns.push(`${foes[0]} lies on the way`);
+ if(unknown)warns.push(`${unknown} unexplored ${unknown===1?"hex":"hexes"}: the way may change`);
+ return{tx,ty,z:Z,path,steps:path.length,mins,warns,from:hereId()};
+}
+function fmtDur(m){m=Math.round(m);return m<60?`${m} min`:`${Math.floor(m/60)} h${m%60?" "+(m%60)+" min":""}`}
+function planOrWalk(x,y){
+ x=wrapC(x);y=wrapC(y);
+ if(routePlan&&routePlan.tx===x&&routePlan.ty===y&&routePlan.from===hereId()){walkPlan();return}
+ routePlan=planRoute(x,y);
+ if(!routePlan){flash="You can see no way there from here.";render();flashBlocked(null,"No way there that you know of");return}
+ render();
+}
+async function walkPlan(){
+ if(!routePlan||routeWalking)return;routeWalking=true;let replans=0;
+ try{while(routePlan&&routePlan.path.length){
+  for(let w=0;w<80&&busy;w++)await new Promise(r=>setTimeout(r,100));
+  if(foeId()||isDowned())break;
+  const H=cell(hereId()),st=routePlan.path[0];if(H.x===st.x&&H.y===st.y){routePlan.path.shift();continue}
+  const here=hereId();if(roughSide(here,st.d))roughAsk={here,dir:st.d,t:Date.now()};   // you saw the warning on the plan
+  await (DIAG[st.d]?moveDiag(st.d):move(st.d));
+  if(hereId()===here){                                   // a wall or the night got in the way: plan again once or twice
+   if(++replans>2||isNight(gameNow())&&!hasLight())break;const g=routePlan;routePlan=planRoute(g.tx,g.ty);if(!routePlan)break;routePlan.walking=true;continue}
+  routePlan.path.shift();routePlan.from=hereId();routePlan.steps=routePlan.path.length;
+  await new Promise(r=>setTimeout(r,150));
+ }}finally{routeWalking=false;if(routePlan&&!routePlan.path.length)routePlan=null;render()}
+}
+function routeSvg(C,ui,H,Z){
+ const P=routePlan;if(!P||P.from!==hereId()||P.z!==Z||!P.path.length)return"";
+ const pts=[[0,0],...P.path.map(st=>[wrapC(st.x-H.x),wrapC(st.y-H.y)])].map(([dx,dy])=>C(dx,dy));
+ const d=pts.map(([x,y],i)=>`${i?"L":"M"}${x.toFixed(1)} ${y.toFixed(1)}`).join(" "),[ex,ey]=pts[pts.length-1];
+ const head=`${P.steps} ${P.steps===1?"step":"steps"} · ${fmtDur(P.mins)}`,lines=[head,...P.warns.slice(0,3).map(w=>"⚠ "+w)],wpx=Math.max(...lines.map(l=>l.length))*7.2+20,lh=20;
+ // the label sits beside the end of the route, on whichever side has room, and never under the slider or off the top
+ const VBx=+document.getElementById("map").getAttribute("viewBox").split(" ")[0],VBw=+document.getElementById("map").getAttribute("viewBox").split(" ")[2],VBy=+document.getElementById("map").getAttribute("viewBox").split(" ")[1];
+ const bw=wpx*ui,bh=(lines.length*lh+40)*ui,right=VBx+VBw-80*ui;
+ let bx=ex+16*ui;if(bx+bw>right)bx=Math.max(VBx+8*ui,ex-16*ui-bw);let by=ey-bh-8*ui;if(by<VBy+28*ui)by=ey+18*ui;
+ return`<g class="routeplan" pointer-events="none"><path class="rp-line" d="${d}"/><circle class="rp-end" cx="${ex.toFixed(1)}" cy="${ey.toFixed(1)}" r="${(14*ui).toFixed(1)}"/>
+  <g transform="translate(${bx.toFixed(1)} ${by.toFixed(1)}) scale(${ui})"><rect class="rp-box" x="0" y="0" width="${wpx}" height="${lines.length*lh+40}" rx="8"/>
+  ${lines.map((l,i)=>`<text class="rp-t${i?" warn":""}" x="10" y="${20+i*lh}">${esc(l)}</text>`).join("")}<text class="rp-hint" x="10" y="${lines.length*lh+30}">tap again to go</text></g></g>`;
+}
+
+/* ============================================================
+   2. Pins. Press and hold any hex to pin a note to it: "good camp", "wolves", "Maud sells rations".
+      Pins are yours, kept with your world. When you fall, a pin marks where your pack lies.
+   ============================================================ */
+const pinsOf=()=>{const r=cell("root");return r?(r.pins=r.pins||{}):{}};
+function setPin(x,y,z,text,auto){const P=pinsOf(),k=`${wrapC(x)},${wrapC(y)},${z}`;if(text&&text.trim())P[k]={text:text.trim().slice(0,60),t:gameNow(),auto:!!auto};else delete P[k];touch("root");store.flush();render()}
+function pinSvg(C,ui,H,Z,inBox){
+ let out="";for(const [k,p] of Object.entries(pinsOf())){const [x,y,z]=k.split(",").map(Number);if(z!==Z)continue;const dx=wrapC(x-H.x),dy=wrapC(y-H.y);if(!inBox(dx,dy))continue;const [cx,cy]=C(dx,dy);
+  out+=`<g class="pin${p.auto?" auto":""}" data-pin="${esc(k)}"><path d="M${(cx+6*ui).toFixed(1)} ${(cy-4*ui).toFixed(1)} v${(-22*ui).toFixed(1)} l${(14*ui).toFixed(1)} ${(5*ui).toFixed(1)} l${(-14*ui).toFixed(1)} ${(5*ui).toFixed(1)}"/><circle cx="${(cx+6*ui).toFixed(1)}" cy="${(cy-4*ui).toFixed(1)}" r="${(2.5*ui).toFixed(1)}"/><title>${esc(p.text)}</title></g>`}
+ return out;
+}
+function openPinEditor(x,y,z){
+ const el=$("pinedit");if(!el)return;const k=`${wrapC(x)},${wrapC(y)},${z}`,p=pinsOf()[k],id=coord.get(ck(wrapC(x),wrapC(y),z)),name=id?cell(id).t:"an unexplored hex";
+ el.innerHTML=`<form class="pe-card" data-k="${esc(k)}"><b>Pin a note to ${esc(name)}</b><input id="pe-text" maxlength="60" placeholder="good camp, wolves, come back with a lantern…" value="${esc(p?p.text:"")}"><div class="btnrow"><button class="primary" type="submit">Pin it</button>${p?`<button type="button" data-pe="del">Remove</button>`:""}<button type="button" data-pe="cancel">Cancel</button></div></form>`;
+ el.classList.add("show");const f=el.querySelector("form");setTimeout(()=>$("pe-text").focus(),30);
+ f.onsubmit=e=>{e.preventDefault();setPin(...k.split(",").map(Number).slice(0,2),z,$("pe-text").value);el.classList.remove("show")};
+ f.querySelectorAll("[data-pe]").forEach(b=>b.onclick=()=>{if(b.dataset.pe==="del")setPin(...k.split(",").map(Number).slice(0,2),z,"");el.classList.remove("show")});
+}
+let pinPress=null,pinSuppressClick=false;
+document.addEventListener("pointerdown",e=>{
+ if(!e.target.closest||!e.target.closest("#map")||e.button!==0)return;
+ const pinEl=e.target.closest("#map g.pin");
+ const g=e.target.closest("#map g[data-loc]"),gh=e.target.closest("#map polygon.hexgrid");let x,y,z;
+ const H=hereId()&&cell(hereId());if(!H)return;
+ if(pinEl){const [px,py,pz]=pinEl.dataset.pin.split(",").map(Number);x=px;y=py;z=pz}
+ else if(g){const c=cell(g.dataset.loc);if(!c)return;x=c.x;y=c.y;z=zOf(c)}else if(gh){x=+gh.dataset.hx;y=+gh.dataset.hy;z=zOf(H)}else return;
+ const sx=e.clientX,sy=e.clientY;clearTimeout(pinPress&&pinPress.t);
+ pinPress={sx,sy,t:setTimeout(()=>{pinSuppressClick=true;openPinEditor(x,y,z)},550)};
+},true);
+for(const ev of ["pointerup","pointercancel"])document.addEventListener(ev,()=>{if(pinPress)clearTimeout(pinPress.t);pinPress=null},true);
+document.addEventListener("pointermove",e=>{if(pinPress&&Math.hypot(e.clientX-pinPress.sx,e.clientY-pinPress.sy)>9){clearTimeout(pinPress.t);pinPress=null}},true);
+document.addEventListener("click",e=>{if(pinSuppressClick&&e.target.closest&&e.target.closest("#map")){pinSuppressClick=false;e.stopImmediatePropagation();e.preventDefault()}},true);
+document.addEventListener("contextmenu",e=>{if(e.target.closest&&e.target.closest("#map"))e.preventDefault()});
+
+/* ============================================================
+   3. Living weather and light. Cloud shadows drift over the map on the wind, rain streaks where it is raining
+      and thicker as it pours, and at night the map darkens but for a warm circle of light around you: a
+      lantern's glow that shrinks as its oil runs down, or the small ring of your campfire.
+   ============================================================ */
+function renderWxFx(){
+ const el=$("wxfx");if(!el)return;const H=hereId()&&cell(hereId());if(!H||isDowned()){el.className="wxfx";return}
+ const t=gameNow(),z=zOf(H),w=weatherAt(H.x,H.y,z,t)||{rain:0,cloud:0,wind:.3},ws=wxState(),night=isNight(t)&&z>=0;
+ const cloud=Math.min(1,(w.cloud||0)+(w.rain||0)*.5),rain=z<0?0:Math.min(1.2,w.rain||0),wind=ws&&ws.wind||{x:.5,y:0};
+ el.style.setProperty("--cloud",(cloud*.22).toFixed(3));el.style.setProperty("--rain",Math.min(.55,rain*.5).toFixed(3));
+ el.style.setProperty("--rainAng",`${Math.round(100+Math.max(-25,Math.min(25,(wind.x||0)*25)))}deg`);
+ el.style.setProperty("--drift",`${Math.max(30,140-Math.hypot(wind.x||0,wind.y||0)*60).toFixed(0)}s`);
+ el.style.setProperty("--dir",(wind.x||0)<0?"reverse":"normal");
+
+ el.className="wxfx"+(cloud>.15?" clouds":"")+(rain>.05?" rain":"")+(night?" night":"");
+}
 let folkTimer=null;
 function flashFolk(locId){
  const el=$("folkflash");if(!el||hereId()!==locId||isDowned())return;const L=cell(locId),Z=zOf(L);
@@ -2640,7 +2772,7 @@ function woundedRetreat(by){
  passTime(Math.min(16*60,Math.max(60,dist*STEP_MIN)));store.flush();render();
 }
 function fall(locId){
- const ch=cell(charId());ch.downed=locId;touch(ch.id);
+ const ch=cell(charId());ch.downed=locId;touch(ch.id);{const L=cell(locId);if(L&&packIds().length)setPin(L.x,L.y,zOf(L),"Your pack lies here",true)}
  const f=foeId(locId);if(f){cell(f).hp=cell(f).maxhp;touch(f)}
  setStat("HP",0);rounds=[];
  log(`You fall at ${cell(locId).t}.`,"bad");
@@ -4835,7 +4967,7 @@ function renderMap(){
  if(Z===0)for(const w of wanderers()){const sx=wrapC(w.x-H.x),sy=wrapC(w.y-H.y),dd=hexDist(H.x,H.y,w.x,w.y);if(dd>3||!dd)continue;const [qx,qy]=P(sx,sy);
   out+=`<text class="wnote${WANDERERS[w.i].bard?" bard":""}" x="${(qx+30).toFixed(1)}" y="${(qy+38).toFixed(1)}" text-anchor="middle"><title>A whistled tune: ${esc(WANDERERS[w.i].name.split(",")[0])} is on the road</title>♪</text>`}
  if(ws&&ws.storm&&Z>=0){const sx=wrapC(Math.round(ws.storm.x)-H.x),sy=wrapC(Math.round(ws.storm.y)-H.y);const [qx,qy]=P(sx,sy);out+=`<circle class="stormring" cx="${qx+30}" cy="${qy+30}" r="${ws.storm.r*HW*.6}"/>`}
- out+=seekSvg(C,VB,ui);
+ out+=pinSvg(C,ui,H,Z,inBox)+routeSvg(C,ui,H,Z)+seekSvg(C,VB,ui);
  out+=`<text class="axis" x="${VB[0]+W/2}" y="${VB[1]+16*ui}" text-anchor="middle">N ↑</text>`;
  // The fifteen layers, deepest on the left, the peak on the right; yours is marked
  $("layerbar").innerHTML=`<span class="mono">−${ZMAX}</span>${Array.from({length:2*ZMAX+1},(_,i)=>{const z=i-ZMAX;return`<span class="lv${z===Z?" on":z===0?" ground":z>0?" up":" down"}" title="${z===0?"ground level":z>0?`${z} above ground`:`${-z} below ground`}${z===Z?" (you are here)":""}"></span>`}).join("")}<span class="mono">+${ZMAX}</span>`;
@@ -4847,7 +4979,11 @@ function renderMap(){
    :zOf(Lh)<0?(hasLight()&&steps>0?`Deep underground night means nothing. Your lantern has ${steps} ${steps===1?"step":"steps"} left.`:"You rest in the dark until dawn.")
    :"You have made camp for the night, and sleep until dawn.";
   const narrow=W<V,wrapAt=narrow?24:38,G=narrow?44:30;
-  out=`<g class="nightfade">${out}</g>${beacons}`+(()=>{const words=line.split(" "),rows=[];let cur="";for(const w of words){if((cur+" "+w).trim().length>wrapAt&&cur){rows.push(cur);cur=w}else cur=(cur+" "+w).trim()}if(cur)rows.push(cur);
+  // the light around you: a lantern's glow that shrinks as its oil runs down, a campfire's small ring, a town's lamps
+  const lightR=(()=>{const ch=cell(charId()),camped=ch&&ch.campedNight===nightKey(t),lamp=hasLight()?Math.max(.25,nightLeft(t)/LANTERN_NIGHT_MIN):0;return(H.town?3.4:camped?1.5:lamp?1.2+2*lamp:.8)*HW})();
+  const [lx,ly]=C(0,0),warm=cell(charId())&&cell(charId()).campedNight===nightKey(t)?"rgba(255,165,80,.28)":"rgba(255,215,150,.2)";
+  const glow=`<defs><radialGradient id="nightlight" gradientUnits="userSpaceOnUse" cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="${(lightR*2).toFixed(1)}"><stop offset="0" stop-color="${warm}"/><stop offset=".42" stop-color="rgba(0,0,0,0)"/><stop offset=".55" stop-color="rgba(8,10,24,.42)"/><stop offset="1" stop-color="rgba(6,8,18,.62)"/></radialGradient></defs><rect x="${VB[0]}" y="${VB[1]}" width="${W}" height="${V}" fill="url(#nightlight)" pointer-events="none"/>`;
+  out=`<g class="nightfade">${out}</g>${glow}${beacons}`+(()=>{const words=line.split(" "),rows=[];let cur="";for(const w of words){if((cur+" "+w).trim().length>wrapAt&&cur){rows.push(cur);cur=w}else cur=(cur+" "+w).trim()}if(cur)rows.push(cur);
    // near the top of the map, clear of the Ways rose and the controls along the bottom
    // on a narrow map (a phone) the box shrinks to fit the width, leaving room for the zoom slider
    const h=(narrow?150:110)+rows.length*G,Y=26,nsc=W>=V?ui:(W-62*U)/420,NUI=W>=V?UI:(s=>`<g transform="translate(${VB[0]+6*U} ${VB[1]}) scale(${nsc})">${s}</g>`);return NUI(`<g class="nightnote" pointer-events="none" style="--k:${(1/nsc).toFixed(4)}"><rect x="14" y="${Y}" width="392" height="${h}" rx="12"/>
@@ -5475,7 +5611,7 @@ function renderMapKey(){const k=$("mapkey");if(!k||k.innerHTML)return;
 // Travellers have twice the hit points they used to; older characters are brought up once
 function doubleHP(){const ch=charId()&&cell(charId());if(!ch||ch.hpx2)return;ch.hpx2=true;setStat("MAXHP",2*sv("MAXHP"));setStat("HP",Math.max(1,2*sv("HP")));touch(ch.id)}
 function fixPlaceName(id){const c=id&&cell(id);if(c&&c.k==="loc"&&!c.town&&(BAD_NAME.test(String(c.t||""))||/^(new|name|place|title)\s*[:\-–—]/i.test(String(c.t||"")))){c.t=cleanPlaceName(c.t,c.terrain);touch(id)}}
-function render(){doubleHP();fixPlaceName(hereId());renderSeekStar();if(hereId()&&!isDowned())ensureWayOut(hereId(),cell(charId()).prevAt);renderMapKey();renderGate();renderDream();renderEncounter();renderStarving();{const x=$("exploring");if(x)x.classList.toggle("show",!!(busy&&charId()&&!isDowned()&&!["realm","founding","river","start"].includes(busy.dir)))}renderPills();renderScriptButton();renderMap();renderCompass();renderPlace();renderSheet();renderSocial();renderGarden();renderCodex();renderAlphabet();renderLog();renderVoice();decoratePanels();iconHeads();sound.update();voiceOnRender()}
+function render(){requestAnimationFrame(renderWxFx);doubleHP();fixPlaceName(hereId());renderSeekStar();if(hereId()&&!isDowned())ensureWayOut(hereId(),cell(charId()).prevAt);renderMapKey();renderGate();renderDream();renderEncounter();renderStarving();{const x=$("exploring");if(x)x.classList.toggle("show",!!(busy&&charId()&&!isDowned()&&!["realm","founding","river","start"].includes(busy.dir)))}renderPills();renderScriptButton();renderMap();renderCompass();renderPlace();renderSheet();renderSocial();renderGarden();renderCodex();renderAlphabet();renderLog();renderVoice();decoratePanels();iconHeads();sound.update();voiceOnRender()}
 
 /* ============================================================
    Soundtrack: generated live from white, pink and brown noise and a few oscillators.
@@ -5957,8 +6093,8 @@ document.addEventListener("click",e=>{
  if(g&&(g.dataset.dir||g.dataset.loc)){if(g.dataset.dir)move(g.dataset.dir);else if(g.dataset.loc){const id=g.dataset.loc,H=cell(hereId()),C=cell(id);
   const dir=H&&C?Object.keys(DIRS).find(k=>coord.get(ck(H.x+DIRS[k].dx,H.y+DIRS[k].dy,zOf(H)+DIRS[k].dz))===id):null;
   const dg=!dir&&H&&C&&zOf(C)===zOf(H)?Object.keys(DIAG).find(k=>coord.get(ck(H.x+DIAG[k].dx,H.y+DIAG[k].dy,zOf(H)))===id&&!diagCheck(hereId(),k).block):null;
-  if(dir)move(dir);else if(dg)moveDiag(dg);else if(zOf(C)===zOf(H)&&!pathTo(id))walkToward(C.x,C.y);else travelTo(id)}return}
- const gh=e.target.closest("#map polygon.hexgrid")||(e.target.closest("#map")&&document.elementsFromPoint(e.clientX,e.clientY).find(el=>el.matches&&el.matches("#map polygon.hexgrid")));if(gh){walkToward(+gh.dataset.hx,+gh.dataset.hy);return}
+  if(dir){routePlan=null;move(dir)}else if(dg){routePlan=null;moveDiag(dg)}else if(zOf(C)===zOf(H))planOrWalk(C.x,C.y);else travelTo(id)}return}
+ const gh=e.target.closest("#map polygon.hexgrid")||(e.target.closest("#map")&&document.elementsFromPoint(e.clientX,e.clientY).find(el=>el.matches&&el.matches("#map polygon.hexgrid")));if(gh){const H=cell(hereId()),gx=wrapC(+gh.dataset.hx),gy=wrapC(+gh.dataset.hy);if(H&&hexDist(H.x,H.y,gx,gy)===1&&!coord.get(ck(gx,gy,zOf(H)))){const d=sideMoves(H.x).find(k=>{const D=DIRS[k]||DIAG[k];return wrapC(H.x+D.dx)===gx&&wrapC(H.y+D.dy)===gy});if(d){routePlan=null;DIAG[d]?moveDiag(d):move(d);return}}planOrWalk(gx,gy);return}
 });
 document.addEventListener("toggle",e=>{if(e.target.id==="zz-details")zzOpen=e.target.open},true);
 document.addEventListener("submit",e=>{const sf=e.target.closest("form[data-say]");if(sf){e.preventDefault();const t=sf.querySelector("input").value.trim();if(t){sf.querySelector("input").value="";mpPing(t.slice(0,160))}}});
