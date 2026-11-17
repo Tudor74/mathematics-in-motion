@@ -139,6 +139,7 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .map .routeplan .rp-end{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-dasharray:4 4}
 .map .routeplan .rp-box{fill:var(--sheet);stroke:var(--rule);opacity:.96}
 .map .routeplan text{font-family:var(--body);font-size:13pt;fill:var(--ink)}.map .routeplan .rp-t{font-weight:700}.map .routeplan .warn{fill:#8a3a12;font-weight:400}.map .routeplan .rp-hint{fill:var(--faint);font-style:italic}
+.map .routeplan .rp-btn{cursor:pointer}.map .routeplan .rp-btn rect{stroke-width:1.5}.map .routeplan .rp-btn.go rect{fill:#2f7d4a;stroke:#1f5a34}.map .routeplan .rp-btn.go text{fill:#fff;font-weight:700}.map .routeplan .rp-btn.no rect{fill:var(--sheet);stroke:var(--rule)}.map .routeplan .rp-btn:hover rect{filter:brightness(1.08)}
 .map .pin path{fill:#c4512a;stroke:#5e2310;stroke-width:1;stroke-linejoin:round}.map .pin circle{fill:#5e2310}.map .pin{cursor:pointer}.map .pin.auto path{fill:#8a6d3b}
 .pinedit{position:absolute;inset:0;display:none;place-items:center;z-index:8;background:rgba(0,0,0,.08);border-radius:12px}.pinedit.show{display:grid}
 .pinedit .pe-card{background:var(--sheet);border:1px solid var(--rule);border-radius:14px;box-shadow:0 8px 24px #0003;padding:14px 16px;display:grid;gap:10px;width:min(360px,86%)}
@@ -2622,6 +2623,9 @@ function diagPass(id,d){
  const thereOpen=!T||(!T.lake&&!riverBlock(tid)&&(exitOpen(T,OPP[a])||exitOpen(T,OPP[b])));
  return hereOpen&&thereOpen;
 }
+// The Go / Not now buttons on the route label: caught before the map's own click handler sees the tap
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-route]");if(!b)return;e.stopPropagation();e.preventDefault();
+ if(b.dataset.route==="go")walkPlan();else{routePlan=null;render()}},true);
 function fmtDur(m){m=Math.round(m);return m<60?`${m} min`:`${Math.floor(m/60)} h${m%60?" "+(m%60)+" min":""}`}
 function planOrWalk(x,y){
  x=wrapC(x);y=wrapC(y);
@@ -2652,14 +2656,15 @@ function routeSvg(C,ui,H,Z){
  const P=routePlan;if(!P||P.from!==hereId()||P.z!==Z||!P.path.length)return"";
  const pts=[[0,0],...P.path.map(st=>[wrapC(st.x-H.x),wrapC(st.y-H.y)])].map(([dx,dy])=>C(dx,dy));
  const d=pts.map(([x,y],i)=>`${i?"L":"M"}${x.toFixed(1)} ${y.toFixed(1)}`).join(" "),[ex,ey]=pts[pts.length-1];
- const head=`${P.steps} ${P.steps===1?"step":"steps"} · ${fmtDur(P.mins)}`,lines=[head,...P.warns.slice(0,3).map(w=>"⚠ "+w)],wpx=Math.max(...lines.map(l=>l.length))*7.2+20,lh=20;
+ const head=`${P.steps} ${P.steps===1?"step":"steps"} · ${fmtDur(P.mins)}`,lines=[head,...P.warns.slice(0,3).map(w=>"⚠ "+w)],wpx=Math.max(220,Math.max(...lines.map(l=>l.length))*7.2+20),lh=20,BH=36;
  // the label sits beside the end of the route, on whichever side has room, and never under the slider or off the top
  const VBx=+document.getElementById("map").getAttribute("viewBox").split(" ")[0],VBw=+document.getElementById("map").getAttribute("viewBox").split(" ")[2],VBy=+document.getElementById("map").getAttribute("viewBox").split(" ")[1];
- const bw=wpx*ui,bh=(lines.length*lh+40)*ui,right=VBx+VBw-80*ui;
+ const bw=wpx*ui,bh=(lines.length*lh+BH+22)*ui,right=VBx+VBw-80*ui;
  let bx=ex+16*ui;if(bx+bw>right)bx=Math.max(VBx+8*ui,ex-16*ui-bw);let by=ey-bh-8*ui;if(by<VBy+28*ui)by=ey+18*ui;
  return`<g class="routeplan" pointer-events="none"><path class="rp-line" d="${d}"/><circle class="rp-end" cx="${ex.toFixed(1)}" cy="${ey.toFixed(1)}" r="${(14*ui).toFixed(1)}"/>
-  <g transform="translate(${bx.toFixed(1)} ${by.toFixed(1)}) scale(${ui})"><rect class="rp-box" x="0" y="0" width="${wpx}" height="${lines.length*lh+40}" rx="8"/>
-  ${lines.map((l,i)=>`<text class="rp-t${i?" warn":""}" x="10" y="${20+i*lh}">${esc(l)}</text>`).join("")}<text class="rp-hint" x="10" y="${lines.length*lh+30}">tap again to go</text></g></g>`;
+  <g transform="translate(${bx.toFixed(1)} ${by.toFixed(1)}) scale(${ui})"><rect class="rp-box" x="0" y="0" width="${wpx}" height="${lines.length*lh+BH+22}" rx="8"/>
+  ${lines.map((l,i)=>`<text class="rp-t${i?" warn":""}" x="10" y="${20+i*lh}">${esc(l)}</text>`).join("")}
+  ${(()=>{const y=lines.length*lh+10,w=(wpx-30)/2;return`<g class="rp-btn go" data-route="go" pointer-events="all"><rect x="10" y="${y}" width="${w}" height="${BH}" rx="7"/><text x="${10+w/2}" y="${y+BH/2+6}" text-anchor="middle">Go</text></g><g class="rp-btn no" data-route="no" pointer-events="all"><rect x="${20+w}" y="${y}" width="${w}" height="${BH}" rx="7"/><text x="${20+w*1.5}" y="${y+BH/2+6}" text-anchor="middle">Not now</text></g>`})()}</g></g>`;
 }
 
 /* ============================================================
