@@ -2595,7 +2595,7 @@ function planRoute(tx,ty){
   const id=coord.get(ck(x,y,Z));if(id&&k!==start&&foeId(id)&&k!==goal)continue;
   for(const d of sideMoves(x)){const D=DIRS[d]||DIAG[d],nx=wrapC(x+D.dx),ny=wrapC(y+D.dy),nk=key(nx,ny);if(hexDist(nx,ny,tx,ty)>R)continue;
    const nid=coord.get(ck(nx,ny,Z)),N=nid&&cell(nid);let cost=1;
-   if(id){if(!sideOpen(id,d))continue;if(roughSide(id,d))cost=8}else if(N&&(N.lake||N.hole||(N.river&&riverBlock(nid))))continue;
+   if(id){if(DIAG[d]?!diagPass(id,d):!sideOpen(id,d))continue;if(roughSide(id,d))cost=8}else if(N&&(N.lake||N.hole||(N.river&&riverBlock(nid))))continue;
    if(N&&(N.lake||riverBlock(nid)))continue;if(!N)cost+=.25;
    const nd=dd+cost;if(nd<(dist[nk]??1e9)){dist[nk]=nd;prev[nk]=[k,d];open.push([nd,nx,ny])}}}
  if(!(goal in prev))return null;
@@ -2612,6 +2612,16 @@ function planRoute(tx,ty){
  if(unknown)warns.push(`${unknown} unexplored ${unknown===1?"hex":"hexes"}: the way may change`);
  return{tx,ty,z:Z,path,steps:path.length,mins,warns,from:hereId()};
 }
+// A diagonal step exactly as walking judges it (see diagCheck), leaving out night and foes: walking will not
+// take a diagonal past a hard-going side, so the planner must not either
+function diagPass(id,d){
+ const A=cell(id),Z=zOf(A);if(!hexDiagOK(A.x,d))return false;
+ const D=DIAG[d],ok=(i,e)=>flatPass(i,e)&&!roughSide(i,e),nb=e=>coord.get(ck(A.x+DIRS[e].dx,A.y+DIRS[e].dy,Z)),tid=coord.get(ck(A.x+D.dx,A.y+D.dy,Z)),T=tid&&cell(tid);
+ for(const [p,q] of [D.via,[D.via[1],D.via[0]]]){const sid=nb(p);if(sid&&ok(id,p)&&ok(sid,q))return true}
+ const [a,b]=D.via,hereOpen=ok(id,a)||ok(id,b)||(!nb(a)&&!nb(b));
+ const thereOpen=!T||(!T.lake&&!riverBlock(tid)&&(exitOpen(T,OPP[a])||exitOpen(T,OPP[b])));
+ return hereOpen&&thereOpen;
+}
 function fmtDur(m){m=Math.round(m);return m<60?`${m} min`:`${Math.floor(m/60)} h${m%60?" "+(m%60)+" min":""}`}
 function planOrWalk(x,y){
  x=wrapC(x);y=wrapC(y);
@@ -2621,7 +2631,7 @@ function planOrWalk(x,y){
  render();
 }
 async function walkPlan(){
- if(!routePlan||routeWalking)return;routeWalking=true;let replans=0;
+ if(!routePlan||routeWalking)return;routeWalking=true;let replans=0,stuck=false;
  try{while(routePlan&&routePlan.path.length){
   for(let w=0;w<80&&busy;w++)await new Promise(r=>setTimeout(r,100));
   if(foeId()||isDowned())break;
@@ -2629,10 +2639,14 @@ async function walkPlan(){
   const here=hereId();if(roughSide(here,st.d))roughAsk={here,dir:st.d,t:Date.now()};   // you saw the warning on the plan
   await (DIAG[st.d]?moveDiag(st.d):move(st.d));
   if(hereId()===here){                                   // a wall or the night got in the way: plan again once or twice
-   if(++replans>2||isNight(gameNow())&&!hasLight())break;const g=routePlan;routePlan=planRoute(g.tx,g.ty);if(!routePlan)break;routePlan.walking=true;continue}
+   const g=routePlan;stuck=true;
+   if(++replans>4||isNight(gameNow())&&(!hasLight()||nightLeft()<=0))break;routePlan=planRoute(g.tx,g.ty);if(!routePlan)break;routePlan.walking=true;stuck=false;continue}
   routePlan.path.shift();routePlan.from=hereId();routePlan.steps=routePlan.path.length;
   await new Promise(r=>setTimeout(r,150));
- }}finally{routeWalking=false;if(routePlan&&!routePlan.path.length)routePlan=null;render()}
+ }}finally{routeWalking=false;
+  // stopped short: drop the plan, so the next tap plans afresh from here instead of trying the same blocked step
+  if(routePlan&&(!routePlan.path.length||stuck))routePlan=null;
+  if(stuck&&!flash)flash="The way on is blocked. Tap the hex again to plan a new route.";render()}
 }
 function routeSvg(C,ui,H,Z){
  const P=routePlan;if(!P||P.from!==hereId()||P.z!==Z||!P.path.length)return"";
