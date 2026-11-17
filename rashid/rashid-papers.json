@@ -322,7 +322,7 @@
    "venue": "CyBOK project, National Cyber Security Centre (Open Government Licence)",
    "coauthors": "edited with Howard Chivers, George Danezis, Emil Lupu and Andrew Martin",
    "era": "cybok",
-   "summary": "Released on 31 October 2019, CyBOK 1.0 brought together 19 Knowledge Areas written and peer-reviewed by international experts, freely available to all. It gives universities, employers and certification bodies a common vocabulary for what cyber security knowledge is; version 1.1 added two further areas.",
+   "summary": "Released in October 2019 (the version 1.0 document is dated 31 October), CyBOK 1.0 brought together 19 Knowledge Areas written and peer-reviewed by international experts, freely available to all. It gives universities, employers and certification bodies a common vocabulary for what cyber security knowledge is; version 1.1 added two further areas.",
    "diagram": "A wheel of 19 segments grouped into themes (human and organisational, attacks and defences, systems, software and platform, infrastructure) that rotates to reveal each Knowledge Area's title.",
    "interaction": "Spin the CyBOK wheel and click a Knowledge Area to read a one-line description and test yourself with a quick question.",
    "source": "https://cybok.org/knowledgebase",
@@ -439,7 +439,7 @@
   {
    "year": 2026,
    "title": "Building an Open Source Operational Technology Pentesting Platform: Lessons from LINICS",
-   "venue": "IEEE Security & Privacy 24(2)",
+   "venue": "IEEE Security & Privacy, vol. 24 (2026)",
    "coauthors": "with Joseph Gardiner and Louise Evans",
    "era": "cps",
    "summary": "IT security testers have Kali Linux, but operational technology had no equivalent. LINICS is an open-source OT penetration-testing platform whose tools are mapped to MITRE ATT&CK for ICS, so IT professionals moving into industrial security can find their way, with pre-built virtual machines for ease of use.",
