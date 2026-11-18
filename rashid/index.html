@@ -120,12 +120,27 @@ dialog::backdrop{background:#192c3755}
  .grid16{grid-template-columns:44px repeat(16,1fr);gap:2px}
  .keys button{min-width:30px}
 }
+/* Shared In Motion banner: the same dark band, course line and title as the other courses. */
+header{min-height:58px;padding:6px 18px;align-items:center;gap:12px;background:#222;color:#f2f2f2;border-bottom:0}
+header h1{font-size:23px;line-height:1.22;font-weight:580;letter-spacing:-.02em;color:#f2f2f2;overflow-wrap:anywhere}
+header>div:first-child{padding:4px 0;min-width:0}
+.brand{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#c9d2d6;font-weight:650;margin:0 0 1px}
+.brand a{position:relative;z-index:4;color:inherit;text-decoration:underline;text-decoration-color:#ffffff66;text-underline-offset:3px;display:inline-block;min-height:24px;line-height:24px}
+.brand a:hover{color:#fff}
+header a:focus-visible{outline:2px solid #acd4ef;outline-offset:2px}
+header .counter{border:0;padding:0;border-radius:0;font-size:13px;color:#d0d6d9}
+header .header-link,header nav a{color:#f1f4f6;border:1px solid #ffffff40;background:#ffffff08;border-radius:7px;padding:6px 11px;font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap;display:inline-block}
+header .header-link:hover,header nav a:hover{background:#ffffff17;border-color:#ffffff66}
+@media(max-width:760px){header{padding:6px 12px}header h1{font-size:20px}.brand{display:none}}
+@media(max-width:380px){header{gap:6px}header h1{font-size:18px}}
+@media(forced-colors:active){header{background:Canvas;color:CanvasText;border-bottom:1px solid CanvasText}header h1{color:CanvasText}}
+@media print{header{background:#fff;color:#192c37}header h1,header .counter{color:#192c37}}
 </style>
 </head>
 <body>
 <main class="frame" id="app" aria-label="Electronic Music In Motion">
 <header>
- <div><p class="eyebrow">Awais Rashid In Motion · v0.1</p><h1 id="stage-title">2000–2005</h1></div>
+ <div><p class="brand"><a href="https://in-motion.puter.site/" title="All In Motion courses">In Motion</a> · Awais Rashid</p><h1 id="stage-title">2000–2005</h1></div>
  <div class="counter" id="counter" aria-live="polite">1 / 31</div>
 </header>
 <p class="honest"><strong>About this page:</strong> an independent, unofficial guide to the published research of Professor Awais Rashid (University of Bristol), not affiliated with or endorsed by him or the university. Paper titles, venues, years and co-authors were checked against publisher and repository records, and each scene links its source. The diagrams and Try it activities illustrate each paper’s core idea; they do not reproduce its data.</p>
