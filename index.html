@@ -426,6 +426,13 @@ svg .svg-word{cursor:pointer!important;text-decoration-line:underline!important;
 @media(max-width:1000px){.research-columns{grid-template-columns:1fr}.research-papers,.people-list,.reading-list{grid-template-columns:1fr 1fr}}
 @media(max-width:760px){.research-panel{margin-top:10px;padding:16px 14px}.research-charts,.research-papers,.people-list,.open-list,.route-columns,.reading-list{grid-template-columns:1fr}.milestones::before{left:46px}.milestones li{grid-template-columns:40px 1fr;gap:0 22px}.milestones li::after{left:41px}}
 @media print{.research-panel{display:none}}
+/* Shared In Motion banner: the course line sits above the lesson title, as in the other courses. */
+.brand{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#c9d2d6;font-weight:650;margin:0 0 1px}
+.brand a{position:relative;z-index:4;color:inherit;text-decoration:underline;text-decoration-color:#ffffff66;text-underline-offset:3px;display:inline-block;min-height:24px;line-height:24px}
+.brand a:hover{color:#fff}
+.brand a:focus-visible{outline:2px solid #acd4ef;outline-offset:2px}
+.header-row .title-picker{flex-direction:column;justify-content:center;align-items:stretch;padding:4px 28px 4px 0}
+@media(max-width:760px){.brand{display:none}}
 </style>
 </head>
 <body>
@@ -434,7 +441,8 @@ svg .svg-word{cursor:pointer!important;text-decoration-line:underline!important;
 <svg class="topic-texture" id="topic-texture" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><defs><pattern id="topic-tile" patternUnits="userSpaceOnUse" width="24" height="24"><circle cx="12" cy="12" r="1.5" fill="currentColor"/></pattern></defs><rect width="100%" height="100%" fill="url(#topic-tile)"/></svg>
 <div class="header-row" aria-label="Lesson and topic navigation">
  <div class="title-picker" title="Sets, functions &amp; proof — choose any lesson">
-  <h1 id="topic-title" aria-label="Sets, functions and proof" aria-describedby="texture-context">Sets And Proof</h1>
+  <p class="brand"><a href="https://in-motion.puter.site/" title="All In Motion courses">In Motion</a> · Mathematics</p>
+  <h1 id="topic-title" aria-label="Sets, functions and proof" aria-describedby="texture-context">Sets, functions and proof</h1>
   <span class="picker-chevron" aria-hidden="true"></span>
   <label class="sr-only" for="route-select">Choose any lesson</label>
   <select id="route-select" aria-label="Choose any lesson" disabled><option>1. Sets, Functions And Proof</option></select>
@@ -2335,6 +2343,8 @@ function topicTextureFor(key){
 }
 // Display lesson titles with spaces and each word's first letter capitalised.
 // Preserve punctuation and internal capitals; do not alter the lesson data.
+// Lesson names as written, with “&” spelled out, matching the other In Motion courses.
+function lessonName(value){return String(value).replace(/\s*&\s*/g,' and ').replace(/\s+/g,' ').trim()}
 function titleCase(value){
  return String(value).replace(/&/g,' and ').replace(/\s+/g,' ').trim()
   .replace(/(^|[\s–—-])(\p{L})/gu,(_,separator,letter)=>separator+letter.toLocaleUpperCase('en-GB'));
@@ -2360,7 +2370,7 @@ function followDestination(button){
 function updateTopicHeader(key){
  if(displayedTextureLesson===key)return;
  const texture=topicTextureFor(key),header=$('topic-header');
- $('topic-title').textContent=titleCase(branches[key].name);
+ $('topic-title').textContent=lessonName(branches[key].name);
  $('topic-title').setAttribute('aria-label',branches[key].name);
  document.querySelector('.title-picker').title=branches[key].name+' — choose any lesson';
  $('topic-texture').innerHTML=texture.markup;
@@ -2412,7 +2422,7 @@ function navigateTo(id,remember=true){if(!nodes[id])return;pauseForWord();savePl
 function switchLesson(key){if(!branches[key]||key===branchKey)return;pauseForWord();savePlace();trail.push({branch:branchKey,time:t,thread:activeThread});if(trail.length>80)trail.shift();const saved=bookmarks[key];activeThread=saved?saved.thread:null;activateBranch(key,saved?saved.time:0)}
 function goBack(){const saved=trail.pop();if(!saved)return;pauseForWord();savePlace();activeThread=saved.thread;activateBranch(saved.branch,saved.time)}
 function installLessonNavigation(){
- $('route-select').innerHTML=CURRICULUM.stages.map(g=>`<optgroup label="${esc(g.name)}">${branchOrder.filter(k=>branches[k].stage===g.id).map(k=>`<option value="${k}">${branchOrder.indexOf(k)+1}. ${esc(titleCase(branches[k].name))}</option>`).join('')}</optgroup>`).join('');
+ $('route-select').innerHTML=CURRICULUM.stages.map(g=>`<optgroup label="${esc(g.name)}">${branchOrder.filter(k=>branches[k].stage===g.id).map(k=>`<option value="${k}">${branchOrder.indexOf(k)+1}. ${esc(lessonName(branches[k].name))}</option>`).join('')}</optgroup>`).join('');
  $('route-select').addEventListener('change',e=>switchLesson(e.target.value));
  renderLessonNavigation();
 }
