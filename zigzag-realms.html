@@ -144,6 +144,12 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .pinedit{position:absolute;inset:0;display:none;place-items:center;z-index:8;background:rgba(0,0,0,.08);border-radius:12px}.pinedit.show{display:grid}
 .pinedit .pe-card{background:var(--sheet);border:1px solid var(--rule);border-radius:14px;box-shadow:0 8px 24px #0003;padding:14px 16px;display:grid;gap:10px;width:min(360px,86%)}
 .pinedit input{font:inherit;font-size:13pt;padding:8px 10px;border:1px solid var(--rule);border-radius:8px;background:var(--paper,#fff)}
+.ticker{position:absolute;left:12px;top:44px;max-width:min(46%,340px);display:grid;gap:5px;z-index:4;pointer-events:none}
+.ticker .tk{font:13pt/1.3 var(--body);padding:5px 10px;border-radius:8px;background:color-mix(in srgb,var(--sheet) 90%,transparent);border:1px solid var(--rule);box-shadow:0 2px 8px #0002;animation:tkin .35s ease;transition:opacity .6s ease}
+.ticker .tk.out{opacity:0}@keyframes tkin{from{opacity:0;transform:translateX(-8px)}}
+.journeycard{position:absolute;inset:0;display:grid;place-items:center;padding:12px;z-index:5;pointer-events:none;opacity:0;transition:opacity .35s ease}
+.journeycard.show{opacity:1}.journeycard .jc-card{pointer-events:auto;max-width:min(440px,92%);max-height:90%;overflow:auto;display:grid;gap:6px;padding:14px 16px;border-radius:12px;background:var(--sheet);border:1px solid var(--rule);box-shadow:0 8px 28px #0004;font-size:13pt}
+.journeycard:not(.show) .jc-card{pointer-events:none}.journeycard h3{margin:0;font-size:18pt}.journeycard .jc-sub{color:var(--faint)}.journeycard button{justify-self:end;min-width:90px}
 .pickflash{position:absolute;left:50%;bottom:22px;transform:translate(-50%,10px);z-index:4;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .3s ease}
 .pickflash.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 .pickflash{display:flex;align-items:center;gap:6px}.pickflash .pf-x{min-height:44px;width:44px;padding:0;border-radius:99px;font-size:20px;line-height:1;justify-content:center;background:var(--sheet)}
@@ -584,7 +590,7 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
    <section class="panel map" aria-label="Map">
     <span id="coords" hidden></span>
     <div class="mapwrap"><svg id="map" viewBox="0 0 480 416" role="img" aria-label="Map of explored places on your current level"></svg>
-<div class="blockflash" id="blockflash" aria-live="assertive"></div><div class="folkflash" id="folkflash" aria-live="polite"></div><div class="pickflash" id="pickflash"></div><div class="lightning" id="lightning" aria-hidden="true"></div><div class="wxfx" id="wxfx" aria-hidden="true"><i class="cl a"></i><i class="cl b"></i><i class="rn"></i></div><div class="pinedit" id="pinedit"></div><button class="seekstar" id="seekstar" data-act="seek" aria-label="Seek: find people (once a day)" title="Seek: once a day, see which way everyone is"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.7 6.1 6.6.6-5 4.4 1.5 6.5L12 16.7l-5.8 3.4 1.5-6.5-5-4.4 6.6-.6z"/></svg></button><nav class="compass roseover" id="compass" aria-label="Ways from here"></nav><div class="encounter" id="encounter" aria-live="polite"></div><div class="starve" id="starve" role="alert"></div><div class="dream" id="dream" aria-hidden="true"><div class="track"></div></div><div class="exploring" id="exploring" role="status" aria-live="polite"><span><svg class="hourglass" viewBox="0 0 24 32" aria-hidden="true"><g class="hg"><path class="hg-frame" d="M4 2h16M4 30h16M6 2c0 8 5 10 5 14s-5 6-5 14M18 2c0 8-5 10-5 14s5 6 5 14"/><path class="hg-top" d="M7.2 6h9.6c-.6 4-3.6 6.2-4.8 9.5C10.8 12.2 7.8 10 7.2 6z"/><path class="hg-bot" d="M7 29c.6-4 3.6-6 5-7.5 1.4 1.5 4.4 3.5 5 7.5z"/><line class="hg-fall" x1="12" y1="16" x2="12" y2="28"/></g></svg>Exploring, stand by</span></div><div class="zoomslider"><button class="small iconbtn" id="map-key-btn" type="button" aria-label="Map key" title="Map key">?</button><span aria-hidden="true">+</span><input type="range" id="zoom" min="0" max="5" step="1" aria-label="Zoom" title="Zoom"><span aria-hidden="true">−</span></div><div class="mapkey" id="mapkey" hidden></div><div class="arrive" id="arrive" aria-live="polite"></div><div class="gate" id="gate" hidden></div></div>
+<div class="blockflash" id="blockflash" aria-live="assertive"></div><div class="folkflash" id="folkflash" aria-live="polite"></div><div class="pickflash" id="pickflash"></div><div class="ticker" id="ticker" aria-live="polite"></div><div class="journeycard" id="journeycard"></div><div class="lightning" id="lightning" aria-hidden="true"></div><div class="wxfx" id="wxfx" aria-hidden="true"><i class="cl a"></i><i class="cl b"></i><i class="rn"></i></div><div class="pinedit" id="pinedit"></div><button class="seekstar" id="seekstar" data-act="seek" aria-label="Seek: find people (once a day)" title="Seek: once a day, see which way everyone is"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.7 6.1 6.6.6-5 4.4 1.5 6.5L12 16.7l-5.8 3.4 1.5-6.5-5-4.4 6.6-.6z"/></svg></button><nav class="compass roseover" id="compass" aria-label="Ways from here"></nav><div class="encounter" id="encounter" aria-live="polite"></div><div class="starve" id="starve" role="alert"></div><div class="dream" id="dream" aria-hidden="true"><div class="track"></div></div><div class="exploring" id="exploring" role="status" aria-live="polite"><span><svg class="hourglass" viewBox="0 0 24 32" aria-hidden="true"><g class="hg"><path class="hg-frame" d="M4 2h16M4 30h16M6 2c0 8 5 10 5 14s-5 6-5 14M18 2c0 8-5 10-5 14s5 6 5 14"/><path class="hg-top" d="M7.2 6h9.6c-.6 4-3.6 6.2-4.8 9.5C10.8 12.2 7.8 10 7.2 6z"/><path class="hg-bot" d="M7 29c.6-4 3.6-6 5-7.5 1.4 1.5 4.4 3.5 5 7.5z"/><line class="hg-fall" x1="12" y1="16" x2="12" y2="28"/></g></svg>Exploring, stand by</span></div><div class="zoomslider"><button class="small iconbtn" id="map-key-btn" type="button" aria-label="Map key" title="Map key">?</button><span aria-hidden="true">+</span><input type="range" id="zoom" min="0" max="5" step="1" aria-label="Zoom" title="Zoom"><span aria-hidden="true">−</span></div><div class="mapkey" id="mapkey" hidden></div><div class="arrive" id="arrive" aria-live="polite"></div><div class="gate" id="gate" hidden></div></div>
     <div class="layerbar" id="layerbar" role="img" aria-label="Layers"></div>
    </section>
  </div>
@@ -2297,9 +2303,11 @@ function meetWanderer(w){
   const before=sv("HP");setStat("HP",Math.max(1,before-3));const stats=shuffle(["STR","DEX","CON","INT","WIS","CHA"]).slice(0,2);
   ch.boons=(ch.boons||[]).concat(stats.map(stat=>({stat,amount:-1,until:t+4*60,from:W.name})));touch(ch.id);
   log(`${W.name}. ${W.greet} You lose ${before-sv("HP")} HP, and feel duller for a while (−1 ${stats.join(", −1 ")} for 4 hours).`,"bad");
+  journeyMet(`${W.name.split(",")[0]}: −${before-sv("HP")} HP, −1 ${stats.join(", −1 ")}`);
  }else{
   ch.boons=(ch.boons||[]).concat([{stat:W.stat,amount:W.amt,until:t+W.hours*60,from:W.name}]);touch(ch.id);
   log(`${W.name}. ${W.greet} (+${W.amt} ${W.stat} for ${W.hours} hours.) "${wandererTip()}"`,"npc");
+  journeyMet(`${W.name.split(",")[0]}: +${W.amt} ${W.stat}`);
  }
 }
 function checkWanderers(){
@@ -2626,6 +2634,34 @@ function diagPass(id,d){
 // The Go / Not now buttons on the route label: caught before the map's own click handler sees the tap
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-route]");if(!b)return;e.stopPropagation();e.preventDefault();
  if(b.dataset.route==="go")walkPlan();else{routePlan=null;render()}},true);
+/* Travel mode. While you follow a planned route, hexes you pass do not interrupt you: things lying there
+   are picked up, people are noted in a small ticker on the map, nothing is read aloud. Only what needs you
+   stops the walk (a fight, night, bad wounds, food running short). At the end one card sums up the way. */
+let journey=null;
+function journeyStart(){journey={t0:gameNow(),from:cell(hereId()).t,to:routePlan.tx+","+routePlan.ty,hp0:sv("HP"),items:[],heavy:[],met:[],folk:[],found:[],steps:0,short:!!foodShort()}}
+function tickerNote(text){const el=$("ticker");if(!el)return;const d=document.createElement("div");d.className="tk";d.textContent=text;el.appendChild(d);
+ while(el.children.length>3)el.firstChild.remove();setTimeout(()=>{d.classList.add("out");setTimeout(()=>d.remove(),700)},5500)}
+function journeyMet(text){if(journey&&routeWalking){journey.met.push(text);tickerNote("Met "+text)}}
+function journeyPass(id){
+ const J=journey;if(!J)return;J.steps++;const L=cell(id);if(!L||foeId())return;
+ const got=[];for(const it of loose(id).sort((a,b)=>(+a.weight||0)-(+b.weight||0))){
+  if(carried()+(+it.weight||0)>capacity()){J.heavy.push(`${it.t} (${L.t})`);continue}
+  excise(it.id,"contain");appendTo(charId(),"contain",it.id);got.push(it.t)}
+ if(got.length){J.items.push(...got);log(`On the way through ${L.t} you pick up ${got.join(", ")}.`,"good");tickerNote("Picked up "+(got.length>2?got.slice(0,2).join(", ")+` and ${got.length-2} more`:got.join(" and ")))}
+ const folk=npcsAt(L.x,L.y).filter(n=>!n.wild&&(zOf(L)===0||n.z===zOf(L))).map(n=>n.t);
+ for(const n of folk)if(!J.folk.includes(n))J.folk.push(n);
+ if(folk.length)tickerNote(`Passed ${folk.length>2?folk.slice(0,2).join(", ")+` and ${folk.length-2} more`:folk.join(" and ")} at ${L.t}`);
+}
+function journeyEnd(arrived){
+ const J=journey;journey=null;{const tk=$("ticker");if(tk)tk.innerHTML=""}const el=$("journeycard");if(!J||!el||J.steps+(arrived?1:0)<2)return;
+ const mins=gameNow()-J.t0,dhp=sv("HP")-J.hp0,list=(h,a)=>a.length?`<div><b>${h}</b> ${esc(a.length>6?a.slice(0,6).join(", ")+` and ${a.length-6} more`:a.join(", "))}</div>`:"";
+ el.innerHTML=`<div class="jc-card" role="status"><h3>${arrived?"You arrive at "+esc(cell(hereId()).t):"On the way"}</h3>
+  <div class="jc-sub">From ${esc(J.from)} · ${fmtDur(mins)}${dhp?` · ${dhp>0?"+":""}${dhp} HP`:""}</div>
+  ${list("Picked up:",J.items)}${list("Too heavy, left:",J.heavy)}${list("Met:",J.met)}${list("Passed:",J.folk)}${list("New places:",J.found)}
+  <button class="small" data-act="journeyok">OK</button></div>`;
+ el.classList.add("show");
+}
+document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest('[data-act="journeyok"]')){const el=$("journeycard");el.classList.remove("show")}},true);
 function fmtDur(m){m=Math.round(m);return m<60?`${m} min`:`${Math.floor(m/60)} h${m%60?" "+(m%60)+" min":""}`}
 function planOrWalk(x,y){
  x=wrapC(x);y=wrapC(y);
@@ -2635,10 +2671,15 @@ function planOrWalk(x,y){
  render();
 }
 async function walkPlan(){
- if(!routePlan||routeWalking)return;routeWalking=true;let replans=0,stuck=false;
+ if(!routePlan||routeWalking)return;routeWalking=true;let replans=0,stuck=false,paused=null;
+ if(!journey||journey.to!==routePlan.tx+","+routePlan.ty)journeyStart();
  try{while(routePlan&&routePlan.path.length){
   for(let w=0;w<80&&busy;w++)await new Promise(r=>setTimeout(r,100));
   if(foeId()||isDowned())break;
+  // only what needs you stops the journey; the route waits, and Go carries on
+  if(isNight(gameNow())&&(!hasLight()||nightLeft()<=0)){paused="Night has fallen. Your route waits: tap Go when it is light.";break}
+  if(sv("HP")<sv("MAXHP")*.3&&journey.hp0>=sv("MAXHP")*.3){paused=`You are badly hurt (${sv("HP")} HP). The route waits: rest, or tap Go to press on.`;journey.hp0=0;break}
+  if(!journey.short&&foodShort()){journey.short=true;paused="Your food will not last to a town at this rate. The route waits: tap Go to press on.";break}
   const H=cell(hereId()),st=routePlan.path[0];if(H.x===st.x&&H.y===st.y){routePlan.path.shift();continue}
   const here=hereId();if(roughSide(here,st.d))roughAsk={here,dir:st.d,t:Date.now()};   // you saw the warning on the plan
   await (DIAG[st.d]?moveDiag(st.d):move(st.d));
@@ -2646,11 +2687,17 @@ async function walkPlan(){
    const g=routePlan;stuck=true;
    if(++replans>4||isNight(gameNow())&&(!hasLight()||nightLeft()<=0))break;routePlan=planRoute(g.tx,g.ty);if(!routePlan)break;routePlan.walking=true;stuck=false;continue}
   routePlan.path.shift();routePlan.from=hereId();routePlan.steps=routePlan.path.length;
+  if(routePlan.path.length)journeyPass(hereId());
   await new Promise(r=>setTimeout(r,150));
  }}finally{routeWalking=false;
   // stopped short: drop the plan, so the next tap plans afresh from here instead of trying the same blocked step
+  const arrived=routePlan&&!routePlan.path.length;
   if(routePlan&&(!routePlan.path.length||stuck))routePlan=null;
-  if(stuck&&!flash)flash="The way on is blocked. Tap the hex again to plan a new route.";render()}
+  if(stuck&&!flash)flash="The way on is blocked. Tap the hex again to plan a new route.";
+  if(paused)flash=paused;
+  render();
+  // at the end of the road (arrived, or stopped for good) the destination gets its usual welcome, then the summary
+  if(!routePlan&&journey){const here=hereId();setTimeout(()=>{flashFolk(here);flashPickup(here)},80);journeyEnd(arrived)}}
 }
 function routeSvg(C,ui,H,Z){
  const P=routePlan;if(!P||P.from!==hereId()||P.z!==Z||!P.path.length)return"";
@@ -2738,8 +2785,9 @@ function flashFolk(locId){
 function enter(locId,first){
  if(mp.on()){mpSoon();const T=cell(locId);if(T&&T.town)maybeIntroduce(T)}
  const ch=charId(),prev=hereId();if(prev&&prev!==locId){cell(ch).prevAt=prev;touch(ch)}
- ensureWayOut(locId,prev);{const Lb=cell(locId);if(Lb&&!Lb.town&&BAD_NAME.test(String(Lb.t||""))){Lb.t=cleanPlaceName("",Lb.terrain);touch(locId)}}if(prev!==locId)setTimeout(()=>{flashFolk(locId);flashPickup(locId)},80);
+ ensureWayOut(locId,prev);{const Lb=cell(locId);if(Lb&&!Lb.town&&BAD_NAME.test(String(Lb.t||""))){Lb.t=cleanPlaceName("",Lb.terrain);touch(locId)}}if(prev!==locId&&!routeWalking)setTimeout(()=>{flashFolk(locId);flashPickup(locId)},80);
  connect(ch,"at",locId);const L=cell(locId);lastHazard=null;rounds=[];
+ if(!L.visited&&journey&&routeWalking&&!journey.found.includes(L.t))journey.found.push(L.t);
  if(!L.visited){L.visited=true;touch(locId);gainXP(L.town&&!L.town.of?25:10);if(L.town&&!L.town.of)log(`You reach ${L.t}, a ${TOWN_SIZES[L.town.size].label} on the ${riverName()}.`,"good")}
  markSeen(locId);ravenScout(locId);checkRumour(locId);checkMarks(L);
  if(first&&!L.town)foxFind(locId);
@@ -4533,7 +4581,7 @@ document.addEventListener("change",e=>{
  else if(e.target.id==="xi-hide"){voice.hide=e.target.checked;voice.save();render()}});
 // Read each new place aloud on arrival
 // Each place is read aloud by itself only the first time you are there; the read button beside its name still reads it again
-function voiceOnRender(){if(!voice.on()||!voice.auto||busy||!hereId()||isDowned())return;const L=cell(hereId());if(L.id===voice.last||!L.desc)return;
+function voiceOnRender(){if(!voice.on()||!voice.auto||busy||routeWalking||!hereId()||isDowned())return;const L=cell(hereId());if(L.id===voice.last||!L.desc)return;
  if(L.narrated){voice.last=L.id;return}
  L.narrated=true;touch(L.id);voice.readHere()}
 if(voice.on())voice.listVoices().then(renderVoice);
