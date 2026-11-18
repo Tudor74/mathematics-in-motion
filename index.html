@@ -395,7 +395,7 @@ svg .svg-word{cursor:pointer!important;text-decoration-line:underline!important;
 <svg class="map-wires" viewBox="0 0 300 260" preserveAspectRatio="none" aria-hidden="true"><path id="wire-up" d="M150 130 L158 100 L150 39" fill="none" stroke="#76949f" stroke-width="1.6" stroke-dasharray="4 3"/><path id="wire-down" d="M150 130 L142 170 L150 221" fill="none" stroke="#76949f" stroke-width="1.6" stroke-dasharray="4 3"/><path id="wire-left" d="M150 130 L120 120 L45 130" fill="none" stroke="#1772b7" stroke-width="1.8"/><path id="wire-right" d="M150 130 L180 140 L255 130" fill="none" stroke="#1772b7" stroke-width="1.8"/></svg>
 <button type="button" class="map-node" id="map-up" disabled></button>
 <button type="button" class="map-node" id="map-left" disabled></button>
-<div class="map-node" id="map-current" aria-current="step"><small>You are here</small><b>Outcome</b></div>
+<div class="map-node" id="map-current" aria-current="step"><small>You are here</small><b>Set</b></div>
 <button type="button" class="map-node" id="map-right" disabled></button>
 <button type="button" class="map-node" id="map-down" disabled></button>
 </div>
@@ -413,11 +413,11 @@ svg .svg-word{cursor:pointer!important;text-decoration-line:underline!important;
  <div class="speed-heading"><label for="speed">Speed</label><output id="speed-readout" for="speed">0 · Paused</output></div>
  <div class="range-wrap"><div class="track-rail" aria-hidden="true"></div><input type="range" id="speed" min="0" max="1000" step="1" value="170" aria-label="Playback speed" aria-describedby="speed-help" aria-valuetext="Paused" disabled></div>
  <div class="scale" aria-hidden="true"><span class="start">−8×</span><span class="zero">0</span><span class="one">1×</span><span class="two">6×</span><span class="end">12×</span></div>
- <p class="sr-only" id="speed-help">The slider changes speed only. Hold left to rewind up to eight times speed; release to pause. Forward speed stays set up to twelve times. Use the separate Play and Pause button to pause and resume. Arrow keys adjust speed; Home holds full rewind and End selects full forward speed.</p>
+ <p class="sr-only" id="speed-help">The slider changes speed only. Hold left to rewind at up to eight times normal speed. Release to pause. A forward speed stays selected when you release the slider. The maximum is twelve times normal speed. Use the separate Play and Pause button to pause and resume. Arrow keys adjust speed; Home holds full rewind and End selects full forward speed.</p>
 </div>
 </section>
 </div><p class="sr-only" id="status" role="status">Static opening preview. JavaScript enables the lessons.</p>
-<noscript><p class="note">JavaScript is disabled here. Open START-HERE.html in a browser with JavaScript enabled to use the lesson.</p></noscript>
+<noscript><p class="note">JavaScript is disabled here. Enable JavaScript in your browser, then reload this page to use the interactive lessons.</p></noscript>
 <p class="sr-only" id="announcement" aria-live="polite"></p>
 </main>
 
