@@ -195,7 +195,7 @@ function detail(it){
   <div class="cap"><b>Where it sits.</b> Across: how structured and therapist-led. Up: how body- and action-based. Ringed: the ${esc(fam.name.toLowerCase())} family; purple lines: the three nearest approaches. ${stated}</div>
   <div class="dtools"><button type="button" id="replay">↺ Replay</button><a href="#/" class="badge" style="align-self:center;text-decoration:none;font-size:13px">All therapies</a></div>
   <div class="picture" style="margin-top:12px">${radarSVG(it)}<div class="cap"><b>Fingerprint.</b> Coloured: ${esc(it.name)}. Dashed grey: the ${esc(fam.name.toLowerCase())} average. Green spoke: evidence, which is about research, not the session.</div></div>
-  <div class="picture" style="margin-top:12px">${timelineSVG(it)}<div class="cap"><b>When it began</b>, among every approach in the atlas; same-family ticks are coloured.</div></div>
+  <div class="picture" style="margin-top:12px">${timelineSVG(it)}<div class="cap">${it.year?'<b>Founding year</b> compared with other dated approaches in the atlas':'This approach has no single founding year. The timeline shows other approaches with recorded dates'}; same-family ticks are coloured.</div></div>
  </div>
  <article class="right" aria-labelledby="name">
   <p class="eyebrow"><a href="#/" style="text-decoration:none">Atlas</a> · ${esc(fam.name)}</p>
