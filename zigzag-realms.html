@@ -201,6 +201,21 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .blockflash.show{animation:bflash 2.2s ease forwards}@keyframes bflash{0%{opacity:0;transform:scale(.85)}12%{opacity:1;transform:scale(1.04)}22%{transform:scale(1)}80%{opacity:1}100%{opacity:0}}
 .bf-hex{width:230px;height:200px;display:grid;place-content:center;gap:6px;text-align:center;padding:0 34px;background:var(--ink);color:var(--sheet);clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);box-shadow:0 6px 24px #0005}
 .bf-hex b{font-family:var(--display);font-size:22px;letter-spacing:.04em}.bf-hex span{font-size:13pt;line-height:1.3}
+.panel.itembar{padding:6px 10px;overflow:hidden}
+.itemstrip{overflow-x:auto;scrollbar-width:none}.itemstrip.rolling{mask-image:linear-gradient(90deg,transparent,#000 14px,#000 calc(100% - 14px),transparent)}.itemstrip::-webkit-scrollbar{display:none}
+.itemstrip .istrack{display:flex;width:max-content}.itemstrip .isrow{display:flex;gap:6px;padding:2px 3px}.itemstrip:not(.rolling) .isrow[aria-hidden]{display:none}
+.itemstrip.rolling{overflow:hidden}.itemstrip.rolling .istrack{animation:isroll var(--isdur,20s) linear infinite}.itemstrip.rolling .isrow{padding-right:6px}
+.itemstrip.held .istrack,.itemstrip.rolling:hover .istrack,.itemstrip.rolling:focus-within .istrack,.itemstrip.rolling:active .istrack{animation-play-state:paused}
+@keyframes isroll{to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.itemstrip.rolling{overflow-x:auto}.itemstrip.rolling .istrack{animation:none}.itemstrip.rolling .isrow[aria-hidden]{display:none}}
+.itile{position:relative;flex:none;width:44px;height:44px;min-height:0;padding:0;display:grid;place-items:center;border-radius:10px;border:1px solid transparent;background:transparent;box-shadow:none;cursor:pointer}
+.itile:hover,.itile:focus-visible{background:var(--wash);border-color:var(--rule)}.itile.on{background:color-mix(in srgb,var(--good) 14%,transparent);border-color:color-mix(in srgb,var(--good) 45%,transparent)}
+.itile .icount{position:absolute;right:1px;bottom:0;min-width:18px;padding:0 4px;border-radius:99px;background:var(--ink);color:var(--paper);font:700 13pt/20px var(--mono)}
+.itempop{position:fixed;z-index:30;max-width:min(320px,calc(100vw - 16px));padding:8px 12px;border-radius:10px;background:var(--sheet);border:1px solid var(--rule);box-shadow:0 6px 22px #0003;font-size:13pt;opacity:0;pointer-events:none;transform:translateY(4px);transition:opacity .15s,transform .15s}
+.itempop.show{opacity:1;transform:none}.itempop.pinned{pointer-events:auto}.itempop .ip-name{font-weight:700}.itempop .ip-meta{color:var(--faint);margin-top:2px}.itempop .ip-acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.itemstrip .is-empty{margin:6px 4px;color:var(--faint);font-size:13pt}
+.items .nm .iicon{vertical-align:-8px;margin-right:2px}
+.items li.ihl{animation:ihl 1.6s ease}@keyframes ihl{0%,40%{background:color-mix(in srgb,var(--accent) 18%,transparent)}100%{background:transparent}}
 .panel.statusbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 20px;padding:10px 16px}
 .statusbar .hud,.statusbar .maprealm,.statusbar .mapwx,.statusbar .nixie{position:static;transform:none;box-shadow:none;max-width:none}
 .statusbar .hud{display:flex;align-items:center;gap:12px}.statusbar .hudside{display:flex;flex-wrap:wrap;gap:6px;padding-top:0;align-items:center}
@@ -602,6 +617,8 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
     <div class="layerbar" id="layerbar" role="img" aria-label="Layers"></div>
    </section>
  </div>
+
+ <section class="panel itembar" aria-label="What you carry"><div class="itemstrip" id="itemstrip"></div><div class="itempop" id="itempop" role="dialog" aria-label="Item"></div></section>
 
  <section class="panel statusbar" aria-label="Status">
   <div class="hud" id="hud" aria-live="polite"></div>
@@ -5261,7 +5278,7 @@ function itemRow(id,where){
   acts+=B("drop","drop","Drop",busy?"disabled":"");
   if(mp.on())acts+=B("leave","leave","Leave it on the ground for another player to find",busy?"disabled":"");
  }
- return`<li><span><span class="nm">${ic(kindI,it.kind)} ${esc(it.t)}</span><span class="meta icons">${facts.join("")}</span>${it.desc?`<span class="about">${esc(it.desc)}</span>`:""}</span><span class="acts">${acts}</span></li>`;
+ return`<li><span><span class="nm">${typeof itemIcon==="function"?itemIcon(it,28):ic(kindI,it.kind)} ${esc(it.t)}</span><span class="meta icons">${facts.join("")}</span>${it.desc?`<span class="about">${esc(it.desc)}</span>`:""}</span><span class="acts">${acts}</span></li>`;
 }
 
 function renderFoe(f,split){
@@ -5819,7 +5836,102 @@ function placeOverlays(){
  }
  w.classList.toggle("rose-top",overlayPos.rose==="top"&&!isNight(gameNow()));   /* at night the night box holds the top */w.classList.toggle("star-top",overlayPos.star==="top");
 }
-function render(){requestAnimationFrame(renderWxFx);doubleHP();fixPlaceName(hereId());renderSeekStar();if(hereId()&&!isDowned())ensureWayOut(hereId(),cell(charId()).prevAt);renderMapKey();renderGate();renderDream();renderEncounter();renderStarving();{const x=$("exploring");if(x)x.classList.toggle("show",!!(busy&&charId()&&!isDowned()&&!["realm","founding","river","start"].includes(busy.dir)))}renderPills();renderScriptButton();renderMap();renderCompass();renderPlace();renderSheet();renderSocial();renderGarden();renderCodex();renderAlphabet();renderLog();renderVoice();decoratePanels();iconHeads();sound.update();voiceOnRender();placeOverlays()}
+/* ============================================================
+   Item icons. Every thing gets its own 32×32 badge: a basic shape for what kind of thing it is
+   (a diamond for blades, a shield for armour, a flask for potions, a disc for food, a hexagon for
+   treasure, a star for magic), a colour drawn from its name, a pattern of rim marks from its name,
+   and at its heart the realm-script letter its name begins with.
+   ============================================================ */
+const nameHash=t=>{let h=2166136261;for(const c of String(t))h=Math.imul(h^c.charCodeAt(0),16777619);return h>>>0};
+const ICON_SHAPE={
+ weapon:"M16 1.5 29.5 16 16 30.5 2.5 16Z",
+ armor:"M16 2 28 6.5v8.5c0 7.5-5.4 12.6-12 15-6.6-2.4-12-7.5-12-15V6.5Z",
+ potion:"M12.5 2h7v7.2a10.5 10.5 0 1 1-7 0Z",
+ food:"M16 2.2a13.8 13.8 0 1 1 0 27.6 13.8 13.8 0 1 1 0-27.6Z",
+ treasure:"M16 1.8 28.3 8.9v14.2L16 30.2 3.7 23.1V8.9Z",
+ magic:"M16 1.5l3.6 6.8 7.5-1.4-1.4 7.5 6.8 3.6-6.8 3.6 1.4 7.5-7.5-1.4L16 30.5l-3.6-6.8-7.5 1.4 1.4-7.5L-.3 16l6.8-3.6-1.4-7.5 7.5 1.4Z",
+ mushroom:"M3 17C3 8.5 9 3 16 3s13 5.5 13 14Zm8.5 0h9v12.5h-9Z",
+ map:"M4 3h17l7 7v19H4Z",
+ tool:"M8 2.5h16a5.5 5.5 0 0 1 5.5 5.5v16a5.5 5.5 0 0 1-5.5 5.5H8A5.5 5.5 0 0 1 2.5 24V8A5.5 5.5 0 0 1 8 2.5Z",
+ junk:"M16 3 29 11 24 28H8L3 11Z"};
+const ICON_HUE={weapon:210,armor:190,potion:350,food:30,treasure:45,magic:275,mushroom:95,map:38,tool:160,junk:20};
+function iconKind(it){return it.kind==="mushroom"?"mushroom":it.mapOf||/\bmap\b/i.test(it.t)?"map":ICON_SHAPE[it.kind]?it.kind:"junk"}
+const glyphPathCache={};
+function glyphPath(k,cx,cy,size){
+ const key=k+"|"+cx+"|"+cy+"|"+size;if(glyphPathCache[key])return glyphPathCache[key];
+ const g=REALM.glyphs[k];if(!g)return"";const C=realmContours(g);let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
+ for(const p of C)for(const [x,y] of p){x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y)}
+ const sc=size/Math.max(x1-x0,y1-y0),ox=cx-(x0+x1)/2*sc,oy=cy+(y0+y1)/2*sc;
+ return glyphPathCache[key]=C.map(p=>"M"+p.map(([x,y])=>`${(ox+x*sc).toFixed(2)} ${(oy-y*sc).toFixed(2)}`).join("L")+"Z").join("");
+}
+function itemIcon(it,size=32){
+ const kind=iconKind(it),h=nameHash(it.t),hue=(ICON_HUE[kind]+(h%90)-45+360)%360,lit=78+(h>>>20)%10;
+ const words=String(it.t).toLowerCase().replace(/[^a-z ]/g," ").split(/\s+/).filter(w=>w&&!/^(a|an|the|of|and|some|pair)$/.test(w));
+ const letter=(words[0]||"x")[0],second=(words[words.length-1]||"")[0];
+ const fill=`hsl(${hue} 52% ${lit}%)`,ink=`hsl(${hue} 55% 26%)`,edge=`hsl(${hue} 45% 42%)`;
+ // rim marks: which of six spots carry a dot, from the name, so two things that share a letter still differ
+ let marks="";const pat=(h>>>8)%63+1;for(let i=0;i<6;i++)if(pat>>i&1){const a=(i/6)*2*Math.PI-Math.PI/2+(h%7)*.12;marks+=`<circle cx="${(16+11.5*Math.cos(a)).toFixed(1)}" cy="${(16.5+11.5*Math.sin(a)).toFixed(1)}" r="1.25" fill="${edge}"/>`}
+ const small=second&&second!==letter?`<path d="${glyphPath(second,24.4,24.4,6.4)}" fill="${edge}"/>`:"";
+ // magic things keep the shape of what they are, with a gold rim and a sparkle
+ const magic=it.magic?`<path d="${ICON_SHAPE[kind]}" fill="none" stroke="#d9a520" stroke-width="2.4" stroke-linejoin="round" opacity=".9"/><path d="M26 1.5l1.3 3.2 3.2 1.3-3.2 1.3L26 10.5l-1.3-3.2-3.2-1.3 3.2-1.3Z" fill="#f2c443" stroke="#9a6b12" stroke-width=".6"/>`:"";
+ const band=(h>>>14)%3===0?`<path d="${ICON_SHAPE[kind]}" fill="none" stroke="${fill}" stroke-width="1.2" transform="translate(16 16) scale(.8) translate(-16 -16)"/>`:"";
+ return`<svg class="iicon" viewBox="0 0 32 32" width="${size}" height="${size}" aria-hidden="true"><path d="${ICON_SHAPE[kind]}" fill="${fill}" stroke="${edge}" stroke-width="1.5" stroke-linejoin="round"/>${magic}${band}${marks}<path d="${glyphPath(letter,15.6,16.4,13)}" fill="${ink}"/>${small}</svg>`;
+}
+/* The strip under the map: everything you carry, at a glance. When it is longer than the row it drifts
+   slowly sideways on a loop; hover, focus or a touch holds it still. Tap an icon to find it in your pack. */
+let stripSig="";
+function renderItemStrip(){
+ const el=$("itemstrip");if(!el)return;const ids=charId()?packIds():[];
+ const groups=new Map();for(const id of ids){const it=cell(id);if(!it)continue;const k=it.t+"|"+(it.worn||it.wielded?1:0);const g=groups.get(k);if(g)g.n++;else groups.set(k,{id,it,n:1})}
+ const list=[...groups.values()].sort((a,b)=>["wear","heal","keep","craft","sell"].indexOf(itemGroup(a.it))-["wear","heal","keep","craft","sell"].indexOf(itemGroup(b.it)));
+ const sig=list.map(g=>g.id+":"+g.n+":"+(g.it.worn||g.it.wielded||weapon()===g.it?1:0)+":"+(g.it.usedDay||"")).join(",");if(sig===stripSig)return;stripSig=sig;
+ hideStripPop();
+ if(!list.length){el.innerHTML=`<p class="is-empty">Your pack is empty.</p>`;el.classList.remove("rolling");return}
+ const tile=g=>{const on=g.it.worn||(g.it.kind==="weapon"&&weapon()===g.it);return`<button type="button" class="itile${on?" on":""}" data-strip="${g.id}" title="${esc(g.it.t)}${g.n>1?` ×${g.n}`:""}${on?" (in use)":""}" aria-label="${esc(g.it.t)}${g.n>1?`, ${g.n} of them`:""}">${itemIcon(g.it)}${g.n>1?`<span class="icount">${g.n}</span>`:""}</button>`};
+ const row=list.map(tile).join("");
+ el.innerHTML=`<div class="istrack"><div class="isrow">${row}</div><div class="isrow" aria-hidden="true">${row.replace(/<button /g,'<button tabindex="-1" ')}</div></div>`;
+ requestAnimationFrame(()=>{const r=el.querySelector(".isrow");const over=r&&r.scrollWidth>el.clientWidth+2;el.classList.toggle("rolling",!!over);
+  if(over)el.style.setProperty("--isdur",`${Math.max(12,r.scrollWidth/28).toFixed(1)}s`)});
+}
+window.addEventListener("resize",()=>{stripSig="";renderItemStrip()});
+// Hover shows the name; a tap or click opens a small card with the name and what you can do with it;
+// a tap on that button does it. Tap elsewhere (or the same icon) to close.
+let stripPin=null;
+function itemAction(it){
+ const B=(act,label,dis)=>({act,label,dis:!!dis});
+ if(it.teleport||it.seer||it.larder){const cold=it.usedDay===dayOf(gameNow());return B("use",(it.teleport==="any"?"Travel to a town":it.teleport==="home"?"Burn it: go home":it.seer?"Seek again":"Take today's meal")+(cold?" (used today)":""),cold)}
+ if(it.heal)return B("use",it.kind==="food"?"Eat":"Drink");
+ if(it.kind==="mushroom")return B("use","Eat");
+ if(it.mapOf)return B("use","Read");
+ if(it.kind==="treasure")return B("use","Put in your purse");
+ if(it.kind==="armor")return B("wear",it.worn?"Take off":"Wear");
+ if(it.kind==="weapon")return weapon()===it?null:B("wield","Wield");
+ return null;
+}
+function showStripPop(tile,pinned){
+ const pop=$("itempop"),it=cell(tile.dataset.strip);if(!pop||!it)return;
+ const a=pinned?itemAction(it):null;
+ pop.innerHTML=`<div class="ip-name">${esc(it.t)}</div>${pinned?`<div class="ip-meta">${[it.heal?"heals "+it.heal:"",it.dmg?"damage "+it.dmg:"",it.ac?"armour +"+it.ac:"",it.value?it.value+" gp":"",fmtW(+it.weight||0)+" lb"].filter(Boolean).join(" · ")}</div>
+  <div class="ip-acts">${a?`<button class="small primary" data-act="${a.act}" data-id="${it.id}" data-poprun="1" ${a.dis?"disabled":""}>${esc(a.label)}</button>`:""}<button class="small" data-popfind="${it.id}">In pack</button></div>`:""}`;
+ pop.classList.toggle("pinned",!!pinned);pop.classList.add("show");
+ const r=tile.getBoundingClientRect(),w=pop.offsetWidth,h=pop.offsetHeight;
+ let x=r.left+r.width/2-w/2;x=Math.max(8,Math.min(innerWidth-w-8,x));let y=r.top-h-8;if(y<8)y=r.bottom+8;
+ pop.style.left=x+"px";pop.style.top=y+"px";$("itemstrip").classList.toggle("held",!!pinned);
+}
+function hideStripPop(){const pop=$("itempop");if(pop)pop.classList.remove("show","pinned");stripPin=null;const st=$("itemstrip");if(st)st.classList.remove("held")}
+document.addEventListener("pointerover",e=>{if(e.pointerType==="touch"||stripPin)return;const t=e.target.closest&&e.target.closest("[data-strip]");if(t)showStripPop(t,false)});
+document.addEventListener("pointerout",e=>{if(e.pointerType==="touch"||stripPin)return;const t=e.target.closest&&e.target.closest("[data-strip]");if(t&&!t.contains(e.relatedTarget))hideStripPop()});
+document.addEventListener("click",e=>{
+ const t=e.target.closest&&e.target.closest("[data-strip]");
+ if(t){e.stopPropagation();if(stripPin===t.dataset.strip){hideStripPop();return}stripPin=t.dataset.strip;showStripPop(t,true);return}
+ const f=e.target.closest&&e.target.closest("[data-popfind]");
+ if(f){const id=f.dataset.popfind,pk=$("pack");hideStripPop();if(!pk)return;if(pk.classList.contains("collapsed")){const fb=pk.querySelector(".fold");if(fb)fb.click()}
+  setTimeout(()=>{const row=[...pk.querySelectorAll(".items li")].find(li=>li.querySelector(`[data-id="${id}"]`));const tg=row||pk;tg.scrollIntoView({behavior:"smooth",block:"center"});if(row){row.classList.remove("ihl");void row.offsetWidth;row.classList.add("ihl")}},60);return}
+ if(e.target.closest&&e.target.closest("[data-poprun]")){setTimeout(hideStripPop,0);return}   // the game's own handler runs the action
+ if(stripPin&&!(e.target.closest&&e.target.closest("#itempop")))hideStripPop();
+},true);
+window.addEventListener("scroll",()=>{if(stripPin)hideStripPop()},{passive:true});
+function render(){requestAnimationFrame(renderWxFx);doubleHP();fixPlaceName(hereId());renderSeekStar();if(hereId()&&!isDowned())ensureWayOut(hereId(),cell(charId()).prevAt);renderMapKey();renderGate();renderDream();renderEncounter();renderStarving();{const x=$("exploring");if(x)x.classList.toggle("show",!!(busy&&charId()&&!isDowned()&&!["realm","founding","river","start"].includes(busy.dir)))}renderPills();renderScriptButton();renderMap();renderCompass();renderPlace();renderSheet();renderSocial();renderGarden();renderCodex();renderAlphabet();renderLog();renderVoice();decoratePanels();iconHeads();sound.update();voiceOnRender();placeOverlays();renderItemStrip()}
 
 /* ============================================================
    Soundtrack: generated live from white, pink and brown noise and a few oscillators.
