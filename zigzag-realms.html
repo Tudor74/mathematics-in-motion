@@ -349,6 +349,9 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .roseover{position:absolute;left:10px;bottom:10px;z-index:3;width:168px;padding:4px 4px 2px;background:color-mix(in srgb,var(--sheet) 82%,transparent);border:1px solid var(--rule);border-radius:14px;box-shadow:0 4px 14px #0002;backdrop-filter:blur(2px)}
 .roseover,.seekstar{transition:top .35s ease,bottom .35s ease,opacity .2s}
 .mapwrap.asleep #map{cursor:default}
+/* while the narrator is writing a new place, only the hourglass shows over the map */
+.mapwrap > *:not(#map):not(#exploring):not(.wxfx):not(.lightning){transition:opacity .25s ease,visibility .25s}
+.mapwrap:has(#exploring.show) > *:not(#map):not(#exploring):not(.wxfx):not(.lightning){opacity:0!important;visibility:hidden!important;pointer-events:none!important}
 .mapwrap.rose-top .roseover{bottom:auto;top:40px}.mapwrap.rose-top .ticker{left:190px}
 .mapwrap.star-top .seekstar{bottom:auto;top:40px}
 @media (max-width:700px){.mapwrap.rose-top .roseover{bottom:auto;top:36px}.mapwrap.rose-top .ticker{left:146px}}
