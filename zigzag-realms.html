@@ -150,7 +150,8 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .ticker .tk.out{opacity:0}@keyframes tkin{from{opacity:0;transform:translateX(-8px)}}
 .journeycard{position:absolute;inset:0;display:grid;place-items:center;padding:12px;z-index:5;pointer-events:none;opacity:0;transition:opacity .35s ease}
 .journeycard.show{opacity:1}.journeycard .jc-card{pointer-events:auto;max-width:min(440px,92%);max-height:90%;overflow:auto;display:grid;gap:6px;padding:14px 16px;border-radius:12px;background:var(--sheet);border:1px solid var(--rule);box-shadow:0 8px 28px #0004;font-size:13pt}
-.journeycard:not(.show) .jc-card{pointer-events:none}.journeycard h3{margin:0;font-size:18pt}.journeycard .jc-sub{color:var(--faint)}.journeycard button{justify-self:end;min-width:90px}
+.journeycard:not(.show) .jc-card{pointer-events:none}.journeycard .btnrow{justify-content:flex-end;gap:8px}.journeycard .btnrow button{justify-self:auto}
+.victory .vx{font-size:15pt}.victory .lvup{color:var(--good)}.victory .xpbar{height:10px;border-radius:99px;background:var(--wash);border:1px solid var(--rule);overflow:hidden}.victory .xpbar i{display:block;height:100%;background:var(--good);transition:width .8s ease}.journeycard h3{margin:0;font-size:18pt}.journeycard .jc-sub{color:var(--faint)}.journeycard button{justify-self:end;min-width:90px}
 .pickflash{position:absolute;left:50%;bottom:22px;transform:translate(-50%,10px);z-index:4;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .3s ease}
 .pickflash.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 .pickflash{display:flex;align-items:center;gap:6px}.pickflash .pf-x{min-height:44px;width:44px;padding:0;border-radius:99px;font-size:20px;line-height:1;justify-content:center;background:var(--sheet)}
@@ -2924,12 +2925,36 @@ function attack(index){
  if(F.evSlot)eventHit(F,h0-Math.max(0,F.hp));
  if(F.hp<=0){
   // The great foe's reward is shared out by the server among everyone who fought it, not given to the last blow
-  const xp=F.evSlot?0:Math.round(F.maxhp*2+F.ac*2+F.atk*5);placeMemory(hereId(),"slay",F.t);checkQuests("slay",hereId());neutraliseAt(hereId(),null);say(`${F.designation} ${F.t} is neutralised.`,"good");if(xp){gainXP(xp);log(`You gain ${xp} XP.`,"good")}
-  const H=cell(hereId()),you=cell(charId());if(zOf(H)===0){const saw=npcs().filter(o=>Math.abs(o.x-H.x)+Math.abs(o.y-H.y)<=1);for(const o of saw)bump(o,you,.15);
+  const xp=F.evSlot?0:Math.round(F.maxhp*2+F.ac*2+F.atk*5);
+  if(!F.evSlot)ensureSpoils(f,F);const drops=rank(f,"contain").map(id=>cell(id).t),gp0=sv("GP"),xp0=sv("XP"),lv0=sv("LVL");
+  placeMemory(hereId(),"slay",F.t);checkQuests("slay",hereId());neutraliseAt(hereId(),null);say(`${F.designation} ${F.t} is neutralised.`,"good");if(xp){gainXP(xp);log(`You gain ${xp} XP.`,"good")}
+  const H=cell(hereId()),you=cell(charId());let saw=[];if(zOf(H)===0){saw=npcs().filter(o=>Math.abs(o.x-H.x)+Math.abs(o.y-H.y)<=1);for(const o of saw)bump(o,you,.15);
    if(saw.length)log(`${saw.slice(0,3).map(o=>o.t).join(", ")}${saw.length>3?` and ${saw.length-3} more`:""} saw you do it, and think better of you.`,"npc")}
-  store.flush();render();return}
+  store.flush();render();
+  showVictory({name:`${F.designation} ${F.t}`,xp:sv("XP")-xp0,lv0,bounty:sv("GP")-gp0,drops,saw:saw.map(o=>o.t),shared:!!F.evSlot});return}
  monsterTurn();store.flush();render();
 }
+/* Every anomaly leaves something: coins from the weak, a real find from the dangerous */
+function ensureSpoils(f,F){
+ const cls=F.objectClass||"Safe",tough=cls==="Keter"?2:cls==="Euclid"?1:0,depth=Math.max(0,-zOf(cell(hereId())));
+ const coin=(lo,hi)=>itemCell(normItem({name:pick(["Tarnished coins","A pouch of old silver","Silver containment tag"]),description:`Left behind by ${F.designation}.`,kind:"treasure",weight:.2,value:lo+rnd(hi-lo)}));
+ if(!rank(f,"contain").length)appendTo(f,"contain",tough?coin(15+depth*3,35+depth*5):coin(5,15));
+ if(tough>=1&&Math.random()<(tough===2?1:.5)){const pool=LOOT.ruin.concat(LOOT.dungeon);appendTo(f,"contain",itemCell(normItem(asItem(pick(pool)))))}
+ if(tough===2)appendTo(f,"contain",itemCell(normItem({name:"Uncut gemstone",description:"Heavy and cloudy, but it catches the light.",kind:"treasure",weight:.2,value:40+depth*5})));
+}
+/* The victory card: what you won, at a glance, with the spoils one tap away */
+function showVictory(v){
+ const el=$("journeycard");if(!el)return;const lv=sv("LVL"),xp=sv("XP"),lo=xpFor(lv),hi=xpFor(lv+1),pct=Math.max(0,Math.min(100,Math.round((xp-lo)/Math.max(1,hi-lo)*100)));
+ const here=loose(hereId()).length;
+ el.innerHTML=`<div class="jc-card victory" role="status"><h3>${v.beast?"You win":"Neutralised"}</h3><div class="jc-sub">${esc(v.name)}</div>
+  ${v.xp?`<div class="vx"><b>+${v.xp} XP</b>${lv>v.lv0?` · <b class="lvup">Level ${lv}!</b>`:""}</div><div class="xpbar" title="${xp-lo} of ${hi-lo} XP to level ${lv+1}"><i style="width:${pct}%"></i></div><div class="jc-sub">${hi-xp} XP to level ${lv+1}</div>`:v.shared?`<div class="jc-sub">The reward is shared among everyone who fought it.</div>`:""}
+  ${v.bounty>0?`<div><b>Bounty:</b> ${v.bounty} gp</div>`:""}
+  ${v.drops.length?`<div><b>It left:</b> ${esc(v.drops.join(", "))}</div>`:""}
+  ${v.saw.length?`<div><b>Seen by:</b> ${esc(v.saw.slice(0,3).join(", "))}${v.saw.length>3?` and ${v.saw.length-3} more`:""}, who think better of you</div>`:""}
+  <div class="btnrow">${here?`<button class="small primary" data-act="victorytake">${ic("take","")} Take it all</button>`:""}<button class="small" data-act="journeyok">OK</button></div></div>`;
+ el.classList.add("show");
+}
+document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest('[data-act="victorytake"]')){e.stopPropagation();$("journeycard").classList.remove("show");pickUpAll()}},true);
 function neutraliseAt(locId,by){
  const f=foeId(locId),F=cell(f),L=cell(locId);
  for(const id of rank(f,"contain")){excise(id,"contain");appendTo(locId,"contain",id)}
@@ -3625,7 +3650,8 @@ function attackAgent(id){
   for(const q of quests())if(!q.done&&q.giver===n.id){q.done=true;q.failed=true}
   remember(n,"was beaten by the traveller",gameNow());
   log(`${n.t} is beaten. Others carry ${n.wild?"it":"them"} to ${S.t} to recover. From now on ${n.wild?"it keeps":"they keep"} well away from you.`,"bad");
-  if(n.wild){appendTo(hereId(),"contain",itemCell({name:"Fresh meat",desc:"Lean and dark. Cook it if you can; eat it if you must.",kind:"food",weight:2,value:1,heal:"1d6"}));log("It leaves fresh meat behind. Eat it to stave off hunger.","good")}
+  if(n.wild){appendTo(hereId(),"contain",itemCell({name:"Fresh meat",desc:"Lean and dark. Cook it if you can; eat it if you must.",kind:"food",weight:2,value:1,heal:"1d6"}));log("It leaves fresh meat behind. Eat it to stave off hunger.","good");
+   setTimeout(()=>showVictory({name:n.t,xp:0,lv0:sv("LVL"),bounty:0,drops:["Fresh meat"],saw:[],beast:true}),60)}
  }else if(!n.wild&&n.courage>.5&&n.hp>n.maxhp*.3){
   const R=ROLES[n.role]||ROLES.farmer,d2=rnd(20),t2=d2+n.atk,ac=armourClass(),tx=`d20 → ${d2} +${n.atk} = ${t2} against your AC ${ac}`;
   if(t2>=ac){const r=roll(R[5]);setStat("HP",sv("HP")-r.total);log(`${n.t} fights back: ${r.total} damage.`,"bad",tx+"; "+r.text);if(sv("HP")<=0){n.fight="over";woundedRetreat(n)}}
@@ -6195,7 +6221,7 @@ document.addEventListener("click",e=>{
   trade:i=>{openTrade=openTrade===i?null:i;openChat=null;armedAttack=null;render()},
   buyfood:buyFood,sell:v=>{const [n,it]=v.split("|");sellTo(n,it)},quest:i=>{offerQuest(cell(i));passTime(5);store.flush();render()},
   give:giveFood,arm:i=>{armedAttack=armedAttack===i?null:i;render()},hit:attackAgent,
-  disengage:()=>disengage(),seek:()=>seekPeople(),pickall:()=>pickUpAll(),sellspares:()=>sellSpares(),pickdismiss:()=>$("pickflash").classList.remove("show"),autofight:()=>toggleAutoFight(),evgo:id=>goToEvent(id),reengage:()=>{const f=foeHere();if(f){cell(f).truce=0;touch(f);log(`You turn to face ${cell(f).t} again.`,"bad");store.flush();render()}},craft,deposit,withdraw,rent:rentCottage,leave:leaveForOthers,takeleft:takeLeft,train:takeTrain,steal:trySteal,sharefood:shareFood,rate:rateChat,contest:enterContest,festprize:festivalPrize,throwdart:throwDart})[b.dataset.act](id);return}
+  disengage:()=>disengage(),seek:()=>seekPeople(),pickall:()=>pickUpAll(),sellspares:()=>sellSpares(),journeyok:()=>{},victorytake:()=>{},pickdismiss:()=>$("pickflash").classList.remove("show"),autofight:()=>toggleAutoFight(),evgo:id=>goToEvent(id),reengage:()=>{const f=foeHere();if(f){cell(f).truce=0;touch(f);log(`You turn to face ${cell(f).t} again.`,"bad");store.flush();render()}},craft,deposit,withdraw,rent:rentCottage,leave:leaveForOthers,takeleft:takeLeft,train:takeTrain,steal:trySteal,sharefood:shareFood,rate:rateChat,contest:enterContest,festprize:festivalPrize,throwdart:throwDart})[b.dataset.act](id);return}
  const d=e.target.closest("#compass button[data-dir]");if(d){move(d.dataset.dir);return}
  // while the map slides (and a moment after), taps on it are ignored, so a moving map never walks you somewhere
  if(e.target.closest("#map")&&mapCam&&(mapCam.anim||performance.now()-(mapCam.settled||0)<250||mapDownAt>(mapCam.anim?mapCam.anim.t0:mapCam.slideStart||0)&&mapDownDuringSlide))return;
