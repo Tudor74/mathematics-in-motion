@@ -389,6 +389,7 @@ button.dirlink:hover:not(:disabled){color:var(--accent);text-decoration-style:so
 .people .said{font-size:13pt;font-style:italic;margin:2px 0 0;border-left:2px solid var(--water);padding-left:9px}
 
 .items{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.packgroup{margin-top:10px}.packgroup .pg-head{display:flex;justify-content:space-between;gap:8px;font-size:13pt;font-weight:700;padding:4px 0;border-bottom:2px solid var(--rule)}.packgroup .pg-head .mono{font-weight:400;color:var(--faint)}.packgroup .btnrow{margin-top:6px}
 .items li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:9px 0;border-top:1px solid var(--rule)}
 .items li:first-child{border-top:0}
 .items .nm{font-weight:700}
@@ -2644,7 +2645,7 @@ function tickerNote(text){const el=$("ticker");if(!el)return;const d=document.cr
 function journeyMet(text){if(journey&&routeWalking){journey.met.push(text);tickerNote("Met "+text)}}
 function journeyPass(id){
  const J=journey;if(!J)return;J.steps++;const L=cell(id);if(!L||foeId())return;
- const got=[];for(const it of loose(id).sort((a,b)=>(+a.weight||0)-(+b.weight||0))){
+ const got=[];for(const it of loose(id).filter(usefulPickup).sort((a,b)=>(+a.weight||0)-(+b.weight||0))){
   if(carried()+(+it.weight||0)>capacity()){J.heavy.push(`${it.t} (${L.t})`);continue}
   excise(it.id,"contain");appendTo(charId(),"contain",it.id);got.push(it.t)}
  if(got.length){J.items.push(...got);log(`On the way through ${L.t} you pick up ${got.join(", ")}.`,"good");tickerNote("Picked up "+(got.length>2?got.slice(0,2).join(", ")+` and ${got.length-2} more`:got.join(" and ")))}
@@ -4045,6 +4046,44 @@ function craft(i){
  const it=Array.isArray(r.make)?normItem(asItem(r.make)):normItem(r.make),id=itemCell(it);if(r.after)r.after(id);appendTo(charId(),"contain",id);
  log(r.smith?`The smith melts down your coins and hammers out a lantern for you.`:`You make ${r.name}.`,"good");passTime(30);store.flush();render();
 }
+/* ---------- Sorting the pack: what each thing is for, and what is spare ---------- */
+const diceAvg=d=>{const m=/(\d*)d(\d+)\s*([+-]\s*\d+)?/.exec(String(d||""));return m?(+m[1]||1)*(+m[2]+1)/2+(+(m[3]||"0").replace(/\s/g,"")):(+d||0)};
+const isIngredient=it=>Object.values(ING).some(r=>r.test(it.t));
+function bestOf(kind,key){return packIds().map(cell).filter(i=>i.kind===kind).reduce((a,i)=>Math.max(a,key(i)),0)}
+// Better than anything of its kind you already carry?
+const beats=it=>it.kind==="weapon"?diceAvg(it.dmg)>bestOf("weapon",i=>diceAvg(i.dmg)):it.kind==="armor"?(+it.ac||0)>bestOf("armor",i=>+i.ac||0):false;
+function itemGroup(it){
+ if(it.worn||(it.kind==="weapon"&&weapon()===it))return"wear";
+ if(it.heal||it.kind==="mushroom")return"heal";
+ if(isIngredient(it))return"craft";
+ if(it.kind==="treasure"||it.light||it.mapOf||it.magic||it.kind==="tool")return"keep";
+ if(it.kind==="weapon"||it.kind==="armor"){const ws=packIds().map(cell).filter(i=>i.kind===it.kind&&i!==it),mine=it.kind==="weapon"?diceAvg(it.dmg):+it.ac||0;
+  return ws.some(o=>(it.kind==="weapon"?diceAvg(o.dmg):+o.ac||0)>=mine)?"sell":"keep"}
+ return"sell";
+}
+const PACK_GROUPS=[["wear","Wearing and in hand"],["heal","Food and healing"],["craft","For crafting"],["keep","Keep"],["sell","Spare: worth selling"]];
+// What travel mode picks up on the way: food, healing, treasure, crafting things, light, maps, magic, and gear better than yours
+const usefulPickup=it=>!!(it.heal||it.kind==="food"||it.kind==="potion"||it.kind==="mushroom"||it.kind==="treasure"||it.light||it.mapOf||it.magic||isIngredient(it)||beats(it));
+// Selling the spares to whoever here can pay; the first tap shows the total, the second sells
+let sellConfirm=0;
+function buyersHere(){const H=cell(hereId());if(!H||!H.town||foeId())return[];return npcsAt(H.x,H.y).filter(n=>!n.wild&&!n.defeated&&!n.shunsYou&&n.gold>0)}
+function sparePlan(){const B=buyersHere().map(n=>({n,gold:n.gold})),sold=[];if(!B.length)return{sold,total:0};
+ for(const it of packIds().map(cell).filter(i=>itemGroup(i)==="sell").sort((a,b)=>(+b.value||0)-(+a.value||0))){
+  const b=B.map(x=>({x,price:sellPrice(it,x.n)})).filter(o=>o.x.gold>=o.price).sort((a,b)=>b.price-a.price)[0];if(!b)continue;b.x.gold-=b.price;sold.push({it,n:b.x.n,price:b.price})}
+ return{sold,total:sold.reduce((a,o)=>a+o.price,0)}}
+function sellSpares(){
+ const P=sparePlan();if(!P.sold.length)return;
+ if(Date.now()-sellConfirm>8000){sellConfirm=Date.now();render();return}
+ sellConfirm=0;for(const {it,n,price} of P.sold){n.gold-=price;setStat("GP",sv("GP")+price);excise(it.id,"contain");destroy(it.id);touch(n.id);bump2(n,me(),.02)}
+ log(`You sell your spare things (${P.sold.map(o=>o.it.t).join(", ")}) for ${P.total} gp.`,"good");passTime(10);store.flush();render();
+}
+function renderPackGroups(ids){
+ const by={};for(const id of ids){const g=itemGroup(cell(id));(by[g]=by[g]||[]).push(id)}
+ return PACK_GROUPS.filter(([g])=>by[g]).map(([g,label])=>{const list=by[g],w=list.reduce((a,id)=>a+(+cell(id).weight||0),0),v=list.reduce((a,id)=>a+(+cell(id).value||0),0);
+  let sell="";if(g==="sell"){const P=sparePlan();sell=P.sold.length?`<div class="btnrow"><button class="small${Date.now()-sellConfirm<8000?" primary":""}" data-act="sellspares">${Date.now()-sellConfirm<8000?`Confirm: sell ${P.sold.length} for ${P.total} gp`:`${ic("coin","")} Sell the spares · ${P.total} gp`}</button></div>`:`<p class="note">Sell these to townsfolk in a town${H_town()?" (nobody here can pay just now)":""}.</p>`}
+  return`<div class="packgroup"><div class="pg-head"><span>${label}</span><span class="mono">${list.length} · ${fmtW(w)} lb${v?` · ${v} gp`:""}</span></div><ul class="items">${list.map(id=>itemRow(id,"pack")).join("")}</ul>${sell}</div>`}).join("");
+}
+const H_town=()=>{const H=hereId()&&cell(hereId());return!!(H&&H.town)};
 function renderCraft(){
  const rows=RECIPES.map((r,i)=>({r,i,ok:!!haveFor(r)&&(!r.smith||smithHere())})).filter(x=>x.ok||!x.r.smith);
  const can=rows.filter(x=>x.ok);
@@ -5525,7 +5564,7 @@ function renderSheet(){
  $("rest").onclick=rest;
  const ids=packIds();
  pk.innerHTML=`<div class="sectionhead"><h3 id="pack-h">Pack</h3><span class="mono" style="font-size:13pt;color:${carried()>capacity()*.9?"var(--danger)":"var(--faint)"}">${fmtW(carried())} / ${capacity()} lb</span></div>`+
-  (ids.length?`<ul class="items">${ids.map(id=>itemRow(id,"pack")).join("")}</ul>`:`<p class="empty">Your pack is empty.</p>`)+renderCraft();
+  (ids.length?renderPackGroups(ids):`<p class="empty">Your pack is empty.</p>`)+renderCraft();
 }
 let planInfoOpen=false;
 
@@ -6155,7 +6194,7 @@ document.addEventListener("click",e=>{
   trade:i=>{openTrade=openTrade===i?null:i;openChat=null;armedAttack=null;render()},
   buyfood:buyFood,sell:v=>{const [n,it]=v.split("|");sellTo(n,it)},quest:i=>{offerQuest(cell(i));passTime(5);store.flush();render()},
   give:giveFood,arm:i=>{armedAttack=armedAttack===i?null:i;render()},hit:attackAgent,
-  disengage:()=>disengage(),seek:()=>seekPeople(),pickall:()=>pickUpAll(),pickdismiss:()=>$("pickflash").classList.remove("show"),autofight:()=>toggleAutoFight(),evgo:id=>goToEvent(id),reengage:()=>{const f=foeHere();if(f){cell(f).truce=0;touch(f);log(`You turn to face ${cell(f).t} again.`,"bad");store.flush();render()}},craft,deposit,withdraw,rent:rentCottage,leave:leaveForOthers,takeleft:takeLeft,train:takeTrain,steal:trySteal,sharefood:shareFood,rate:rateChat,contest:enterContest,festprize:festivalPrize,throwdart:throwDart})[b.dataset.act](id);return}
+  disengage:()=>disengage(),seek:()=>seekPeople(),pickall:()=>pickUpAll(),sellspares:()=>sellSpares(),pickdismiss:()=>$("pickflash").classList.remove("show"),autofight:()=>toggleAutoFight(),evgo:id=>goToEvent(id),reengage:()=>{const f=foeHere();if(f){cell(f).truce=0;touch(f);log(`You turn to face ${cell(f).t} again.`,"bad");store.flush();render()}},craft,deposit,withdraw,rent:rentCottage,leave:leaveForOthers,takeleft:takeLeft,train:takeTrain,steal:trySteal,sharefood:shareFood,rate:rateChat,contest:enterContest,festprize:festivalPrize,throwdart:throwDart})[b.dataset.act](id);return}
  const d=e.target.closest("#compass button[data-dir]");if(d){move(d.dataset.dir);return}
  // while the map slides (and a moment after), taps on it are ignored, so a moving map never walks you somewhere
  if(e.target.closest("#map")&&mapCam&&(mapCam.anim||performance.now()-(mapCam.settled||0)<250||mapDownAt>(mapCam.anim?mapCam.anim.t0:mapCam.slideStart||0)&&mapDownDuringSlide))return;
