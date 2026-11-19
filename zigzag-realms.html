@@ -34,6 +34,8 @@
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:13pt;line-height:1.5;margin:0}
+/* the page never scrolls sideways: anything wider is clipped (clip keeps sticky headers working; hidden is the fallback) */
+html,body{overflow-x:hidden;max-width:100%}@supports (overflow:clip){html,body{overflow-x:clip}}
 .wrap{max-width:1240px;margin:0 auto;padding-block:18px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:16px}
 button,input,select,textarea{font:inherit;color:inherit}
 button{background:var(--sheet);border:1px solid var(--rule);border-radius:6px;padding:6px 12px;min-height:36px;cursor:pointer;font-weight:500}
@@ -201,8 +203,8 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .blockflash.show{animation:bflash 2.2s ease forwards}@keyframes bflash{0%{opacity:0;transform:scale(.85)}12%{opacity:1;transform:scale(1.04)}22%{transform:scale(1)}80%{opacity:1}100%{opacity:0}}
 .bf-hex{width:230px;height:200px;display:grid;place-content:center;gap:6px;text-align:center;padding:0 34px;background:var(--ink);color:var(--sheet);clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);box-shadow:0 6px 24px #0005}
 .bf-hex b{font-family:var(--display);font-size:22px;letter-spacing:.04em}.bf-hex span{font-size:13pt;line-height:1.3}
-.panel.itembar{padding:6px 10px;overflow:hidden}
-.itemstrip{overflow-x:auto;scrollbar-width:none}.itemstrip.rolling{mask-image:linear-gradient(90deg,transparent,#000 14px,#000 calc(100% - 14px),transparent)}.itemstrip::-webkit-scrollbar{display:none}
+.panel.itembar{padding:6px 10px;overflow:hidden;min-width:0;max-width:100%;contain:paint;position:relative}
+.itemstrip{overflow-x:auto;scrollbar-width:none;max-width:100%;overscroll-behavior-x:contain;touch-action:pan-x pan-y}.itemstrip.rolling{mask-image:linear-gradient(90deg,transparent,#000 14px,#000 calc(100% - 14px),transparent)}.itemstrip::-webkit-scrollbar{display:none}
 .itemstrip .istrack{display:flex;width:max-content}.itemstrip .isrow{display:flex;gap:6px;padding:2px 3px}.itemstrip:not(.rolling) .isrow[aria-hidden]{display:none}
 .itemstrip.rolling{overflow:hidden}.itemstrip.rolling .istrack{animation:isroll var(--isdur,20s) linear infinite}.itemstrip.rolling .isrow{padding-right:6px}
 .itemstrip.held .istrack,.itemstrip.rolling:hover .istrack,.itemstrip.rolling:focus-within .istrack,.itemstrip.rolling:active .istrack{animation-play-state:paused}
@@ -211,8 +213,8 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .itile{position:relative;flex:none;width:44px;height:44px;min-height:0;padding:0;display:grid;place-items:center;border-radius:10px;border:1px solid transparent;background:transparent;box-shadow:none;cursor:pointer}
 .itile:hover,.itile:focus-visible{background:var(--wash);border-color:var(--rule)}.itile.on{background:color-mix(in srgb,var(--good) 14%,transparent);border-color:color-mix(in srgb,var(--good) 45%,transparent)}
 .itile .icount{position:absolute;right:1px;bottom:0;min-width:18px;padding:0 4px;border-radius:99px;background:var(--ink);color:var(--paper);font:700 13pt/20px var(--mono)}
-.itempop{position:fixed;z-index:30;max-width:min(320px,calc(100vw - 16px));padding:8px 12px;border-radius:10px;background:var(--sheet);border:1px solid var(--rule);box-shadow:0 6px 22px #0003;font-size:13pt;opacity:0;pointer-events:none;transform:translateY(4px);transition:opacity .15s,transform .15s}
-.itempop.show{opacity:1;transform:none}.itempop.pinned{pointer-events:auto}.itempop .ip-name{font-weight:700}.itempop .ip-meta{color:var(--faint);margin-top:2px}.itempop .ip-acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.itempop{position:fixed;left:0;top:0;visibility:hidden;z-index:30;max-width:min(320px,calc(100vw - 16px));padding:8px 12px;border-radius:10px;background:var(--sheet);border:1px solid var(--rule);box-shadow:0 6px 22px #0003;font-size:13pt;opacity:0;pointer-events:none;transform:translateY(4px);transition:opacity .15s,transform .15s}
+.itempop.show{opacity:1;transform:none;visibility:visible}.itempop.pinned{pointer-events:auto}.itempop .ip-name{font-weight:700}.itempop .ip-meta{color:var(--faint);margin-top:2px}.itempop .ip-acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
 .itemstrip .is-empty{margin:6px 4px;color:var(--faint);font-size:13pt}
 .items .nm .iicon{vertical-align:-8px;margin-right:2px}
 .items li.ihl{animation:ihl 1.6s ease}@keyframes ihl{0%,40%{background:color-mix(in srgb,var(--accent) 18%,transparent)}100%{background:transparent}}
@@ -618,7 +620,8 @@ html.realm .alphabet .lat{font-family:"IBM Plex Mono",ui-monospace,monospace}
    </section>
  </div>
 
- <section class="panel itembar" aria-label="What you carry"><div class="itemstrip" id="itemstrip"></div><div class="itempop" id="itempop" role="dialog" aria-label="Item"></div></section>
+ <section class="panel itembar" aria-label="What you carry"><div class="itemstrip" id="itemstrip"></div></section>
+ <div class="itempop" id="itempop" role="dialog" aria-label="Item"></div>
 
  <section class="panel statusbar" aria-label="Status">
   <div class="hud" id="hud" aria-live="polite"></div>
