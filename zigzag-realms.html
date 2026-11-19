@@ -348,6 +348,7 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .compass.rosebox{display:block}
 .roseover{position:absolute;left:10px;bottom:10px;z-index:3;width:168px;padding:4px 4px 2px;background:color-mix(in srgb,var(--sheet) 82%,transparent);border:1px solid var(--rule);border-radius:14px;box-shadow:0 4px 14px #0002;backdrop-filter:blur(2px)}
 .roseover,.seekstar{transition:top .35s ease,bottom .35s ease,opacity .2s}
+.mapwrap.asleep #map{cursor:default}
 .mapwrap.rose-top .roseover{bottom:auto;top:40px}.mapwrap.rose-top .ticker{left:190px}
 .mapwrap.star-top .seekstar{bottom:auto;top:40px}
 @media (max-width:700px){.mapwrap.rose-top .roseover{bottom:auto;top:36px}.mapwrap.rose-top .ticker{left:146px}}
@@ -2691,8 +2692,11 @@ function journeyEnd(arrived){
 }
 document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest('[data-act="journeyok"]')){const el=$("journeycard");el.classList.remove("show")}},true);
 function fmtDur(m){m=Math.round(m);return m<60?`${m} min`:`${Math.floor(m/60)} h${m%60?" "+(m%60)+" min":""}`}
+// Asleep in camp for the night (and no lantern left to walk by): the map can be looked at, not travelled
+function asleepNow(){const ch=charId()&&cell(charId()),t=gameNow();return!!(ch&&isNight(t)&&ch.campedNight===nightKey(t)&&ch.campedAt===hereId()&&(!hasLight()||nightLeft(t)<=0))}
 function planOrWalk(x,y){
  x=wrapC(x);y=wrapC(y);
+ if(asleepNow()){const m=Math.max(1,Math.round(realMinutesToDawn(gameNow())));flash=`You are asleep in camp until dawn, in about ${m} real ${m===1?"minute":"minutes"}.`;render();flashBlocked(null,"Asleep until dawn");return}
  if(routePlan&&routePlan.tx===x&&routePlan.ty===y&&routePlan.from===hereId()){walkPlan();return}
  routePlan=planRoute(x,y);
  if(!routePlan){flash="You can see no way there from here.";render();flashBlocked(null,"No way there that you know of");return}
@@ -2728,7 +2732,7 @@ async function walkPlan(){
   if(!routePlan&&journey){const here=hereId();setTimeout(()=>{flashFolk(here);flashPickup(here)},80);journeyEnd(arrived)}}
 }
 function routeSvg(C,ui,H,Z){
- const P=routePlan;if(!P||P.from!==hereId()||P.z!==Z||!P.path.length)return"";
+ const P=routePlan;if(!P||P.from!==hereId()||P.z!==Z||!P.path.length||asleepNow())return"";   // a waiting route reappears at dawn
  const pts=[[0,0],...P.path.map(st=>[wrapC(st.x-H.x),wrapC(st.y-H.y)])].map(([dx,dy])=>C(dx,dy));
  const d=pts.map(([x,y],i)=>`${i?"L":"M"}${x.toFixed(1)} ${y.toFixed(1)}`).join(" "),[ex,ey]=pts[pts.length-1];
  const head=`${P.steps} ${P.steps===1?"step":"steps"} · ${fmtDur(P.mins)}`,lines=[head,...P.warns.slice(0,3).map(w=>"⚠ "+w)],wpx=Math.max(220,Math.max(...lines.map(l=>l.length))*7.2+20),lh=20,BH=36;
@@ -5196,7 +5200,9 @@ function renderMap(){
   // the light around you: a lantern's glow that shrinks as its oil runs down, a campfire's small ring, a town's lamps
   const lightR=(()=>{const ch=cell(charId()),camped=ch&&ch.campedNight===nightKey(t),lamp=hasLight()?Math.max(.25,nightLeft(t)/LANTERN_NIGHT_MIN):0;return(H.town?3.4:camped?1.5:lamp?1.2+2*lamp:.8)*HW})();
   const [lx,ly]=C(0,0),warm=cell(charId())&&cell(charId()).campedNight===nightKey(t)?"rgba(255,165,80,.28)":"rgba(255,215,150,.2)";
-  const glow=`<defs><radialGradient id="nightlight" gradientUnits="userSpaceOnUse" cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="${(lightR*2).toFixed(1)}"><stop offset="0" stop-color="${warm}"/><stop offset=".42" stop-color="rgba(0,0,0,0)"/><stop offset=".55" stop-color="rgba(8,10,24,.42)"/><stop offset="1" stop-color="rgba(6,8,18,.62)"/></radialGradient></defs><rect x="${VB[0]}" y="${VB[1]}" width="${W}" height="${V}" fill="url(#nightlight)" pointer-events="none"/>`;
+  // Real dark: inside your light all is clear; over the next two hexes it falls away to near black, and beyond that nothing shows
+  const RT=lightR+1.8*HW,k1=(lightR/RT).toFixed(3),k2=((lightR+.75*HW)/RT).toFixed(3),k3=((lightR+1.35*HW)/RT).toFixed(3);
+  const glow=`<defs><radialGradient id="nightlight" gradientUnits="userSpaceOnUse" cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="${RT.toFixed(1)}"><stop offset="0" stop-color="${warm}"/><stop offset="${k1}" stop-color="rgba(0,0,0,0)"/><stop offset="${k2}" stop-color="rgba(5,7,16,.62)"/><stop offset="${k3}" stop-color="rgba(4,5,12,.88)"/><stop offset="1" stop-color="rgba(3,4,10,.97)"/></radialGradient></defs><rect x="${VB[0]}" y="${VB[1]}" width="${W}" height="${V}" fill="url(#nightlight)" pointer-events="none"/>`;
   out=`<g class="nightfade">${out}</g>${glow}${beacons}`+(()=>{const words=line.split(" "),rows=[];let cur="";for(const w of words){if((cur+" "+w).trim().length>wrapAt&&cur){rows.push(cur);cur=w}else cur=(cur+" "+w).trim()}if(cur)rows.push(cur);
    // near the top of the map, clear of the Ways rose and the controls along the bottom
    // on a narrow map (a phone) the box shrinks to fit the width, leaving room for the zoom slider
@@ -5842,7 +5848,7 @@ function placeOverlays(){
   if(h.vx<0)overlayPos.rose=h.vy>0?"top":"bottom";
   if(h.vx>0)overlayPos.star=h.vy>0?"top":"bottom";
  }
- w.classList.toggle("rose-top",overlayPos.rose==="top"&&!isNight(gameNow()));   /* at night the night box holds the top */w.classList.toggle("star-top",overlayPos.star==="top");
+ w.classList.toggle("asleep",asleepNow());w.classList.toggle("rose-top",overlayPos.rose==="top"&&!isNight(gameNow()));   /* at night the night box holds the top */w.classList.toggle("star-top",overlayPos.star==="top");
 }
 /* ============================================================
    Item icons. Every thing gets its own 32×32 badge: a basic shape for what kind of thing it is
