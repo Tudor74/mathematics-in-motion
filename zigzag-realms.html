@@ -5813,7 +5813,7 @@ function placeOverlays(){
   if(h.vx<0)overlayPos.rose=h.vy>0?"top":"bottom";
   if(h.vx>0)overlayPos.star=h.vy>0?"top":"bottom";
  }
- w.classList.toggle("rose-top",overlayPos.rose==="top"&&!isNight(gameNow()));   // at night the night box holds the topw.classList.toggle("star-top",overlayPos.star==="top");
+ w.classList.toggle("rose-top",overlayPos.rose==="top"&&!isNight(gameNow()));   /* at night the night box holds the top */w.classList.toggle("star-top",overlayPos.star==="top");
 }
 function render(){requestAnimationFrame(renderWxFx);doubleHP();fixPlaceName(hereId());renderSeekStar();if(hereId()&&!isDowned())ensureWayOut(hereId(),cell(charId()).prevAt);renderMapKey();renderGate();renderDream();renderEncounter();renderStarving();{const x=$("exploring");if(x)x.classList.toggle("show",!!(busy&&charId()&&!isDowned()&&!["realm","founding","river","start"].includes(busy.dir)))}renderPills();renderScriptButton();renderMap();renderCompass();renderPlace();renderSheet();renderSocial();renderGarden();renderCodex();renderAlphabet();renderLog();renderVoice();decoratePanels();iconHeads();sound.update();voiceOnRender();placeOverlays()}
 
