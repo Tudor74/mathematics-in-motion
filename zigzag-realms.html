@@ -151,7 +151,7 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .journeycard{position:absolute;inset:0;display:grid;place-items:center;padding:12px;z-index:5;pointer-events:none;opacity:0;transition:opacity .35s ease}
 .journeycard.show{opacity:1}.journeycard .jc-card{pointer-events:auto;max-width:min(440px,92%);max-height:90%;overflow:auto;display:grid;gap:6px;padding:14px 16px;border-radius:12px;background:var(--sheet);border:1px solid var(--rule);box-shadow:0 8px 28px #0004;font-size:13pt}
 .journeycard:not(.show) .jc-card{pointer-events:none}.journeycard .btnrow{justify-content:flex-end;gap:8px}.journeycard .btnrow button{justify-self:auto}
-.victory .vx{font-size:15pt}.victory .lvup{color:var(--good)}.victory .xpbar{height:10px;border-radius:99px;background:var(--wash);border:1px solid var(--rule);overflow:hidden}.victory .xpbar i{display:block;height:100%;background:var(--good);transition:width .8s ease}.journeycard h3{margin:0;font-size:18pt}.journeycard .jc-sub{color:var(--faint)}.journeycard button{justify-self:end;min-width:90px}
+.journeycard .tp-list{display:flex;flex-wrap:wrap;gap:6px}.victory .vx{font-size:15pt}.victory .lvup{color:var(--good)}.victory .xpbar{height:10px;border-radius:99px;background:var(--wash);border:1px solid var(--rule);overflow:hidden}.victory .xpbar i{display:block;height:100%;background:var(--good);transition:width .8s ease}.journeycard h3{margin:0;font-size:18pt}.journeycard .jc-sub{color:var(--faint)}.journeycard button{justify-self:end;min-width:90px}
 .pickflash{position:absolute;left:50%;bottom:22px;transform:translate(-50%,10px);z-index:4;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .3s ease}
 .pickflash.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 .pickflash{display:flex;align-items:center;gap:6px}.pickflash .pf-x{min-height:44px;width:44px;padding:0;border-radius:99px;font-size:20px;line-height:1;justify-content:center;background:var(--sheet)}
@@ -876,8 +876,8 @@ function setStat(name,v){const c=statCell(name);if(c&&c.v!==v){c.v=v;touch(c.id)
 const packIds=()=>rank(charId(),"contain");
 const storeIds=loc=>rank(loc,"contain");
 const carried=()=>packIds().reduce((a,id)=>a+(+cell(id).weight||0),0);
-const capacity=()=>sv("STR")*15+(typeof hasCompanion==="function"&&hasCompanion("pony")?60:0);
-function armourBonus(){return packIds().map(cell).filter(i=>i.worn).reduce((a,i)=>Math.max(a,+i.ac||0),0)}
+const capacity=()=>sv("STR")*15+(typeof hasCompanion==="function"&&hasCompanion("pony")?60:0)+(charId()&&packIds().some(i=>cell(i)&&cell(i).holding)?60:0);
+function armourBonus(){const w=packIds().map(cell).filter(i=>i.worn);return w.filter(i=>i.slot!=="trinket").reduce((a,i)=>Math.max(a,+i.ac||0),0)+w.filter(i=>i.slot==="trinket").reduce((a,i)=>a+(+i.ac||0),0)}
 function armourClass(){return 10+mod(sv("DEX"))+armourBonus()}
 const hitDie=()=>CLASSES[cell(charId()).cls]?.hd||8;
 const prof=()=>2+Math.floor((sv("LVL")-1)/4);
@@ -2940,6 +2940,7 @@ function ensureSpoils(f,F){
  const coin=(lo,hi)=>itemCell(normItem({name:pick(["Tarnished coins","A pouch of old silver","Silver containment tag"]),description:`Left behind by ${F.designation}.`,kind:"treasure",weight:.2,value:lo+rnd(hi-lo)}));
  if(!rank(f,"contain").length)appendTo(f,"contain",tough?coin(15+depth*3,35+depth*5):coin(5,15));
  if(tough>=1&&Math.random()<(tough===2?1:.5)){const pool=LOOT.ruin.concat(LOOT.dungeon);appendTo(f,"contain",itemCell(normItem(asItem(pick(pool)))))}
+ if(tough===2&&Math.random()<.3||depth>=3&&Math.random()<.15){const m=pick(MAGIC_ITEMS);appendTo(f,"contain",magicItem(m,false))}
  if(tough===2)appendTo(f,"contain",itemCell(normItem({name:"Uncut gemstone",description:"Heavy and cloudy, but it catches the light.",kind:"treasure",weight:.2,value:40+depth*5})));
 }
 /* The victory card: what you won, at a glance, with the spoils one tap away */
@@ -3182,6 +3183,7 @@ function useItem(id){
  const it=cell(id);
  if(it.kind==="treasure"){setStat("GP",sv("GP")+(+it.value||0));log(`You add ${it.t} to your purse: ${it.value} gp.`,"good");excise(id,"contain");destroy(id);store.flush();render();return}
  if(it.mapOf){readMap(id);return}
+ if(it.teleport||it.seer||it.larder){useWonder(id);return}
  if(it.kind==="mushroom"){eatShroom(id);return}
  if(!it.heal)return;
  if(it.kind==="food"){ate(it.t.toLowerCase());if(it.shared){const ch=cell(charId());ch.lastMeal=gameNow()+720;touch(ch.id);log("Food that was shared goes twice as far.","good")}}
@@ -3191,9 +3193,37 @@ function useItem(id){
  if(foeId())monsterTurn();
  store.flush();render();
 }
+/* The wonders: teleport, a second Seek, a daily meal */
+function useWonder(id){
+ const it=cell(id),today=dayOf(gameNow()),ch=cell(charId());if(isDowned())return;
+ if(foeId()){flash=`Not with ${cell(foeId()).t} in front of you.`;render();return}
+ if(it.larder){if(it.usedDay===today){flash="The basket is empty until tomorrow.";render();return}
+  it.usedDay=today;touch(id);ate("a fresh meal from the Everfull Larder");const r=roll("1d6"),b=sv("HP");setStat("HP",Math.min(sv("MAXHP"),b+r.total));log(`The Everfull Larder holds bread, cheese and a warm pie. You eat, and recover ${sv("HP")-b} HP.`,"good");store.flush();render();return}
+ if(it.seer){if(seekReady()){flash="Your own sense is fresh today: use the star to Seek first.";render();return}
+  if(it.usedDay===today){flash="The glass is clouded until tomorrow.";render();return}
+  it.usedDay=today;touch(id);ch.seekDay=null;touch(ch.id);log("You look through the Seer's Glass, and the world opens again.","good");seekPeople();return}
+ if(it.teleport==="any"){if(it.usedDay===today){flash="The waystone is cold until the next dawn.";render();return}
+  const T=towns().filter(t=>t.visited&&t.id!==hereId()).sort((a,b)=>a.t.localeCompare(b.t));
+  if(!T.length){flash="Name a town you have stood in: you have not yet been to another.";render();return}
+  const el=$("journeycard");el.innerHTML=`<div class="jc-card" role="dialog" aria-label="Waystone"><h3>Waystone of Return</h3><div class="jc-sub">Name a town you have stood in.</div>
+   <div class="tp-list">${T.map(t=>`<button class="small" data-act="teleport" data-id="${id}|${t.id}">${esc(t.t)}</button>`).join("")}</div><div class="btnrow"><button class="small" data-act="journeyok">Not now</button></div></div>`;el.classList.add("show");return}
+ if(it.teleport==="home"){const C=cottage(),H=cell(hereId());let D=C&&cell(C.town);
+  if(!D){D=towns().filter(t=>t.visited).sort((a,b)=>hexDist(H.x,H.y,a.x,a.y)-hexDist(H.x,H.y,b.x,b.y))[0]}
+  if(!D||D.id===hereId()){flash="You are already where the feather would take you.";render();return}
+  excise(id,"contain");destroy(id);teleportTo(D.id,"You burn the heron's feather. A wind lifts you, and sets you down");return}
+}
+function teleportTo(destId,how){
+ const D=cell(destId);if(!D)return;routePlan=null;
+ log(`${how} in ${D.t}.`,"good");
+ if(sound.started&&sound.on){sound.tone(440,1760,1.2,.05,0,"sine");sound.tone(660,2640,1.2,.03,.1,"triangle")}
+ enter(destId,!D.visited);shunPlayer();if(!isDowned())passTime(5);store.flush();render();if(!isDowned())ensureNeighbours(hereId());
+}
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest('[data-act="teleport"]');if(!b)return;e.stopPropagation();
+ const [sid,tid]=b.dataset.id.split("|"),it=cell(sid);$("journeycard").classList.remove("show");if(!it||foeId()||isDowned())return;
+ it.usedDay=dayOf(gameNow());touch(sid);teleportTo(tid,"You close your hand on the waystone and say the name. The world folds, and you stand")},true);
 function wear(id){
  const it=cell(id),on=!it.worn;
- for(const o of packIds().map(cell))if(o.kind==="armor"&&o.worn){o.worn=false;touch(o.id)}
+ for(const o of packIds().map(cell))if(o.kind==="armor"&&o.worn&&o!==it&&(o.slot==="trinket")===(it.slot==="trinket")&&it.slot!=="trinket"){o.worn=false;touch(o.id)}
  it.worn=on;touch(id);log(on?`You put on ${it.t}. AC is now ${armourClass()}.`:`You take off ${it.t}. AC is now ${armourClass()}.`);store.flush();render();
 }
 function wield(id){
@@ -3780,20 +3810,34 @@ function reputation(){
 const repTier=(r=reputation())=>REP_TIERS.filter(([lo])=>r>=lo).pop()[1];
 // Magic items: each has the reputation it takes before anyone will sell or give it to you
 const MAGIC_ITEMS=[
- {name:"Ring of Warding",description:"A plain silver band that hums when danger is near.",kind:"armor",weight:0,value:120,ac:2,minRep:.25},
+ {name:"Ring of Warding",description:"A plain silver band that hums when danger is near. Worn with any armour.",kind:"armor",slot:"trinket",weight:0,value:120,ac:2,minRep:.25},
  {name:"Lantern of Unfading Light",description:"Its flame needs no oil and does not flicker in wind or rain.",kind:"tool",weight:1,value:90,light:true,minRep:.25},
  {name:"Draught of the Spring",description:"Water from the healing spring, bottled under a full moon.",kind:"potion",weight:.5,value:80,heal:"4d6",minRep:.25},
  {name:"Wand of Sparks",description:"A hazel wand that throws crackling light.",kind:"weapon",weight:.5,value:160,damage:"2d6",finesse:true,minRep:.5},
  {name:"Cloak of the Veil",description:"Woven from golden mist; blows seem to slide off it.",kind:"armor",weight:2,value:200,ac:4,minRep:.5},
- {name:"Riverblade",description:"A sword that runs cold and wet, quenched in the hole at the river's end.",kind:"weapon",weight:3,value:240,damage:"2d8",minRep:.5}
+ {name:"Riverblade",description:"A sword that runs cold and wet, quenched in the hole at the river's end.",kind:"weapon",weight:3,value:240,damage:"2d8",minRep:.5},
+ // rarer things: the best of them turn up only in honoured towns, as quest rewards, or on Keter anomalies
+ {name:"Waystone of Return",description:"A palm-sized stone carved with every town's mark. Hold it and name a town you have stood in, and you are there. It goes cold until the next dawn.",kind:"tool",weight:.5,value:350,teleport:"any",minRep:.5,rare:true},
+ {name:"Feather of Recall",description:"A grey heron's feather. Burn it and the wind carries you to your cottage, or the nearest town you know. It works once.",kind:"tool",weight:0,value:110,teleport:"home",minRep:.25},
+ {name:"Plate of the Last Keep",description:"Full plate, black with age, from the castle that never fell. Heavy as a promise.",kind:"armor",weight:40,value:300,ac:6,minRep:.5,rare:true},
+ {name:"Sunsteel Greatsword",description:"Forged where the desert is hottest; the blade is warm even in snow.",kind:"weapon",weight:6,value:320,damage:"2d10",minRep:.5,rare:true},
+ {name:"Heron Bow",description:"Long, pale and quiet. Arrows from it seem to wait for the gap in a guard.",kind:"weapon",weight:2,value:180,damage:"1d12",finesse:true,minRep:.25},
+ {name:"Phoenix Draught",description:"Red-gold and warm through the glass. One swallow and wounds close as you watch.",kind:"potion",weight:.5,value:250,heal:"8d6",minRep:.5},
+ {name:"Amulet of Stoneskin",description:"A grey pebble on a cord. Worn with any armour, blows land as if on rock.",kind:"armor",slot:"trinket",weight:0,value:220,ac:2,minRep:.5},
+ {name:"Satchel of Holding",description:"An ordinary-looking bag that is roomier inside than out. You can carry 60 lb more.",kind:"tool",weight:1,value:260,holding:60,minRep:.25},
+ {name:"Seer's Glass",description:"A lens of smoky crystal. Look through it and you can Seek a second time in a day.",kind:"tool",weight:.5,value:200,seer:true,minRep:.25},
+ {name:"Everfull Larder",description:"A small lidded basket. Each day it holds a fresh meal, however often you empty it.",kind:"tool",weight:2,value:230,larder:true,minRep:.25},
+ {name:"Crown of the Drowned King",description:"Gold gone green at the rim, still set with river-pearls. Worth a fortune to any merchant.",kind:"treasure",weight:2,value:500,minRep:.5,rare:true},
+ {name:"Starmetal ingot",description:"Fell from the sky over the mountain; it rings when tapped. Smiths would pay dearly.",kind:"treasure",weight:3,value:150,minRep:.25}
 ];
-function magicItem(m,forSale){const id=itemCell(normItem(m));Object.assign(cell(id),{magic:true,minRep:m.minRep,forSale:!!forSale});return id}
+const MAGIC_EXTRA=["teleport","holding","seer","larder","slot","rare"];
+function magicItem(m,forSale){const id=itemCell(normItem(m));Object.assign(cell(id),{magic:true,minRep:m.minRep,forSale:!!forSale});for(const k of MAGIC_EXTRA)if(m[k]!=null)cell(id)[k]=m[k];return id}
 // Town shops stock magic items as your reputation grows; they are never taken away, only withheld
 function stockMagic(townId){
  const T=cell(townId);if(!T||!T.town)return;const r=(reputation()+townStanding(townId))/2;
  const want=(r>=.5?3:r>=.25?1:0)+(r>=.25&&T.town.size==="large"?1:0);
  T.magicStocked=T.magicStocked||[];
- const pool=MAGIC_ITEMS.filter(m=>m.minRep<=r&&!T.magicStocked.includes(m.name));
+ const pool=MAGIC_ITEMS.filter(m=>m.minRep<=r&&!T.magicStocked.includes(m.name)&&(!m.rare||T.town.size==="large"));   // the rarest only in large towns
  while(T.magicStocked.length<want&&pool.length){const m=pool.splice(Math.floor(Math.random()*pool.length),1)[0];appendTo(townId,"contain",magicItem(m,true));T.magicStocked.push(m.name);log(`Word of your name has reached ${T.t}: the merchants bring out ${m.name}.`,"good")}
  touch(townId);
 }
@@ -4060,7 +4104,7 @@ const RECIPES=[
  {name:"Smith's lantern",needs:["coins15"],smith:true,make:LANTERN}
 ];
 function haveFor(r){
- const pack=packIds().map(cell).filter(i=>!i.worn&&!i.wielded),used=new Set();
+ const pack=packIds().map(cell).filter(i=>!i.worn&&!i.wielded&&!i.magic),used=new Set();
  if(r.needs[0]==="coins15"){const coins=pack.filter(i=>i.kind==="treasure").sort((a,b)=>b.value-a.value);let s=0;const take=[];for(const c of coins){if(s>=15)break;s+=c.value;take.push(c.id)}return s>=15?take:null}
  for(const need of r.needs){const it=pack.find(i=>!used.has(i.id)&&ING[need].test(i.t));if(!it)return null;used.add(it.id)}
  return[...used];
@@ -4082,6 +4126,7 @@ const beats=it=>it.kind==="weapon"?diceAvg(it.dmg)>bestOf("weapon",i=>diceAvg(i.
 function itemGroup(it){
  if(it.worn||(it.kind==="weapon"&&weapon()===it))return"wear";
  if(it.heal||it.kind==="mushroom")return"heal";
+ if(it.magic)return"keep";
  if(isIngredient(it))return"craft";
  if(it.kind==="treasure"||it.light||it.mapOf||it.magic||it.kind==="tool")return"keep";
  if(it.kind==="weapon"||it.kind==="armor"){const ws=packIds().map(cell).filter(i=>i.kind===it.kind&&i!==it),mine=it.kind==="weapon"?diceAvg(it.dmg):+it.ac||0;
@@ -5200,6 +5245,7 @@ function itemRow(id,where){
   if(it.heal)acts+=B("use",it.kind==="food"?"eat":"potion",it.kind==="food"?"Eat":"Drink");
   if(it.kind==="mushroom")acts+=B("use","eat",`Eat. ${it.desc||""}`);
   if(it.mapOf)acts+=B("use","read","Read");
+  if(it.teleport||it.seer||it.larder){const cold=it.usedDay===dayOf(gameNow());acts+=B("use","magic",(it.teleport==="any"?"Travel to a town":it.teleport==="home"?"Burn it: go home":it.seer?"Seek again":"Take today's meal")+(cold?" (used today)":""),cold?"disabled":"")}
   if(atCottage())acts+=B("deposit","store","Store in your chest");
   if(it.kind==="treasure")acts+=B("use","coin","Put in your purse");
   if(it.kind==="armor")acts+=B("wear","armor",it.worn?"Take off":"Wear");
@@ -6221,7 +6267,7 @@ document.addEventListener("click",e=>{
   trade:i=>{openTrade=openTrade===i?null:i;openChat=null;armedAttack=null;render()},
   buyfood:buyFood,sell:v=>{const [n,it]=v.split("|");sellTo(n,it)},quest:i=>{offerQuest(cell(i));passTime(5);store.flush();render()},
   give:giveFood,arm:i=>{armedAttack=armedAttack===i?null:i;render()},hit:attackAgent,
-  disengage:()=>disengage(),seek:()=>seekPeople(),pickall:()=>pickUpAll(),sellspares:()=>sellSpares(),journeyok:()=>{},victorytake:()=>{},pickdismiss:()=>$("pickflash").classList.remove("show"),autofight:()=>toggleAutoFight(),evgo:id=>goToEvent(id),reengage:()=>{const f=foeHere();if(f){cell(f).truce=0;touch(f);log(`You turn to face ${cell(f).t} again.`,"bad");store.flush();render()}},craft,deposit,withdraw,rent:rentCottage,leave:leaveForOthers,takeleft:takeLeft,train:takeTrain,steal:trySteal,sharefood:shareFood,rate:rateChat,contest:enterContest,festprize:festivalPrize,throwdart:throwDart})[b.dataset.act](id);return}
+  disengage:()=>disengage(),seek:()=>seekPeople(),pickall:()=>pickUpAll(),teleport:()=>{},sellspares:()=>sellSpares(),journeyok:()=>{},victorytake:()=>{},pickdismiss:()=>$("pickflash").classList.remove("show"),autofight:()=>toggleAutoFight(),evgo:id=>goToEvent(id),reengage:()=>{const f=foeHere();if(f){cell(f).truce=0;touch(f);log(`You turn to face ${cell(f).t} again.`,"bad");store.flush();render()}},craft,deposit,withdraw,rent:rentCottage,leave:leaveForOthers,takeleft:takeLeft,train:takeTrain,steal:trySteal,sharefood:shareFood,rate:rateChat,contest:enterContest,festprize:festivalPrize,throwdart:throwDart})[b.dataset.act](id);return}
  const d=e.target.closest("#compass button[data-dir]");if(d){move(d.dataset.dir);return}
  // while the map slides (and a moment after), taps on it are ignored, so a moving map never walks you somewhere
  if(e.target.closest("#map")&&mapCam&&(mapCam.anim||performance.now()-(mapCam.settled||0)<250||mapDownAt>(mapCam.anim?mapCam.anim.t0:mapCam.slideStart||0)&&mapDownDuringSlide))return;
