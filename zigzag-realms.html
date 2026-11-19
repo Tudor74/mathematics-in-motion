@@ -2872,12 +2872,16 @@ function fall(locId){
  setStat("HP",0);rounds=[];
  log(`You fall at ${cell(locId).t}.`,"bad");
 }
+// From now until the next sunrise: through tonight if it is night, else through the rest of today and the coming night
+function minutesToNextDawn(t){if(isNight(t))return minutesToDawn(t)+1;let m=0;while(!isNight(t+m)&&m<1440)m+=15;return m+minutesToDawn(t+m)+1}
 function wakeAtHome(){
  const ch=cell(charId()),locId=ch.downed;if(!locId)return;let n=0;
  for(const id of packIds()){excise(id,"contain");Object.assign(cell(id),{worn:false,wielded:false});touch(id);appendTo(locId,"contain",id);n++}
  ch.downed=null;touch(ch.id);setStat("HP",Math.max(1,Math.ceil(sv("MAXHP")/2)));connect(ch.id,"at",cell("root").home);markSeen(cell("root").home);
- log(`You wake back at ${cell(cell("root").home).t} with half your HP (${sv("HP")}).${n?` Your pack lies where you fell, at ${cell(locId).t}.`:""}`,"bad");
- passTime(REST_MIN);store.flush();render();
+ // you are always reborn at sunrise, so waking never lands you straight in a night camp
+ passTime(minutesToNextDawn(gameNow()));ch.campedNight=null;ch.lastMeal=gameNow();ch.starveMark=0;ch.hungerSaid=0;touch(ch.id);   // whoever found you fed you
+ log(`You wake at dawn back at ${cell(cell("root").home).t} with half your HP (${sv("HP")}), fed and rested.${n?` Your pack lies where you fell, at ${cell(locId).t}.`:""}`,"bad");
+ store.flush();render();
 }
 function resurrect(){
  const ch=cell(charId());if(!ch.downed)return;const ent=entitlement();
@@ -2885,7 +2889,8 @@ function resurrect(){
  ent.tokens--;saveEntitlement(ent);
  const back=ch.prevAt&&!foeId(ch.prevAt)&&cell(ch.prevAt)?ch.prevAt:cell("root").home;
  ch.downed=null;touch(ch.id);setStat("HP",Math.ceil(sv("MAXHP")/2));connect(ch.id,"at",back);
- log(`A resurrection token burns away. You open your eyes at ${cell(back).t}, pack and all, with half your HP.`,"good");
+ const wasNight=isNight(gameNow());if(wasNight){passTime(minutesToNextDawn(gameNow()));ch.campedNight=null;touch(ch.id)}
+ log(`A resurrection token burns away. You open your eyes at ${cell(back).t}${wasNight?" as the sun comes up":""}, pack and all, with half your HP.`,"good");
  store.flush();render();
 }
 /* Billing. These are the game-side rules; payments themselves are not connected yet, so entitlements
