@@ -1,0 +1,319 @@
+// Zigzag Realms shared-realm worker (Puter Worker).
+// Deploy: put this file in Puter and create a worker from it. All shared state lives in the
+// owner's KV (me.puter.kv) under the "zrmp:" prefix. Callers are identified by their Puter
+// sign-in (user.puter), never by anything in the request body.
+const P = "zrmp:";
+const CHUNK = 4;                 // squares are stored in 4×4 chunks, one KV key each
+const ONLINE_TTL = 180e3;        // a player counts as online for 3 minutes after their last ping
+const LIST_EVERY = 4e3;          // the online list is rebuilt from player keys at most every 4 s
+const SNAP_PART = 300e3;         // bytes per snapshot part (KV values are capped near 400 KB)
+const who = new Map();
+// Realm events: one every two real hours, the same for everyone, in a fixed rotation.
+// Only the foe needs the server: its wounds are shared, counted with atomic increments.
+const EV_SLOT = 2 * 3600e3, EV_HP = 150, EV_KINDS = ["storm", "market", "foe"];
+const evSlot = (t = Date.now()) => Math.floor(t / EV_SLOT);
+const evKind = slot => EV_KINDS[((slot % 3) + 3) % 3];
+async function evState(slot, u) {
+  if (evKind(slot) !== "foe") return { slot, kind: evKind(slot) };
+  const dmg = (await me.puter.kv.get(P + "ev:" + slot + ":dmg")) || 0;
+  const n = (await me.puter.kv.get(P + "ev:" + slot + ":n")) || 0;
+  const mine = u ? (await me.puter.kv.get(P + "ev:" + slot + ":u:" + u)) || 0 : 0;
+  return { slot, kind: "foe", hp: EV_HP, dmg, n, mine };
+}           // auth token -> username, cached per worker instance
+
+const json = (o, status = 200) => new Response(JSON.stringify(o), { status, headers: { "Content-Type": "application/json" } });
+const bad = (msg, status = 400) => json({ error: msg }, status);
+const str = (v, n) => typeof v === "string" ? v.replace(/[\u0000-\u001f]/g, " ").trim().slice(0, n) : "";
+const num = (v, lo, hi, d = 0) => Number.isFinite(+v) ? Math.max(lo, Math.min(hi, +v)) : d;
+const dice = v => typeof v === "string" && /^\d{1,2}d\d{1,3}([+-]\d{1,2})?$/.test(v) ? v : "";
+const sqKey = (x, y, z) => `${x|0},${y|0},${z|0}`;
+const chunkOf = (x, y, z) => `${P}ch:${Math.floor(x / CHUNK)},${Math.floor(y / CHUNK)},${z|0}`;
+
+async function identify(request, user) {
+  if (!user || !user.puter) return null;
+  const tok = request.headers.get("puter-auth") || "";
+  if (tok && who.has(tok)) return who.get(tok);
+  let u = null;
+  try { u = await user.puter.auth.getUser() } catch (e) { try { u = await user.puter.getUser() } catch (e2) {} }
+  const name = u && (u.username || u.uuid);
+  if (!name) return null;
+  if (tok) { if (who.size > 5000) who.clear(); who.set(tok, name) }
+  return name;
+}
+async function body(request) { try { return await request.json() } catch (e) { return {} } }
+async function guard(request, user) {
+  const me_ = await identify(request, user);
+  if (!me_) return [null, bad("Sign in with Puter to join the shared realm.", 401)];
+  return [me_, null];
+}
+
+// ---------- the realm: one world snapshot, written once by the first player ----------
+router.get("/realm", async () => {
+  const meta = await me.puter.kv.get(P + "snap:meta");
+  const online = await me.puter.kv.get(P + "online");
+  const n = online ? Object.values(online.players || {}).filter(p => Date.now() - p.t < ONLINE_TTL).length : 0;
+  return { ready: !!meta, meta: meta || null, online: n };
+});
+router.post("/realm/claim", async ({ request, user }) => {
+  const [u, err] = await guard(request, user); if (err) return err;
+  if (await me.puter.kv.get(P + "snap:meta")) return { granted: false, ready: true };
+  const c = await me.puter.kv.get(P + "snap:claim");
+  if (c && c.by !== u && Date.now() - c.at < 5 * 60e3) return { granted: false, ready: false, by: c.by };
+  await me.puter.kv.set(P + "snap:claim", { by: u, at: Date.now() });
+  const again = await me.puter.kv.get(P + "snap:claim");
+  return { granted: !!again && again.by === u, ready: false };
+});
+router.post("/realm/part/:i", async ({ request, user, params }) => {
+  const [u, err] = await guard(request, user); if (err) return err;
+  const c = await me.puter.kv.get(P + "snap:claim");
+  if (!c || c.by !== u) return bad("Only the player founding the realm can write it.", 403);
+  if (await me.puter.kv.get(P + "snap:meta")) return bad("The realm already exists.", 409);
+  const i = num(params.i, 0, 40);
+  const text = await request.text();
+  if (text.length > SNAP_PART + 1000) return bad("Part too large.", 413);
+  await me.puter.kv.set(P + "snap:" + i, text);
+  return { ok: true };
+});
+router.post("/realm/done", async ({ request, user }) => {
+  const [u, err] = await guard(request, user); if (err) return err;
+  const c = await me.puter.kv.get(P + "snap:claim");
+  if (!c || c.by !== u) return bad("Only the founder can finish the realm.", 403);
+  const b = await body(request);
+  const meta = { parts: num(b.parts, 1, 40, 1), by: u, at: Date.now(), name: str(b.name, 80), id: "r" + Date.now().toString(36) };
+  await me.puter.kv.set(P + "snap:meta", meta);
+  return { ok: true, meta };
+});
+router.get("/realm/part/:i", async ({ params }) => {
+  const t = await me.puter.kv.get(P + "snap:" + num(params.i, 0, 40));
+  return t == null ? bad("No such part.", 404) : new Response(t, { headers: { "Content-Type": "application/json" } });
+});
+
+// ---------- squares discovered by anyone, first writer wins ----------
+function cleanSquare(s) {
+  if (!s || typeof s !== "object") return null;
+  const o = { name: str(s.name, 80), desc: str(s.desc, 1200), glimpse: str(s.glimpse, 100), terrain: str(s.terrain, 20),
+    exits: str(s.exits, 6), walls: s.walls && typeof s.walls === "object" ? Object.fromEntries(Object.entries(s.walls).filter(([d]) => ["north", "south", "east", "west", "up", "down"].includes(d)).map(([d, w]) => [d, str(w, 80)])) : null,
+    planned: !!s.planned, by: str(s.by, 40), at: Date.now() };
+  if (!o.desc) return null;
+  o.hasMon = !!s.hasMon;
+  if (s.mon && typeof s.mon === "object") o.mon = { name: str(s.mon.name, 60), designation: str(s.mon.designation, 20), objectClass: ["Safe", "Euclid", "Keter"].includes(s.mon.objectClass) ? s.mon.objectClass : "Euclid",
+    description: str(s.mon.description, 500), hp: num(s.mon.hp, 1, 200, 10) | 0, ac: num(s.mon.ac, 5, 20, 12) | 0, attack: num(s.mon.attack, 0, 15, 3) | 0, damage: dice(s.mon.damage) || "1d6",
+    special: ["none", "regenerate", "phasing", "frenzy"].includes(s.mon.special) ? s.mon.special : "none" };
+  if (s.hazard && typeof s.hazard === "object") o.hazard = { name: str(s.hazard.name, 60), text: str(s.hazard.text, 200), stat: str(s.hazard.stat, 3), dc: num(s.hazard.dc, 5, 20, 10), damage: dice(s.hazard.damage) || "1d4" };
+  return o;
+}
+router.post("/squares/get", async ({ request }) => {
+  const b = await body(request), keys = Array.isArray(b.keys) ? b.keys.slice(0, 24) : [];
+  const chunks = {}, out = {};
+  for (const k of keys) { const [x, y, z] = String(k).split(",").map(Number); if ([x, y, z].some(Number.isNaN)) continue; (chunks[chunkOf(x, y, z)] ||= []).push(sqKey(x, y, z)) }
+  for (const [ck, ks] of Object.entries(chunks)) { const c = await me.puter.kv.get(ck) || {}; for (const k of ks) if (c[k]) out[k] = c[k] }
+  return { squares: out };
+});
+router.post("/squares/put", async ({ request, user }) => {
+  const [u, err] = await guard(request, user); if (err) return err;
+  const b = await body(request), sq = b.squares && typeof b.squares === "object" ? Object.entries(b.squares).slice(0, 12) : [];
+  const chunks = {}, kept = {};
+  for (const [k, s] of sq) { const [x, y, z] = String(k).split(",").map(Number); const c = cleanSquare(Object.assign({}, s, { by: u })); if (!c || [x, y, z].some(Number.isNaN)) continue; (chunks[chunkOf(x, y, z)] ||= {})[sqKey(x, y, z)] = c }
+  for (const [ck, add] of Object.entries(chunks)) {
+    const cur = await me.puter.kv.get(ck) || {};
+    let changed = false;
+    for (const [k, s] of Object.entries(add)) { if (cur[k]) { kept[k] = cur[k]; continue } cur[k] = s; kept[k] = s; changed = true }
+    if (changed) await me.puter.kv.set(ck, cur);
+  }
+  return { squares: kept };   // what is now true for each key (yours, or the earlier writer's)
+});
+
+// ---------- presence: each player writes only their own key; the list is rebuilt now and then ----------
+router.post("/presence", async ({ request, user }) => {
+  const [u, err] = await guard(request, user); if (err) return err;
+  const b = await body(request), now = Date.now();
+  const prev = await me.puter.kv.get(P + "pl:" + u);
+  if (prev && now - prev.t < 1500) return json({ error: "Too fast." }, 429);
+  const x = num(b.x, -99, 99) | 0, y = num(b.y, -99, 99) | 0, z = num(b.z, -9, 9) | 0;
+  const trail = ((prev && prev.trail) || []).filter(p => p.t > now - 6 * 3600e3);
+  const last = trail[trail.length - 1];
+  if (!last || last.x !== x || last.y !== y || last.z !== z) trail.push({ x, y, z, t: now });
+  const me_ = { u, name: str(b.name, 40) || u, cls: str(b.cls, 20), lvl: num(b.lvl, 1, 30, 1) | 0, x, y, z, t: now, trail: trail.slice(-8),
+    say: prev && prev.say || null, exp: prev && prev.exp || 0,
+    poss: b.poss != null ? num(b.poss, 0, 999) | 0 : (prev && prev.poss) || 0,
+    worth: b.worth != null ? num(b.worth, 0, 1e7) | 0 : (prev && prev.worth) || 0,
+    colour: /^#[0-9a-f]{6}$/i.test(b.colour || "") ? b.colour : (prev && prev.colour) || "" };
+  const refresh = now - me_.exp > 300e3; if (refresh) me_.exp = now;
+  const said = str(b.say, 160);
+  if (said) me_.say = { text: said, t: now, x, y, z };
+  await me.puter.kv.set(P + "pl:" + u, me_);
+  // What could be stolen from you: sent only when it changes, kept apart from the public list
+  if (Array.isArray(b.pack)) await me.puter.kv.set(P + "pk:" + u, b.pack.slice(0, 40).map(it => Object.assign(cleanItem(it) || {}, { id: str(it.id, 20) })).filter(it => it.name));
+  // Thefts from you since your last ping, for your game to take out of your pack
+  let thefts = await me.puter.kv.get(P + "th:" + u);
+  if (thefts && thefts.length) await me.puter.kv.del(P + "th:" + u); else thefts = [];
+  if (refresh) { try { await me.puter.kv.expire(P + "pl:" + u, 3600) } catch (e) {} }   // forgotten players fall out of the list
+  let online = await me.puter.kv.get(P + "online");
+  if (!online || now - online.at > LIST_EVERY) {
+    const players = {};
+    let cursor;
+    do {
+      const page = await me.puter.kv.list({ pattern: P + "pl:", returnValues: true, limit: 1000, cursor });
+      const items = Array.isArray(page) ? page : page.items || [];
+      for (const it of items) { const v = it.value; if (v && now - v.t < ONLINE_TTL) players[v.u] = v }
+      cursor = Array.isArray(page) ? null : page.cursor;
+    } while (cursor);
+    online = { at: now, players };
+    await me.puter.kv.set(P + "online", online);
+  }
+  online.players[u] = me_;
+  const ground = await me.puter.kv.get(P + "gi:" + sqKey(x, y, z)) || [];
+  const ev = await evState(evSlot(now), u);
+  // ---- the shared world: a keeper (by short lease) runs townsfolk, creatures and anomalies
+  let keeper = await me.puter.kv.get(P + "keeper");const freshKeeper = !keeper || keeper.u !== u;
+  if (!keeper || keeper.until < now || keeper.u === u) { keeper = { u, until: now + 20000 }; await me.puter.kv.set(P + "keeper", keeper) }
+  const amKeeper = keeper.u === u;
+  let world = await me.puter.kv.get(P + "world"), acts = (await me.puter.kv.get(P + "wacts")) || [], dead = (await me.puter.kv.get(P + "wdead")) || [];
+  let actsChanged = false, deadChanged = false;
+  if (!amKeeper && Array.isArray(b.acts)) for (const a of b.acts.slice(0, 40)) {
+    let c = null;
+    if (a && a.k === "npc" && typeof a.id === "string" && a.patch && typeof a.patch === "object") {
+      const pt = {};
+      for (const k of ["hp", "food", "gold"]) if (a.patch[k] != null) pt[k] = num(a.patch[k], -50, 999) | 0;
+      for (const k of ["x", "y"]) if (a.patch[k] != null) pt[k] = num(a.patch[k], -99, 99) | 0;
+      if ("defeated" in a.patch) pt.defeated = a.patch.defeated && typeof a.patch.defeated === "object" ? { place: str(a.patch.defeated.place, 60), until: num(a.patch.defeated.until, 0, 1e9) } : null;
+      c = { k: "npc", id: str(a.id, 20), patch: pt };
+    } else if (a && a.k === "mon" && typeof a.sid === "string") {
+      c = { k: "mon", sid: str(a.sid, 30) };
+      if (a.gone) { c.gone = true; if (!dead.includes(c.sid)) { dead.push(c.sid); deadChanged = true } } else c.hp = num(a.hp, -50, 999) | 0;
+    }
+    if (c) { c.seq = await me.puter.kv.incr(P + "wseq"); acts.push(c); actsChanged = true }
+  }
+  if (amKeeper && b.world && typeof b.world === "object") {
+    const ack = num(b.ack, 0, 1e9) | 0;
+    const before = acts.length; acts = acts.filter(a => a.seq > ack); if (acts.length !== before) actsChanged = true;
+    const mons = b.world.mons && typeof b.world.mons === "object" ? b.world.mons : {};
+    if (world && world.mons) for (const sid of Object.keys(world.mons)) if (!(sid in mons) && !dead.includes(sid)) { dead.push(sid); deadChanged = true }
+    world = { v: ((world && world.v) || 0) + 1, at: now, npcs: b.world.npcs || {}, mons };
+    const text = JSON.stringify(world);
+    if (text.length < 350e3) await me.puter.kv.set(P + "world", world);
+  }
+  if (actsChanged) await me.puter.kv.set(P + "wacts", acts.slice(-200));
+  if (deadChanged) await me.puter.kv.set(P + "wdead", dead.slice(-800));
+  return { you: u, now, players: Object.values(online.players).filter(p => now - p.t < ONLINE_TTL), ground, ev, thefts,
+    keeper: amKeeper, world: amKeeper && !freshKeeper ? null : world, wacts: acts, dead };
+});
+
+// ---------- items left on the ground for other players ----------
+function cleanItem(it) {
+  if (!it || typeof it !== "object") return null;
+  const kinds = ["weapon", "armor", "potion", "treasure", "tool", "food", "junk"];
+  const o = { name: str(it.name, 60), desc: str(it.desc, 240), kind: kinds.includes(it.kind) ? it.kind : "junk",
+    weight: num(it.weight, 0, 60, 1), value: num(it.value, 0, 500, 1) | 0, heal: dice(it.heal), ac: num(it.ac, 0, 5) | 0,
+    dmg: dice(it.dmg || it.damage), finesse: !!it.finesse, light: !!it.light, magic: !!it.magic };
+  return o.name ? o : null;
+}
+router.post("/ground/drop", async ({ request, user }) => {
+  const [u, err] = await guard(request, user); if (err) return err;
+  const b = await body(request), item = cleanItem(b.item);
+  if (!item) return bad("That item cannot be left here.");
+  const k = P + "gi:" + sqKey(b.x, b.y, b.z);
+  const list = (await me.puter.kv.get(k) || []).filter(g => Date.now() - g.at < 7 * 86400e3);
+  if (list.length >= 12) return bad("There is no room left on the ground here.", 409);
+  const g = { id: "g" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), by: u, at: Date.now(), item };
+  list.push(g);
+  await me.puter.kv.set(k, list);
+  return { ok: true, ground: list };
+});
+router.post("/ground/take", async ({ request, user }) => {
+  const [u, err] = await guard(request, user); if (err) return err;
+  const b = await body(request), id = str(b.id, 40);
+  const k = P + "gi:" + sqKey(b.x, b.y, b.z);
+  const list = await me.puter.kv.get(k) || [];
+  const g = list.find(g => g.id === id);
+  if (!g) return json({ ok: false, error: "Someone else has already taken it.", ground: list }, 409);
+  // incr is atomic, so only the first taker gets 1 even if two arrive together
+  const n = await me.puter.kv.incr(P + "tk:" + id);
+  if (n !== 1) return json({ ok: false, error: "Someone else has already taken it.", ground: list.filter(x => x.id !== id) }, 409);
+  const fresh = (await me.puter.kv.get(k) || []).filter(x => x.id !== id);
+  await me.puter.kv.set(k, fresh);
+  try { await me.puter.kv.expire(P + "tk:" + id, 86400) } catch (e) {}
+  return { ok: true, item: g.item, by: g.by, ground: fresh };
+});
+
+// ---------- realm events: wounds on the shared foe, and the reward for those who fought it ----------
+router.post("/event/hit", async ({ request, user }) => {
+  const [u, err] = await guard(request, user); if (err) return err;
+  const b = await body(request), slot = evSlot();
+  if ((b.slot | 0) !== slot || evKind(slot) !== "foe") return bad("That foe is gone.", 409);
+  const dmg = num(b.dmg, 0, 30) | 0;
+  if (!dmg) return await evState(slot, u);
+  const cur = (await me.puter.kv.get(P + "ev:" + slot + ":dmg")) || 0;
+  if (cur >= EV_HP) return await evState(slot, u);
+  const mine = await me.puter.kv.incr(P + "ev:" + slot + ":u:" + u, dmg);
+  if (mine === dmg) await me.puter.kv.incr(P + "ev:" + slot + ":n");     // a new fighter
+  await me.puter.kv.incr(P + "ev:" + slot + ":dmg", dmg);
+  return await evState(slot, u);
+});
+router.post("/event/claim", async ({ request, user }) => {
+  const [u, err] = await guard(request, user); if (err) return err;
+  const b = await body(request), slot = b.slot | 0, now = evSlot();
+  if (slot !== now && slot !== now - 1) return bad("That was too long ago.", 409);
+  const st = await evState(slot, u);
+  if (st.kind !== "foe" || st.dmg < EV_HP) return json({ ok: false, error: "It still stands." }, 409);
+  if (!st.mine) return json({ ok: false, error: "You did not fight it." }, 403);
+  const first = await me.puter.kv.incr(P + "ev:" + slot + ":claimed:" + u);
+  if (first !== 1) return json({ ok: false, error: "Already claimed." }, 409);
+  return { ok: true, share: st.mine / st.dmg, fighters: st.n, mine: st.mine };
+});
+
+// ---------- stealing: players cannot hurt each other, but may try to lift one item from someone
+// standing with them who carries more than twice what they do. Once a day for each pair. ----------
+router.post("/steal", async ({ request, user }) => {
+  const [u, err] = await guard(request, user); if (err) return err;
+  const b = await body(request), target = str(b.target, 60), now = Date.now();
+  if (!target || target === u) return bad("There is no one to steal from.");
+  const [mine, theirs] = [await me.puter.kv.get(P + "pl:" + u), await me.puter.kv.get(P + "pl:" + target)];
+  if (!mine || !theirs || now - theirs.t > ONLINE_TTL) return bad("They are not here.", 409);
+  if (mine.x !== theirs.x || mine.y !== theirs.y || mine.z !== theirs.z) return bad("They are not here.", 409);
+  if (!(theirs.poss > 2 * mine.poss)) return bad("They carry no more than twice what you do; there is nothing to gain.", 409);
+  const tries = await me.puter.kv.incr(P + "st:" + u + ":" + target + ":" + Math.floor(now / 86400e3));
+  if (tries > 1) return bad("You have already tried today. They are watching you now.", 409);
+  const roll = 1 + Math.floor(Math.random() * 20), dex = num(b.dex, -5, 5) | 0, total = roll + dex;
+  if (total < 12) {
+    const th = (await me.puter.kv.get(P + "th:" + target)) || [];
+    th.push({ thief: mine.name || u, failed: true, t: now }); await me.puter.kv.set(P + "th:" + target, th.slice(-10));
+    return { ok: false, roll, total };
+  }
+  const pack = (await me.puter.kv.get(P + "pk:" + target)) || [];
+  if (!pack.length) return { ok: false, roll, total, empty: true };
+  const i = Math.floor(Math.random() * pack.length), item = pack[i];
+  pack.splice(i, 1); await me.puter.kv.set(P + "pk:" + target, pack);
+  const th = (await me.puter.kv.get(P + "th:" + target)) || [];
+  th.push({ thief: mine.name || u, id: item.id, name: item.name, t: now }); await me.puter.kv.set(P + "th:" + target, th.slice(-10));
+  return { ok: true, roll, total, item, from: theirs.name || target, theirWorth: theirs.worth || 0, myWorth: mine.worth || 0 };
+});
+
+// ---------- sharing food with another player standing with you ----------
+router.post("/gift", async ({ request, user }) => {
+  const [u, err] = await guard(request, user); if (err) return err;
+  const b = await body(request), target = str(b.target, 60), now = Date.now(), item = cleanItem(b.item);
+  if (!item || item.kind !== "food") return bad("Only food can be shared this way.");
+  const [mine, theirs] = [await me.puter.kv.get(P + "pl:" + u), await me.puter.kv.get(P + "pl:" + target)];
+  if (!mine || !theirs || now - theirs.t > ONLINE_TTL || mine.x !== theirs.x || mine.y !== theirs.y || mine.z !== theirs.z) return bad("They are not here.", 409);
+  const th = (await me.puter.kv.get(P + "th:" + target)) || [];
+  th.push({ from: mine.name || u, gift: item, t: now }); await me.puter.kv.set(P + "th:" + target, th.slice(-10));
+  return { ok: true };
+});
+
+router.get("/health", async () => ({ ok: true, at: Date.now() }));
+// Opened in a browser, the worker explains itself in plain text instead of answering "Not found".
+// (Puter adds a warning pop-up to HTML served from a worker, so this is deliberately not a web page.)
+router.get("/", async () => {
+  const meta = await me.puter.kv.get(P + "snap:meta");
+  const text = [
+    "Zigzag Realms: shared realm server",
+    "",
+    "This address is the server behind the shared realm. There is nothing to play here.",
+    "To play, go to https://zigzag-realms.puter.site and tick \"Join the shared realm\" before you set out.",
+    "",
+    "Status: " + (meta ? "the shared realm has been founded." : "no one has founded the shared realm yet."),
+  ].join("\n");
+  return new Response(text, { headers: { "Content-Type": "text/plain; charset=utf-8" } });
+});
+router.get("/*page", async ({ params }) => bad("Not found: " + params.page, 404));

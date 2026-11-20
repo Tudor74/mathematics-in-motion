@@ -1,3 +1,230 @@
 # Mathematics In Motion
 
-Interactive maths page (v0.11). Open `index.html` in a browser.
+This repository contains two browser projects.
+
+| Project | Source entry point | How to open it |
+| --- | --- | --- |
+| Mathematics in Motion (v0.11) | [`index.html`](index.html) | Open the file in a browser. |
+| Zigzag Realms | [`zigzag-realms.html`](zigzag-realms.html) | Open the file in a browser for local play, or visit the [live Puter game](https://zigzag-realms.puter.site/). |
+
+### Zigzag Realms deployment files
+
+- [`zigzag-realms.html`](zigzag-realms.html) is the game source. For Puter hosting, wrap it in a complete HTML document and deploy that document as `index.html` in the Puter site folder. The repository's root `index.html` is the maths project.
+- [`tools/realms-worker.js`](tools/realms-worker.js) is the separate Puter Worker for the shared realm.
+- [`tools/realm-script.mjs`](tools/realm-script.mjs) generates the realm alphabet data. See [The realm script](#the-realm-script) for the command.
+
+## Zigzag Realms
+
+`zigzag-realms.html` is a D&D-style exploration game whose map builds itself.
+Every place, item, person, creature, anomaly and stat is a cell in a ZigZag
+structure (`d.x` east/west, `d.y` north/south, `d.z` up/down, `d.river` the
+river's flow, `d.residents` a town's people, `d.contain` stores, `d.stat` the
+character sheet, `d.occupant` an anomaly at a place, `d.at` where you stand).
+
+- A prepopulated region: a river that rises at the mountain and ends in a
+  bottomless hole, three towns (with shops and inns), a ford, a stone bridge
+  and a magical bridge that comes and goes, a woodland with a magical grove, a
+  mountain path to the peak, two lakes, a waterfall, caves under the mountain,
+  a desert, and twelve monuments that each reveal one of the game's real rules.
+- Places beyond are written one step ahead by the AI narrator (or built-in
+  tables), with explicit exits, so each direction shows what you can see.
+- 20 townsfolk and 10 creatures move, forage, fight or flee, go home at night,
+  and form a social graph from a small dynamical model of ties.
+- A world clock at 4× speed, weather driven by a mountain storm engine and a
+  desert heat engine, lightning, and forest fires.
+- d20 combat against original SCP-style anomalies; a lantern is needed at
+  night and underground; death offers waking at the start or a paid resurrection.
+- A generated soundtrack (noise beds, birds, crickets, drips, crackle, thunder).
+- The world is 65 squares across and wraps round at the veil of golden mist.
+
+As a Claude artifact it narrates with Claude and saves to the viewer's Claude
+account. Hosted on puter.site it uses Puter sign-in, a cheap model through `puter.ai.chat`, and
+Puter KV storage. Opened as a plain file it uses built-in tables and saves in
+the browser.
+
+### The realm script
+
+`tools/realm-script.mjs` generates a new 26-letter alphabet for English and writes
+`tools/realm-script.json`, which the game embeds and turns into a font in the
+browser (toggle "Script" in the header). Each letter is described by 21
+features (Latin form, English sound, the meaning of the Proto-Sinaitic
+pictograph it descends from, frequency), reduced to three principal components
+that set terminals and corners. Glyphs are drawn from the source pictographs,
+and a frequency-weighted search over variants keeps frequent letters light and
+hard to confuse. Run `node tools/realm-script.mjs` to regenerate.
+
+### v0.2: the garden, encounters and reputation
+
+- **The garden**: a canvas of flowers grown from the social graph. One flower per
+  group held together by friendly ties; petals from group size, layers from
+  clustering, petal length from tie strength, seed spirals from overall bloom.
+  Flowers droop, shed petals and grow thorns as the fabric sours.
+- **Conversation**: a back-and-forth chat with each townsperson, written by the
+  narrator in character and remembered.
+- **Trade**: buy rations from townsfolk and sell them your things; friends give
+  better prices.
+- **Quests**: slay an anomaly, deliver food to a friend, or read a monument.
+- **Fighting townsfolk and creatures**: once each, never to the death. The
+  beaten are carried to one of four sanctuaries to recover, and from then on
+  flee two squares for each one you take toward them.
+- **Allies**: friends and following creatures strike anomalies beside you.
+- **Reputation** (the mean of everyone's tie to you) decides who gives work, how
+  well it pays, quest rewards of magic items, and which magic items shops offer.
+- **The paladin** (v0.2.1): your standing is ranked against every townsperson's
+  and creature's standing in the social graph. At the 5th percentile or below,
+  with a negative reputation, a paladin rides out from a sanctuary and pursues
+  you at two squares per half hour (twice your speed), routing around the river.
+  On catching you they defeat you, take your magic items, restore your standing
+  to a random point between the 5th and 20th percentile, and leave seven days of
+  rations. They do not ride out again for two days.
+- **Layout** (v0.2.4): every panel except "You are at", the survey map and the
+  character sheet can be rolled up and dragged to any column (or moved with the
+  arrow keys from its grip). Desktop and phone layouts are saved separately.
+- **Town voices and sanctuaries** (v0.2.5): towns murmur with talk, carts and
+  song, scaled by size (talk by day, carts by day, singing mostly at night).
+  Sanctuaries are hushed. Resting at one heals fully, with a 4% chance of a boon
+  of +1 or +2 to one ability for 7 to 30 days.
+- **Night** (v0.2.8): the clock runs at 4× real time by day and 200× at night, so
+  night (20:00 to 06:00) lasts about three real minutes and a full day about
+  3 hours 33 minutes. At nightfall a friendly overlay suggests a break: stretch,
+  pet the cat (or dog, or imaginary friend), and get some water. It can be
+  switched off.
+- **Lantern limit** (v0.2.9): a lantern gives two game hours (four steps) of
+  night travel; then you must make camp or take a room. Resting or dawn refills it.
+
+### v0.3
+
+- **Seasons**: a 28-day year of four seven-day seasons. Dawn and dusk move with
+  the season (winter nights are longest), but every night still lasts about
+  three real minutes. Winter freezes the river so it can be walked across, and
+  snow closes unexplored high mountain paths. Temperature, snow and foraging
+  follow the season.
+- **Hunger**: after about a day without food you are hungry (−1 STR, −1 CON, half
+  healing when you camp). Later you are starving and lose 1 HP every six hours.
+  Eating, or resting at an inn or your cottage, fixes it.
+- **Rumours that come true**: friendly townsfolk sometimes pass on a rumour (a
+  cache, a lost item, a lurking creature). It is planted in the world and marked
+  ★ on the map until you find it.
+- **Cottage**: rent one in a town for 30 gp. Sleeping there is free and comes
+  with supper. Its chest is safe from paladins and falls.
+- **Companion gifts**: allies who travel with you help. The wisp gives light,
+  the pony carries 60 lb, the raven scouts, the fox finds things, the otter and
+  heron fish at dawn, the badger heals you fully at camp, and the deer adds an
+  hour of night travel.
+- **Maps and notes**: towns sell maps of sanctuaries, springs, caves and
+  monuments. About one in five is wrong and adds a false mark. You can also
+  leave your own note on any place; a pencil mark shows it on the map.
+- **Town factions**: the towns have rivalries. Helping one town raises your
+  standing there and lowers it with its rivals. Standing affects magic stock.
+- **Anomalies**: some stay put, some roam across the land, and some spread
+  (capped at six offspring).
+- **Crafting**: potions, a draught of vigour, a charm of warding, pitch torches,
+  hearty stew, and a smith's lantern, made from what you carry.
+
+### v0.4: the shared realm
+
+- **Multiplayer on Puter**: on puter.site, tick "Join the shared realm" before
+  setting out (you sign in with Puter). The first player to do so founds the
+  realm. Their starting world (the river, towns, region, townsfolk, creatures and
+  monuments) is saved by a Puter Worker (`tools/realms-worker.js`, deployed as
+  zigzag-realms-mp.puter.work). Every later player downloads that same world but
+  keeps their own character, pack, clock and save.
+- **Shared squares**: before the narrator writes a new square, the game asks the
+  realm whether someone has already written it, and uses theirs if so. Each player
+  still rolls their own finds and anomalies there. Squares are stored in 4×4
+  chunks, and the first writer wins.
+- **Other travellers**: everyone online shows on the map with their recent
+  footprints. Players within three squares are listed with their distance and
+  direction, and you can speak to them. Positions update about every six seconds
+  and soon after each move.
+- **Leaving things for others**: "Leave for others" puts an item on the ground
+  for any player to find. Taking one is atomic, so only one player gets it.
+- **A fragment a day**: the first time you come back into the world each day, one
+  sentence of a hidden rule you have not read yet comes to you and is kept in
+  the Codex. Reading the monument still gives you the whole rule.
+- **Capacity**: each player sends about 10 presence calls a minute (each is one
+  KV read and one write, plus a list every 4 seconds shared by everyone).
+  Against Puter's limit of 400 KV operations per 10 seconds, that is roughly
+  80–120 players online at once, fewer while many are exploring new ground.
+  KV use is billed to the worker's owner.
+
+### v0.5 design notes
+
+Check the version in the game source or live build before relying on these features.
+
+- **Diagonal moves**: north-east, north-west, south-east and south-west, from the
+  compass, Y U B N (or 7 9 1 3), "What you can see", or a click on the map. A
+  diagonal step only works if one of the two routes round the corner is open, and it
+  takes 45 minutes.
+- **Limited approaches**: each newly written place is open on four sides (50%),
+  three (25%), two (15%) or one (10%). The side you came from always stays open.
+- **Sound**: the volume breathes and each background sound drifts on its own. The
+  river gurgles. Caves and the heights echo. Footsteps match the ground. A woodcutter
+  saws in the woods. Creatures call, each species in its own voice. Groups of
+  townsfolk chatter, placed left or right.
+- **Realm events** (shared realm): every two real hours a new event begins, the same
+  for everyone: a great storm crossing from the mountain to the desert, a market day
+  with rare goods at a quarter off, or a great foe at a fixed place. The foe's wounds
+  are shared through the server (150 HP; each blow is capped at 30), and everyone who
+  fought it claims a share of gold, XP and perhaps a magic item.
+- **Townsfolk remember you**: each townsperson keeps a record of how often they have
+  met you, when they last did, and up to eight things you did or said, in their own
+  words. The narrator greets you by name, brings the past up, and notices long
+  absences. Their card shows "Remembers you".
+
+### v0.6: layers, castles, railways, friends, narration
+
+- **Fifteen layers** from −7 to +7. A 37-hex mountain narrows to a single peak at
+  +7. The Old Mine leads down to the Root of the Mountain at −7, three more cave
+  mouths go 2 to 5 layers down, and two castles each have battlements, a tower and a
+  dungeon with a guarded prize. Large towns cover 7 hexes, villages 3 and hamlets 1.
+- **Hexagon map**: the layers above and below are painted faintly, there is zoom
+  and a layer bar, distant sanctuaries and caves glow as beacons, the map greys out
+  at night with a notice, and a HUD shows HP, XP, gold, light, hunger and load.
+- **Railways** between some towns, with stations, fares and day trains.
+- **Friends** (shared realm): in towns, townsfolk introduce you to other players and
+  a path lights toward them. Friends you have met appear as a ring accurate to about
+  seven hexes. Players cannot hurt each other, but you may try once a day to lift one
+  item from someone carrying more than twice what you do.
+- **Narration** with the player's own ElevenLabs key (kept in their browser).
+- **Clock**: seven-segment digits, a moon in its eight-day phase, and a season line.
+- Only the most recently opened copy of a world saves to Puter, and old shared-realm
+  saves detach when the realm is founded anew.
+
+### v0.7: a shared living world
+
+- **Shared townsfolk, creatures and anomalies**: one player's game at a time (the
+  keeper, on a 20-second lease) runs them and uploads their state. Everyone else
+  mirrors it. Blows, defeats and trades by anyone are sent to the server and folded in.
+- **Mountain path**: one stair per layer, joined by a cairned path that winds to the
+  peak. Off the path, from the second ledge up, a slip can drop you one or two layers.
+- **The whole world is open to everyone.** Plans and prices are gone from this page.
+- **Walls are decided before the AI writes a place**, and it is told which sides are
+  blocked.
+- **Festivals**: one per season, a darts-and-archery contest. A bullseye earns +1 to an
+  ability for good or a level's worth of experience.
+- **Acquaintances and friends**: three separate meetings make a friend. Goodwill fades
+  without good meetings or good chats (rate each chat good, mid or bad).
+- **Wolves** hunt anyone who steals from a poorer player. They run faster as the moon fills.
+- **Sensible survival**: you eat when hungry, strangers share food (shared food counts
+  double), every town gives charity, starvation only harms on the mountain and in the
+  deep mine, you make camp when you cannot go on, and nothing kills you while you wait.
+  Only Keter anomalies can kill; anything else wounds you, and you flee to a town,
+  dropping half your loose things where you fell.
+- **Place memories**: the game remembers what happened where, and says so when you return.
+- **Player colours and hints**: meeting another player can draw a faint dotted path in
+  their colour toward something worth finding.
+- **Narration** is shorter, and the voice carries the mood (steady or urgent, optionally
+  a second voice).
+- **Layout**: the map runs full width on desktop, with three equal columns below.
+
+## v0.8: richer places, signs of the dead, coins and mushrooms
+
+- **Sentence constructor**, about ten times larger. Each kind of ground has many more pieces. A smooth field over the world gives each region a dialect and a mood, and each dialect brings its own sentence shapes: Norse kennings, Welsh and Gaelic fronted predicates, Japanese topic–comment, Latin absolutes, Arabic paired phrases and the plain English of the Shires. It also brings glossed loanwords such as *tarn*, *cwm*, *komorebi* and *wadi*. Neighbouring hexes never share a sentence shape.
+- **Signs of death** every 17–24 places: a single boot, a broken sword, a rotting clump of arrows.
+- **Coins** every 30–40 places: bronze, sometimes silver, never gold.
+- **Mushrooms**: real species, either plain food or with stat effects for up to 8 hours (always some up and some down: the real-world effect, made larger). Poisonous ones are labelled and need a second click to eat; none can kill.
+- No text smaller than 13pt. The map starts at 28 × 11 hexes.
+
+### Portraits (idea for paid extras)
+Each character's portrait is generated from their name: an asymmetric ink-brush drawing in black, white and greys, combining chibi proportions, a toy-brick head and Aztec ornament. The character cell can hold a `faceSeed`. Raising it draws a new face, so "a fresh portrait" could be offered as a small paid extra, through the intro page and not from inside the game.
