@@ -2628,7 +2628,7 @@ function renderSeekStar(){const b=$("seekstar");if(!b)return;const ok=seekReady(
       how long it takes, and anything worth knowing: night falling on the way, hard going, an anomaly in the
       path, unexplored ground. Tap the same hex again to set off; tap anywhere else to plan again.
    ============================================================ */
-let routePlan=null,routeWalking=false;
+let routePlan=null,routeWalking=false,routeLayer="";
 function planRoute(tx,ty){
  const H=cell(hereId());if(!H)return null;const Z=zOf(H);tx=wrapC(tx);ty=wrapC(ty);
  const key=(x,y)=>x+","+y,start=key(H.x,H.y),goal=key(tx,ty),dist={[start]:0},prev={},open=[[0,H.x,H.y]],R=hexDist(H.x,H.y,tx,ty)+10;
@@ -5188,7 +5188,7 @@ function renderMap(){
  if(Z===0)for(const w of wanderers()){const sx=wrapC(w.x-H.x),sy=wrapC(w.y-H.y),dd=hexDist(H.x,H.y,w.x,w.y);if(dd>3||!dd)continue;const [qx,qy]=P(sx,sy);
   out+=`<text class="wnote${WANDERERS[w.i].bard?" bard":""}" x="${(qx+30).toFixed(1)}" y="${(qy+38).toFixed(1)}" text-anchor="middle"><title>A whistled tune: ${esc(WANDERERS[w.i].name.split(",")[0])} is on the road</title>♪</text>`}
  if(ws&&ws.storm&&Z>=0){const sx=wrapC(Math.round(ws.storm.x)-H.x),sy=wrapC(Math.round(ws.storm.y)-H.y);const [qx,qy]=P(sx,sy);out+=`<circle class="stormring" cx="${qx+30}" cy="${qy+30}" r="${ws.storm.r*HW*.6}"/>`}
- out+=pinSvg(C,ui,H,Z,inBox)+routeSvg(C,ui,H,Z)+seekSvg(C,VB,ui);
+ out+=pinSvg(C,ui,H,Z,inBox)+seekSvg(C,VB,ui);routeLayer=routeSvg(C,ui,H,Z);   // the route goes on last, above beacons and the dark
  out+=`<text class="axis" x="${VB[0]+W/2}" y="${VB[1]+16*ui}" text-anchor="middle">N ↑</text>`;
  // The fifteen layers, deepest on the left, the peak on the right; yours is marked
  $("layerbar").innerHTML=`<span class="mono">−${ZMAX}</span>${Array.from({length:2*ZMAX+1},(_,i)=>{const z=i-ZMAX;return`<span class="lv${z===Z?" on":z===0?" ground":z>0?" up":" down"}" title="${z===0?"ground level":z>0?`${z} above ground`:`${-z} below ground`}${z===Z?" (you are here)":""}"></span>`}).join("")}<span class="mono">+${ZMAX}</span>`;
@@ -5217,7 +5217,7 @@ function renderMap(){
  else out+=beacons;
  if(zoomTw){const fresh=!zoomTw.to;zoomTw.to=VB.slice();if(fresh){svg.setAttribute("viewBox",zoomTw.from.map(v=>v.toFixed(1)).join(" "));requestAnimationFrame(stepZoom)}}else svg.setAttribute("viewBox",(mapCam.anim?camBox():VB).map(v=>v.toFixed(1)).join(" "));{const cw=svg.clientWidth||bb.width;svg.style.setProperty("--u",cw>50?(W/cw*1.003).toFixed(4):"1")}{const zs=$("zoom"),lab=`${Math.round(W/(HW*.75))} × ${2*R+1} hexes`;if(zs){zs.max=String(ZOOMS.length-1);zs.value=String(ZOOMS.length-1-ZOOMS.indexOf(R));zs.setAttribute("aria-valuetext",lab);zs.title=`Zoom: ${lab}`}}
  renderHud();
- svg.innerHTML=`<defs><filter id="beaconglow" x="-1" y="-1" width="3" height="3"><feGaussianBlur stdDeviation="4"/></filter></defs>`+out;
+ svg.innerHTML=`<defs><filter id="beaconglow" x="-1" y="-1" width="3" height="3"><feGaussianBlur stdDeviation="4"/></filter></defs>`+out+routeLayer;routeLayer="";
  const ew=H.x===0?"0":Math.abs(H.x)+(H.x>0?" E":" W"),ns=H.y===0?"0":Math.abs(H.y)+(H.y>0?" N":" S");
  $("coords").textContent=`${ew}, ${ns} · level ${Z>0?"+"+Z:Z===0?"0":"−"+(-Z)}`;
 }
