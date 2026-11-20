@@ -352,6 +352,11 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 /* while the narrator is writing a new place, only the hourglass shows over the map */
 .mapwrap > *:not(#map):not(#exploring):not(.wxfx):not(.lightning){transition:opacity .25s ease,visibility .25s}
 .mapwrap:has(#exploring.show) > *:not(#map):not(#exploring):not(.wxfx):not(.lightning){opacity:0!important;visibility:hidden!important;pointer-events:none!important}
+/* ...the map itself dims to half, and the cards drawn inside it (route, night box, seek rays, pins) step aside too */
+#map{transition:filter .3s ease}#map .routeplan,#map .nightnote,#map .seekray,#map .pin{transition:opacity .25s ease}
+.mapwrap:has(#exploring.show) #map{filter:brightness(.5)}
+.mapwrap:has(#exploring.show) #map :is(.routeplan,.nightnote,.seekray,.pin){opacity:0;pointer-events:none}
+.mapwrap:has(#exploring.show) .exploring{background:transparent}
 .mapwrap.rose-top .roseover{bottom:auto;top:40px}.mapwrap.rose-top .ticker{left:190px}
 .mapwrap.star-top .seekstar{bottom:auto;top:40px}
 @media (max-width:700px){.mapwrap.rose-top .roseover{bottom:auto;top:36px}.mapwrap.rose-top .ticker{left:146px}}
