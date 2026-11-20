@@ -331,6 +331,8 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .map .folk,.map .footprint{display:none}
 .map .pawn{fill:var(--accent);stroke:var(--sheet);stroke-width:2;pointer-events:none}
 .map .folk{fill:var(--water);stroke:var(--sheet);stroke-width:1.2;pointer-events:none}
+.map .npchead{filter:drop-shadow(0 1px 1px #0006)}.map .npchead.seeker{animation:seekpulse 1.6s ease-in-out infinite}@keyframes seekpulse{50%{opacity:.55}}.map .folkmore{font:700 11px var(--mono);fill:var(--ink);paint-order:stroke;stroke:var(--sheet);stroke-width:3px}
+.journeycard .visit .vis-top{display:flex;gap:12px;align-items:center}.journeycard .vis-face svg{border-radius:12px;display:block}.journeycard .vis-line{margin:4px 0;font-style:italic}
 .map .frontier{fill:transparent;stroke:var(--faint);stroke-dasharray:4 4;stroke-width:1.4;cursor:pointer}
 .map .frontier:hover{stroke:var(--accent)}
 .map .q{fill:var(--faint);font-family:var(--mono);font-size:calc(13pt * var(--u,1));pointer-events:none}
@@ -2206,8 +2208,70 @@ function creatureTick(n,t){
  n.activity=friend&&tie(n,friend)>.3?`${n.doing} beside ${friend.t}`:`${n.doing} near ${placeName(n)}`;
 }
 function placeName(n){const id=coord.get(ck(n.x,n.y,0));return id?cell(id).t:"open country"}
+/* ============================================================
+   Company on the road. Towns grow a little busier (half as many folk again), and now and then someone
+   who knows you, or has heard of you, sets out to find you: to bring you something, pass on news,
+   ask for help, or just walk a while with you. You hear that they are coming; they show on the map
+   with their face; and when they reach you, they say why they came.
+   ============================================================ */
+const FOLK_FIRST=["Ada","Bram","Cass","Dora","Edric","Fen","Gwen","Hal","Ida","Jory","Kit","Lark","Mabel","Ned","Orla","Piers","Quill","Rosa","Silas","Tamsin","Ulric","Vera","Wat","Yara","Agnes","Bertil","Clem","Della","Ewan","Frida","Giles","Hester","Ivo","Joan","Kester","Lettice","Merry","Nell","Osric","Prue"];
+const FOLK_LAST=["Ashby","Brook","Carter","Dunn","Fairweather","Greaves","Hale","Ivers","Kettle","Lumb","Marsh","Nettles","Oakes","Pike","Quarry","Reed","Shaw","Thorne","Underhill","Vane","Wren","Yarrow","Cobb","Fletcher","Hollins","Mossop"];
+const FOLK_TRAITS=["cheerful","gruff","curious","kindly","nervous","talkative","shrewd","gentle","proud","restless"];
+function topUpTownsfolk(){
+ const r=cell("root");if(!r||r.folkV>=2||mp.on())return;r.folkV=2;touch("root");
+ const used=new Set(npcs().map(n=>n.t));let added=0;
+ for(const T of towns()){const size=T.town&&TOWN_SIZES[T.town.size];if(!size)continue;
+  const have=npcs().filter(n=>!n.wild&&n.home===T.id).length,want=Math.round(size.folk*1.5);
+  for(let k=have;k<want;k++){let name;for(let i=0;i<40;i++){name=`${pick(FOLK_FIRST)} ${pick(FOLK_LAST)}`;if(!used.has(name))break}used.add(name);
+   const id=makeNpc({name,role:pick(Object.keys(ROLES)),trait:pick(FOLK_TRAITS)},T.id,T);appendTo(T.id,"residents",id);added++;
+   const n=cell(id);for(const o of npcs())if(!o.wild&&o!==n&&o.home===T.id){n.ties[o.id]=+(.15+Math.random()*.3).toFixed(3);o.ties[id]=+(.15+Math.random()*.3).toFixed(3)}}}
+ return added;
+}
+const SEEK_WHY=["gift","news","quest","company","company"];
+function seekerTick(t){
+ if(!charId()||!hereId()||isDowned())return;const H=cell(hereId());if(zOf(H)!==0||isNight(t))return;
+ for(const n of npcs().filter(n=>n.seeking))if(n.seeking.until<t||n.defeated||n.shunsYou){n.seeking=null;touch(n.id)}
+ if(npcs().some(n=>n.seeking)||Math.random()>.07)return;            // about once every seven game hours of daylight
+ const me_=me(),f=field(hereId(),magicPresent(t)),cands=npcs().filter(n=>!n.wild&&!n.defeated&&!n.shunsYou&&(n.z||0)===0&&hexDist(n.x,n.y,H.x,H.y)>=2&&hexDist(n.x,n.y,H.x,H.y)<=9&&f.has(n.x+","+n.y));
+ if(!cands.length)return;
+ cands.sort((a,b)=>(tie(b,me_)-tie(a,me_))+(Math.random()-.5)*.3);const n=cands[0];
+ n.seeking={until:t+8*60,why:pick(SEEK_WHY)};touch(n.id);
+ const dx=wrapC(n.x-H.x),dy=wrapC(n.y-H.y);
+ log(`Word reaches you: ${n.t}, ${n.role||"a traveller"}${cell(n.home)?" of "+cell(n.home).t:""}, is out looking for you, ${hexDist(n.x,n.y,H.x,H.y)} hexes to the ${hexWord(dx,dy)}.`,"npc");
+ if(typeof tickerNote==="function")tickerNote(`${n.t.split(" ")[0]} is looking for you`);
+}
+// a seeker heads for you along open ground; returns true on reaching you
+function seekStep(n,t){
+ const H=cell(hereId());if(!H||zOf(H)!==0)return false;const f=field(hereId(),magicPresent(t)),cur=f.get(n.x+","+n.y);if(cur===0)return true;
+ let best=null,bd=cur??999;for(const d of FLAT){const v=DIRS[d],dd=f.get((n.x+v.dx)+","+(n.y+v.dy));if(dd!==undefined&&dd<bd){bd=dd;best=v}}
+ if(best){n.x+=best.dx;n.y+=best.dy}return f.get(n.x+","+n.y)===0;
+}
+function checkVisitors(){
+ if(!charId()||!hereId()||isDowned()||foeId())return;const H=cell(hereId());
+ const n=npcs().find(o=>o.seeking&&o.x===H.x&&o.y===H.y&&(o.z||0)===zOf(H));if(!n)return;
+ const why=n.seeking.why;n.seeking=null;touch(n.id);bump2(n,me(),.1);remember(n,"went looking for the traveller, and found them",gameNow());
+ let line="",extra="";
+ if(why==="gift"){const g=pick([["Loaf of bread","Still warm, wrapped in a cloth.","food",.5,1,"1d4"],["Bag of apples","Crisp and sweet.","food",1,1,"1d4"],["Bundle of herbs","Feverfew and woundwort, tied with twine.","potion",.5,5,"1d4+1"],["Smoked fish","Wrapped in dock leaves.","food",.5,2,"1d4"]]);
+  appendTo(charId(),"contain",itemCell(normItem(asItem(g))));line=`"There you are! I thought you might be hungry out here."`;extra=`${n.t.split(" ")[0]} gives you ${{"Smoked fish":"some smoked fish"}[g[0]]||"a "+g[0].toLowerCase()}.`}
+ else if(why==="news"){const r=plantRumour(n);line=r?`"I heard something you'll want to know: ${r}."`:`"Folk in ${cell(n.home)?cell(n.home).t:"town"} are talking about you. Good things, mostly."`;extra=r?"It is in your rumours now.":""}
+ else if(why==="quest"){line=`"I hoped I'd find you. I need someone I can trust."`;setTimeout(()=>{offerQuest(n);store.flush();render()},50);extra="They tell you what they need."}
+ else{const b=sv("HP"),hl=roll("1d4").total;setStat("HP",Math.min(sv("MAXHP"),b+hl));line=pick([`"Thought I'd walk a while with you. The road's lonely on your own."`,`"Just wanted to see a friendly face."`,`"Mind if I keep you company for a bit?"`]);extra=`You talk as you go, and feel better for it${sv("HP")>b?` (+${sv("HP")-b} HP)`:""}.`}
+ log(`${n.t} finds you. ${line} ${extra}`,"npc");
+ const el=$("journeycard");if(el){el.innerHTML=`<div class="jc-card visit" role="status"><div class="vis-top"><span class="vis-face">${faceSVG(n.t,n.role||"",72)}</span><div><h3>${esc(n.t)}</h3><div class="jc-sub">${esc(n.role||"traveller")}${cell(n.home)?" of "+esc(cell(n.home).t):""} came looking for you</div></div></div><p class="vis-line">${esc(line)}</p>${extra?`<p class="jc-sub">${esc(extra)}</p>`:""}<div class="btnrow"><button class="small primary" data-act="journeyok">Thank them</button></div></div>`;el.classList.add("show")}
+ store.flush();render();
+}
+// Faces in a hex: one fills it; a few share a row; more sit in rows of 3, 4 and 3; past ten the rest are a count
+function folkFaces(list,cx,cy){
+ const n=Math.min(list.length,10),rows=n===1?[1]:n<=3?[n]:n<=7?[3,n-3]:[3,4,n-7],sz=n===1?26:n===2?20:n<=3?16:13,gap=sz+1;
+ let out="",k=0;rows.forEach((cnt,r)=>{const y=cy+(r-(rows.length-1)/2)*(sz-0.5);for(let i=0;i<cnt;i++,k++){const o=list[k],x=cx+(i-(cnt-1)/2)*gap;
+  out+=headAt(o.t,o.role||"",nameHash(o.t)%997,x,y,sz,`${o.t}${o.seeking?" (looking for you)":""}`,`npchead${o.seeking?" seeker":""}`)}});
+ if(list.length>10)out+=`<text class="folkmore" x="${cx+24}" y="${cy+26}" text-anchor="end">+${list.length-10}</text>`;
+ return out;
+}
 function npcTick(n,t){
  const home=cell(n.home);if(!home)return;
+ // someone out looking for you heads your way by day, whatever else they were doing
+ if(n.seeking&&!isNight(t)&&n.seeking.until>t&&hereId()&&zOf(cell(hereId()))===0){seekStep(n,t);n.activity="out looking for you";return}
  const h=hourOf(t),atHome=n.x===home.x&&n.y===home.y;
  if(!isNight(t)&&weatherAt(n.x,n.y,0,t).storm>.3){
   if(atHome)n.activity=`sheltering from the storm in ${home.t}`;else{stepToward(n,t);n.activity=`hurrying home to ${home.t} out of the storm`}return;
@@ -2377,7 +2441,7 @@ function simulate(){
   paladinTick();wolvesTick();wanderTick(t);
  }
  for(const f of npcs())touch(f.id);
- r.npcT=t;touch("root");recordBloom();checkPaladin();checkWanderers();
+ r.npcT=t;touch("root");recordBloom();checkPaladin();checkWanderers();if(!sharedFollower()){topUpTownsfolk();seekerTick(end)}checkVisitors();
  const ch=charId()&&cell(charId());if(ch&&ch.boons&&ch.boons.length){const gone=ch.boons.filter(b=>b.until<=t);if(gone.length){for(const b of gone)log(`The effect of ${b.from} fades: ${b.amount>0?"+":""}${b.amount} ${b.stat} is gone.`,"time");ch.boons=ch.boons.filter(b=>b.until>t);touch(ch.id)}}
 }
 function passTime(min){const r=cell("root");if(!r)return;r.clock={base:gameNow()+min,real:Date.now()};touch("root");simulate()}
@@ -2829,7 +2893,7 @@ function enter(locId,first){
  connect(ch,"at",locId);const L=cell(locId);lastHazard=null;rounds=[];
  if(!L.visited&&journey&&routeWalking&&!journey.found.includes(L.t))journey.found.push(L.t);
  if(!L.visited){L.visited=true;touch(locId);gainXP(L.town&&!L.town.of?25:10);if(L.town&&!L.town.of)log(`You reach ${L.t}, a ${TOWN_SIZES[L.town.size].label} on the ${riverName()}.`,"good")}
- markSeen(locId);ravenScout(locId);checkRumour(locId);checkMarks(L);
+ markSeen(locId);ravenScout(locId);checkRumour(locId);checkMarks(L);setTimeout(checkVisitors,120);
  if(first&&!L.town)foxFind(locId);
  if(L.town)stockMagic(locId);
  if(L.crag&&zOf(L)>0&&!isDowned()){
@@ -5154,7 +5218,8 @@ function renderMap(){
   if(c.trail&&zOf(c)>0)out+=`<circle class="cairn" cx="${px+18}" cy="${py+44}" r="2.2"/><circle class="cairn" cx="${px+24}" cy="${py+46}" r="1.8"/>`;
   if(c.crag)out+=`<path class="cragmark" d="M${px+12} ${py+44} l6 -6 M${px+18} ${py+46} l6 -6 M${px+24} ${py+48} l6 -6"/>`;
   if(c.note||(c.memories&&c.memories.length))out+=`<path class="notemark" d="M${px+44} ${py+52} l8 -8 l3 3 l-8 8 Z"><title>${esc(c.note||memoryText(c))}</title></path>`;
-  if(Z===0){const folk=npcsAt(c.x,c.y).slice(0,5);folk.forEach((o,k)=>{out+=`<circle class="folk${o.wild?" beast":""}" cx="${px+12+k*7}" cy="${py+48}" r="3.2"/>`})}
+  if(Z===0){const folk=npcsAt(c.x,c.y),ppl=folk.filter(o=>!o.wild);if(ppl.length)out+=folkFaces(ppl,px+30,py+31);
+   folk.filter(o=>o.wild).slice(0,5).forEach((o,k)=>{out+=`<circle class="folk beast" cx="${px+12+k*7}" cy="${py+52}" r="3.2"/>`})}
   out+=`</g>`;}
  for(const d of FLAT){const v=DIRS[d],id=coord.get(ck(H.x+v.dx,H.y+v.dy,Z));if((id&&visible(cell(id)))||!exitOpen(H,d))continue;const [px,py]=P(v.dx,v.dy);
   out+=`<g data-dir="${d}"><polygon class="frontier" points="${hex(px+30,py+30,.88)}" tabindex="0" role="button" aria-label="Explore ${d}"><title>Explore ${d}</title></polygon><text class="q" x="${px+30}" y="${py+36}" text-anchor="middle">${genFor===here?"…":"?"}</text></g>`;}
