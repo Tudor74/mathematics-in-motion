@@ -332,6 +332,9 @@ header.top:not(:has(.pills>*:not([hidden]):not(:empty))){display:none!important}
 .map .pawn{fill:var(--accent);stroke:var(--sheet);stroke-width:2;pointer-events:none}
 .map .folk{fill:var(--water);stroke:var(--sheet);stroke-width:1.2;pointer-events:none}
 .map .npchead{filter:drop-shadow(0 1px 1px #0006)}.map .npchead.seeker{animation:seekpulse 1.6s ease-in-out infinite}@keyframes seekpulse{50%{opacity:.55}}.map .folkmore{font:700 11px var(--mono);fill:var(--ink);paint-order:stroke;stroke:var(--sheet);stroke-width:3px}
+.svc{margin:8px 0 10px;padding:8px 10px;border:1px solid var(--rule);border-radius:10px;background:color-mix(in srgb,var(--wash) 50%,transparent)}.svc>b{display:block;margin-bottom:4px}.svc .btnrow{flex-wrap:wrap;gap:6px}
+.linkish{background:none;border:0;box-shadow:none;padding:0;min-height:0;color:var(--accent);text-decoration:underline;cursor:pointer;font:inherit}
+.map .lamp{fill:#ffcf73;filter:url(#beaconglow)}.map .lampcore{fill:#fff2c4}
 .journeycard .visit .vis-top{display:flex;gap:12px;align-items:center}.journeycard .vis-face svg{border-radius:12px;display:block}.journeycard .vis-line{margin:4px 0;font-style:italic}
 .map .frontier{fill:transparent;stroke:var(--faint);stroke-dasharray:4 4;stroke-width:1.4;cursor:pointer}
 .map .frontier:hover{stroke:var(--accent)}
@@ -912,7 +915,7 @@ function setStat(name,v){const c=statCell(name);if(c&&c.v!==v){c.v=v;touch(c.id)
 const packIds=()=>rank(charId(),"contain");
 const storeIds=loc=>rank(loc,"contain");
 const carried=()=>packIds().reduce((a,id)=>a+(+cell(id).weight||0),0);
-const capacity=()=>sv("STR")*15+(typeof hasCompanion==="function"&&hasCompanion("pony")?60:0)+(charId()&&packIds().some(i=>cell(i)&&cell(i).holding)?60:0);
+const capacity=()=>sv("STR")*15+(typeof hasCompanion==="function"&&hasCompanion("pony")?60:0)+(charId()&&packIds().some(i=>cell(i)&&cell(i).holding)?60:0)+(charId()&&(cell(charId()).ponyUntil||0)>gameNow()?60:0);
 function armourBonus(){const w=packIds().map(cell).filter(i=>i.worn);return w.filter(i=>i.slot!=="trinket").reduce((a,i)=>Math.max(a,+i.ac||0),0)+w.filter(i=>i.slot==="trinket").reduce((a,i)=>a+(+i.ac||0),0)}
 function armourClass(){return 10+mod(sv("DEX"))+armourBonus()}
 const hitDie=()=>CLASSES[cell(charId()).cls]?.hd||8;
@@ -1443,7 +1446,7 @@ function normItem(i){
  i=i&&typeof i==="object"?i:{};
  const kind=KINDS.includes(i.kind)?i.kind:"junk";
  const heal=DICE.test(cleanDice(i.heal))&&(kind==="potion"||kind==="food")?cleanDice(i.heal):null;
- const ac=kind==="armor"?Math.max(1,Math.min(5,Math.round(+i.ac||1))):0;
+ const ac=kind==="armor"?Math.max(1,Math.min(6,Math.round(+i.ac||1))):0;
  let dmg=null,finesse=false;
  if(kind==="weapon"){const m=DICE.exec(cleanDice(i.damage));dmg=m?`${Math.min(2,+m[1])}d${Math.min(12,Math.max(2,+m[2]))}${m[3]&&+m[3]>0?"+"+Math.min(3,+m[3]):""}`:"1d6";finesse=!!i.finesse}
  return{name:String(i.name||"Odd trinket").slice(0,60),desc:String(i.description||"").slice(0,200),kind,
@@ -1839,6 +1842,183 @@ function takeTrain(destId){
  if(sound.started&&sound.on){sound.tone(880,860,.5,.05,0,"square");sound.tone(660,650,.8,.05,.55,"square");for(let i=0;i<10;i++)sound.burst("bandpass",900,500,1.5,.06,.12,1.4+i*.28)}
  enter(destId,!D.visited);shunPlayer();if(!isDowned())passTime(mins);store.flush();render();if(!isDowned())ensureNeighbours(hereId());
 }
+/* ============================================================
+   Towns with a life of their own.
+   - Each part of a town has a job: market, inn, chapel, notice board, smithy, stables, quay.
+   - Each town is known for one good, sells it cheap, and pays well for what it lacks; prices drift by day and season.
+   - Boats run along the river between quays and crossings: quick downstream, slow and dear upstream.
+   - Towns prosper when you help them and slump when anomalies roam close; a thriving town builds a new street.
+   - After dark the lamps are lit, the watch walks, the tavern is loud.
+   - Your cottage can grow: a herb garden, a workbench, a better hearth.
+   ============================================================ */
+const PART_ROLES={"Market Square":["market"],"Gatehouse":["board","stables"],"Quay":["quay"],"Chapel Row":["chapel"],"Tanners' Lane":["smithy"],"Inn Yard":["inn"],
+ "Green":["chapel","board"],"Mill Lane":["smithy","stables"],"Weavers' Row":["market"],"Coopers' Yard":["smithy"],"Orchard Lane":["inn"],"New Street":["board"]};
+const SVC_NAME={market:"Market",inn:"Inn",chapel:"Chapel",board:"Notice board",smithy:"Smithy",stables:"Stables",quay:"Quay"};
+const townOf=L=>L&&L.town?(L.town.of?cell(L.town.of):L):null;
+const townHexes=T=>Object.values(zz.cells).filter(c=>c.k==="loc"&&c.town&&(c.id===T.id||c.town.of===T.id));
+function districts(L){
+ const T=townOf(L);if(!T)return[];
+ if(L===T){const sz=T.town.size;const base=sz==="small"?["market","inn","chapel","board","smithy","stables"]:sz==="medium"?["market","inn"]:["market"];
+  return base.concat(sz!=="large"&&riverIndexNear(L)!=null?["quay"]:[])}
+ const part=String(L.t).slice(T.t.length+1);return PART_ROLES[part]||["board"];
+}
+const districtHere=role=>{const L=hereId()&&cell(hereId());return!!L&&districts(L).includes(role)};
+function whereIs(T,role){return townHexes(T).find(c=>districts(c).includes(role))}
+
+/* ---------- Trade goods ---------- */
+const GOODS={fish:{n:"Salted fish",d:"A crate of river fish packed in salt.",w:3,v:6},ore:{n:"Iron ore",d:"Heavy rust-red lumps from the hill workings.",w:6,v:10},
+ grain:{n:"Sack of grain",d:"Good wheat from the river meadows.",w:5,v:5},wool:{n:"Bolt of wool cloth",d:"Thick, warm, dyed madder red.",w:3,v:12},
+ herbs:{n:"Dried herbs",d:"Bundled and hung to dry; the apothecaries want them.",w:1,v:8},ale:{n:"Cask of ale",d:"A small cask, well sealed.",w:7,v:9}};
+const GOOD_KEYS=Object.keys(GOODS);
+const h01=s=>(nameHash(s)%10000)/10000;
+// Every town's speciality is wanted by at least one other town, so carrying goods between them pays
+function assignTrade(){
+ const Ts=towns();if(Ts.every(T=>T.trade&&T.trade.v===2))return;
+ for(const T of Ts){const near=k=>Object.values(zz.cells).some(c=>c.k==="loc"&&zOf(c)===0&&c.terrain===k&&hexDist(c.x,c.y,T.x,T.y)<=4);
+  T.trade={v:2,makes:near("mountain")&&h01(T.id+"m")<.7?"ore":riverIndexNear(T)!=null&&h01(T.id+"f")<.5?"fish":GOOD_KEYS[nameHash(T.id)%GOOD_KEYS.length],wants:[]}}
+ const made=[...new Set(Ts.map(T=>T.trade.makes))];
+ for(const T of Ts){const others=made.filter(g=>g!==T.trade.makes).sort((a,b)=>h01(T.id+a)-h01(T.id+b)),fill=GOOD_KEYS.filter(g=>g!==T.trade.makes&&!others.includes(g)).sort((a,b)=>h01(T.id+a)-h01(T.id+b));
+  T.trade.wants=others.concat(fill).slice(0,2)}
+ // make sure each speciality has a buyer somewhere
+ for(const T of Ts){const g=T.trade.makes;if(!Ts.some(O=>O!==T&&O.trade.wants.includes(g))){const O=Ts.filter(O=>O!==T&&O.trade.makes!==g).sort((a,b)=>hexDist(b.x,b.y,T.x,T.y)-hexDist(a.x,a.y,T.x,T.y))[0];if(O)O.trade.wants[1]=g}}
+ for(const T of Ts)touch(T.id);
+}
+function townTrade(T){
+ assignTrade();
+ if(!T.trade){const near=k=>Object.values(zz.cells).some(c=>c.k==="loc"&&zOf(c)===0&&c.terrain===k&&hexDist(c.x,c.y,T.x,T.y)<=4);
+  const makes=near("mountain")&&h01(T.id+"m")<.7?"ore":riverIndexNear(T)!=null&&h01(T.id+"f")<.5?"fish":GOOD_KEYS[nameHash(T.id)%GOOD_KEYS.length];
+  const rest=GOOD_KEYS.filter(k=>k!==makes).sort((a,b)=>h01(T.id+a)-h01(T.id+b));T.trade={makes,wants:rest.slice(0,2)};touch(T.id)}
+ return T.trade;
+}
+function goodPrice(T,g,t=gameNow()){
+ const tr=townTrade(T),base=GOODS[g].v,season=seasonOf(t),seas=(g==="grain"||g==="ale")&&season==="winter"?1.3:g==="fish"&&season==="summer"?.85:g==="wool"&&season==="winter"?1.2:1;
+ const drift=.85+.3*h01(T.id+g+dayOf(t)),k=tr.makes===g?.6:tr.wants.includes(g)?1.7:1;
+ return Math.max(1,Math.round(base*k*seas*drift));
+}
+const sellGoodPrice=(T,g)=>Math.max(1,Math.round(goodPrice(T,g)*.85));
+function buyGood(g){const T=townOf(cell(hereId()));if(!T)return;const p=goodPrice(T,g);if(sv("GP")<p){flash=`${GOODS[g].n} costs ${p} gp here.`;render();return}
+ if(carried()+GOODS[g].w>capacity()){flash=`Too heavy: ${GOODS[g].n} weighs ${GOODS[g].w} lb.`;render();return}
+ setStat("GP",sv("GP")-p);const id=itemCell(normItem({name:GOODS[g].n,description:GOODS[g].d,kind:"tool",weight:GOODS[g].w,value:GOODS[g].v}));cell(id).good=g;appendTo(charId(),"contain",id);
+ log(`You buy ${GOODS[g].n.toLowerCase()} in ${T.t} for ${p} gp.`,"good");store.flush();render()}
+function sellGood(id){const T=townOf(cell(hereId())),it=cell(id);if(!T||!it||!it.good)return;const p=sellGoodPrice(T,it.good);
+ setStat("GP",sv("GP")+p);excise(id,"contain");destroy(id);if(townTrade(T).wants.includes(it.good))townProsper(T,.25);
+ log(`You sell ${it.t.toLowerCase()} in ${T.t} for ${p} gp.`,"good");store.flush();render()}
+
+/* ---------- The river by boat ---------- */
+function riverCells(){return Object.values(zz.cells).filter(c=>c.k==="loc"&&c.river&&typeof c.river.index==="number"&&zOf(c)===0).sort((a,b)=>a.river.index-b.river.index)}
+function riverIndexNear(L){let best=null,bd=9;for(const c of riverCells()){const d=hexDist(c.x,c.y,L.x,L.y);if(d<=1&&d<bd){bd=d;best=c.river.index}}return best}
+function boatStops(){
+ const stops=[];for(const T of towns()){const q=townHexes(T).find(c=>districts(c).includes("quay"));if(q){const i=riverIndexNear(q);if(i!=null)stops.push({id:q.id,i,name:T.t+(q===T?"":" quay")})}}
+ for(const c of riverCells())if(c.river.crossing&&c.river.crossing!=="magic"&&!c.lake)stops.push({id:c.id,i:c.river.index,name:c.t});
+ return stops.sort((a,b)=>a.i-b.i);
+}
+function boatFare(from,to){const d=to-from,n=Math.abs(d);return d>0?{gp:Math.max(1,Math.round(n/3)),mins:Math.max(20,n*8),down:true}:{gp:Math.max(2,Math.round(n/1.5)),mins:Math.max(40,n*20),down:false}}
+function takeBoat(destId){
+ const L=cell(hereId()),i0=riverIndexNear(L),S=boatStops().find(s=>s.id===destId);if(i0==null||!S||busy||foeId()||isDowned())return;
+ if(isNight(gameNow())){flash="The boats tie up at night. The first leaves at dawn.";render();return}
+ const f=boatFare(i0,S.i);if(sv("GP")<f.gp){flash=`The boatman wants ${f.gp} gp.`;render();return}
+ setStat("GP",sv("GP")-f.gp);
+ for(const c of riverCells())if(Math.min(i0,S.i)<=c.river.index&&c.river.index<=Math.max(i0,S.i)&&c.seen===false){c.seen=true;touch(c.id)}
+ log(`You pay ${f.gp} gp and take a boat ${f.down?"down":"up"} the ${riverName()} to ${S.name}: ${fmtDur(f.mins)}${f.down?" on the current":" against it, with oars and a tow-rope"}.`,"good");
+ const r=Math.random();
+ if(r<.08){const b=sv("HP"),d=roll("1d4").total;setStat("HP",Math.max(1,b-d));log(`A squall catches the boat mid-river; you are soaked and bruised (−${b-sv("HP")} HP).`,"bad")}
+ else if(r<.18){const id=itemCell(normItem({name:"Smoked fish",description:"Traded from a passing barge.",kind:"food",weight:.5,value:2,heal:"1d4"}));appendTo(charId(),"contain",id);log("A barge passes close; its crew tosses you a smoked fish for news of the road.","npc")}
+ else if(r<.26){gainXP(5);log("On the bank something tall and wrong stands watching the boat go by. The boatman does not look at it.","bad")}
+ else if(r<.34)log("A heron lifts off the shallows and keeps pace with you for a while.","time");
+ teleportTo(destId,"The boat noses in to the bank, and you step off");passTime(Math.max(0,f.mins-5));store.flush();render();
+}
+
+/* ---------- Towns rise and fall ---------- */
+const NEW_STREETS=["Weavers' Row","Coopers' Yard","Orchard Lane","New Street"];
+function townProsper(T,d){
+ if(!T)return;T.pros=Math.round(((T.pros||0)+d)*100)/100;touch(T.id);
+ const grown=T.grown||0;
+ if(T.pros>=4*(grown+1)&&grown<2)growTown(T);
+ if(T.pros<=-3&&!T.slump){T.slump=true;const sale=storeIds(T.id).filter(id=>cell(id).forSale&&!cell(id).magic);if(sale.length){const x=pick(sale);excise(x,"contain");destroy(x)}
+  log(`Trade is falling off in ${T.t}: anomalies roam too close, and the merchants stock less.`,"bad")}
+ if(T.pros>=0&&T.slump){T.slump=false;log(`${T.t} is finding its feet again.`,"good")}
+}
+function growTown(T){
+ const hexes=townHexes(T);let spot=null;
+ for(const h of shuffle(hexes.slice()))for(const d of FLAT){const v=DIRS[d],x=h.x+v.dx,y=h.y+v.dy;if(!coord.get(ck(x,y,0))&&passXY(x,y,false)){spot={x,y};break}if(spot)break}
+ if(!spot)return;const name=NEW_STREETS[(T.grown||0)%NEW_STREETS.length];
+ const pid=createLocation({name:`${T.t} ${name}`,desc:`New-built houses, the timber still pale, along a street that was a field last year. This is part of ${T.t}.`,terrain:"village",items:[],hazard:null,monster:null,by:"tables",exits:EX("nsew")},{x:spot.x,y:spot.y,z:0,dist:Math.abs(spot.x)+Math.abs(spot.y)});
+ Object.assign(cell(pid),{town:{size:T.town.size,side:T.town.side,of:T.id},seen:false,planned:true,written:true});
+ const used=new Set(npcs().map(n=>n.t));for(let k=0;k<2;k++){let nm;for(let i=0;i<40;i++){nm=`${pick(FOLK_FIRST)} ${pick(FOLK_LAST)}`;if(!used.has(nm))break}used.add(nm);appendTo(T.id,"residents",makeNpc({name:nm,role:pick(Object.keys(ROLES)),trait:pick(FOLK_TRAITS)},T.id,T))}
+ T.grown=(T.grown||0)+1;touch(T.id);fieldCache.clear();
+ log(`${T.t} is thriving. A new street, ${name}, has gone up, and new folk have moved in.`,"good");
+}
+const prosperWord=T=>{const p=T.pros||0;return p>=6?"booming":p>=2?"thriving":p<=-3?"struggling":p<0?"uneasy":"steady"};
+function townsDawn(t){
+ for(const T of towns()){
+  const near=Object.values(zz.cells).some(c=>c.k==="loc"&&zOf(c)===0&&foeId(c.id)&&hexDist(c.x,c.y,T.x,T.y)<=4);
+  townProsper(T,near?-1:((T.pros||0)<0?.5:0));
+ }
+ const C=cottage();if(C&&C.garden&&rank(C.id,"contain").filter(id=>/herbs/i.test(cell(id).t)).length<5){appendTo(C.id,"contain",itemCell(normItem({name:"Bundle of herbs",description:"From your own garden.",kind:"potion",weight:.5,value:5,heal:"1d4+1"})))}
+}
+
+/* ---------- Doing things in town ---------- */
+function townService(spec){
+ const [act,arg]=String(spec).split("|"),L=cell(hereId()),T=townOf(L),ch=cell(charId());if(!T||isDowned()||busy)return;const t=gameNow(),today=dayOf(t);
+ const pay=gp=>{if(sv("GP")<gp){flash=`That costs ${gp} gp; you have ${sv("GP")}.`;render();return false}setStat("GP",sv("GP")-gp);return true};
+ if(act==="gossip"){if(T.gossipDay===today){flash="You have heard all the talk there is today.";render();return}if(!pay(2))return;T.gossipDay=today;touch(T.id);
+  const folk=npcs().filter(n=>!n.wild&&n.home===T.id),n=folk.length?pick(folk):null,r=n&&plantRumour(n);
+  log(r?`You stand a round at the inn. ${n.t} leans in: "${r}."`:"You stand a round. The talk is all weather and prices tonight.","npc")}
+ else if(act==="travellers"){const W=wanderers().map(w=>({w,d:hexDist(w.x,w.y,L.x,L.y)})).filter(o=>o.d<=8).sort((a,b)=>a.d-b.d);
+  log(W.length?`The innkeeper says: "${W.slice(0,3).map(o=>`${WANDERERS[o.w.i].name.split(",")[0]}, ${o.d} hexes ${hexWord(wrapC(o.w.x-L.x),wrapC(o.w.y-L.y))}`).join("; ")}."`:`The innkeeper says no travellers have come through lately.`,"npc")}
+ else if(act==="heal"){if(sv("HP")>=sv("MAXHP")){flash="You are already whole.";render();return}const cost=sv("GP")>=3?3:0;if(!cost&&T.almsDay===today){flash="The priest helped you once today already.";render();return}if(cost)setStat("GP",sv("GP")-3);else{T.almsDay=today;touch(T.id)}
+  const b=sv("HP");setStat("HP",sv("MAXHP"));passTime(20);log(`The priest dresses your wounds${cost?" for a 3 gp offering":", asking nothing"} (+${sv("HP")-b} HP).`,"good")}
+ else if(act==="lift"){const bad=(ch.boons||[]).filter(b=>b.amount<0);if(!bad.length){flash="Nothing is hanging over you.";render();return}ch.boons=ch.boons.filter(b=>b.amount>=0);touch(ch.id);log(`The priest says a few words, and the weight lifts: ${[...new Set(bad.map(b=>b.from))].join(", ")} no longer troubles you.`,"good")}
+ else if(act==="bless"){if(!pay(5))return;ch.boons=(ch.boons||[]).concat(["STR","DEX","CON"].map(stat=>({stat,amount:1,until:t+8*60,from:"the chapel's blessing"})));touch(ch.id);log("You kneel for a blessing: +1 STR, DEX and CON for eight hours.","good")}
+ else if(act==="bounty"){const F=cell(foeId(arg)),Lb=cell(arg);if(!F||!Lb)return;if(quests().some(q=>!q.done&&q.target===arg)){flash="You already carry that bounty.";render();return}
+  const gold=12+Math.round((F.maxhp||10)*1.5),xp=Math.round((F.maxhp||10)*2);
+  quests().push({id:"q"+Date.now().toString(36),type:"slay",target:arg,label:F.designation,desc:`neutralise ${F.designation} ${F.t} at ${Lb.t} (a bounty from the ${T.t} watch)`,giver:null,giverName:`The ${T.t} watch`,town:T.id,gold,xp,done:false});touch("root");
+  log(`You take the watch's bounty on ${F.designation} ${F.t} at ${Lb.t}: ${gold} gp when it is done.`,"good")}
+ else if(act==="work"){const folk=npcs().filter(n=>!n.wild&&n.home===T.id&&!n.shunsYou&&!activeQuestFrom(n)).sort((a,b)=>tie(b,me())-tie(a,me()));if(!folk.length){flash="No one has work for you today.";render();return}offerQuest(folk[0])}
+ else if(act==="sharpen"){const w=weapon();if(!w){flash="You carry no weapon.";render();return}const u=w.upg||0;if(u>=3){flash="The smith says it will take no more.";render();return}if(!pay(20*(u+1)))return;
+  const m=/^(\d+d\d+)([+-]\d+)?$/.exec(w.dmg||"1d6")||[0,"1d6",""];w.dmg=`${m[1]}+${(+(m[2]||0))+1}`;w.upg=u+1;touch(w.id);passTime(60);log(`The smith hones and rebalances your ${w.t.toLowerCase()}: damage now ${w.dmg}.`,"good")}
+ else if(act==="reinforce"){const a=packIds().map(cell).find(i=>i.worn&&i.slot!=="trinket");if(!a){flash="You are not wearing armour.";render();return}const u=a.upg||0;if(u>=2){flash="The smith says it will take no more.";render();return}if(!pay(30*(u+1)))return;
+  a.ac=(+a.ac||0)+1;a.upg=u+1;touch(a.id);passTime(90);log(`The smith rivets new plates onto your ${a.t.toLowerCase()}: armour now +${a.ac}.`,"good")}
+ else if(act==="pony"){if((ch.ponyUntil||0)>t){flash="You already have a pony on hire.";render();return}if(!pay(5))return;ch.ponyUntil=t+1440;touch(ch.id);log("You hire a sturdy pony for a day. It will carry 60 lb for you.","good")}
+ else if(act==="buy")return buyGood(arg);
+ else if(act==="sell")return sellGood(arg);
+ else if(act==="boat")return takeBoat(arg);
+ else if(act==="garden"||act==="bench"||act==="hearth"){const C=cottage();if(!C||C.town!==hereId())return;const cost={garden:60,bench:80,hearth:50}[act];if(C[act])return;if(!pay(cost))return;C[act]=true;touch(C.id);
+  log({garden:"You dig and plant a herb garden behind the cottage. Each dawn it gives you herbs, into the chest.",bench:"A carpenter builds you a workbench: you can make what needs a smith right here.",hearth:"Masons rebuild your hearth. Sleeping by it leaves you well rested."}[act],"good")}
+ else if(act==="go"){const D=cell(arg);if(D){routePlan=planRoute(D.x,D.y);if(routePlan)walkPlan();}return}
+ store.flush();render();
+}
+function renderTownServices(L){
+ const T=townOf(L);if(!T||zOf(L)!==0)return"";const here=districts(L),t=gameNow(),night=isNight(t),tr=townTrade(T),ch=cell(charId());
+ const B=(spec,label,dis)=>`<button class="small" data-svc="${esc(spec)}" ${dis?"disabled":""}>${label}</button>`;
+ let h=`<div class="sectionhead"><h3>${esc(T.t)}</h3><span class="mono" style="font-size:13pt;color:var(--faint)">${prosperWord(T)}</span></div>`;
+ h+=`<p class="note">Known for <b>${esc(GOODS[tr.makes].n.toLowerCase())}</b>; pays well for ${tr.wants.map(g=>esc(GOODS[g].n.toLowerCase())).join(" and ")}.${night?" "+pick(["Lamplighters have been round, and the streets glow.","The watch passes with lanterns swinging.","Song and laughter spill out of the tavern.","Shutters are closed; somewhere a dog barks."]):""}</p>`;
+ const elsewhere=Object.keys(SVC_NAME).filter(r=>!here.includes(r)).map(r=>({r,c:whereIs(T,r)})).filter(o=>o.c);
+ for(const role of here){
+  h+=`<div class="svc"><b>${SVC_NAME[role]}</b>`;
+  if(role==="market"){
+   h+=`<ul class="items goods">${GOOD_KEYS.filter(g=>g===tr.makes||h01(T.id+g+dayOf(t))<.5).map(g=>`<li><span><span class="nm">${itemIcon({t:GOODS[g].n,kind:"tool"},28)} ${esc(GOODS[g].n)}</span><span class="meta">${GOODS[g].w} lb${g===tr.makes?" · made here, cheap":tr.wants.includes(g)?" · scarce here":""}</span></span><span class="acts">${B("buy|"+g,`Buy · ${goodPrice(T,g)} gp`,night)}</span></li>`).join("")}</ul>`;
+   const mine=packIds().map(cell).filter(i=>i.good);
+   if(mine.length)h+=`<ul class="items goods">${mine.map(i=>`<li><span><span class="nm">${itemIcon(i,28)} ${esc(i.t)}</span><span class="meta">yours</span></span><span class="acts">${B("sell|"+i.id,`Sell · ${sellGoodPrice(T,i.good)} gp`,night)}</span></li>`).join("")}</ul>`;
+   if(night)h+=`<p class="note">The stalls are shut until morning.</p>`}
+  if(role==="inn")h+=`<div class="btnrow">${B("gossip","Stand a round and hear the talk · 2 gp",T.gossipDay===dayOf(t))}${B("travellers","Ask about travellers")}</div><p class="note">Take a room with the Rest button: 2 gp, full HP.</p>`;
+  if(role==="chapel")h+=`<div class="btnrow">${B("heal","Have wounds dressed · 3 gp",sv("HP")>=sv("MAXHP"))}${B("lift","Lift what hangs over you",!(ch.boons||[]).some(b=>b.amount<0))}${B("bless","Ask a blessing · 5 gp")}</div>`;
+  if(role==="board"){const foes=Object.values(zz.cells).filter(c=>c.k==="loc"&&zOf(c)===0&&foeId(c.id)&&hexDist(c.x,c.y,T.x,T.y)<=10).slice(0,4);
+   h+=foes.length?`<ul class="items">${foes.map(c=>{const F=cell(foeId(c.id)),taken=quests().some(q=>!q.done&&q.target===c.id);return`<li><span><span class="nm">Bounty: ${esc(F.designation)} ${esc(F.t)}</span><span class="meta">at ${esc(c.t)}, ${hexDist(c.x,c.y,L.x,L.y)} hexes ${hexWord(wrapC(c.x-L.x),wrapC(c.y-L.y))} · ${12+Math.round((F.maxhp||10)*1.5)} gp</span></span><span class="acts">${B("bounty|"+c.id,taken?"Taken":"Take it",taken)}</span></li>`}).join("")}</ul>`:`<p class="note">No bounties posted: the watch knows of no anomalies nearby.</p>`;
+   h+=`<div class="btnrow">${B("work","Ask who needs help")}</div>`}
+  if(role==="smithy"){const w=weapon(),a=packIds().map(cell).find(i=>i.worn&&i.slot!=="trinket");
+   h+=`<div class="btnrow">${w?B("sharpen",`Hone ${esc(w.t.toLowerCase())} +1 · ${20*((w.upg||0)+1)} gp`,(w.upg||0)>=3):""}${a?B("reinforce",`Reinforce ${esc(a.t.toLowerCase())} +1 · ${30*((a.upg||0)+1)} gp`,(a.upg||0)>=2):""}</div><p class="note">The smith can also make you a lantern: see Craft in your pack.</p>`}
+  if(role==="stables")h+=`<div class="btnrow">${B("pony",(ch.ponyUntil||0)>t?"Pony on hire":"Hire a pony for a day · 5 gp",(ch.ponyUntil||0)>t)}</div>`;
+  if(role==="quay"){const i0=riverIndexNear(L),stops=i0==null?[]:boatStops().filter(s=>s.id!==L.id&&Math.abs(s.i-i0)>0&&Math.abs(s.i-i0)<=40);
+   h+=stops.length?`<ul class="items">${stops.map(s=>{const f=boatFare(i0,s.i);return`<li><span><span class="nm">${f.down?"↓":"↑"} ${esc(s.name)}</span><span class="meta">${f.down?"downstream":"upstream"} · ${fmtDur(f.mins)}</span></span><span class="acts">${B("boat|"+s.id,`${f.gp} gp`,night)}</span></li>`}).join("")}</ul>${night?`<p class="note">The boats tie up at night.</p>`:""}`:`<p class="note">No boats run from here.</p>`}
+  h+=`</div>`;
+ }
+ if(elsewhere.length)h+=`<p class="note svc-else">Elsewhere in ${esc(T.t)}: ${elsewhere.map(o=>`<button class="linkish" data-svc="go|${o.c.id}">${SVC_NAME[o.r]} (${esc(o.c===T?"centre":String(o.c.t).slice(T.t.length+1))})</button>`).join(" · ")}</p>`;
+ const C=cottage();if(C&&C.town===T.id&&atCottage())h+=`<div class="svc"><b>Your cottage</b><div class="btnrow">${C.garden?"":B("garden","Plant a herb garden · 60 gp")}${C.bench?"":B("bench","Build a workbench · 80 gp")}${C.hearth?"":B("hearth","Rebuild the hearth · 50 gp")}</div>${C.garden||C.bench||C.hearth?`<p class="note">You have: ${[C.garden&&"a herb garden",C.bench&&"a workbench",C.hearth&&"a good hearth"].filter(Boolean).join(", ")}.</p>`:""}</div>`;
+ return h;
+}
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-svc]");if(!b||b.disabled)return;e.stopPropagation();townService(b.dataset.svc)},true);
+
 function renderStation(L){
  if(!L.station||!L.station.length)return"";
  const night=isNight(gameNow());
@@ -2427,7 +2607,7 @@ function simulate(){
  for(let i=0;i<n;i++){
   const before=isNight(t);t+=TICK;const after=isNight(t);
   if(!before&&after)log(`Dusk on day ${dayOf(t)}. Lamps are lit and the townsfolk head for home.`,"time");
-  if(before&&!after){log(`Dawn on day ${dayOf(t)}. The townsfolk set out for the day.`,"time");{const F=festivalToday(t);if(F)log(`Today is ${F.name}, in every town. There is a contest: ${F.contest}.`,"good")}dawnGifts();if(seasonOf(t)!==seasonOf(t-1440))log(`${seasonOf(t)[0].toUpperCase()+seasonOf(t).slice(1)} has come to the realm.${seasonOf(t)==="winter"?" The river is freezing over, and snow closes the high path.":seasonOf(t)==="spring"?" The ice on the river breaks up.":""}`,"time")}
+  if(before&&!after){log(`Dawn on day ${dayOf(t)}. The townsfolk set out for the day.`,"time");{const F=festivalToday(t);if(F)log(`Today is ${F.name}, in every town. There is a contest: ${F.contest}.`,"good")}dawnGifts();townsDawn(t);if(seasonOf(t)!==seasonOf(t-1440))log(`${seasonOf(t)[0].toUpperCase()+seasonOf(t).slice(1)} has come to the realm.${seasonOf(t)==="winter"?" The river is freezing over, and snow closes the high path.":seasonOf(t)==="spring"?" The ice on the river breaks up.":""}`,"time")}
   const follow=sharedFollower();
   weatherTick(t);hungerTick(t);if(!follow)anomalyTick(t);
   if(!follow)for(const f of npcs()){
@@ -2697,7 +2877,7 @@ function renderSeekStar(){const b=$("seekstar");if(!b)return;const ok=seekReady(
       how long it takes, and anything worth knowing: night falling on the way, hard going, an anomaly in the
       path, unexplored ground. Tap the same hex again to set off; tap anywhere else to plan again.
    ============================================================ */
-let routePlan=null,routeWalking=false,routeLayer="";
+let routePlan=null,routeWalking=false,routeLayer="",lampLayer="";
 function planRoute(tx,ty){
  const H=cell(hereId());if(!H)return null;const Z=zOf(H);tx=wrapC(tx);ty=wrapC(ty);
  const key=(x,y)=>x+","+y,start=key(H.x,H.y),goal=key(tx,ty),dist={[start]:0},prev={},open=[[0,H.x,H.y]],R=hexDist(H.x,H.y,tx,ty)+10;
@@ -3346,7 +3526,7 @@ function rest(atDusk){
  if(isNight(t)){ch.campedNight=nightKey(t);ch.campedAt=here}
  const span=isNight(t)?minutesToDawn(t):REST_MIN,max=sv("MAXHP"),before=sv("HP");let after,msg;
  if(L.town){
-  if(atCottage()){after=max;ate("supper by your own hearth");msg=`You sleep in your own cottage in ${L.t} and wake fully rested (+${max-before} HP).`}
+  if(atCottage()){after=max;ate("supper by your own hearth");msg=`You sleep in your own cottage in ${L.t} and wake fully rested (+${max-before} HP).`;{const C=cottage();if(C&&C.hearth){ch.boons=(ch.boons||[]).concat([{stat:"CON",amount:1,until:t+span+8*60,from:"a night by your own hearth"}]);msg+=" Your hearth leaves you well rested (+1 CON for the day)."}}}
   else if(sv("GP")>=2){setStat("GP",sv("GP")-2);after=max;ate("supper at the inn");msg=`You take a room at the inn in ${L.t} for 2 gp, supper included. The taproom is loud until late, but you sleep well and wake fully healed (+${max-before} HP).`}
   else{after=Math.min(max,before+Math.ceil(max/2));msg=`You cannot pay for a room, so the innkeeper lets you sleep in the stable (+${after-before} HP).`}
  }else if(L.sanctuary){after=max;msg=`The keepers of ${L.t} tend your wounds without asking who you are. You sleep in deep quiet and wake fully healed (+${max-before} HP).`;
@@ -3745,7 +3925,7 @@ function offerQuest(n){
  quests().push(q);touch("root");noteOf(n,`I asked you to ${q.desc}`);log(`${n.t} asks you to ${q.desc}. Reward: ${q.gold} gp${q.magic?` and ${q.magic}`:""}.`,"good");
 }
 function completeQuest(q,how){
- q.done=true;touch("root");setStat("GP",sv("GP")+q.gold);gainXP(q.xp);
+ q.done=true;touch("root");setStat("GP",sv("GP")+q.gold);gainXP(q.xp);if(q.town)townProsper(cell(q.town),1);
  const g=cell(q.giver);if(g){bump2(g,me(),.25);noteOf(g,`you did what I asked: ${q.desc}`);if(g.home)townHelped(g.home)}
  if(q.magic){const m=MAGIC_ITEMS.find(x=>x.name===q.magic);if(m)appendTo(charId(),"contain",magicItem(m,false))}
  log(`Quest done: ${q.desc}${how?" ("+how+")":""}. ${q.giverName} pays you ${q.gold} gp${q.magic?` and gives you ${q.magic}`:""}.`,"good");
@@ -4181,7 +4361,7 @@ function rivalry(a,b){const r=cell("root");if(!r||!r.rivalry||a===b)return 0;ret
 function seedRivalry(){const r=cell("root"),T=towns();r.rivalry={};for(let i=0;i<T.length;i++)for(let j=i+1;j<T.length;j++)r.rivalry[[T[i].id,T[j].id].sort().join("|")]=pick([-.5,-.2,.3,.6]);touch("root")}
 function townStanding(townId){const ch=charId()&&cell(charId());const res=rank(townId,"residents").map(cell).filter(Boolean);if(!ch||!res.length)return 0;return res.reduce((s,n)=>s+tie(n,ch),0)/res.length}
 // Helping one town is noticed in the others: rivals sour on you, allies warm to you
-function townHelped(townId){const ch=cell(charId());for(const T of towns()){if(T.id===townId)continue;const rv=rivalry(townId,T.id);if(!rv)continue;for(const n of rank(T.id,"residents").map(cell).filter(Boolean))bump(n,ch,rv>0?-.06*rv:.04*-rv);if(rv>=.3)log(`Word reaches ${T.t} that you have been helping their rivals in ${cell(townId).t}.`,"npc")}}
+function townHelped(townId){townProsper(cell(townId),1);const ch=cell(charId());for(const T of towns()){if(T.id===townId)continue;const rv=rivalry(townId,T.id);if(!rv)continue;for(const n of rank(T.id,"residents").map(cell).filter(Boolean))bump(n,ch,rv>0?-.06*rv:.04*-rv);if(rv>=.3)log(`Word reaches ${T.t} that you have been helping their rivals in ${cell(townId).t}.`,"npc")}}
 const relationName=v=>v>=.5?"bitter rivals":v>0?"rivals":v<=-.4?"close allies":"friendly";
 
 /* ---------- Anomalies that roam and spread ---------- */
@@ -4215,7 +4395,7 @@ function haveFor(r){
  for(const need of r.needs){const it=pack.find(i=>!used.has(i.id)&&ING[need].test(i.t));if(!it)return null;used.add(it.id)}
  return[...used];
 }
-const smithHere=()=>{const H=cell(hereId());return!!(H&&zOf(H)===0&&npcsAt(H.x,H.y).some(n=>n.role==="smith"&&!n.shunsYou))};
+const smithHere=()=>{const H=cell(hereId());if(!H)return false;if(districtHere("smithy"))return true;const C=cottage();if(C&&C.bench&&atCottage())return true;return!!(zOf(H)===0&&npcsAt(H.x,H.y).some(n=>n.role==="smith"&&!n.shunsYou))};
 function craft(i){
  const r=RECIPES[+i];if(!r||isDowned())return;if(r.smith&&!smithHere()){flash="You need a smith at hand for that.";render();return}
  const use=haveFor(r);if(!use){flash=`You lack what ${r.name} needs.`;render();return}
@@ -4232,6 +4412,7 @@ const beats=it=>it.kind==="weapon"?diceAvg(it.dmg)>bestOf("weapon",i=>diceAvg(i.
 function itemGroup(it){
  if(it.worn||(it.kind==="weapon"&&weapon()===it))return"wear";
  if(it.heal||it.kind==="mushroom")return"heal";
+ if(it.good)return"trade";
  if(it.magic)return"keep";
  if(isIngredient(it))return"craft";
  if(it.kind==="treasure"||it.light||it.mapOf||it.magic||it.kind==="tool")return"keep";
@@ -4239,7 +4420,7 @@ function itemGroup(it){
   return ws.some(o=>(it.kind==="weapon"?diceAvg(o.dmg):+o.ac||0)>=mine)?"sell":"keep"}
  return"sell";
 }
-const PACK_GROUPS=[["wear","Wearing and in hand"],["heal","Food and healing"],["craft","For crafting"],["keep","Keep"],["sell","Spare: worth selling"]];
+const PACK_GROUPS=[["trade","Trade goods"],["wear","Wearing and in hand"],["heal","Food and healing"],["craft","For crafting"],["keep","Keep"],["sell","Spare: worth selling"]];
 // What travel mode picks up on the way: food, healing, treasure, crafting things, light, maps, magic, and gear better than yours
 const usefulPickup=it=>!!(it.heal||it.kind==="food"||it.kind==="potion"||it.kind==="mushroom"||it.kind==="treasure"||it.light||it.mapOf||it.magic||isIngredient(it)||beats(it));
 // Selling the spares to whoever here can pay; the first tap shows the total, the second sells
@@ -5208,6 +5389,7 @@ function renderMap(){
   const glyph=c.sanctuary?"M14 34 V22 L26 13 L38 22 V34 Z M26 19 V31 M20 25 H32":c.monument?GLYPH_MON[c.monument]:c.castle?"M13 35 V19 h5 v4 h4 v-4 h5 v4 h4 v-4 h5 v16 Z M23 35 v-6 a3 3 0 0 1 6 0 v6":c.cavemouth?GLYPH.cave:c.town?(c.town.of?GLYPH.village:GLYPH["town_"+c.town.size]):c.falls?GLYPH.falls:GLYPH[tr]||GLYPH.other;
   const label=c.town?`${c.t}, ${TOWN_SIZES[c.town.size].label}`:c.hole?`${c.t}, where the river falls into the hole`:c.river?(c.river.crossing?`${c.t}, ${CROSSINGS[c.river.crossing]}${c.river.crossing==="magic"&&!magic?" (absent now)":""}`:`${c.t}, the river`):c.lake?`${c.t}, a lake`:c.t;
   const wa=Z>=0?weatherAt(c.x,c.y,Z,t):null,fire=fireAt(c.x,c.y,Z);
+  if(Z===0&&c.town&&isNight(t)){const ph=nameHash(id);for(let k=0;k<3;k++){const lx=px+14+((ph>>(k*4))%32),ly=py+14+((ph>>(k*4+2))%30);lampLayer+=`<circle class="lamp" cx="${lx}" cy="${ly}" r="5"/><circle class="lampcore" cx="${lx}" cy="${ly}" r="1.6"/>`}}   // lamps lit in the streets
   out+=`<g data-loc="${id}"${c.visited?"":' class="unvisited"'}><polygon class="tile t-${c.hole?"cave":tr}" points="${hex(px+30,py+30,.95)}" tabindex="0" role="button" aria-label="${esc(label)}${id===here?" (you are here)":""}${f?", anomaly at large":""}${fire?", on fire":""}"><title>${esc(label)}${f?" · "+esc(cell(f).designation)+" at large":""}${wa?" · "+esc(wa.short):""}${fire?" · burning":""}</title></polygon><path class="${c.monument?"rune":"glyph"}" transform="translate(${px+4} ${py+4})" d="${c.hole?"M16 25 a10 8 0 1 0 20 0 a10 8 0 1 0 -20 0 M21 25 a5 4 0 1 0 10 0 a5 4 0 1 0 -10 0":glyph}"/>`;
   if(c.river&&c.river.crossing){const cr=c.river.crossing;out+=`<path class="${cr==="magic"?"magicarc"+(magic?"":" gone"):"cross"}" transform="translate(${px+4} ${py+4})" d="${CROSS_GLYPH[cr]}"/>`}
   if(wa&&wa.rain>.2)out+=`<path class="rainmark" d="M${px+40} ${py+12} l-4 8 M${px+46} ${py+12} l-4 8 M${px+52} ${py+12} l-4 8" style="opacity:${Math.min(1,.3+wa.rain)}"/>`;
@@ -5276,7 +5458,7 @@ function renderMap(){
   // Real dark: inside your light all is clear; over the next two hexes it falls away to near black, and beyond that nothing shows
   const RT=lightR+1.8*HW,k1=(lightR/RT).toFixed(3),k2=((lightR+.75*HW)/RT).toFixed(3),k3=((lightR+1.35*HW)/RT).toFixed(3);
   const glow=`<defs><radialGradient id="nightlight" gradientUnits="userSpaceOnUse" cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="${RT.toFixed(1)}"><stop offset="0" stop-color="${warm}"/><stop offset="${k1}" stop-color="rgba(0,0,0,0)"/><stop offset="${k2}" stop-color="rgba(5,7,16,.62)"/><stop offset="${k3}" stop-color="rgba(4,5,12,.88)"/><stop offset="1" stop-color="rgba(3,4,10,.97)"/></radialGradient></defs><rect x="${VB[0]}" y="${VB[1]}" width="${W}" height="${V}" fill="url(#nightlight)" pointer-events="none"/>`;
-  out=`<g class="nightfade">${out}</g>${glow}${beacons}`+(()=>{const words=line.split(" "),rows=[];let cur="";for(const w of words){if((cur+" "+w).trim().length>wrapAt&&cur){rows.push(cur);cur=w}else cur=(cur+" "+w).trim()}if(cur)rows.push(cur);
+  out=`<g class="nightfade">${out}</g>${glow}${(()=>{const l=lampLayer;lampLayer="";return l})()}${beacons}`+(()=>{const words=line.split(" "),rows=[];let cur="";for(const w of words){if((cur+" "+w).trim().length>wrapAt&&cur){rows.push(cur);cur=w}else cur=(cur+" "+w).trim()}if(cur)rows.push(cur);
    // near the top of the map, clear of the Ways rose and the controls along the bottom
    // on a narrow map (a phone) the box shrinks to fit the width, leaving room for the zoom slider
    const h=(narrow?150:110)+rows.length*G,Y=26,nsc=W>=V?ui:(W-62*U)/420,NUI=W>=V?UI:(s=>`<g transform="translate(${VB[0]+6*U} ${VB[1]}) scale(${nsc})">${s}</g>`);return NUI(`<g class="nightnote" pointer-events="none" style="--k:${(1/nsc).toFixed(4)}"><rect x="14" y="${Y}" width="392" height="${h}" rx="12"/>
@@ -5287,7 +5469,7 @@ function renderMap(){
  else out+=beacons;
  if(zoomTw){const fresh=!zoomTw.to;zoomTw.to=VB.slice();if(fresh){svg.setAttribute("viewBox",zoomTw.from.map(v=>v.toFixed(1)).join(" "));requestAnimationFrame(stepZoom)}}else svg.setAttribute("viewBox",(mapCam.anim?camBox():VB).map(v=>v.toFixed(1)).join(" "));{const cw=svg.clientWidth||bb.width;svg.style.setProperty("--u",cw>50?(W/cw*1.003).toFixed(4):"1")}{const zs=$("zoom"),lab=`${Math.round(W/(HW*.75))} × ${2*R+1} hexes`;if(zs){zs.max=String(ZOOMS.length-1);zs.value=String(ZOOMS.length-1-ZOOMS.indexOf(R));zs.setAttribute("aria-valuetext",lab);zs.title=`Zoom: ${lab}`}}
  renderHud();
- svg.innerHTML=`<defs><filter id="beaconglow" x="-1" y="-1" width="3" height="3"><feGaussianBlur stdDeviation="4"/></filter></defs>`+out+routeLayer;routeLayer="";
+ svg.innerHTML=`<defs><filter id="beaconglow" x="-1" y="-1" width="3" height="3"><feGaussianBlur stdDeviation="4"/></filter></defs>`+out+lampLayer+routeLayer;routeLayer="";lampLayer="";
  const ew=H.x===0?"0":Math.abs(H.x)+(H.x>0?" E":" W"),ns=H.y===0?"0":Math.abs(H.y)+(H.y>0?" N":" S");
  $("coords").textContent=`${ew}, ${ns} · level ${Z>0?"+"+Z:Z===0?"0":"−"+(-Z)}`;
 }
@@ -5486,7 +5668,7 @@ function renderPlace(){
   else html+=`<div class="btnrow"><button class="small" data-act="rent" ${sv("GP")<COTTAGE_RENT?"disabled":""}>${C?"Move your cottage here":"Rent a cottage here"} · ${COTTAGE_RENT} gp</button><span class="note">A home with a chest the paladin cannot touch.</span></div>`;
  }
  html+=renderTravellers(L);
- html+=renderFestival(L)+renderStation(L);
+ html+=renderFestival(L)+renderStation(L)+renderTownServices(L);
  if(L.spring)html+=`<p class="note">A healing spring rises here.</p>`;
  if(L.hazard&&L.outcome){const o=L.outcome;html+=`<div class="hazard${o.ok?" passed":""}"><b>${esc(L.hazard.name)}.</b> ${esc(L.hazard.text)} ${o.ok?"You get through unharmed.":`You take ${o.dmg} damage.`}${here===lastHazard?`<span class="roll">${esc(o.roll)}</span>`:""}</div>`}
  if(f)html+=`<p class="neutral">An encounter is under way: see the map.</p>`;
